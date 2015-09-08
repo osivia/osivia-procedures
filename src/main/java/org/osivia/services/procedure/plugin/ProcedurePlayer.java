@@ -94,7 +94,7 @@ public class ProcedurePlayer implements IPlayerModule {
         
         String docType = document.getType();
         if("ProcedureInstance".equals(docType)){
-            title = document.getString("pi:name");
+            title = document.getString("pi:directive");
         } else if("Procedure".equals(docType)){
             title = document.getString("dc:title");
         }

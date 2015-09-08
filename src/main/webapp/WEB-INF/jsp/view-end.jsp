@@ -2,6 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<div class="well">
-	<h3>End of Procedure</h3>
-</div>
+<fieldset>
+    <div>${procedure.message}</div>
+</fieldset>

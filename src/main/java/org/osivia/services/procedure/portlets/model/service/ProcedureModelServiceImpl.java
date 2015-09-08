@@ -57,6 +57,7 @@ public class ProcedureModelServiceImpl implements IProcedureModelService {
 
             ProcedureModel vo = new ProcedureModel();
             vo.setName(document.getString("dc:title"));
+            vo.setDescription(document.getString("dc:description"));
 
             return vo;
         } catch (Exception e) {

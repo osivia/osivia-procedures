@@ -70,16 +70,16 @@ public class GoToNextStepCommand implements INuxeoCommand {
         MultipartFile mpFile = p.getForm().getDocument();
         if(mpFile != null){
             Blob blob = FormUtils.adaptFile(mpFile);
-            service.setBlob(piRef, blob, "pi:form/document");
+            service.setBlob(piRef, blob, "pi:form/document/content");
+            service.setProperty(piRef, "pi:form/document/fileName", blob.getFileName());
         }
         pi = service.getDocument(piRef);
         
         // Update other properties
         Form form = p.getForm();
-        pi.set("pi:form/comment", form.getComment());
-        pi.set("pi:form/action", form.getAction());
-        pi.set("pi:form/nature", form.getNature());
-        
+        service.setProperty(piRef, "pi:form/comment", form.getComment());
+        service.setProperty(piRef, "pi:form/action", form.getAction());
+        service.setProperty(piRef, "pi:form/nature", form.getNature());
         
         return pi;
     }

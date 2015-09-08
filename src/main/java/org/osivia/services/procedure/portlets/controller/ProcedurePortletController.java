@@ -1,5 +1,9 @@
 package org.osivia.services.procedure.portlets.controller;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -14,6 +18,7 @@ import javax.portlet.RenderResponse;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -137,11 +142,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     * @param response
     * @param procedure
     * @throws PortletException
+    * @throws IOException 
     */
     @ActionMapping(value = "startProcedureAction")
     public void startProcedureAction(ActionRequest request, ActionResponse response, @ModelAttribute(value = "procedureModel") ProcedureModel procedureModel, 
             @ModelAttribute(value = "procedure") Procedure procedure)
-            throws PortletException {
+            throws PortletException, IOException {
         NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
         
         String procedureName = procedureModel.getName();
@@ -150,15 +156,24 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         // Update procedure
         Procedure newProcedure = ((ProcedureServiceImpl) this.procedureService).toViewObject(nuxeoController, procedureInstance);
         this.procedureService.updateProcedure(procedure, newProcedure);
-        // Set render parameters to redirect to procedureInstances render view
-        // and save new path
-        response.setRenderParameter("nextStep", StringUtils.EMPTY);
-        PortalWindow window = WindowFactory.getWindow(nuxeoController.getRequest());
-        window.setProperty(Constants.WINDOW_PROP_URI, procedureInstance.getPath());
-        request.setAttribute("osivia.portal.window", window);
         
+        final Map<String, String> windowProperties = new HashMap<String, String>(1);
+        windowProperties.put(Constants.WINDOW_PROP_URI, procedureInstance.getPath());
+        windowProperties.put("osivia.doctype", procedureInstance.getType());
+        windowProperties.put("osivia.title", procedureInstance.getString("pi:directive"));
+        windowProperties.put("osivia.hideDecorators", "1");
+        windowProperties.put("osivia.ajaxLink", "1");
+        String redirectUrl;
+        try {
+            redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance", windowProperties, false);
+        } catch (final PortalException e) {
+            throw new PortletException(e);
+        }
+
         // To update portlets, especially Tasks portlet
         request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
+
+        response.sendRedirect(redirectUrl);
         
     }
     
@@ -181,7 +196,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         
         this.procedureService.goToNextStep(nuxeoController, procedureInstance, procedure);
         
+        String oldMessage = procedureInstance.getString("pi:message");
         this.procedureService.updateProcedure(procedure, this.procedureService.getProcedure(nuxeoController));
+        procedure.setMessage(oldMessage);
         
         // To update portlets, especially Tasks portlet
         request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);

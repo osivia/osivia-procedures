@@ -6,34 +6,28 @@
 
 <portlet:actionURL name="nextStepAction" var="nextStepActionURL" />
 
-<div class="well">
 
-	    <c:choose> 
+	<c:choose> 
         <c:when test="${procedure.currentUserIsActor}">
-			<div class="form-group">
-				<label class="control-label">Procedure: </label>
-				<span class="form-control-static">${procedure.name}</span>
-			</div>
-			<div class="form-group">
-				<label class="control-label">Current Step: </label>
-		        <span class="form-control-static">${procedure.currentStep}</span>
-		    </div>
 		    
-		    <form:form modelAttribute="procedure" action="${nextStepActionURL}" method="post" enctype="multipart/form-data" role="form">
+		    <form:form modelAttribute="procedure" action="${nextStepActionURL}" method="post" enctype="multipart/form-data" role="form"
+		               class="form-horizontal">
 		        
 			    <jsp:include page="${procedure.formId}.jsp" />
             
-			    <button type="submit" class="btn btn-primary">
-	                <span>Valider</span>
-	            </button>
+                <div class="col-sm-offset-2">
+				    <button type="submit" class="btn btn-primary">
+		                <span>Valider</span>
+		            </button>
+	            </div>
 		    
 		    </form:form>
 
 		</c:when>
 		<c:otherwise>
-		  <h3>The End for You!</h3>
+		  <fieldset>
+		      <div>${procedure.message}</div>
+		  </fieldset>
 		</c:otherwise>
 		
     </c:choose>
-
-</div>

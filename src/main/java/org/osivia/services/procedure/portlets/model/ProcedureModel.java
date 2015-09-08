@@ -12,6 +12,8 @@ public class ProcedureModel {
     
     /** Name of procedure model. */
     private String name;
+    /** Description of procedure.*/
+    private String description;
     
     /**
      * @return the name
@@ -27,6 +29,18 @@ public class ProcedureModel {
         this.name = name;
     }
     
-    
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
 }

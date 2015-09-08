@@ -16,6 +16,12 @@ public class Procedure {
     
     /** Name of procedure. */
     private String name;
+    /** Initiator of procedure. */
+    private String initiator;
+    /** Directive of current step. */
+    private String directive;
+    /** Message. */
+    private String message;
     /** Current step of procedure. */
     private String currentStep;
     /** Next step of procedure. */
@@ -43,6 +49,48 @@ public class Procedure {
         this.name = name;
     }
     
+    /**
+     * @return the initiator
+     */
+    public String getInitiator() {
+        return initiator;
+    }
+
+    /**
+     * @param initiator the initiator to set
+     */
+    public void setInitiator(String initiator) {
+        this.initiator = initiator;
+    }
+
+    /**
+     * @return the directive
+     */
+    public String getDirective() {
+        return directive;
+    }
+
+    /**
+     * @param directive the directive to set
+     */
+    public void setDirective(String directive) {
+        this.directive = directive;
+    }
+    
+    /**
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+    
+    /**
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     /**
      * @return the currentStep
      */

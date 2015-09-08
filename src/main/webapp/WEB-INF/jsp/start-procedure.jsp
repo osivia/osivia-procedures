@@ -5,8 +5,10 @@
     <portlet:param name="start" value="true" />
 </portlet:actionURL>
 
-<div class="well">
-    <h3>Démarrer la procédure ${procedureModel.name}</h3>
-    
-    <a class="btn btn-primary" href="${startProcedureActionURL}">Valider</a>
-</div>
+<fieldset>
+    <div class="col-sm-12">${procedureModel.description}</div>
+</fieldset>
+
+<div class="col-sm-12">
+    <a class="col-sm-offset-2  btn btn-primary" href="${startProcedureActionURL}">Démarrer</a>
+</div>   

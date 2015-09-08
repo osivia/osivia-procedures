@@ -47,6 +47,7 @@ public class FormUtils {
             mpFile.transferTo(attachment);
             
             blob = new FileBlob(attachment);
+            blob.setFileName(mpFile.getOriginalFilename());
         }
         
         return blob;
