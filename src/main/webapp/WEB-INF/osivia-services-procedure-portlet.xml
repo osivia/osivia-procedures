@@ -10,7 +10,7 @@
 
     <context:annotation-config />
 
-    <context:component-scan base-package="org.osivia.services.procedure.portlets" />
+    <context:component-scan base-package="org.osivia.services.procedure.portlet" />
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="cache" value="true" />

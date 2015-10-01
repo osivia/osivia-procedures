@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  *
- *    
+ *
  */
 package org.osivia.services.procedure.plugin;
 
@@ -26,9 +26,9 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSHandlerProperties;
-import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.IPlayerModule;
 
@@ -40,8 +40,8 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.IPlayerModule;
  * @author Jean-Sébastien Steux
  */
 public class ProcedurePlayer implements IPlayerModule {
-    
-    
+
+
     /**
      * Instantiates a new player module.
      *
@@ -49,7 +49,7 @@ public class ProcedurePlayer implements IPlayerModule {
      */
     public ProcedurePlayer(PortletContext portletContext) {
 
-    } 
+    }
 
     /**
      * Get procedure thread player.
@@ -63,9 +63,13 @@ public class ProcedurePlayer implements IPlayerModule {
         Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
         windowProperties.put("osivia.doctype", document.getType());
-        windowProperties.put("osivia.title", getPortletTitle(document));
+        windowProperties.put("osivia.title", "Éditer une procédure");
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("osivia.ajaxLink", "1");
+
+        if (StringUtils.equals(cmsContext.getDisplayContext(), "adminproc")) {
+            windowProperties.put("osivia.procedure.admin", cmsContext.getDisplayContext());
+        }
 
         CMSHandlerProperties linkProps = new CMSHandlerProperties();
         linkProps.setWindowProperties(windowProperties);
@@ -79,27 +83,11 @@ public class ProcedurePlayer implements IPlayerModule {
         Document doc = (Document) ctx.getDoc();
         String docType = doc.getType();
 
-        if ("ProcedureInstance".equals(docType) || "Procedure".equals(docType)) {
-            return this.getProcedurePlayer(ctx);
+        if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getName()) || StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
+            return getProcedurePlayer(ctx);
         }
-        
+
         return null;
-    }
-    
-    /**
-     * @return the portlet title.
-     */
-    protected String getPortletTitle(Document document){
-        String title = StringUtils.EMPTY;
-        
-        String docType = document.getType();
-        if("ProcedureInstance".equals(docType)){
-            title = document.getString("pi:directive");
-        } else if("Procedure".equals(docType)){
-            title = document.getString("dc:title");
-        }
-        
-        return title;
     }
 
 }

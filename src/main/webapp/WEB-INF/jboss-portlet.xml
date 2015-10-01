@@ -10,7 +10,9 @@
             <trans-attribute>Required</trans-attribute>
         </transaction>
         
-        <header-content />
+        <header-content>
+            <script type="text/javascript" src="/js/procedure.js"></script>
+        </header-content>
 
         <portlet-info>
             <icon>
