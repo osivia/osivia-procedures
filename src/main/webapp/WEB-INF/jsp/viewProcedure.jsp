@@ -7,7 +7,7 @@
 <portlet:actionURL name="actionProcedure" var="actionProcedureUrl">
 </portlet:actionURL>
 
-<form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
+<form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" cssClass="form-horizontal" role="form" enctype="multipart/form-data">
 
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -24,6 +24,14 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <form:input path="procedureInstance.globalVariablesValues['${field.name}']" type="text" cssClass="form-control"/>
+                                </div>
+                            </c:when>
+                            <c:when test="${field.type eq 'FILE'}">
+                                <div class="col-sm-3">
+                                    <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${field.label}</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="file" name="file:${field.name}"/>
                                 </div>
                             </c:when>
                             <c:otherwise>

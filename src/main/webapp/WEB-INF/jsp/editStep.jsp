@@ -69,6 +69,7 @@
                                     <div class="col-sm-4">
                                         <form:select path="theSelectedStep.fields[${status.index}].type" cssClass="form-control">
                                             <form:option value="TEXT">Texte</form:option>
+                                            <form:option value="FILE">Fichier</form:option>
                                         </form:select>
                                     </div>
                                     <div class="col-sm-4">

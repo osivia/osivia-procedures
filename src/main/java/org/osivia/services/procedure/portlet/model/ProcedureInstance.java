@@ -1,13 +1,11 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
@@ -16,37 +14,37 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 /**
  * @author dorian
  */
-@JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
-        creatorVisibility = Visibility.NONE)
 public class ProcedureInstance {
 
     /** globalVariablesValues */
-    @JsonProperty("pi:globalVariablesValues")
     private Map<String, String> globalVariablesValues;
 
     /** currentStep */
-    @JsonProperty("pi:currentStep")
     private String currentStep;
 
     /** taskTitle */
-    @JsonProperty("pi:taskTitle")
     private String taskTitle;
 
     /** procedureModelPath */
-    @JsonIgnore
     private String procedureModelPath;
+
+    /** filesPath */
+    private List<FilePath> filesPath;
 
     public ProcedureInstance() {
         globalVariablesValues = new HashMap<String, String>();
+        filesPath = new ArrayList<FilePath>();
     }
 
     public ProcedureInstance(String currentStep) {
         globalVariablesValues = new HashMap<String, String>();
+        filesPath = new ArrayList<FilePath>();
         this.currentStep = currentStep;
     }
 
     public ProcedureInstance(Document document) {
         globalVariablesValues = new HashMap<String, String>();
+        filesPath = new ArrayList<FilePath>();
         PropertyMap properties = document.getProperties();
         currentStep = properties.getString("pi:currentStep");
         procedureModelPath = properties.getString("pi:procedureModelPath");
@@ -59,6 +57,21 @@ public class ProcedureInstance {
             while (gvvIterator.hasNext()) {
                 PropertyMap gvv = (PropertyMap) gvvIterator.next();
                 globalVariablesValues.put(gvv.getString("name"), gvv.getString("value"));
+            }
+        }
+
+        // files
+        PropertyList fileList = properties.getList("pi:files");
+        Iterator<Object> fileListIterator;
+        if (fileList != null) {
+            fileListIterator = fileList.list().iterator();
+            FilePath filePath;
+            while (fileListIterator.hasNext()) {
+                PropertyMap file = (PropertyMap) fileListIterator.next();
+                filePath = new FilePath();
+                filePath.setVariableName(file.getString("variableName"));
+                filePath.setFileName(file.getString("fileName"));
+                filesPath.add(filePath);
             }
         }
     }
@@ -141,4 +154,23 @@ public class ProcedureInstance {
         this.procedureModelPath = procedureModelPath;
     }
 
+
+    /**
+     * Getter for filesPath.
+     *
+     * @return the filesPath
+     */
+    public List<FilePath> getFilesPath() {
+        return filesPath;
+    }
+
+
+    /**
+     * Setter for filesPath.
+     *
+     * @param filesPath the filesPath to set
+     */
+    public void setFilesPath(List<FilePath> filesPath) {
+        this.filesPath = filesPath;
+    }
 }

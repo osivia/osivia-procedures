@@ -1,13 +1,18 @@
 package org.osivia.services.procedure.portlet.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
 import javax.portlet.PortletException;
 
+import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.model.StreamBlob;
 import org.osivia.services.procedure.portlet.adapter.ProcedureJSONAdapter;
 import org.osivia.services.procedure.portlet.command.CreateDocumentCommand;
 import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
@@ -15,6 +20,7 @@ import org.osivia.services.procedure.portlet.command.StartProcedureCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
 import org.osivia.services.procedure.portlet.command.UpdateProcedureCommand;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
+import org.osivia.services.procedure.portlet.model.FilePath;
 import org.osivia.services.procedure.portlet.model.GlobalVariablesValuesType;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
@@ -90,7 +96,17 @@ public class ProcedureServiceImpl implements IProcedureService {
                 gvvList.add(new GlobalVariablesValuesType(entry.getKey(), entry.getValue()));
             }
             propMap.set("pi:globalVariablesValues", ProcedureJSONAdapter.getInstance().toJSON(gvvList));
-            command = new StartProcedureCommand(taskTitle, propMap);
+
+            Blobs blobs = null;
+            for (FilePath file : procedureInstance.getFilesPath()) {
+                blobs = new Blobs();
+                InputStream in = new ByteArrayInputStream(file.getFile().getBytes());
+                Blob blob = new StreamBlob(in, file.getFile().getOriginalFilename(), file.getFile().getContentType());
+                blobs.add(blob);
+            }
+            propMap.set("files", ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getFilesPath()));
+
+            command = new StartProcedureCommand(taskTitle, propMap, blobs);
         } catch (final Exception e) {
             throw new PortletException(e);
         }

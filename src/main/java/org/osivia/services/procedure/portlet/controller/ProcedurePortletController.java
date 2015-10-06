@@ -24,20 +24,24 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.services.procedure.portlet.model.Action;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.Field;
+import org.osivia.services.procedure.portlet.model.FilePath;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.Step;
+import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
+import org.springframework.web.portlet.multipart.MultipartActionRequest;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
@@ -167,36 +171,32 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void proceedProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "stepReference") String stepReference) throws PortletException, IOException {
 
-        // validating next step
-        boolean isStepValid = false;
-        String taskTitle = null;
-        if (StringUtils.isNotEmpty(stepReference)) {
-            if (StringUtils.equals(stepReference, "endStep")) {
-                // if it's the final step
-                isStepValid = true;
-                form.getProcedureInstance().setCurrentStep(stepReference);
-                taskTitle = StringUtils.EMPTY;
-            } else {
-                // check step exist
-                for (Step step : form.getProcedureModel().getSteps()) {
-                    if (StringUtils.equals(stepReference, step.getReference())) {
-                        isStepValid = true;
-                        form.getProcedureInstance().setCurrentStep(stepReference);
-                        taskTitle = step.getStepName();
-                        break;
-                    }
+        if (request instanceof MultipartActionRequest) {
+            // set the uploaded files in the instance
+            MultipartActionRequest multipartActionRequest = (MultipartActionRequest) request;
+            for (Field field : form.getTheCurrentStep().getFields()) {
+                if (StringUtils.equals(field.getType(), VariableTypesEnum.FILE.name())) {
+                    MultipartFile multipartFile = multipartActionRequest.getFileMap().get("file:" + field.getName());
+                    FilePath filePath = new FilePath();
+                    filePath.setFile(multipartFile);
+                    filePath.setVariableName(field.getName());
+                    filePath.setFileName(String.valueOf(multipartFile.getOriginalFilename()));
+                    form.getProcedureInstance().getFilesPath().add(filePath);
                 }
             }
         }
 
-        if (isStepValid) {
+        // validating next step
+        String taskTitle = buildTaskTitle(form, stepReference);
+
+        if (taskTitle != null) {
             // if step exist check if there is an instance
             PortalWindow window = WindowFactory.getWindow(request);
             String path = window.getProperty(Constants.WINDOW_PROP_URI);
             String doctype = window.getProperty("osivia.doctype");
 
             if (StringUtils.isNotEmpty(path) && StringUtils.equals(doctype, DocumentTypeEnum.PROCEDUREMODEL.getName())) {
-                // id there is no instance, create it
+                // if there is no instance, create it
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
                 procedureService.createProcedureInstance(nuxeoController, form.getProcedureModel(), form.getProcedureInstance(), taskTitle);
                 // redirect to end of step page
@@ -217,6 +217,32 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             // if step doesn't exist do nothing and display current step
             response.setRenderParameter("action", "viewProcedure");
         }
+    }
+
+    /**
+     * @param form
+     * @param stepReference
+     * @return
+     */
+    private String buildTaskTitle(Form form, String stepReference) {
+        String taskTitle = null;
+        if (StringUtils.isNotEmpty(stepReference)) {
+            if (StringUtils.equals(stepReference, "endStep")) {
+                // if it's the final step
+                form.getProcedureInstance().setCurrentStep(stepReference);
+                taskTitle = StringUtils.EMPTY;
+            } else {
+                // check step exist
+                for (Step step : form.getProcedureModel().getSteps()) {
+                    if (StringUtils.equals(stepReference, step.getReference())) {
+                        form.getProcedureInstance().setCurrentStep(stepReference);
+                        taskTitle = step.getStepName();
+                        break;
+                    }
+                }
+            }
+        }
+        return taskTitle;
     }
 
 

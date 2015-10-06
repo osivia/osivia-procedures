@@ -5,6 +5,7 @@ package org.osivia.services.procedure.portlet.command;
 
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
@@ -24,6 +25,9 @@ public class StartProcedureCommand implements INuxeoCommand {
     /** properties */
     private PropertyMap properties;
 
+    /** blobs */
+    private Blobs blobs;
+
     /**
      * Constructor.
      */
@@ -33,12 +37,20 @@ public class StartProcedureCommand implements INuxeoCommand {
         this.properties = properties;
     }
 
+    public StartProcedureCommand(String taskTitle, PropertyMap properties, Blobs blobs) {
+        super();
+        this.taskTitle = taskTitle;
+        this.properties = properties;
+        this.blobs = blobs;
+    }
+
     @Override
     public Document execute(Session nuxeoSession) throws Exception {
 
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.StartProcedure.getId());
         request.set("taskTitle", taskTitle);
         request.set("properties", properties);
+        request.setInput(blobs);
 
         return (Document) nuxeoSession.execute(request);
 

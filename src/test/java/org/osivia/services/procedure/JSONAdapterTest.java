@@ -11,6 +11,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.osivia.services.procedure.portlet.adapter.ProcedureJSONAdapter;
 import org.osivia.services.procedure.portlet.model.Action;
 import org.osivia.services.procedure.portlet.model.Field;
+import org.osivia.services.procedure.portlet.model.FilePath;
 import org.osivia.services.procedure.portlet.model.GlobalVariablesValuesType;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
@@ -53,6 +54,7 @@ public class JSONAdapterTest {
         procedureInstance.getGlobalVariablesValues().put("plop", "plopoui");
         procedureInstance.getGlobalVariablesValues().put("plip", "plipoui");
 
+
         List<GlobalVariablesValuesType> gvvList = new ArrayList<GlobalVariablesValuesType>();
         for (Entry<String, String> entry : procedureInstance.getGlobalVariablesValues().entrySet()) {
             gvvList.add(new GlobalVariablesValuesType(entry.getKey(), entry.getValue()));
@@ -62,6 +64,19 @@ public class JSONAdapterTest {
 
         System.out.println(json);
 
+
+        FilePath filepath1 = new FilePath();
+        filepath1.setFileName("XKLJHSDFJK");
+        filepath1.setVariableName("comentaire");
+        procedureInstance.getFilesPath().add(filepath1);
+        FilePath filepath2 = new FilePath();
+        filepath2.setFileName("sdfLJHSDFJDGSD");
+        filepath2.setVariableName("comentaire2");
+        procedureInstance.getFilesPath().add(filepath2);
+
+        json = ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getFilesPath());
+
+        System.out.println(json);
     }
 
 }
