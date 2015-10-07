@@ -98,16 +98,15 @@ public class ProcedureServiceImpl implements IProcedureService {
             }
             propMap.set("pi:globalVariablesValues", ProcedureJSONAdapter.getInstance().toJSON(gvvList));
 
-            Blobs blobs = null;
+            Blobs blobs = new Blobs();
             for (FilePath file : procedureInstance.getFilesPath().values()) {
                 if (file.getFile().getSize() > 0) {
-                    blobs = new Blobs();
                     InputStream in = new ByteArrayInputStream(file.getFile().getBytes());
                     Blob blob = new StreamBlob(in, file.getFile().getOriginalFilename(), file.getFile().getContentType());
                     blobs.add(blob);
                 }
             }
-            if (blobs != null) {
+            if (blobs.size() > 0) {
                 propMap.set("attachments", ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getFilesPath().values()));
             }
 
