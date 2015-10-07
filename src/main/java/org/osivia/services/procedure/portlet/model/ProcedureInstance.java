@@ -1,9 +1,7 @@
 package org.osivia.services.procedure.portlet.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -29,22 +27,22 @@ public class ProcedureInstance {
     private String procedureModelPath;
 
     /** filesPath */
-    private List<FilePath> filesPath;
+    private Map<String, FilePath> filesPath;
 
     public ProcedureInstance() {
         globalVariablesValues = new HashMap<String, String>();
-        filesPath = new ArrayList<FilePath>();
+        filesPath = new HashMap<String, FilePath>();
     }
 
     public ProcedureInstance(String currentStep) {
         globalVariablesValues = new HashMap<String, String>();
-        filesPath = new ArrayList<FilePath>();
+        filesPath = new HashMap<String, FilePath>();
         this.currentStep = currentStep;
     }
 
     public ProcedureInstance(Document document) {
         globalVariablesValues = new HashMap<String, String>();
-        filesPath = new ArrayList<FilePath>();
+        filesPath = new HashMap<String, FilePath>();
         PropertyMap properties = document.getProperties();
         currentStep = properties.getString("pi:currentStep");
         procedureModelPath = properties.getString("pi:procedureModelPath");
@@ -61,7 +59,7 @@ public class ProcedureInstance {
         }
 
         // files
-        PropertyList fileList = properties.getList("pi:files");
+        PropertyList fileList = properties.getList("pi:attachments");
         Iterator<Object> fileListIterator;
         if (fileList != null) {
             fileListIterator = fileList.list().iterator();
@@ -71,7 +69,7 @@ public class ProcedureInstance {
                 filePath = new FilePath();
                 filePath.setVariableName(file.getString("variableName"));
                 filePath.setFileName(file.getString("fileName"));
-                filesPath.add(filePath);
+                filesPath.put(filePath.getVariableName(), filePath);
             }
         }
     }
@@ -160,7 +158,7 @@ public class ProcedureInstance {
      *
      * @return the filesPath
      */
-    public List<FilePath> getFilesPath() {
+    public Map<String, FilePath> getFilesPath() {
         return filesPath;
     }
 
@@ -170,7 +168,8 @@ public class ProcedureInstance {
      *
      * @param filesPath the filesPath to set
      */
-    public void setFilesPath(List<FilePath> filesPath) {
+    public void setFilesPath(Map<String, FilePath> filesPath) {
         this.filesPath = filesPath;
     }
+
 }

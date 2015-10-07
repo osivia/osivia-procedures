@@ -15,6 +15,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.client.model.StreamBlob;
 import org.osivia.services.procedure.portlet.adapter.ProcedureJSONAdapter;
 import org.osivia.services.procedure.portlet.command.CreateDocumentCommand;
+import org.osivia.services.procedure.portlet.command.CreateDocumentFromBlobCommand;
 import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
 import org.osivia.services.procedure.portlet.command.StartProcedureCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
@@ -98,13 +99,17 @@ public class ProcedureServiceImpl implements IProcedureService {
             propMap.set("pi:globalVariablesValues", ProcedureJSONAdapter.getInstance().toJSON(gvvList));
 
             Blobs blobs = null;
-            for (FilePath file : procedureInstance.getFilesPath()) {
-                blobs = new Blobs();
-                InputStream in = new ByteArrayInputStream(file.getFile().getBytes());
-                Blob blob = new StreamBlob(in, file.getFile().getOriginalFilename(), file.getFile().getContentType());
-                blobs.add(blob);
+            for (FilePath file : procedureInstance.getFilesPath().values()) {
+                if (file.getFile().getSize() > 0) {
+                    blobs = new Blobs();
+                    InputStream in = new ByteArrayInputStream(file.getFile().getBytes());
+                    Blob blob = new StreamBlob(in, file.getFile().getOriginalFilename(), file.getFile().getContentType());
+                    blobs.add(blob);
+                }
             }
-            propMap.set("files", ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getFilesPath()));
+            if (blobs != null) {
+                propMap.set("attachments", ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getFilesPath().values()));
+            }
 
             command = new StartProcedureCommand(taskTitle, propMap, blobs);
         } catch (final Exception e) {
@@ -144,5 +149,16 @@ public class ProcedureServiceImpl implements IProcedureService {
         return new ProcedureInstance(documentInstance);
     }
 
+    @Override
+    public void createDocumentFromBlob(NuxeoController nuxeoController, String procedureInstancePath, String variableName) throws PortletException {
+        INuxeoCommand command;
+        try {
+            Document procedureInstance = nuxeoController.fetchDocument(procedureInstancePath, true);
+            command = new CreateDocumentFromBlobCommand(procedureInstance, variableName);
+        } catch (final Exception e) {
+            throw new PortletException(e);
+        }
+        nuxeoController.executeNuxeoCommand(command);
+    }
 
 }

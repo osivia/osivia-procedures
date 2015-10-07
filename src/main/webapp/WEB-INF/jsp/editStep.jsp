@@ -61,23 +61,26 @@
                             <div class="col-sm-1 sortable-handle">
                                 <i class="glyphicons glyphicons-sorting pull-right"></i>
                             </div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-10">
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <form:input path="theSelectedStep.fields[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
                                     </div>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <form:select path="theSelectedStep.fields[${status.index}].type" cssClass="form-control">
                                             <form:option value="TEXT">Texte</form:option>
                                             <form:option value="FILE">Fichier</form:option>
                                         </form:select>
                                     </div>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <form:input path="theSelectedStep.fields[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <form:checkbox path="theSelectedStep.fields[${status.index}].input" cssClass="form-control" label="Éditable:"/>
                                     </div>
                                 </div>
                             </div>
-                            <div class="btn-group col-sm-2">
+                            <div class="btn-group col-sm-1">
                                 <button type="submit" name="deleteField" class="btn btn-default" onclick="selector(this,'${status.index}','selectedRow')">
                                     <i class="glyphicons glyphicons-remove-2"></i>
                                 </button>

@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
         creatorVisibility = Visibility.NONE)
@@ -11,6 +12,7 @@ public class Field implements Comparable<Field> {
 
     /** isInput */
     @JsonProperty("isInput")
+    @JsonSerialize(include = JsonSerialize.Inclusion.ALWAYS)
     private boolean isInput;
 
     /**
@@ -153,7 +155,7 @@ public class Field implements Comparable<Field> {
 
     /**
      * Getter for value.
-     * 
+     *
      * @return the value
      */
     public String getValue() {
@@ -162,7 +164,7 @@ public class Field implements Comparable<Field> {
 
     /**
      * Setter for value.
-     * 
+     *
      * @param value the value to set
      */
     public void setValue(String value) {

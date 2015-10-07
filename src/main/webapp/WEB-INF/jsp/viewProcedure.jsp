@@ -14,28 +14,54 @@
             <h3 class="panel-title">${form.theCurrentStep.stepName}</h3>
         </div>
         <div class="panel-body">
+            <c:if test="${not empty form.alertSuccess}">
+                <div class="alert alert-success" role="alert">${form.alertSuccess}</div>
+            </c:if>
+        
             <ul class="procedure-sortable list-unstyled">
                 <c:forEach var="field" items="${form.theCurrentStep.fields}" varStatus="status">
                     <li class="form-group">
                         <c:choose>
-                            <c:when test="${field.type eq 'TEXT'}">
-                                <div class="col-sm-3">
-                                    <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${field.label}</label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <form:input path="procedureInstance.globalVariablesValues['${field.name}']" type="text" cssClass="form-control"/>
-                                </div>
-                            </c:when>
-                            <c:when test="${field.type eq 'FILE'}">
-                                <div class="col-sm-3">
-                                    <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${field.label}</label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="file" name="file:${field.name}"/>
-                                </div>
+                            <c:when test="${field.input eq true}">
+                                <c:choose>
+                                    <c:when test="${field.type eq 'TEXT'}">
+                                        <div class="col-sm-3">
+                                            <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${field.label}</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <form:input path="procedureInstance.globalVariablesValues['${field.name}']" type="text" cssClass="form-control"/>
+                                        </div>
+                                    </c:when>
+                                    <c:when test="${field.type eq 'FILE'}">
+                                        <div class="col-sm-3">
+                                            <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${field.label}</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <input type="file" name="file:${field.name}"/>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p>empty</p>
+                                    </c:otherwise>
+                                </c:choose>
                             </c:when>
                             <c:otherwise>
-                                <p>empty</p>
+                                <c:choose>
+                                    <c:when test="${field.type eq 'FILE'}">
+                                        <div class="col-sm-3">
+                                            ${field.label} : 
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <c:out value="${form.procedureInstance.filesPath[field.name].fileName}"/>
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <button type="submit" name="saveDocument" class="btn btn-default pull-right" onclick="selector(this,'${field.name}','variableName')" >Enregistrer le document dans mon espace personnel</button>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p>empty</p>
+                                    </c:otherwise>
+                                </c:choose>
                             </c:otherwise>
                         </c:choose>
                     </li>

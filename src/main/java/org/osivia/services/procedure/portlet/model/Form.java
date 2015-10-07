@@ -17,6 +17,9 @@ public class Form {
     /** procedureInstance */
     private ProcedureInstance procedureInstance;
 
+    /** alertSuccess */
+    private String alertSuccess;
+
 
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
@@ -111,5 +114,23 @@ public class Form {
      */
     public void setProcedureInstance(ProcedureInstance procedureInstance) {
         this.procedureInstance = procedureInstance;
+    }
+
+    /**
+     * Getter for alertSuccess.
+     * 
+     * @return the alertSuccess
+     */
+    public String getAlertSuccess() {
+        return alertSuccess;
+    }
+
+    /**
+     * Setter for alertSuccess.
+     * 
+     * @param alertSuccess the alertSuccess to set
+     */
+    public void setAlertSuccess(String alertSuccess) {
+        this.alertSuccess = alertSuccess;
     }
 }

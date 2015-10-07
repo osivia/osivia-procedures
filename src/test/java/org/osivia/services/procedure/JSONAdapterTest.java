@@ -35,12 +35,19 @@ public class JSONAdapterTest {
         action.setStepReference("actionPath");
         step.getActions().add(action);
         Field field = new Field();
-        field.setInput(true);
+        field.setInput(false);
         field.setLabel("fieldLabel");
         field.setName("fieldName");
         field.setOrder(0);
         field.setType("text");
         step.getFields().add(field);
+        Field field2 = new Field();
+        field2.setInput(true);
+        field2.setLabel("fieldLabel2");
+        field2.setName("fieldName2");
+        field2.setOrder(1);
+        field2.setType("text2");
+        step.getFields().add(field2);
         procedure.getSteps().add(step);
         Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT);
         procedure.getVariables().put("fieldName", variable);
@@ -48,6 +55,9 @@ public class JSONAdapterTest {
         String json = ProcedureJSONAdapter.getInstance().toJSON(procedure.getVariables().values());
 
         System.out.println(json);
+
+        json = ProcedureJSONAdapter.getInstance().toJSON(procedure.getSteps());
+        System.out.println("steps: " + json);
 
         ProcedureInstance procedureInstance = new ProcedureInstance();
         procedureInstance.setGlobalVariablesValues(new HashMap<String, String>());
@@ -68,13 +78,13 @@ public class JSONAdapterTest {
         FilePath filepath1 = new FilePath();
         filepath1.setFileName("XKLJHSDFJK");
         filepath1.setVariableName("comentaire");
-        procedureInstance.getFilesPath().add(filepath1);
+        procedureInstance.getFilesPath().put("comentaire", filepath1);
         FilePath filepath2 = new FilePath();
         filepath2.setFileName("sdfLJHSDFJDGSD");
         filepath2.setVariableName("comentaire2");
-        procedureInstance.getFilesPath().add(filepath2);
+        procedureInstance.getFilesPath().put("comentaire2", filepath2);
 
-        json = ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getFilesPath());
+        json = ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getFilesPath().values());
 
         System.out.println(json);
     }

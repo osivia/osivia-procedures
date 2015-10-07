@@ -167,6 +167,21 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "viewProcedure");
     }
 
+    @ActionMapping(value = "actionProcedure", params = "saveDocument")
+    public void saveDocument(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
+            @RequestParam(value = "variableName") String variableName) throws PortletException {
+
+        PortalWindow window = WindowFactory.getWindow(request);
+        String path = window.getProperty(Constants.WINDOW_PROP_URI);
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        procedureService.createDocumentFromBlob(nuxeoController, path, variableName);
+
+        form.setAlertSuccess("Le document a bien été enregistré");
+
+        response.setRenderParameter("action", "viewProcedure");
+    }
+
+
     @ActionMapping(value = "actionProcedure", params = "proceedProcedure")
     public void proceedProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "stepReference") String stepReference) throws PortletException, IOException {
@@ -175,13 +190,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             // set the uploaded files in the instance
             MultipartActionRequest multipartActionRequest = (MultipartActionRequest) request;
             for (Field field : form.getTheCurrentStep().getFields()) {
-                if (StringUtils.equals(field.getType(), VariableTypesEnum.FILE.name())) {
+                if (StringUtils.equals(field.getType(), VariableTypesEnum.FILE.name()) && field.isInput()) {
                     MultipartFile multipartFile = multipartActionRequest.getFileMap().get("file:" + field.getName());
-                    FilePath filePath = new FilePath();
-                    filePath.setFile(multipartFile);
-                    filePath.setVariableName(field.getName());
-                    filePath.setFileName(String.valueOf(multipartFile.getOriginalFilename()));
-                    form.getProcedureInstance().getFilesPath().add(filePath);
+                    if (multipartFile.getSize() > 0) {
+                        FilePath filePath = new FilePath();
+                        filePath.setFile(multipartFile);
+                        filePath.setVariableName(field.getName());
+                        filePath.setFileName(String.valueOf(multipartFile.getOriginalFilename()));
+                        form.getProcedureInstance().getFilesPath().put(filePath.getVariableName(), filePath);
+                    }
                 }
             }
         }
@@ -371,6 +388,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editStep", params = "addField")
     public void addField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         Field field = new Field(form.getTheSelectedStep().getHighestOrder() + 1);
+        field.setInput(true);
         form.getTheSelectedStep().getFields().add(field);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.updateProcedure(nuxeoController, form.getProcedureModel());

@@ -77,4 +77,12 @@ public interface IProcedureService {
     public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, ProcedureInstance procedureInstance, String procedureInstancePath,
             String taskTitle) throws PortletException;
 
+
+    /**
+     * @param nuxeoController
+     * @param procedureInstancePath
+     * @param variableName
+     * @throws PortletException
+     */
+    public void createDocumentFromBlob(NuxeoController nuxeoController, String procedureInstancePath, String variableName) throws PortletException;
 }
