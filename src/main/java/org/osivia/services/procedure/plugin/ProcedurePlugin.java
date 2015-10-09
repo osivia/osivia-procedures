@@ -14,7 +14,6 @@
 package org.osivia.services.procedure.plugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,24 +25,23 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
-import org.osivia.portal.api.customization.CustomizationModuleMetadatas;
 import org.osivia.portal.api.customization.ICustomizationModule;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSExtendedDocumentInfos;
-import org.osivia.portal.core.cms.CMSItemType;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.IMenubarModule;
-import fr.toutatice.portail.cms.nuxeo.api.domain.IPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
 
 
@@ -93,31 +91,15 @@ public class ProcedurePlugin extends AbstractPluginPortlet implements ICustomiza
     }
 
     /**
-     * Utility method used to generate attributes bundles customization module metadatas.
-     *
-     * @return metadatas
-     */
-    @Override
-    protected CustomizationModuleMetadatas generateMetadatas() {
-        CustomizationModuleMetadatas metadatas = new CustomizationModuleMetadatas();
-        metadatas.setName(CUSTOMIZER_NAME);
-        metadatas.setModule(this);
-        metadatas.setCustomizationIDs(Arrays.asList(ICustomizationModule.PLUGIN_ID));
-        metadatas.setOrder(1020);
-        return metadatas;
-    }
-
-
-    /**
      * {@inheritDoc}
      */
     @Override
     protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
 
-        Map<String, CMSItemType> docTypes = getDocTypes(context);
+        Map<String, DocumentType> docTypes = getDocTypes(context);
 
         ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
-        docTypes.put("ProcedureModel", new CMSItemType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
+        docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
                 "glyphicons glyphicons-conversation"));
 
 
@@ -159,5 +141,11 @@ public class ProcedurePlugin extends AbstractPluginPortlet implements ICustomiza
             }
         }
 
+    }
+
+
+    @Override
+    protected String getPluginName() {
+        return CUSTOMIZER_NAME;
     }
 }

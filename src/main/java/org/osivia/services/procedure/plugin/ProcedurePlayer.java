@@ -10,9 +10,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
- *
- *
  */
 package org.osivia.services.procedure.plugin;
 
@@ -24,14 +21,13 @@ import javax.portlet.PortletContext;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSHandlerProperties;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.api.cms.DocumentContext;
+import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
+import org.osivia.portal.api.player.Player;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
-import fr.toutatice.portail.cms.nuxeo.api.domain.IPlayerModule;
-
+import fr.toutatice.portail.cms.nuxeo.api.domain.PluginModule;
+import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 
 
 /**
@@ -39,7 +35,7 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.IPlayerModule;
  *
  * @author Jean-Sébastien Steux
  */
-public class ProcedurePlayer implements IPlayerModule {
+public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule {
 
 
     /**
@@ -48,7 +44,7 @@ public class ProcedurePlayer implements IPlayerModule {
      * @param portletContext the portlet context
      */
     public ProcedurePlayer(PortletContext portletContext) {
-
+        super(portletContext);
     }
 
     /**
@@ -57,8 +53,8 @@ public class ProcedurePlayer implements IPlayerModule {
      * @param cmsContext CMS context
      * @return procedure thread player
      */
-    private CMSHandlerProperties getProcedurePlayer(CMSServiceCtx cmsContext) {
-        Document document = (Document) cmsContext.getDoc();
+    private Player getProcedurePlayer(DocumentContext<Document> docCtx) {
+        Document document = docCtx.getDoc();
 
         Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
@@ -67,11 +63,12 @@ public class ProcedurePlayer implements IPlayerModule {
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("osivia.ajaxLink", "1");
 
-        if (StringUtils.equals(cmsContext.getDisplayContext(), "adminproc")) {
-            windowProperties.put("osivia.procedure.admin", cmsContext.getDisplayContext());
+        BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
+        if (StringUtils.equals(publicationInfos.getDisplayContext(), "adminproc")) {
+            windowProperties.put("osivia.procedure.admin", publicationInfos.getDisplayContext());
         }
 
-        CMSHandlerProperties linkProps = new CMSHandlerProperties();
+        Player linkProps = new Player();
         linkProps.setWindowProperties(windowProperties);
         linkProps.setPortletInstance("osivia-services-procedure-portletInstance");
 
@@ -79,12 +76,12 @@ public class ProcedurePlayer implements IPlayerModule {
     }
 
     @Override
-    public CMSHandlerProperties getCMSPlayer(CMSServiceCtx ctx, ICMSService cmsService) throws CMSException {
-        Document doc = (Document) ctx.getDoc();
+    public Player getCMSPlayer(DocumentContext<Document> docCt) {
+        Document doc = docCt.getDoc();
         String docType = doc.getType();
 
         if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getName()) || StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
-            return getProcedurePlayer(ctx);
+            return getProcedurePlayer(docCt);
         }
 
         return null;
