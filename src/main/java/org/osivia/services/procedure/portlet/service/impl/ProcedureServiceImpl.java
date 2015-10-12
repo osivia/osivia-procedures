@@ -44,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
@@ -58,7 +59,8 @@ public class ProcedureServiceImpl implements IProcedureService {
     @Override
     public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
 
-        Document container = nuxeoController.fetchDocument(path, true);
+        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(),  path);
+        Document container = documentContext.getDoc();
         INuxeoCommand command;
         try {
             command = new CreateDocumentCommand(container, procedureModel.getName(), DocumentTypeEnum.PROCEDUREMODEL);
@@ -72,7 +74,8 @@ public class ProcedureServiceImpl implements IProcedureService {
 
     @Override
     public ProcedureModel retrieveProcedureByPath(NuxeoController nuxeoController, String path) throws PortletException {
-        Document currentDocument = nuxeoController.fetchDocument(path, true);
+        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), path);
+        Document currentDocument = documentContext.getDoc();
         return new ProcedureModel(currentDocument);
     }
 
@@ -80,7 +83,8 @@ public class ProcedureServiceImpl implements IProcedureService {
     public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
         INuxeoCommand command;
         try {
-            Document currentDocument = nuxeoController.fetchDocument(procedureModel.getPath(), true);
+            NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), procedureModel.getPath());
+            Document currentDocument = documentContext.getDoc();
             PropertyMap propMap = new PropertyMap();
             propMap.set("dc:title", procedureModel.getName());
             propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
@@ -98,8 +102,12 @@ public class ProcedureServiceImpl implements IProcedureService {
 
     @Override
     public void deleteProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
-        INuxeoCommand command = new DeleteDocumentCommand(nuxeoController.fetchDocument(procedureModel.getPath(), true));
-        nuxeoController.executeNuxeoCommand(command);
+        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), procedureModel.getPath());
+        INuxeoCommand command;
+        if (documentContext != null) {
+            command = new DeleteDocumentCommand(documentContext.getDoc());
+            nuxeoController.executeNuxeoCommand(command);
+        }
     }
 
     @Override
@@ -251,7 +259,8 @@ public class ProcedureServiceImpl implements IProcedureService {
 
     @Override
     public ProcedureInstance retrieveProcedureInstanceByPath(NuxeoController nuxeoController, String path) throws PortletException {
-        Document currentDocument = nuxeoController.fetchDocument(path, true);
+        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), path);
+        Document currentDocument = documentContext.getDoc();
         return new ProcedureInstance(currentDocument);
     }
 
@@ -260,7 +269,8 @@ public class ProcedureServiceImpl implements IProcedureService {
             String taskTitle) throws PortletException {
         INuxeoCommand command;
         try {
-            Document currentDocument = nuxeoController.fetchDocument(procedureInstancePath, true);
+            NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), procedureInstancePath);
+            Document currentDocument = documentContext.getDoc();
             PropertyMap propMap = new PropertyMap();
             propMap.set("pi:currentStep", procedureInstance.getCurrentStep());
             propMap.set("pi:procedureModelPath", procedureInstance.getProcedureModelPath());
@@ -283,7 +293,8 @@ public class ProcedureServiceImpl implements IProcedureService {
     public void createDocumentFromBlob(NuxeoController nuxeoController, String procedureInstancePath, String variableName) throws PortletException {
         INuxeoCommand command;
         try {
-            Document procedureInstance = nuxeoController.fetchDocument(procedureInstancePath, true);
+            NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), procedureInstancePath);
+            Document procedureInstance = documentContext.getDoc();
             command = new CreateDocumentFromAttachmentCommand(procedureInstance, variableName);
         } catch (final Exception e) {
             throw new PortletException(e);
