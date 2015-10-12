@@ -14,25 +14,25 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 public class RetrieveDocumentCommand implements INuxeoCommand {
 
     /** path the location of the document to retrieve */
-    private String path;
+    private String fetchBY;
 
 
-    public RetrieveDocumentCommand(String path) {
+    public RetrieveDocumentCommand(String fetchBY) {
         super();
-        this.path = path;
+        this.fetchBY = fetchBY;
     }
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.RetrieveDocument.getId());
         request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
-        request.set("value", path);
+        request.set("value", fetchBY);
         return request.execute();
     }
 
     @Override
     public String getId() {
-        return "RetrieveDocumentCommand/" + path;
+        return "RetrieveDocumentCommand/" + fetchBY;
     }
 
 }

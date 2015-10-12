@@ -2,6 +2,7 @@ package org.osivia.services.procedure.portlet.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -28,6 +29,7 @@ import org.osivia.services.procedure.portlet.model.FilePath;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
+import org.osivia.services.procedure.portlet.model.ProcedureObject;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
@@ -61,6 +63,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     /** VIEW_ENDSTEP */
     private static final String VIEW_ENDSTEP = "endStep";
+
+    private static final String LIST_VIEW = "list";
 
 
     /** Portlet context. */
@@ -98,14 +102,17 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      */
     @RenderMapping
     public String defaultView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
-        PortalWindow window = WindowFactory.getWindow(request);
-        String action = window.getProperty("osivia.procedure.admin");
-        if (StringUtils.equals(action, "adminproc")) {
+
+        if (StringUtils.equals(getAction(request), "adminproc")) {
             return CREATE_VIEW;
-        } else if (StringUtils.equals(action, "adminprocstep")) {
+        } else if (StringUtils.equals(getAction(request), "adminprocstep")) {
             return EDIT_VIEW;
         } else {
-            return VIEW_PROCEDURE;
+            if (getPath(request) != null) {
+                return VIEW_PROCEDURE;
+            } else {
+                return LIST_VIEW;
+            }
         }
     }
 
@@ -132,28 +139,24 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ModelAttribute(value = "form")
     public Form getForm(PortletRequest request, PortletResponse response, @RequestParam(value = "selectedStep", required = false) String selectedStep)
             throws PortletException {
-        PortalWindow window = WindowFactory.getWindow(request);
-        String path = window.getProperty(Constants.WINDOW_PROP_URI);
-        String doctype = window.getProperty("osivia.doctype");
-
 
         Form form;
-        if (StringUtils.isNotEmpty(path) && StringUtils.equals(doctype, DocumentTypeEnum.PROCEDUREMODEL.getName())) {
-            final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-            ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, path);
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
+            ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, getPath(request));
             form = new Form(procedureModel);
             if (StringUtils.isNotEmpty(selectedStep)) {
                 form.setSelectedStep(selectedStep);
             } else {
                 form.setSelectedStep("0");
             }
-        } else if (StringUtils.isNotEmpty(path) && StringUtils.equals(doctype, DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
-            final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-            ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, path);
+        } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
+            ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, getPath(request));
             ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, procedureInstance.getProcedureModelPath());
             form = new Form(procedureModel, procedureInstance);
         } else {
-            form = new Form(new ProcedureModel());
+            List<ProcedureModel> listProcedures = procedureService.listProcedures(nuxeoController, getPortalUrlFactory());
+            form = new Form(listProcedures);
         }
         return form;
     }
@@ -167,12 +170,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "viewProcedure");
     }
 
+
     @ActionMapping(value = "actionProcedure", params = "saveDocument")
     public void saveDocument(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
             @RequestParam(value = "variableName") String variableName) throws PortletException {
 
-        PortalWindow window = WindowFactory.getWindow(request);
-        String path = window.getProperty(Constants.WINDOW_PROP_URI);
+        String path = getPath(request);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.createDocumentFromBlob(nuxeoController, path, variableName);
 
@@ -207,21 +210,17 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         String taskTitle = buildTaskTitle(form, stepReference);
 
         if (taskTitle != null) {
-            // if step exist check if there is an instance
-            PortalWindow window = WindowFactory.getWindow(request);
-            String path = window.getProperty(Constants.WINDOW_PROP_URI);
-            String doctype = window.getProperty("osivia.doctype");
-
-            if (StringUtils.isNotEmpty(path) && StringUtils.equals(doctype, DocumentTypeEnum.PROCEDUREMODEL.getName())) {
+            if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
                 // if there is no instance, create it
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
                 procedureService.createProcedureInstance(nuxeoController, form.getProcedureModel(), form.getProcedureInstance(), taskTitle);
                 // redirect to end of step page
                 response.setRenderParameter("action", "endStep");
-            } else if (StringUtils.isNotEmpty(path) && StringUtils.equals(doctype, DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
+            } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
                 // update the instance
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-                ProcedureInstance procedureInstance = procedureService.updateProcedureInstance(nuxeoController, form.getProcedureInstance(), path, taskTitle);
+                ProcedureInstance procedureInstance = procedureService.updateProcedureInstance(nuxeoController, form.getProcedureInstance(), getPath(request),
+                        taskTitle);
                 form.setProcedureInstance(procedureInstance);
 
                 // redirect to end of step page
@@ -266,8 +265,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editProcedure", params = "saveProcedure")
     public void saveProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
 
-        PortalWindow window = WindowFactory.getWindow(request);
-        String path = window.getProperty(Constants.WINDOW_PROP_URI);
+        String path = getPath(request);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
@@ -283,7 +281,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(Constants.WINDOW_PROP_URI, createdProcedure.getPath());
             windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
-            windowProperties.put("osivia.title", "Éditer un procedure");
+            windowProperties.put("osivia.title", "Éditer une procedure");
             windowProperties.put("osivia.hideDecorators", "1");
             windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.procedure.admin", "adminproc");
@@ -312,8 +310,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void addStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
 
         Integer newIndex = Integer.valueOf(form.getProcedureModel().getSteps().size());
-        PortalWindow window = WindowFactory.getWindow(request);
-        String path = window.getProperty(Constants.WINDOW_PROP_URI);
+        String path = getPath(request);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
@@ -332,7 +329,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(Constants.WINDOW_PROP_URI, createdProcedure.getPath());
             windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
-            windowProperties.put("osivia.title", "Éditer un procedure");
+            windowProperties.put("osivia.title", "Éditer une procedure");
             windowProperties.put("osivia.hideDecorators", "1");
             windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.procedure.admin", "adminprocstep");
@@ -346,6 +343,74 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.sendRedirect(redirectUrl);
         }
     }
+
+    @ActionMapping(value = "editProcedure", params = "addObject")
+    public void addObject(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
+
+
+        String path = getPath(request);
+
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+
+        if (StringUtils.isNotEmpty(path)) {
+            // if the procedure exist in database, update it
+            form.getProcedureModel().getProcedureObjects().add(new ProcedureObject());
+            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+            response.setRenderParameter("action", "editProcedure");
+        } else {
+            // if the procedure doesn't exist in database, create it
+            ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel());
+            createdProcedure.getProcedureObjects().add(new ProcedureObject());
+            procedureService.updateProcedure(nuxeoController, createdProcedure);
+
+            Map<String, String> windowProperties = new HashMap<String, String>();
+            windowProperties.put(Constants.WINDOW_PROP_URI, createdProcedure.getPath());
+            windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
+            windowProperties.put("osivia.title", "Éditer une procedure");
+            windowProperties.put("osivia.hideDecorators", "1");
+            windowProperties.put("osivia.ajaxLink", "1");
+            windowProperties.put("osivia.procedure.admin", "adminproc");
+            String redirectUrl;
+            try {
+                redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
+                        windowProperties, false);
+            } catch (final PortalException e) {
+                throw new PortletException(e);
+            }
+            response.sendRedirect(redirectUrl);
+        }
+    }
+
+    /**
+     * @param request
+     * @return
+     */
+    private String getPath(PortletRequest request) {
+        PortalWindow window = WindowFactory.getWindow(request);
+        String path = window.getProperty(Constants.WINDOW_PROP_URI);
+        return path;
+    }
+
+    /**
+     * @param request
+     * @return
+     */
+    private String getDocType(PortletRequest request) {
+        PortalWindow window = WindowFactory.getWindow(request);
+        String path = window.getProperty("osivia.doctype");
+        return path;
+    }
+
+    /**
+     * @param request
+     * @return
+     */
+    private String getAction(PortletRequest request) {
+        PortalWindow window = WindowFactory.getWindow(request);
+        String path = window.getProperty("osivia.procedure.admin");
+        return path;
+    }
+
 
     @ActionMapping(value = "editProcedure", params = "editStep")
     public void editStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {

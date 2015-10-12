@@ -1,7 +1,6 @@
 package org.osivia.services.procedure.portlet.model;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -29,49 +28,68 @@ public class ProcedureInstance {
     /** filesPath */
     private Map<String, FilePath> filesPath;
 
+    /** procedureObjectInstances */
+    private Map<String, ProcedureObjectInstance> procedureObjectInstances;
+
     public ProcedureInstance() {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
+        setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
+        procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
     }
 
     public ProcedureInstance(String currentStep) {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
+        setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
         this.currentStep = currentStep;
+        procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
     }
 
     public ProcedureInstance(Document document) {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
+        procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
+        setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
         PropertyMap properties = document.getProperties();
         currentStep = properties.getString("pi:currentStep");
         procedureModelPath = properties.getString("pi:procedureModelPath");
 
         // global variables
         PropertyList gvvList = properties.getList("pi:globalVariablesValues");
-        Iterator<Object> gvvIterator;
         if (gvvList != null) {
-            gvvIterator = gvvList.list().iterator();
-            while (gvvIterator.hasNext()) {
-                PropertyMap gvv = (PropertyMap) gvvIterator.next();
+            for (Object gvvO : gvvList.list()) {
+                PropertyMap gvv = (PropertyMap) gvvO;
                 globalVariablesValues.put(gvv.getString("name"), gvv.getString("value"));
             }
         }
 
         // files
         PropertyList fileList = properties.getList("pi:attachments");
-        Iterator<Object> fileListIterator;
         if (fileList != null) {
-            fileListIterator = fileList.list().iterator();
             FilePath filePath;
-            while (fileListIterator.hasNext()) {
-                PropertyMap file = (PropertyMap) fileListIterator.next();
+            for (Object fileO : fileList.list()) {
+                PropertyMap file = (PropertyMap) fileO;
                 filePath = new FilePath();
                 filePath.setVariableName(file.getString("variableName"));
                 filePath.setFileName(file.getString("fileName"));
                 filesPath.put(filePath.getVariableName(), filePath);
             }
         }
+
+        // objects
+        PropertyList objectsList = properties.getList("pi:procedureObjectInstances");
+        if (objectsList != null) {
+            ProcedureObjectInstance procedureObjectInstance;
+            for (Object procedureObjectInstanceO : objectsList.list()) {
+                PropertyMap procedureObjectM = (PropertyMap) procedureObjectInstanceO;
+                procedureObjectInstance = new ProcedureObjectInstance();
+                procedureObjectInstance.setName(procedureObjectM.getString("name"));
+                procedureObjectInstance.setProcedureObjectid(procedureObjectM.getString("procedureObjectId"));
+                procedureObjectInstances.put(procedureObjectInstance.getName(), procedureObjectInstance);
+            }
+        }
+
     }
 
     /**
@@ -170,6 +188,22 @@ public class ProcedureInstance {
      */
     public void setFilesPath(Map<String, FilePath> filesPath) {
         this.filesPath = filesPath;
+    }
+
+    /**
+     * Getter for procedureObjects.
+     * @return the procedureObjects
+     */
+    public Map<String, ProcedureObjectInstance> getProcedureObjects() {
+        return procedureObjectInstances;
+    }
+
+    /**
+     * Setter for procedureObjects.
+     * @param procedureObjects the procedureObjects to set
+     */
+    public void setProcedureObjects(Map<String, ProcedureObjectInstance> procedureObjectInstancess) {
+        procedureObjectInstances = procedureObjectInstancess;
     }
 
 }

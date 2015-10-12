@@ -53,6 +53,49 @@
         </div>
     </div>
     
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Objets métiers</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-unstyled">
+                    <li class="form-group">
+                        <div class="col-sm-4">
+                            <label class="control-label">Nom</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="control-label">Path</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="control-label">Type</label>
+                        </div>
+                    </li>
+                    <c:forEach var="procedureObject" items="${form.procedureModel.procedureObjects}" varStatus="status">
+                         <li class="form-group">
+                            <div class="col-sm-4">
+                                <form:input path="procedureModel.procedureObjects[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
+                            </div>
+                            <div class="col-sm-4">
+                                <form:input path="procedureModel.procedureObjects[${status.index}].path" type="text" cssClass="form-control" placeholder="Path" />
+                            </div>
+                            <div class="col-sm-4">
+                                <form:select path="procedureModel.procedureObjects[${status.index}].type" cssClass="form-control">
+                                    <form:option value="FILE">File</form:option>
+                                </form:select>
+                            </div>
+                         </li>
+                    </c:forEach>
+                </ul>
+            </div>
+            <div class="panel-footer">
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <button type="submit" name="addObject" class="btn btn-default">Ajouter un object Métier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Étape de départ</h3>

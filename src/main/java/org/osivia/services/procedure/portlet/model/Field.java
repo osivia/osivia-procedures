@@ -18,7 +18,7 @@ public class Field implements Comparable<Field> {
     /**
      * the name of the field
      */
-    @JsonProperty("variableLabel")
+    @JsonProperty("variableName")
     private String name;
 
     /**

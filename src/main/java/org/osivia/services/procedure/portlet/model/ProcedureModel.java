@@ -3,56 +3,49 @@ package org.osivia.services.procedure.portlet.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
-@JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
-        creatorVisibility = Visibility.NONE)
 public class ProcedureModel {
 
     /** the name of the procedure */
-    @JsonProperty("dc:title")
     private String name;
 
     /** description of the procedure */
-    @JsonProperty("dc:description")
     private String description;
 
     /** the global variables for the procedure */
-    @JsonProperty("pcd:globalVariablesDefinitions")
     private Map<String, Variable> variables;
 
     /** the ordered list of steps in the procedure */
-    @JsonProperty("pcd:steps")
     private List<Step> steps;
 
+    /** procedureObjects */
+    private List<ProcedureObject> procedureObjects;
+
     /** startingStep */
-    @JsonProperty("pcd:startingStep")
     private String startingStep;
 
     /** path of the document */
-    @JsonIgnore
     private String path;
 
+    private String url;
 
     public ProcedureModel() {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();
+        procedureObjects = new ArrayList<ProcedureObject>();
     }
 
     public ProcedureModel(Document document) {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();
+        procedureObjects = new ArrayList<ProcedureObject>();
 
         PropertyMap properties = document.getProperties();
         name = properties.getString("dc:title");
@@ -61,12 +54,10 @@ public class ProcedureModel {
 
         // global variables
         PropertyList globalVariablesList = properties.getList("pcd:globalVariablesDefinitions");
-        Iterator<Object> globalVariableIterator;
         if (globalVariablesList != null) {
-            globalVariableIterator = globalVariablesList.list().iterator();
             Variable var;
-            while (globalVariableIterator.hasNext()) {
-                PropertyMap globalVariable = (PropertyMap) globalVariableIterator.next();
+            for (Object globalVariableO : globalVariablesList.list()) {
+                PropertyMap globalVariable = (PropertyMap) globalVariableO;
                 var = new Variable(globalVariable.getString("name"), globalVariable.getString("label"), VariableTypesEnum.valueOf(globalVariable
                         .getString("type")));
                 getVariables().put(var.getName(), var);
@@ -75,49 +66,56 @@ public class ProcedureModel {
         // steps
         PropertyList stepsList = properties.getList("pcd:steps");
         if (stepsList != null) {
-            Iterator<Object> stepIterator = stepsList.list().iterator();
             Step step;
-            while (stepIterator.hasNext()) {
-                PropertyMap stepM = (PropertyMap) stepIterator.next();
+            for (Object stepO : stepsList.list()) {
+                PropertyMap stepM = (PropertyMap) stepO;
                 PropertyList widgetList = stepM.getList("globalVariablesReferences");
                 step = new Step();
                 if (widgetList != null) {
-                    Iterator<Object> widgetIterator = widgetList.list().iterator();
                     Field field;
-                    while (widgetIterator.hasNext()) {
-                        PropertyMap widget = (PropertyMap) widgetIterator.next();
+                    for (Object widgetO : widgetList.list()) {
+                        PropertyMap widget = (PropertyMap) widgetO;
                         field = new Field();
                         field.setInput(widget.getBoolean("isInput"));
                         field.setOrder(Integer.valueOf(widget.getString("order")));
-                        Variable variable = getVariables().get(widget.getString("variableLabel"));
+                        Variable variable = getVariables().get(widget.getString("variableName"));
                         if (variable != null) {
                             field.setLabel(variable.getLabel());
                             field.setName(variable.getName());
                             field.setType(variable.getType().name());
                         }
                         step.getFields().add(field);
-
                     }
                 }
                 Collections.sort(step.getFields());
 
                 PropertyList actionsList = stepM.getList("actions");
                 if (actionsList != null) {
-                    Iterator<Object> actionsIterator = actionsList.list().iterator();
                     Action action;
-                    while (actionsIterator.hasNext()) {
-                        PropertyMap actionN = (PropertyMap) actionsIterator.next();
+                    for (Object actionO : actionsList.list()) {
+                        PropertyMap actionN = (PropertyMap) actionO;
                         action = new Action();
                         action.setLabel(actionN.getString("label"));
                         action.setStepReference(actionN.getString("stepReference"));
                         step.getActions().add(action);
                     }
                 }
-
                 step.setStepName(stepM.getString("name"));
                 step.setIndex(stepM.getLong("index").intValue());
                 step.setReference(stepM.getString("reference"));
                 getSteps().add(step.getIndex(), step);
+            }
+        }
+        PropertyList procedureObjectsList = properties.getList("pcd:procedureObjects");
+        if (procedureObjectsList != null) {
+            ProcedureObject newProcedureObject;
+            for (Object procedureObject : procedureObjectsList.list()) {
+                PropertyMap procedureObjectMap = (PropertyMap) procedureObject;
+                newProcedureObject = new ProcedureObject();
+                newProcedureObject.setName(procedureObjectMap.getString("name"));
+                newProcedureObject.setPath(procedureObjectMap.getString("path"));
+                newProcedureObject.setType(procedureObjectMap.getString("type"));
+                procedureObjects.add(newProcedureObject);
             }
         }
     }
@@ -249,6 +247,40 @@ public class ProcedureModel {
      */
     public void setStartingStep(String startingStep) {
         this.startingStep = startingStep;
+    }
+
+    /**
+     * Getter for procedureObjects.
+     * @return the procedureObjects
+     */
+    public List<ProcedureObject> getProcedureObjects() {
+        return procedureObjects;
+    }
+
+    /**
+     * Setter for procedureObjects.
+     * @param procedureObjects the procedureObjects to set
+     */
+    public void setProcedureObjects(List<ProcedureObject> procedureObjects) {
+        this.procedureObjects = procedureObjects;
+    }
+
+    /**
+     * Getter for url.
+     *
+     * @return the url
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * Setter for url.
+     *
+     * @param url the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

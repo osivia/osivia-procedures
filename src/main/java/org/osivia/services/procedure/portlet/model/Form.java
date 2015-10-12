@@ -1,5 +1,8 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -20,14 +23,23 @@ public class Form {
     /** alertSuccess */
     private String alertSuccess;
 
+    /** procedureList */
+    private List<ProcedureModel> procedureList;
+
 
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
+        procedureList = new ArrayList<ProcedureModel>();
     }
 
     public Form(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
         this.procedureModel = procedureModel;
         this.procedureInstance = procedureInstance;
+        procedureList = new ArrayList<ProcedureModel>();
+    }
+
+    public Form(List<ProcedureModel> procedureList) {
+        this.procedureList = procedureList;
     }
 
     /**
@@ -118,7 +130,7 @@ public class Form {
 
     /**
      * Getter for alertSuccess.
-     * 
+     *
      * @return the alertSuccess
      */
     public String getAlertSuccess() {
@@ -127,10 +139,28 @@ public class Form {
 
     /**
      * Setter for alertSuccess.
-     * 
+     *
      * @param alertSuccess the alertSuccess to set
      */
     public void setAlertSuccess(String alertSuccess) {
         this.alertSuccess = alertSuccess;
+    }
+
+    /**
+     * Getter for procedureList.
+     *
+     * @return the procedureList
+     */
+    public List<ProcedureModel> getProcedureList() {
+        return procedureList;
+    }
+
+    /**
+     * Setter for procedureList.
+     *
+     * @param procedureList the procedureList to set
+     */
+    public void setProcedureList(List<ProcedureModel> procedureList) {
+        this.procedureList = procedureList;
     }
 }

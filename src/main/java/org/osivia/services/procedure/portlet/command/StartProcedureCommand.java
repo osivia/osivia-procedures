@@ -50,10 +50,11 @@ public class StartProcedureCommand implements INuxeoCommand {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.StartProcedure.getId());
         request.set("taskTitle", taskTitle);
         request.set("properties", properties);
-        request.setInput(blobs);
+        if (blobs != null) {
+            request.setInput(blobs);
+        }
 
         return (Document) nuxeoSession.execute(request);
-
     }
 
     @Override

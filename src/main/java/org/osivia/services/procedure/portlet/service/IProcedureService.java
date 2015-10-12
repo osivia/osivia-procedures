@@ -1,13 +1,19 @@
 package org.osivia.services.procedure.portlet.service;
 
+import java.util.List;
+
 import javax.portlet.PortletException;
 
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
 
+/**
+ * @author dorian
+ */
 /**
  * @author dorian
  */
@@ -85,4 +91,12 @@ public interface IProcedureService {
      * @throws PortletException
      */
     public void createDocumentFromBlob(NuxeoController nuxeoController, String procedureInstancePath, String variableName) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @param portalUrlFactory
+     * @return
+     * @throws PortletException
+     */
+    public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory) throws PortletException;
 }
