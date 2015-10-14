@@ -20,6 +20,9 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 /**
  * @author dorian
  */
+/**
+ * @author dorian
+ */
 public interface IProcedureService {
 
 
@@ -74,13 +77,15 @@ public interface IProcedureService {
 
     /**
      * @param nuxeoController
+     * @param procedureModel
      * @param procedureInstance
      * @param procedureInstancePath
      * @param taskTitle
      * @return
      * @throws PortletException
      */
-    public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, ProcedureInstance procedureInstance, String procedureInstancePath,
+    public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
+            String procedureInstancePath,
             String taskTitle) throws PortletException;
 
 
@@ -99,4 +104,12 @@ public interface IProcedureService {
      * @throws PortletException
      */
     public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @param portalUrlFactory
+     * @return
+     * @throws PortletException
+     */
+    public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory) throws PortletException;
 }

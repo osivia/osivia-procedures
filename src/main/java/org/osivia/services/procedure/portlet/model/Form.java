@@ -26,6 +26,9 @@ public class Form {
     /** procedureList */
     private List<ProcedureModel> procedureList;
 
+    /** addUrl */
+    private String addUrl;
+
 
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
@@ -162,5 +165,23 @@ public class Form {
      */
     public void setProcedureList(List<ProcedureModel> procedureList) {
         this.procedureList = procedureList;
+    }
+
+    /**
+     * Getter for addUrl.
+     * 
+     * @return the addUrl
+     */
+    public String getAddUrl() {
+        return addUrl;
+    }
+
+    /**
+     * Setter for addUrl.
+     * 
+     * @param addUrl the addUrl to set
+     */
+    public void setAddUrl(String addUrl) {
+        this.addUrl = addUrl;
     }
 }

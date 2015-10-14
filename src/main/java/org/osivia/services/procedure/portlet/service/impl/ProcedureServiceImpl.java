@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
 
@@ -28,23 +26,25 @@ import org.osivia.services.procedure.portlet.command.CreateDocumentFromAttachmen
 import org.osivia.services.procedure.portlet.command.CreateDocumentFromBlobCommand;
 import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
 import org.osivia.services.procedure.portlet.command.ListDocumentsCommand;
+import org.osivia.services.procedure.portlet.command.RetrieveDocumentCommand;
 import org.osivia.services.procedure.portlet.command.StartProcedureCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
+import org.osivia.services.procedure.portlet.command.UpdateDocumentFromBlobCommand;
 import org.osivia.services.procedure.portlet.command.UpdateProcedureCommand;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.FilePath;
 import org.osivia.services.procedure.portlet.model.GlobalVariablesValuesType;
+import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
-import org.osivia.services.procedure.portlet.model.ProcedureObject;
 import org.osivia.services.procedure.portlet.model.ProcedureObjectInstance;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
+import org.osivia.services.procedure.portlet.util.ObjetMetierUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
@@ -53,16 +53,13 @@ public class ProcedureServiceImpl implements IProcedureService {
     private static final String path = "/default-domain/procedures-models.1442475923550";
 
 
-    // ecm://{object}/{variable}
-    private static final Pattern objectPattern = Pattern.compile("^ecm:\\/\\/([\\w.]+)\\/([\\w.:]+)");
-
     @Override
     public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
 
-        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(),  path);
-        Document container = documentContext.getDoc();
         INuxeoCommand command;
         try {
+            command = new RetrieveDocumentCommand(path);
+            Document container = (Document) nuxeoController.executeNuxeoCommand(command);
             command = new CreateDocumentCommand(container, procedureModel.getName(), DocumentTypeEnum.PROCEDUREMODEL);
         } catch (final Exception e) {
             throw new PortletException(e);
@@ -74,17 +71,25 @@ public class ProcedureServiceImpl implements IProcedureService {
 
     @Override
     public ProcedureModel retrieveProcedureByPath(NuxeoController nuxeoController, String path) throws PortletException {
-        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), path);
-        Document currentDocument = documentContext.getDoc();
-        return new ProcedureModel(currentDocument);
+        INuxeoCommand command;
+        Document document = null;
+        ProcedureModel procedureModel = null;
+        try {
+            command = new RetrieveDocumentCommand(path);
+            document = (Document) nuxeoController.executeNuxeoCommand(command);
+            procedureModel = new ProcedureModel(document);
+        } catch (final Exception e) {
+            throw new PortletException(e);
+        }
+        return procedureModel;
     }
 
     @Override
     public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
         INuxeoCommand command;
         try {
-            NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), procedureModel.getPath());
-            Document currentDocument = documentContext.getDoc();
+            command = new RetrieveDocumentCommand(procedureModel.getPath());
+            Document currentDocument = (Document) nuxeoController.executeNuxeoCommand(command);
             PropertyMap propMap = new PropertyMap();
             propMap.set("dc:title", procedureModel.getName());
             propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
@@ -102,11 +107,15 @@ public class ProcedureServiceImpl implements IProcedureService {
 
     @Override
     public void deleteProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
-        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), procedureModel.getPath());
+
         INuxeoCommand command;
-        if (documentContext != null) {
-            command = new DeleteDocumentCommand(documentContext.getDoc());
+        try {
+            command = new RetrieveDocumentCommand(procedureModel.getPath());
+            Document currentDocument = (Document) nuxeoController.executeNuxeoCommand(command);
+            command = new DeleteDocumentCommand(currentDocument);
             nuxeoController.executeNuxeoCommand(command);
+        } catch (final Exception e) {
+            throw new PortletException(e);
         }
     }
 
@@ -114,7 +123,14 @@ public class ProcedureServiceImpl implements IProcedureService {
     public ProcedureInstance createProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
             String taskTitle) throws PortletException {
 
-        defaultAction(nuxeoController, procedureModel, procedureInstance);
+        // build objet metiers from the supplied values
+        Map<String, ObjetMetier> objetMetiers = ObjetMetierUtil.buildObjetMetiers(procedureModel, procedureInstance);
+
+        // apply the actions
+        applyActions(objetMetiers);
+
+        // abstract action applied at every step
+        defaultAction(nuxeoController, procedureModel, procedureInstance, objetMetiers);
 
         INuxeoCommand command;
         try {
@@ -152,125 +168,114 @@ public class ProcedureServiceImpl implements IProcedureService {
         return new ProcedureInstance(documentInstance);
     }
 
-    private void defaultAction(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance) throws PortletException {
+    private void applyActions(Map<String, ObjetMetier> objetMetiers) {
+        for (ObjetMetier objetMetier : objetMetiers.values()) {
 
-        List<FilePath> createDocumentList = new ArrayList<FilePath>();
-        List<String> updateDocumentList = new ArrayList<String>();
-        Map<String, PropertyMap> propMap = new HashMap<String, PropertyMap>();
+            if (StringUtils.isEmpty(objetMetier.getProcedureObject().getPath())) {
+                // si le path n'est pas renseigné on place celui par défaut
+                objetMetier.getProcedureObject().setPath("/default-domain/procedurefiles");
+            }
 
-        // for each variable
-        Matcher matcher;
-        for (Entry<String, String> gvv : procedureInstance.getGlobalVariablesValues().entrySet()) {
-            matcher = objectPattern.matcher(gvv.getKey());
-
-            if (matcher.matches()) {
-                // if the name matches the pattern
-                String objectName = matcher.group(1);
-                String objectProperty = matcher.group(2);
-
-                // find the objectId
-                String objectId = getObjectIdByName(procedureInstance, objectName);
-
-                if (objectId == null) {
-                    // if there is no objectId
-                    if (procedureInstance.getFilesPath().containsKey(objectName)) {
-                        // if there is a MultipartFile matching the object
-
-                        // add file to the createDocumentList
-                        createDocumentList.add(procedureInstance.getFilesPath().get(objectName));
-
-                        // remove the file from the procedureInstance (to avoid creating attachment)
-                        procedureInstance.getFilesPath().remove(objectName);
-                    }
-                } else {
-                    // add object to the updateDocumentList
-                    updateDocumentList.add(objectName);
-                }
-                // add variable to the propertyMap of this object
-                if (propMap.containsKey(objectName)) {
-                    propMap.get(objectName).set(objectProperty, gvv.getValue());
-                } else {
-                    PropertyMap prop = new PropertyMap();
-                    prop.set(objectProperty, gvv.getValue());
-                    propMap.put(objectName, prop);
-                }
-
-                // remove the properties from the procedureInstance (to avoid creating them as globalVariables)
-                procedureInstance.getGlobalVariablesValues().remove(gvv.getKey());
+            if (StringUtils.isEmpty(objetMetier.getProperties().getString("dc:title"))) {
+                // si le titre n'est pas renseigné on place celui par défaut
+                objetMetier.getProperties().set("dc:title", "titre du document");
             }
         }
 
-        // for each file in the createDocumentList
+    }
+
+    private void defaultAction(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
+            Map<String, ObjetMetier> objetMetiers) throws PortletException {
+
+        ObjetMetier objetMetier;
         ProcedureObjectInstance procedureObject;
-        for (FilePath filePath : createDocumentList) {
-            // create document from file and fileProperties
-            INuxeoCommand command;
-            try {
-                MultipartFile file = filePath.getFile();
-                InputStream in = new ByteArrayInputStream(file.getBytes());
-                Blob blob = new StreamBlob(in, file.getOriginalFilename(), file.getContentType());
+        Document documentObject;
+        for (Entry<String, ObjetMetier> objetMetierE : objetMetiers.entrySet()) {
 
-                command = new CreateDocumentFromBlobCommand(getObjectPathByName(procedureModel, filePath), propMap.get(filePath.getVariableName()), blob);
-            } catch (Exception e) {
-                throw new PortletException(e);
+            objetMetier = objetMetierE.getValue();
+            if ((objetMetier.getProcedureObjectInstance() == null) || StringUtils.isEmpty(objetMetier.getProcedureObjectInstance().getProcedureObjectid())) {
+                // if there is no objectId
+
+                // create document from file and properties of objetMetier
+                INuxeoCommand command;
+                try {
+                    MultipartFile file = objetMetier.getFilePath().getFile();
+                    InputStream in = new ByteArrayInputStream(file.getBytes());
+                    Blob blob = new StreamBlob(in, file.getOriginalFilename(), file.getContentType());
+
+                    command = new CreateDocumentFromBlobCommand(objetMetier.getProcedureObject().getPath(), objetMetier.getProperties(),
+                            blob);
+                } catch (Exception e) {
+                    throw new PortletException(e);
+                }
+                documentObject = (Document) nuxeoController.executeNuxeoCommand(command);
+
+                // update the ProcedureObjectsMap
+                procedureObject = new ProcedureObjectInstance();
+                procedureObject.setName(objetMetierE.getKey());
+                procedureObject.setProcedureObjectid(documentObject.getId());
+                procedureInstance.getProcedureObjects().put(procedureObject.getName(), procedureObject);
+            } else {
+                INuxeoCommand command;
+                try {
+                    // retrieve the document from object
+                    command = new RetrieveDocumentCommand(objetMetier.getProcedureObjectInstance().getProcedureObjectid());
+                    documentObject = (Document) nuxeoController.executeNuxeoCommand(command);
+
+                    if (objetMetier.getFilePath() != null) {
+                        // if a file:content was provided, update the content as well as the properties of objetMetier
+                        Blob blob = null;
+                        if (objetMetier.getFilePath().getFile().getSize() > 0) {
+                            InputStream in;
+                            in = new ByteArrayInputStream(objetMetier.getFilePath().getFile().getBytes());
+                            blob = new StreamBlob(in, objetMetier.getFilePath().getFile().getOriginalFilename(), objetMetier.getFilePath().getFile()
+                                    .getContentType());
+                            command = new UpdateDocumentFromBlobCommand(documentObject.getPath(), objetMetier.getProperties(), blob);
+                        }
+                    } else {
+                        // update existing documents with properties of objetMetier
+                        command = new UpdateDocumentCommand(documentObject, objetMetier.getProperties());
+                    }
+                } catch (Exception e) {
+                    throw new PortletException(e);
+                }
+                nuxeoController.executeNuxeoCommand(command);
             }
-            Document createdDocument = (Document) nuxeoController.executeNuxeoCommand(command);
-
-            // update the ProcedureObjectsMap
-            procedureObject = new ProcedureObjectInstance();
-            procedureObject.setName(filePath.getVariableName());
-            procedureObject.setProcedureObjectid(createdDocument.getId());
-            procedureInstance.getProcedureObjects().put(filePath.getFileName(), procedureObject);
         }
-
-        // for each object in the updateDocumentList
-        for (String string : updateDocumentList) {
-            // update document from documentPath and fileProperties
-        }
-
-
-    }
-
-    /**
-     * @param procedureModel
-     * @param filePath
-     */
-    private String getObjectPathByName(ProcedureModel procedureModel, FilePath filePath) {
-        for (ProcedureObject object : procedureModel.getProcedureObjects()) {
-            if (StringUtils.equals(filePath.getVariableName(), object.getName())) {
-                return object.getPath();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param procedureInstance
-     * @param objectName
-     */
-    private String getObjectIdByName(ProcedureInstance procedureInstance, String objectName) {
-        for (ProcedureObjectInstance objectInstance : procedureInstance.getProcedureObjects().values()) {
-            if(StringUtils.equals(objectInstance.getName(), objectName)){
-                return objectInstance.getProcedureObjectid();
-            }
-        }
-        return null;
     }
 
     @Override
     public ProcedureInstance retrieveProcedureInstanceByPath(NuxeoController nuxeoController, String path) throws PortletException {
-        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), path);
-        Document currentDocument = documentContext.getDoc();
-        return new ProcedureInstance(currentDocument);
+
+        INuxeoCommand command;
+        ProcedureInstance procedureInstance = null;
+        try {
+            command = new RetrieveDocumentCommand(path);
+            Document currentDocument = (Document) nuxeoController.executeNuxeoCommand(command);
+            procedureInstance = new ProcedureInstance(currentDocument);
+        } catch (Exception e) {
+            throw new PortletException(e);
+        }
+        return procedureInstance;
     }
 
     @Override
-    public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, ProcedureInstance procedureInstance, String procedureInstancePath,
-            String taskTitle) throws PortletException {
+    public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
+            String procedureInstancePath, String taskTitle) throws PortletException {
+
+        // build objet metiers from the supplied values
+        Map<String, ObjetMetier> objetMetiers = ObjetMetierUtil.buildObjetMetiers(procedureModel, procedureInstance);
+
+        // apply the actions
+        applyActions(objetMetiers);
+
+        // abstract action applied at every step
+        defaultAction(nuxeoController, procedureModel, procedureInstance, objetMetiers);
+
         INuxeoCommand command;
         try {
-            NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), procedureInstancePath);
-            Document currentDocument = documentContext.getDoc();
+            command = new RetrieveDocumentCommand(procedureInstancePath);
+            Document currentDocument = (Document) nuxeoController.executeNuxeoCommand(command);
             PropertyMap propMap = new PropertyMap();
             propMap.set("pi:currentStep", procedureInstance.getCurrentStep());
             propMap.set("pi:procedureModelPath", procedureInstance.getProcedureModelPath());
@@ -293,8 +298,8 @@ public class ProcedureServiceImpl implements IProcedureService {
     public void createDocumentFromBlob(NuxeoController nuxeoController, String procedureInstancePath, String variableName) throws PortletException {
         INuxeoCommand command;
         try {
-            NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(nuxeoController.getCMSCtx(), procedureInstancePath);
-            Document procedureInstance = documentContext.getDoc();
+            command = new RetrieveDocumentCommand(procedureInstancePath);
+            Document procedureInstance = (Document) nuxeoController.executeNuxeoCommand(command);
             command = new CreateDocumentFromAttachmentCommand(procedureInstance, variableName);
         } catch (final Exception e) {
             throw new PortletException(e);
@@ -317,9 +322,9 @@ public class ProcedureServiceImpl implements IProcedureService {
             procedureModel = new ProcedureModel(document);
 
             try {
-                procedureModel.setUrl(getUrl(nuxeoController, portalUrlFactory, procedureModel));
+                procedureModel.setUrl(getEditUrl(nuxeoController, portalUrlFactory, procedureModel));
             } catch (PortalException e) {
-                new PortalException(e);
+                new PortletException(e);
             }
 
             procedureModels.add(procedureModel);
@@ -333,15 +338,37 @@ public class ProcedureServiceImpl implements IProcedureService {
      * @param procedureModel
      * @throws PortalException
      */
-    private String getUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, ProcedureModel procedureModel) throws PortalException {
-        Map<String, String> windowProperties = new HashMap<String, String>();
+    private String getEditUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, ProcedureModel procedureModel) throws PortalException {
+        Map<String, String> windowProperties = getWindowProperties();
         windowProperties.put(Constants.WINDOW_PROP_URI, procedureModel.getPath());
-        windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
         windowProperties.put("osivia.title", "Éditer une procedure");
+        return portalUrlFactory.getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance", windowProperties, false);
+    }
+
+    /**
+     * @param nuxeoController
+     * @param portalUrlFactory
+     * @param procedureModel
+     * @throws PortalException
+     */
+    private Map<String, String> getWindowProperties() throws PortalException {
+        Map<String, String> windowProperties = new HashMap<String, String>();
+        windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("osivia.ajaxLink", "1");
         windowProperties.put("osivia.procedure.admin", "adminproc");
-        return portalUrlFactory.getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance", windowProperties, false);
+        return windowProperties;
+    }
+
+    @Override
+    public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory) throws PortletException {
+        try {
+            Map<String, String> windowProperties = getWindowProperties();
+            windowProperties.put("osivia.title", "Créer une procedure");
+            return portalUrlFactory.getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance", windowProperties, false);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
     }
 
 }

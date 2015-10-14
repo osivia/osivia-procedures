@@ -8,6 +8,7 @@
 <portlet:actionURL name="editProcedure" var="editProcedureUrl">
 </portlet:actionURL>
 
+<a class="btn btn-default btn-sm pull-right" href="${form.addUrl}" role="button" title="Créer une procedure" data-toggle="tooltip" data-placement="auto bottom"><i class="glyphicons glyphicons-circle-plus"></i></a>
 
 <form:form modelAttribute="form" action="${editProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
 

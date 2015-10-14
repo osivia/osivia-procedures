@@ -157,6 +157,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } else {
             List<ProcedureModel> listProcedures = procedureService.listProcedures(nuxeoController, getPortalUrlFactory());
             form = new Form(listProcedures);
+            form.setAddUrl(procedureService.getAddUrl(nuxeoController, getPortalUrlFactory()));
         }
         return form;
     }
@@ -219,8 +220,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
                 // update the instance
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-                ProcedureInstance procedureInstance = procedureService.updateProcedureInstance(nuxeoController, form.getProcedureInstance(), getPath(request),
-                        taskTitle);
+                ProcedureInstance procedureInstance = procedureService.updateProcedureInstance(nuxeoController, form.getProcedureModel(),
+                        form.getProcedureInstance(), getPath(request), taskTitle);
                 form.setProcedureInstance(procedureInstance);
 
                 // redirect to end of step page
