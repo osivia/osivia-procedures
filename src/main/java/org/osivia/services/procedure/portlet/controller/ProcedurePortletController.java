@@ -382,6 +382,17 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
+    @ActionMapping(value = "editProcedure", params = "deleteObject")
+    public void deleteObject(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedObject",
+            required = false) String selectedObject) throws PortletException, IOException {
+
+        form.getProcedureModel().getProcedureObjects().remove(Integer.valueOf(selectedObject).intValue());
+
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+        response.setRenderParameter("action", "editProcedure");
+    }
+
     /**
      * @param request
      * @return

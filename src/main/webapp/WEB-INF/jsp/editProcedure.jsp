@@ -78,10 +78,15 @@
                             <div class="col-sm-4">
                                 <form:input path="procedureModel.procedureObjects[${status.index}].path" type="text" cssClass="form-control" placeholder="Path" />
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-3">
                                 <form:select path="procedureModel.procedureObjects[${status.index}].type" cssClass="form-control">
                                     <form:option value="FILE">File</form:option>
                                 </form:select>
+                            </div>
+                            <div class="btn-group col-sm-1">
+                                <button type="submit" name="deleteObject" class="btn btn-default" onclick="selector(this,'${status.index}','selectedObject')">
+                                    <i class="glyphicons glyphicons-remove-2"></i>
+                                </button>
                             </div>
                          </li>
                     </c:forEach>
