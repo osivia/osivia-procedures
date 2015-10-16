@@ -58,6 +58,11 @@
                                             <button type="submit" name="saveDocument" class="btn btn-default pull-right" onclick="selector(this,'${field.name}','variableName')" >Enregistrer le document dans mon espace personnel</button>
                                         </div>
                                     </c:when>
+                                    <c:when test="${field.type eq 'TEXT'}">
+                                        <div class="col-sm-6">
+                                            ${field.label} : <c:out value="${form.procedureInstance.globalVariablesValues[field.name]}"/>
+                                        </div>
+                                    </c:when>
                                     <c:otherwise>
                                         <p>empty</p>
                                     </c:otherwise>
