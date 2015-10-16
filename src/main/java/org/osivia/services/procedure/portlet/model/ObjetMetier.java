@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.model;
 
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 
@@ -26,6 +27,11 @@ public class ObjetMetier {
         this.procedureObjectInstance = procedureObjectInstance;
         this.filePath = filePath;
         properties = new PropertyMap();
+    }
+
+
+    public ObjetMetier(Document document) {
+        properties = document.getProperties();
     }
 
     /**

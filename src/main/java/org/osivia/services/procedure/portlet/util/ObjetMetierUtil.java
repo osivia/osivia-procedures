@@ -6,11 +6,9 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
-import org.osivia.services.procedure.portlet.model.ProcedureObject;
 
 
 public class ObjetMetierUtil {
@@ -37,7 +35,7 @@ public class ObjetMetierUtil {
                     objetMetier.getProperties().set(objectProperty, gvv.getValue());
                 } else {
                     objetMetiers.put(objectName,
-                            new ObjetMetier(getProcedureObject(procedureModel, objectName), procedureInstance.getProcedureObjects().get(objectName),
+                            new ObjetMetier(procedureModel.getProcedureObject(objectName), procedureInstance.getProcedureObjects().get(objectName),
                                     procedureInstance.getFilesPath().get(fileContentName)));
                     objetMetiers.get(objectName).getProperties().set(objectProperty, gvv.getValue());
                     procedureInstance.getGlobalVariablesValues().remove(gvv.getKey());
@@ -48,17 +46,24 @@ public class ObjetMetierUtil {
         return objetMetiers;
     }
 
-    /**
-     * @param procedureModel
-     * @param objectName
-     * @return
-     */
-    private static ProcedureObject getProcedureObject(ProcedureModel procedureModel, String objectName) {
-        for (ProcedureObject procedureObject : procedureModel.getProcedureObjects()) {
-            if (StringUtils.equals(procedureObject.getName(), objectName)) {
-                return procedureObject;
-            }
+    public static boolean isObject(String string) {
+        return ObjetMetierUtil.objectPattern.matcher(string).matches();
+    }
+
+    public static String getObjectProperty(String string) {
+        Matcher matcher = ObjetMetierUtil.objectPattern.matcher(string);
+        if (matcher.matches()) {
+            return matcher.group(2);
         }
         return null;
     }
+
+    public static String getObjectName(String string) {
+        Matcher matcher = ObjetMetierUtil.objectPattern.matcher(string);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
 }

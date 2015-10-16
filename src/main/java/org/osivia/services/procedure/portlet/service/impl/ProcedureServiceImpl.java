@@ -32,7 +32,9 @@ import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentFromBlobCommand;
 import org.osivia.services.procedure.portlet.command.UpdateProcedureCommand;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
+import org.osivia.services.procedure.portlet.model.Field;
 import org.osivia.services.procedure.portlet.model.FilePath;
+import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.GlobalVariablesValuesType;
 import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
@@ -51,6 +53,9 @@ public class ProcedureServiceImpl implements IProcedureService {
 
     /** path containing the models */
     private static final String path = "/default-domain/procedures-models.1442475923550";
+
+    /** defaultFIlesPath */
+    private static final String defaultFIlesPath = "/default-domain/procedurefiles";
 
 
     @Override
@@ -173,7 +178,7 @@ public class ProcedureServiceImpl implements IProcedureService {
 
             if (StringUtils.isEmpty(objetMetier.getProcedureObject().getPath())) {
                 // si le path n'est pas renseigné on place celui par défaut
-                objetMetier.getProcedureObject().setPath("/default-domain/procedurefiles");
+                objetMetier.getProcedureObject().setPath(defaultFIlesPath);
             }
 
             if (StringUtils.isEmpty(objetMetier.getProperties().getString("dc:title"))) {
@@ -371,4 +376,31 @@ public class ProcedureServiceImpl implements IProcedureService {
         }
     }
 
+    @Override
+    public void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException {
+
+        Map<String, ObjetMetier> ojMap = new HashMap<String, ObjetMetier>();
+
+        ObjetMetier objetMetier;
+        for (Field field : form.getTheCurrentStep().getFields()) {
+            if (ObjetMetierUtil.isObject(field.getName())) {
+                if (ojMap.containsKey(field.getName())) {
+                    objetMetier = ojMap.get(field.getName());
+                } else {
+                    INuxeoCommand command;
+                    try {
+                        command = new RetrieveDocumentCommand(form.getProcedureInstance().getProcedureObjects()
+                                .get(ObjetMetierUtil.getObjectName(field.getName())).getProcedureObjectid());
+                    } catch (final Exception e) {
+                        throw new PortletException(e);
+                    }
+                    Document objetMetierDocument = (Document) nuxeoController.executeNuxeoCommand(command);
+                    objetMetier = new ObjetMetier(objetMetierDocument);
+                    ojMap.put(field.getName(), objetMetier);
+                }
+                form.getProcedureInstance().getGlobalVariablesValues()
+                        .put(field.getName(), objetMetier.getProperties().getString(ObjetMetierUtil.getObjectProperty(field.getName())));
+            }
+        }
+    }
 }

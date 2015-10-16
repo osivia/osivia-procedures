@@ -5,6 +5,7 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 
@@ -96,6 +97,13 @@ public interface IProcedureService {
      * @throws PortletException
      */
     public void createDocumentFromBlob(NuxeoController nuxeoController, String procedureInstancePath, String variableName) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @param form
+     * @throws PortletException
+     */
+    public void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException;
 
     /**
      * @param nuxeoController

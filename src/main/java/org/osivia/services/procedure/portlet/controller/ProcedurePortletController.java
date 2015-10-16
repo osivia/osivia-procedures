@@ -154,6 +154,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, getPath(request));
             ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, procedureInstance.getProcedureModelPath());
             form = new Form(procedureModel, procedureInstance);
+            procedureService.updateFormWithObjectsValues(nuxeoController, form);
         } else {
             List<ProcedureModel> listProcedures = procedureService.listProcedures(nuxeoController, getPortalUrlFactory());
             form = new Form(listProcedures);

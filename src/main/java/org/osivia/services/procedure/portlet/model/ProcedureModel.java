@@ -257,6 +257,15 @@ public class ProcedureModel {
         return procedureObjects;
     }
 
+    public ProcedureObject getProcedureObject(String objectName) {
+        for (ProcedureObject procedureObject : procedureObjects) {
+            if (StringUtils.equals(procedureObject.getName(), objectName)) {
+                return procedureObject;
+            }
+        }
+        return null;
+    }
+
     /**
      * Setter for procedureObjects.
      * @param procedureObjects the procedureObjects to set
