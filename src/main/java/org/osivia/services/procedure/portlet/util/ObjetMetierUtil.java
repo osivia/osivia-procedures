@@ -31,16 +31,17 @@ public class ObjetMetierUtil {
                 String objectProperty = matcher.group(2);
                 String fileContentName = "ecm://" + objectName + "/file:content";
 
-                ObjetMetier objetMetier = objetMetiers.get(objectName);
-                if (objetMetier != null) {
-                    objetMetier.getProperties().set(objectProperty, gvv.getValue());
-                } else {
-                    objetMetiers.put(objectName,
-                            new ObjetMetier(procedureModel.getProcedureObject(objectName), procedureInstance.getProcedureObjects().get(objectName),
-                                    procedureInstance.getFilesPath().get(fileContentName)));
-                    objetMetiers.get(objectName).getProperties().set(objectProperty, gvv.getValue());
-                    procedureInstance.getGlobalVariablesValues().remove(gvv.getKey());
-                    procedureInstance.getFilesPath().remove(fileContentName);
+                if (procedureInstance.getFilesPath().containsKey(fileContentName)) {
+                    ObjetMetier objetMetier = objetMetiers.get(objectName);
+                    if (objetMetier != null) {
+                        objetMetier.getProperties().set(objectProperty, gvv.getValue());
+                    } else {
+                        objetMetiers.put(objectName, new ObjetMetier(procedureModel.getProcedureObject(objectName), procedureInstance.getProcedureObjects()
+                                .get(objectName), procedureInstance.getFilesPath().get(fileContentName)));
+                        objetMetiers.get(objectName).getProperties().set(objectProperty, gvv.getValue());
+                        procedureInstance.getGlobalVariablesValues().remove(gvv.getKey());
+                        procedureInstance.getFilesPath().remove(fileContentName);
+                    }
                 }
             }
         }

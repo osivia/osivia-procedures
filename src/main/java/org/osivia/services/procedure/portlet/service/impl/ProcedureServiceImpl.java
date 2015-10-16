@@ -226,7 +226,7 @@ public class ProcedureServiceImpl implements IProcedureService {
                     command = new RetrieveDocumentCommand(objetMetier.getProcedureObjectInstance().getProcedureObjectid());
                     documentObject = (Document) nuxeoController.executeNuxeoCommand(command);
 
-                    if (objetMetier.getFilePath() != null) {
+                    if ((objetMetier.getFilePath() != null) && (objetMetier.getFilePath().getFile() != null)) {
                         // if a file:content was provided, update the content as well as the properties of objetMetier
                         Blob blob = null;
                         if (objetMetier.getFilePath().getFile().getSize() > 0) {
@@ -371,34 +371,36 @@ public class ProcedureServiceImpl implements IProcedureService {
         ObjetMetier objetMetier;
         for (Field field : form.getTheCurrentStep().getFields()) {
             if (ObjetMetierUtil.isObject(field.getName())) {
-                if (ojMap.containsKey(field.getName())) {
-                    objetMetier = ojMap.get(field.getName());
-                } else {
-                    INuxeoCommand command;
-                    try {
-                        command = new RetrieveDocumentCommand(form.getProcedureInstance().getProcedureObjects()
-                                .get(ObjetMetierUtil.getObjectName(field.getName())).getProcedureObjectid());
-                    } catch (final Exception e) {
-                        throw new PortletException(e);
-                    }
-                    Document objetMetierDocument = (Document) nuxeoController.executeNuxeoCommand(command);
-                    nuxeoController.setDisplayLiveVersion("1");
-                    String downloadLink = nuxeoController.createFileLink(objetMetierDocument, "file:content");
-                    FilePath filePath = new FilePath();
-                    filePath.setDownloadLink(downloadLink);
-                    filePath.setFileName(objetMetierDocument.getString("file:filename"));
-                    objetMetier = new ObjetMetier(objetMetierDocument,filePath);
-                    ojMap.put(field.getName(), objetMetier);
-                }
-                if (ObjetMetierUtil.isContent(field.getName())) {
-                    if (form.getProcedureInstance().getFilesPath().containsKey(field.getName())) {
-                        form.getProcedureInstance().getFilesPath().get(field.getName()).setDownloadLink(objetMetier.getFilePath().getDownloadLink());
+                if (form.getProcedureInstance().getProcedureObjects().containsKey(ObjetMetierUtil.getObjectName(field.getName()))) {
+                    if (ojMap.containsKey(field.getName())) {
+                        objetMetier = ojMap.get(field.getName());
                     } else {
-                        form.getProcedureInstance().getFilesPath().put(field.getName(), objetMetier.getFilePath());
+                        INuxeoCommand command;
+                        try {
+                            command = new RetrieveDocumentCommand(form.getProcedureInstance().getProcedureObjects()
+                                    .get(ObjetMetierUtil.getObjectName(field.getName())).getProcedureObjectid());
+                        } catch (final Exception e) {
+                            throw new PortletException(e);
+                        }
+                        Document objetMetierDocument = (Document) nuxeoController.executeNuxeoCommand(command);
+                        nuxeoController.setDisplayLiveVersion("1");
+                        String downloadLink = nuxeoController.createFileLink(objetMetierDocument, "file:content");
+                        FilePath filePath = new FilePath();
+                        filePath.setDownloadLink(downloadLink);
+                        filePath.setFileName(objetMetierDocument.getString("file:filename"));
+                        objetMetier = new ObjetMetier(objetMetierDocument, filePath);
+                        ojMap.put(field.getName(), objetMetier);
                     }
-                }else{
-                    form.getProcedureInstance().getGlobalVariablesValues()
-                    .put(field.getName(), objetMetier.getProperties().getString(ObjetMetierUtil.getObjectProperty(field.getName())));
+                    if (ObjetMetierUtil.isContent(field.getName())) {
+                        if (form.getProcedureInstance().getFilesPath().containsKey(field.getName())) {
+                            form.getProcedureInstance().getFilesPath().get(field.getName()).setDownloadLink(objetMetier.getFilePath().getDownloadLink());
+                        } else {
+                            form.getProcedureInstance().getFilesPath().put(field.getName(), objetMetier.getFilePath());
+                        }
+                    } else {
+                        form.getProcedureInstance().getGlobalVariablesValues()
+                                .put(field.getName(), objetMetier.getProperties().getString(ObjetMetierUtil.getObjectProperty(field.getName())));
+                    }
                 }
             }
         }
