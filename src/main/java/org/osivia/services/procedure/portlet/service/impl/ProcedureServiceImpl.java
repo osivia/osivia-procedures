@@ -22,7 +22,6 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.procedure.portlet.adapter.ProcedureJSONAdapter;
 import org.osivia.services.procedure.portlet.command.CreateDocumentCommand;
-import org.osivia.services.procedure.portlet.command.CreateDocumentFromAttachmentCommand;
 import org.osivia.services.procedure.portlet.command.CreateDocumentFromBlobCommand;
 import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
 import org.osivia.services.procedure.portlet.command.ListDocumentsCommand;
@@ -299,18 +298,6 @@ public class ProcedureServiceImpl implements IProcedureService {
         return new ProcedureInstance(documentInstance);
     }
 
-    @Override
-    public void createDocumentFromBlob(NuxeoController nuxeoController, String procedureInstancePath, String variableName) throws PortletException {
-        INuxeoCommand command;
-        try {
-            command = new RetrieveDocumentCommand(procedureInstancePath);
-            Document procedureInstance = (Document) nuxeoController.executeNuxeoCommand(command);
-            command = new CreateDocumentFromAttachmentCommand(procedureInstance, variableName);
-        } catch (final Exception e) {
-            throw new PortletException(e);
-        }
-        nuxeoController.executeNuxeoCommand(command);
-    }
 
     @Override
     public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory) throws PortletException {
@@ -395,11 +382,24 @@ public class ProcedureServiceImpl implements IProcedureService {
                         throw new PortletException(e);
                     }
                     Document objetMetierDocument = (Document) nuxeoController.executeNuxeoCommand(command);
-                    objetMetier = new ObjetMetier(objetMetierDocument);
+                    nuxeoController.setDisplayLiveVersion("1");
+                    String downloadLink = nuxeoController.createFileLink(objetMetierDocument, "file:content");
+                    FilePath filePath = new FilePath();
+                    filePath.setDownloadLink(downloadLink);
+                    filePath.setFileName(objetMetierDocument.getString("file:filename"));
+                    objetMetier = new ObjetMetier(objetMetierDocument,filePath);
                     ojMap.put(field.getName(), objetMetier);
                 }
-                form.getProcedureInstance().getGlobalVariablesValues()
-                        .put(field.getName(), objetMetier.getProperties().getString(ObjetMetierUtil.getObjectProperty(field.getName())));
+                if (ObjetMetierUtil.isContent(field.getName())) {
+                    if (form.getProcedureInstance().getFilesPath().containsKey(field.getName())) {
+                        form.getProcedureInstance().getFilesPath().get(field.getName()).setDownloadLink(objetMetier.getFilePath().getDownloadLink());
+                    } else {
+                        form.getProcedureInstance().getFilesPath().put(field.getName(), objetMetier.getFilePath());
+                    }
+                }else{
+                    form.getProcedureInstance().getGlobalVariablesValues()
+                    .put(field.getName(), objetMetier.getProperties().getString(ObjetMetierUtil.getObjectProperty(field.getName())));
+                }
             }
         }
     }

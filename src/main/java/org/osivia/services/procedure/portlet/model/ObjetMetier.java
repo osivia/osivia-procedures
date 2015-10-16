@@ -30,8 +30,9 @@ public class ObjetMetier {
     }
 
 
-    public ObjetMetier(Document document) {
+    public ObjetMetier(Document document, FilePath filePath) {
         properties = document.getProperties();
+        this.filePath = filePath;
     }
 
     /**

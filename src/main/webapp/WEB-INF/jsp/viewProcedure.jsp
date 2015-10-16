@@ -34,10 +34,13 @@
                                     </c:when>
                                     <c:when test="${field.type eq 'FILE'}">
                                         <div class="col-sm-3">
-                                            <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${field.label}</label>
+                                            <label for="${form.procedureInstance.globalVariablesValues[field.name]}">${field.label}</label>
                                         </div>
-                                        <div class="col-sm-9">
+                                        <div class="col-sm-3">
                                             <input type="file" name="file:${field.name}"/>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <a href="${form.procedureInstance.filesPath[field.name].downloadLink}">${form.procedureInstance.filesPath[field.name].fileName}</a> 
                                         </div>
                                     </c:when>
                                     <c:otherwise>
@@ -49,13 +52,10 @@
                                 <c:choose>
                                     <c:when test="${field.type eq 'FILE'}">
                                         <div class="col-sm-3">
-                                            ${field.label} : 
+                                            <label for="${form.procedureInstance.globalVariablesValues[field.name]}">${field.label}</label>
                                         </div>
-                                        <div class="col-sm-4">
-                                            <c:out value="${form.procedureInstance.filesPath[field.name].fileName}"/>
-                                        </div>
-                                        <div class="col-sm-5">
-                                            <button type="submit" name="saveDocument" class="btn btn-default pull-right" onclick="selector(this,'${field.name}','variableName')" >Enregistrer le document dans mon espace personnel</button>
+                                        <div class="col-sm-3">
+                                            <a href="${form.procedureInstance.filesPath[field.name].downloadLink}">${form.procedureInstance.filesPath[field.name].fileName}</a> 
                                         </div>
                                     </c:when>
                                     <c:when test="${field.type eq 'TEXT'}">

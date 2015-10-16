@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
@@ -64,6 +65,14 @@ public class ObjetMetierUtil {
             return matcher.group(1);
         }
         return null;
+    }
+
+    public static boolean isContent(String string) {
+        Matcher matcher = ObjetMetierUtil.objectPattern.matcher(string);
+        if (matcher.matches()) {
+            return StringUtils.equals(matcher.group(2), "file:content");
+        }
+        return false;
     }
 
 }

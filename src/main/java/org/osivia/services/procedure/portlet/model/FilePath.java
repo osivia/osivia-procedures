@@ -26,6 +26,10 @@ public class FilePath {
     @JsonProperty("variableName")
     private String variableName;
 
+    /** downloadLink */
+    @JsonIgnore
+    private String downloadLink;
+
 
     /**
      * Getter for file.
@@ -80,5 +84,25 @@ public class FilePath {
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+
+    /**
+     * Getter for downloadLink.
+     * 
+     * @return the downloadLink
+     */
+    public String getDownloadLink() {
+        return downloadLink;
+    }
+
+
+    /**
+     * Setter for downloadLink.
+     * 
+     * @param downloadLink the downloadLink to set
+     */
+    public void setDownloadLink(String downloadLink) {
+        this.downloadLink = downloadLink;
     }
 }

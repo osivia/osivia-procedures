@@ -173,20 +173,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
 
-    @ActionMapping(value = "actionProcedure", params = "saveDocument")
-    public void saveDocument(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam(value = "variableName") String variableName) throws PortletException {
-
-        String path = getPath(request);
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        procedureService.createDocumentFromBlob(nuxeoController, path, variableName);
-
-        form.setAlertSuccess("Le document a bien été enregistré");
-
-        response.setRenderParameter("action", "viewProcedure");
-    }
-
-
     @ActionMapping(value = "actionProcedure", params = "proceedProcedure")
     public void proceedProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "stepReference") String stepReference) throws PortletException, IOException {
