@@ -97,7 +97,6 @@ public class ProcedureServiceImpl implements IProcedureService {
             PropertyMap propMap = new PropertyMap();
             propMap.set("dc:title", procedureModel.getName());
             propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
-            procedureModel.updateGlobalVariableDefinition();
             propMap.set("pcd:globalVariablesDefinitions", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getVariables().values()));
             propMap.set("pcd:startingStep", procedureModel.getStartingStep());
             propMap.set("pcd:procedureObjects", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getProcedureObjects()));

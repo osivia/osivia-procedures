@@ -20,21 +20,22 @@
         
             <ul class="procedure-sortable list-unstyled">
                 <c:forEach var="field" items="${form.theCurrentStep.fields}" varStatus="status">
+                    <c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
                     <li class="form-group">
                         <c:choose>
                             <c:when test="${field.input eq true}">
                                 <c:choose>
-                                    <c:when test="${field.type eq 'TEXT'}">
+                                    <c:when test="${fieldType eq 'TEXT'}">
                                         <div class="col-sm-3">
-                                            <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${field.label}</label>
+                                            <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${form.procedureModel.variables[field.name].label}</label>
                                         </div>
                                         <div class="col-sm-9">
                                             <form:input path="procedureInstance.globalVariablesValues['${field.name}']" type="text" cssClass="form-control"/>
                                         </div>
                                     </c:when>
-                                    <c:when test="${field.type eq 'FILE'}">
+                                    <c:when test="${fieldType eq 'FILE'}">
                                         <div class="col-sm-3">
-                                            <label for="${form.procedureInstance.globalVariablesValues[field.name]}">${field.label}</label>
+                                            <label for="${form.procedureInstance.globalVariablesValues[field.name]}">${form.procedureModel.variables[field.name].label}</label>
                                         </div>
                                         <div class="col-sm-3">
                                             <input type="file" name="file:${field.name}"/>
@@ -50,17 +51,20 @@
                             </c:when>
                             <c:otherwise>
                                 <c:choose>
-                                    <c:when test="${field.type eq 'FILE'}">
+                                    <c:when test="${fieldType eq 'FILE'}">
                                         <div class="col-sm-3">
-                                            <label for="${form.procedureInstance.globalVariablesValues[field.name]}">${field.label}</label>
+                                            <label for="${form.procedureInstance.globalVariablesValues[field.name]}">${form.procedureModel.variables[field.name].label}</label>
                                         </div>
                                         <div class="col-sm-3">
                                             <a href="${form.procedureInstance.filesPath[field.name].downloadLink}">${form.procedureInstance.filesPath[field.name].fileName}</a> 
                                         </div>
                                     </c:when>
-                                    <c:when test="${field.type eq 'TEXT'}">
-                                        <div class="col-sm-6">
-                                            ${field.label} : <c:out value="${form.procedureInstance.globalVariablesValues[field.name]}"/>
+                                    <c:when test="${fieldType eq 'TEXT'}">
+                                        <div class="col-sm-3">
+                                            ${form.procedureModel.variables[field.name].label} : 
+                                        </div>
+                                        <div class="col-sm-3">
+                                            ${form.procedureInstance.globalVariablesValues[field.name]}
                                         </div>
                                     </c:when>
                                     <c:otherwise>

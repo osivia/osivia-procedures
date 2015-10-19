@@ -80,9 +80,7 @@ public class ProcedureModel {
                         field.setOrder(Integer.valueOf(widget.getString("order")));
                         Variable variable = getVariables().get(widget.getString("variableName"));
                         if (variable != null) {
-                            field.setLabel(variable.getLabel());
                             field.setName(variable.getName());
-                            field.setType(variable.getType().name());
                         }
                         step.getFields().add(field);
                     }
@@ -118,19 +116,6 @@ public class ProcedureModel {
                 procedureObjects.add(newProcedureObject);
             }
         }
-    }
-
-    public void updateGlobalVariableDefinition() {
-
-        Map<String, Variable> globalVariablesDefinition = new HashMap<String, Variable>();
-        for (Step step : steps) {
-            for (Field field : step.getFields()) {
-                if (StringUtils.isNotEmpty(field.getName())) {
-                    globalVariablesDefinition.put(field.getName(), new Variable(field.getName(), field.getLabel(), VariableTypesEnum.valueOf(field.getType())));
-                }
-            }
-        }
-        setVariables(globalVariablesDefinition);
     }
 
     public void updateStepsIndexes() {

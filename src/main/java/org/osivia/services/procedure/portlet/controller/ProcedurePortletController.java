@@ -31,7 +31,6 @@ import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.ProcedureObject;
 import org.osivia.services.procedure.portlet.model.Step;
-import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -181,9 +180,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             // set the uploaded files in the instance
             MultipartActionRequest multipartActionRequest = (MultipartActionRequest) request;
             for (Field field : form.getTheCurrentStep().getFields()) {
-                if (StringUtils.equals(field.getType(), VariableTypesEnum.FILE.name()) && field.isInput()) {
+                if (field.isInput()) {
                     MultipartFile multipartFile = multipartActionRequest.getFileMap().get("file:" + field.getName());
-                    if (multipartFile.getSize() > 0) {
+                    if ((multipartFile != null) && (multipartFile.getSize() > 0)) {
                         FilePath filePath = new FilePath();
                         filePath.setFile(multipartFile);
                         filePath.setVariableName(field.getName());

@@ -67,13 +67,13 @@
                                         <form:input path="theSelectedStep.fields[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
                                     </div>
                                     <div class="col-sm-3">
-                                        <form:select path="theSelectedStep.fields[${status.index}].type" cssClass="form-control">
+                                        <form:select path="procedureModel.variables[${field.name}].type" cssClass="form-control">
                                             <form:option value="TEXT">Texte</form:option>
                                             <form:option value="FILE">Fichier</form:option>
                                         </form:select>
                                     </div>
                                     <div class="col-sm-3">
-                                        <form:input path="theSelectedStep.fields[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
+                                        <form:input path="procedureModel.variables[${field.name}].label" type="text" cssClass="form-control" placeholder="Label" />
                                     </div>
                                     <div class="col-sm-2">
                                         <form:checkbox path="theSelectedStep.fields[${status.index}].input" cssClass="form-control" label="Éditable:"/>

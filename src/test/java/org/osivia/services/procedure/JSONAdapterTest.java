@@ -36,17 +36,13 @@ public class JSONAdapterTest {
         step.getActions().add(action);
         Field field = new Field();
         field.setInput(false);
-        field.setLabel("fieldLabel");
         field.setName("fieldName");
         field.setOrder(0);
-        field.setType("text");
         step.getFields().add(field);
         Field field2 = new Field();
         field2.setInput(true);
-        field2.setLabel("fieldLabel2");
         field2.setName("fieldName2");
         field2.setOrder(1);
-        field2.setType("text2");
         step.getFields().add(field2);
         procedure.getSteps().add(step);
         Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT);
