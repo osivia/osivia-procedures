@@ -51,7 +51,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 public class ProcedureServiceImpl implements IProcedureService {
 
     /** path containing the models */
-    private static final String path = "/default-domain/procedures-models.1442475923550";
+    private static final String path = "/default-domain/procedures-models";
 
     /** defaultFIlesPath */
     private static final String defaultFIlesPath = "/default-domain/procedurefiles";
