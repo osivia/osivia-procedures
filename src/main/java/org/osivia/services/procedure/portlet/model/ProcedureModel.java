@@ -81,6 +81,8 @@ public class ProcedureModel {
                         Variable variable = getVariables().get(widget.getString("variableName"));
                         if (variable != null) {
                             field.setName(variable.getName());
+                            field.setLabel(variable.getLabel());
+                            field.setType(variable.getType());
                         }
                         step.getFields().add(field);
                     }

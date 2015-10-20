@@ -2,5 +2,5 @@ package org.osivia.services.procedure.portlet.model;
 
 
 public enum VariableTypesEnum {
-    TEXT, TEXTAREA, FILE
+    TEXT, FILE
 }

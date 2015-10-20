@@ -29,20 +29,25 @@ public class Form {
     /** addUrl */
     private String addUrl;
 
+    /** addField */
+    private AddField newField;
 
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
         procedureList = new ArrayList<ProcedureModel>();
+        newField = new AddField();
     }
 
     public Form(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
         this.procedureModel = procedureModel;
         this.procedureInstance = procedureInstance;
         procedureList = new ArrayList<ProcedureModel>();
+        newField = new AddField();
     }
 
     public Form(List<ProcedureModel> procedureList) {
         this.procedureList = procedureList;
+        newField = new AddField();
     }
 
     /**
@@ -169,7 +174,7 @@ public class Form {
 
     /**
      * Getter for addUrl.
-     * 
+     *
      * @return the addUrl
      */
     public String getAddUrl() {
@@ -178,10 +183,29 @@ public class Form {
 
     /**
      * Setter for addUrl.
-     * 
+     *
      * @param addUrl the addUrl to set
      */
     public void setAddUrl(String addUrl) {
         this.addUrl = addUrl;
     }
+
+    /**
+     * Getter for addField.
+     *
+     * @return the addField
+     */
+    public AddField getNewField() {
+        return newField;
+    }
+
+    /**
+     * Setter for addField.
+     *
+     * @param addField the addField to set
+     */
+    public void setNewField(AddField newField) {
+        this.newField = newField;
+    }
+
 }

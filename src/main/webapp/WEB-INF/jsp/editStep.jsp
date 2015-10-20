@@ -45,11 +45,14 @@
                                 <div class="col-sm-4">
                                     <label class="control-label">Nom</label>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label class="control-label">Type</label>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label class="control-label">Label</label>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="control-label">Éditable</label>
                                 </div>
                             </div>
                         </div>
@@ -61,40 +64,120 @@
                             <div class="col-sm-1 sortable-handle">
                                 <i class="glyphicons glyphicons-sorting pull-right"></i>
                             </div>
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <form:input path="theSelectedStep.fields[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
+                                        ${form.theSelectedStep.fields[status.index].name}
                                     </div>
                                     <div class="col-sm-3">
-                                        <form:select path="procedureModel.variables[${field.name}].type" cssClass="form-control">
-                                            <form:option value="TEXT">Texte</form:option>
-                                            <form:option value="FILE">Fichier</form:option>
-                                        </form:select>
+                                        ${form.theSelectedStep.fields[status.index].type}
                                     </div>
                                     <div class="col-sm-3">
-                                        <form:input path="procedureModel.variables[${field.name}].label" type="text" cssClass="form-control" placeholder="Label" />
+                                         ${form.theSelectedStep.fields[status.index].label}
                                     </div>
                                     <div class="col-sm-2">
-                                        <form:checkbox path="theSelectedStep.fields[${status.index}].input" cssClass="form-control" label="Éditable:"/>
+                                        <form:checkbox path="theSelectedStep.fields[${status.index}].input" cssClass="form-control"/>
                                     </div>
                                 </div>
                             </div>
-                            <div class="btn-group col-sm-1">
+                            <div class="btn-group col-sm-2">
+                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editFieldModal${status.index}" >
+                                    <i class="glyphicons glyphicons-edit"></i>
+                                </button>
                                 <button type="submit" name="deleteField" class="btn btn-default" onclick="selector(this,'${status.index}','selectedRow')">
                                     <i class="glyphicons glyphicons-remove-2"></i>
                                 </button>
                             </div>
                             <form:input path="theSelectedStep.fields[${status.index}].order" type="hidden" name="order"/>
-                        </li>                    
+                            <div class="modal fade" id="editFieldModal${status.index}" tabindex="-1" role="dialog" aria-labelledby="editFieldModalLabel">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="editFieldModalLabel">Modifier un champ</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <div class="form-group">
+                                        <div class="col-sm-3">
+                                            <label for="${form.theSelectedStep.fields[status.index].name}">Nom</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <form:input path="theSelectedStep.fields[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label for="${form.theSelectedStep.fields[status.index].type}">Type</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <form:select path="theSelectedStep.fields[${status.index}].type" cssClass="form-control">
+                                                <form:options/>
+                                            </form:select>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label for="${form.theSelectedStep.fields[status.index].label}">Label</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <form:input path="theSelectedStep.fields[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
+                                        </div>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                                    <button type="submit" name="editField" class="btn btn-primary" onclick="selector(this,'${status.index}','selectedField')">Modifier</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>              
+                        </li>
                     </c:forEach>
                     <form:input path="selectedStep" type="hidden" name="selectedStep"/>
                 </ul>
             </div>
+            
+            
+            
+            <div class="modal fade" id="addFieldModal" tabindex="-1" role="dialog" aria-labelledby="addFieldModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="addFieldModalLabel">Ajouter un champ</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <label for="${form.newField.variableName}">Nom</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <form:input path="newField.variableName" type="text" cssClass="form-control" placeholder="Nom" />
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="${form.newField.type}">Type</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <form:select path="newField.type" cssClass="form-control">
+                                <form:options/>
+                            </form:select>
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="${form.newField.label}">Label</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <form:input path="newField.label" type="text" cssClass="form-control" placeholder="Label" />
+                        </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="submit" name="addField" class="btn btn-primary">Ajouter</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <div class="panel-footer">
                 <div class="form-group">
                     <div class="col-sm-11">
-                        <button type="submit" name="addField" class="btn btn-default">Ajouter un champ</button>
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addFieldModal">Ajouter un champ</button>
                     </div>
                 </div>
             </div>

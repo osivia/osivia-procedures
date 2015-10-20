@@ -23,6 +23,7 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.services.procedure.portlet.model.Action;
+import org.osivia.services.procedure.portlet.model.AddField;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.Field;
 import org.osivia.services.procedure.portlet.model.FilePath;
@@ -31,6 +32,7 @@ import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.ProcedureObject;
 import org.osivia.services.procedure.portlet.model.Step;
+import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -409,7 +411,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return path;
     }
 
-
     @ActionMapping(value = "editProcedure", params = "editStep")
     public void editStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
 
@@ -448,13 +449,39 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "editProcedure");
     }
 
+    @ActionMapping(value = "editStep", params = "editField")
+    public void editField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedField",
+            required = false) String selectedField) throws PortletException {
+
+
+        Field editedField = form.getTheSelectedStep().getFields().get((Integer.valueOf(selectedField).intValue()));
+        Variable variable = new Variable(editedField.getName(), editedField.getLabel(), editedField.getType());
+
+        form.getProcedureModel().getVariables().put(editedField.getName(), variable);
+
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        ProcedureModel updatedProcedure = procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+        form.setProcedureModel(updatedProcedure);
+        response.setRenderParameter("action", "editStep");
+    }
+
     @ActionMapping(value = "editStep", params = "addField")
     public void addField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+
+        AddField addField = form.getNewField();
+
+        Variable variable = new Variable(addField.getVariableName(), addField.getLabel(), addField.getType());
+
+        form.getProcedureModel().getVariables().put(addField.getVariableName(), variable);
+
         Field field = new Field(form.getTheSelectedStep().getHighestOrder() + 1);
         field.setInput(true);
+        field.setName(addField.getVariableName());
         form.getTheSelectedStep().getFields().add(field);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+        ProcedureModel updatedProcedure = procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+        form.setProcedureModel(updatedProcedure);
+        form.setNewField(new AddField());
 
         response.setRenderParameter("action", "editStep");
     }

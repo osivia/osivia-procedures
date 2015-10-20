@@ -26,4 +26,4 @@ function selector(button, index, name) {
 		name : name,
 		value : index
 	}).appendTo(form);
-}
+};

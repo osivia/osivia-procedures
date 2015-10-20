@@ -2,6 +2,7 @@ package org.osivia.services.procedure.portlet.model;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -26,7 +27,16 @@ public class Field implements Comparable<Field> {
     @JsonProperty("order")
     private Integer order;
 
+    /** type */
+    @JsonIgnore
+    private VariableTypesEnum type;
+
+    /** label */
+    @JsonIgnore
+    private String label;
+
     /** value */
+    @JsonIgnore
     private String value;
 
 
@@ -116,6 +126,46 @@ public class Field implements Comparable<Field> {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+
+    /**
+     * Getter for type.
+     * 
+     * @return the type
+     */
+    public VariableTypesEnum getType() {
+        return type;
+    }
+
+
+    /**
+     * Setter for type.
+     * 
+     * @param type the type to set
+     */
+    public void setType(VariableTypesEnum type) {
+        this.type = type;
+    }
+
+
+    /**
+     * Getter for label.
+     * 
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+
+    /**
+     * Setter for label.
+     * 
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }
