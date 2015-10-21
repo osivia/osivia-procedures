@@ -1,6 +1,7 @@
 package org.osivia.services.procedure.portlet.util;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -22,7 +23,9 @@ public class ObjetMetierUtil {
         Map<String, ObjetMetier> objetMetiers = new HashMap<String, ObjetMetier>();
         Matcher matcher;
         // for each variable
-        for (Entry<String, String> gvv : procedureInstance.getGlobalVariablesValues().entrySet()) {
+        Iterator<Entry<String, String>> gvvI = procedureInstance.getGlobalVariablesValues().entrySet().iterator();
+        while (gvvI.hasNext()) {
+            Entry<String, String> gvv = gvvI.next();
             matcher = ObjetMetierUtil.objectPattern.matcher(gvv.getKey());
 
             if (matcher.matches()) {
@@ -39,7 +42,7 @@ public class ObjetMetierUtil {
                         objetMetiers.put(objectName, new ObjetMetier(procedureModel.getProcedureObject(objectName), procedureInstance.getProcedureObjects()
                                 .get(objectName), procedureInstance.getFilesPath().get(fileContentName)));
                         objetMetiers.get(objectName).getProperties().set(objectProperty, gvv.getValue());
-                        procedureInstance.getGlobalVariablesValues().remove(gvv.getKey());
+                        gvvI.remove();
                         procedureInstance.getFilesPath().remove(fileContentName);
                     }
                 }
