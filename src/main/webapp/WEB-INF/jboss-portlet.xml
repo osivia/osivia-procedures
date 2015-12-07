@@ -14,12 +14,6 @@
             <script type="text/javascript" src="/js/procedure.js"></script>
         </header-content>
 
-        <portlet-info>
-            <icon>
-                <small-icon>/img/portlet_icon.png</small-icon>
-                <large-icon>/img/portlet_icon.png</large-icon>
-            </icon>
-        </portlet-info>
     </portlet>
 
     <portlet>

@@ -26,8 +26,10 @@ import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.player.Player;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
-import fr.toutatice.portail.cms.nuxeo.api.domain.PluginModule;
+
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
+import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
+
 
 
 /**
