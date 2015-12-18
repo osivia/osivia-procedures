@@ -2,8 +2,11 @@ package org.osivia.services.procedure.portlet.util;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +25,8 @@ public class ObjetMetierUtil {
 
         Map<String, ObjetMetier> objetMetiers = new HashMap<String, ObjetMetier>();
         Matcher matcher;
+        Set<String> fileContentToDelete = new TreeSet<String>();
+        
         // for each variable
         Iterator<Entry<String, String>> gvvI = procedureInstance.getGlobalVariablesValues().entrySet().iterator();
         while (gvvI.hasNext()) {
@@ -43,11 +48,17 @@ public class ObjetMetierUtil {
                                 .get(objectName), procedureInstance.getFilesPath().get(fileContentName)));
                         objetMetiers.get(objectName).getProperties().set(objectProperty, gvv.getValue());
                         gvvI.remove();
-                        procedureInstance.getFilesPath().remove(fileContentName);
+                        fileContentToDelete.add(fileContentName);
+                       
                     }
                 }
             }
         }
+        
+        for (String toDelete: fileContentToDelete)  {
+            procedureInstance.getFilesPath().remove(toDelete);
+        }
+        
         return objetMetiers;
     }
 
