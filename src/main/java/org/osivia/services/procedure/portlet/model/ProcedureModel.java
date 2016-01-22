@@ -47,38 +47,38 @@ public class ProcedureModel {
         steps = new ArrayList<Step>();
         procedureObjects = new ArrayList<ProcedureObject>();
 
-        PropertyMap properties = document.getProperties();
+        final PropertyMap properties = document.getProperties();
         name = properties.getString("dc:title");
         path = document.getPath();
         startingStep = properties.getString("pcd:startingStep");
 
         // global variables
-        PropertyList globalVariablesList = properties.getList("pcd:globalVariablesDefinitions");
+        final PropertyList globalVariablesList = properties.getList("pcd:globalVariablesDefinitions");
         if (globalVariablesList != null) {
             Variable var;
-            for (Object globalVariableO : globalVariablesList.list()) {
-                PropertyMap globalVariable = (PropertyMap) globalVariableO;
+            for (final Object globalVariableO : globalVariablesList.list()) {
+                final PropertyMap globalVariable = (PropertyMap) globalVariableO;
                 var = new Variable(globalVariable.getString("name"), globalVariable.getString("label"), VariableTypesEnum.valueOf(globalVariable
                         .getString("type")));
                 getVariables().put(var.getName(), var);
             }
         }
         // steps
-        PropertyList stepsList = properties.getList("pcd:steps");
+        final PropertyList stepsList = properties.getList("pcd:steps");
         if (stepsList != null) {
             Step step;
-            for (Object stepO : stepsList.list()) {
-                PropertyMap stepM = (PropertyMap) stepO;
-                PropertyList widgetList = stepM.getList("globalVariablesReferences");
+            for (final Object stepO : stepsList.list()) {
+                final PropertyMap stepM = (PropertyMap) stepO;
+                final PropertyList widgetList = stepM.getList("globalVariablesReferences");
                 step = new Step();
                 if (widgetList != null) {
                     Field field;
-                    for (Object widgetO : widgetList.list()) {
-                        PropertyMap widget = (PropertyMap) widgetO;
+                    for (final Object widgetO : widgetList.list()) {
+                        final PropertyMap widget = (PropertyMap) widgetO;
                         field = new Field();
                         field.setInput(widget.getBoolean("isInput"));
                         field.setOrder(Integer.valueOf(widget.getString("order")));
-                        Variable variable = getVariables().get(widget.getString("variableName"));
+                        final Variable variable = getVariables().get(widget.getString("variableName"));
                         if (variable != null) {
                             field.setName(variable.getName());
                             field.setLabel(variable.getLabel());
@@ -89,16 +89,24 @@ public class ProcedureModel {
                 }
                 Collections.sort(step.getFields());
 
-                PropertyList actionsList = stepM.getList("actions");
+                final PropertyList actionsList = stepM.getList("actions");
                 if (actionsList != null) {
                     Action action;
-                    for (Object actionO : actionsList.list()) {
-                        PropertyMap actionN = (PropertyMap) actionO;
+                    for (final Object actionO : actionsList.list()) {
+                        final PropertyMap actionN = (PropertyMap) actionO;
                         action = new Action();
                         action.setLabel(actionN.getString("label"));
                         action.setStepReference(actionN.getString("stepReference"));
                         step.getActions().add(action);
                     }
+                }
+                final PropertyList groupsObjectsList = stepM.getList("authorizedGroups");
+                if (groupsObjectsList != null) {
+                    final List<String> groups = new ArrayList<String>();
+                    for (final Object groupsObject : groupsObjectsList.list()) {
+                        groups.add((String) groupsObject);
+                    }
+                    step.setGroups(groups);
                 }
                 step.setStepName(stepM.getString("name"));
                 step.setIndex(stepM.getLong("index").intValue());
@@ -106,11 +114,11 @@ public class ProcedureModel {
                 getSteps().add(step.getIndex(), step);
             }
         }
-        PropertyList procedureObjectsList = properties.getList("pcd:procedureObjects");
+        final PropertyList procedureObjectsList = properties.getList("pcd:procedureObjects");
         if (procedureObjectsList != null) {
             ProcedureObject newProcedureObject;
-            for (Object procedureObject : procedureObjectsList.list()) {
-                PropertyMap procedureObjectMap = (PropertyMap) procedureObject;
+            for (final Object procedureObject : procedureObjectsList.list()) {
+                final PropertyMap procedureObjectMap = (PropertyMap) procedureObject;
                 newProcedureObject = new ProcedureObject();
                 newProcedureObject.setName(procedureObjectMap.getString("name"));
                 newProcedureObject.setPath(procedureObjectMap.getString("path"));
@@ -245,7 +253,7 @@ public class ProcedureModel {
     }
 
     public ProcedureObject getProcedureObject(String objectName) {
-        for (ProcedureObject procedureObject : procedureObjects) {
+        for (final ProcedureObject procedureObject : procedureObjects) {
             if (StringUtils.equals(procedureObject.getName(), objectName)) {
                 return procedureObject;
             }

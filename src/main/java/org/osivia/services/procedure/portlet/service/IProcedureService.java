@@ -63,11 +63,12 @@ public interface IProcedureService {
      * @param procedureModel
      * @param procedureInstance
      * @param taskTitle
+     * @param groups
      * @return
      * @throws PortletException
      */
     public ProcedureInstance createProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
-            String taskTitle) throws PortletException;
+            String taskTitle, List<String> groups) throws PortletException;
 
     /**
      * @param nuxeoController
@@ -82,12 +83,12 @@ public interface IProcedureService {
      * @param procedureInstance
      * @param procedureInstancePath
      * @param taskTitle
+     * @param groups
      * @return
      * @throws PortletException
      */
     public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
-            String procedureInstancePath,
-            String taskTitle) throws PortletException;
+            String procedureInstancePath, String taskTitle, List<String> groups) throws PortletException;
 
 
     /**

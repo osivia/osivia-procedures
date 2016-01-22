@@ -15,8 +15,11 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.windows.PortalWindow;
@@ -42,10 +45,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.portlet.multipart.MultipartActionRequest;
 
+import fr.toutatice.outils.ldap.entity.Profil;
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
@@ -77,6 +82,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @Autowired
     private IProcedureService procedureService;
 
+    @Autowired
+    private Profil profil;
 
     public ProcedurePortletController() {
         super();
@@ -137,6 +144,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return VIEW_ENDSTEP;
     }
 
+
     @ModelAttribute(value = "form")
     public Form getForm(PortletRequest request, PortletResponse response, @RequestParam(value = "selectedStep", required = false) String selectedStep)
             throws PortletException {
@@ -144,7 +152,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         Form form;
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
-            ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, getPath(request));
+            final ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, getPath(request));
             form = new Form(procedureModel);
             if (StringUtils.isNotEmpty(selectedStep)) {
                 form.setSelectedStep(selectedStep);
@@ -152,16 +160,30 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 form.setSelectedStep("0");
             }
         } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
-            ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, getPath(request));
-            ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, procedureInstance.getProcedureModelPath());
+            final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, getPath(request));
+            final ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, procedureInstance.getProcedureModelPath());
             form = new Form(procedureModel, procedureInstance);
             procedureService.updateFormWithObjectsValues(nuxeoController, form);
         } else {
-            List<ProcedureModel> listProcedures = procedureService.listProcedures(nuxeoController, getPortalUrlFactory());
+            final List<ProcedureModel> listProcedures = procedureService.listProcedures(nuxeoController, getPortalUrlFactory());
             form = new Form(listProcedures);
             form.setAddUrl(procedureService.getAddUrl(nuxeoController, getPortalUrlFactory()));
         }
         return form;
+    }
+
+    @ResourceMapping(value="groupSearch")
+    public void getProfils(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
+            throws PortletException {
+
+        final List<Profil> listeProfils = profil.findProfilByFiltre("(&(objectClass=groupOfNames)(cn=*" + filter + "*))");
+        response.setContentType("application/json");
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getPortletOutputStream(), listeProfils);
+        } catch (final IOException e) {
+            throw new PortletException(e);
+        }
     }
 
     @ActionMapping(value = "editProcedure", params = "launchProcedure")
@@ -173,19 +195,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "viewProcedure");
     }
 
-
     @ActionMapping(value = "actionProcedure", params = "proceedProcedure")
     public void proceedProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "stepReference") String stepReference) throws PortletException, IOException {
 
         if (request instanceof MultipartActionRequest) {
             // set the uploaded files in the instance
-            MultipartActionRequest multipartActionRequest = (MultipartActionRequest) request;
-            for (Field field : form.getTheCurrentStep().getFields()) {
+            final MultipartActionRequest multipartActionRequest = (MultipartActionRequest) request;
+            for (final Field field : form.getTheCurrentStep().getFields()) {
                 if (field.isInput()) {
-                    MultipartFile multipartFile = multipartActionRequest.getFileMap().get("file:" + field.getName());
+                    final MultipartFile multipartFile = multipartActionRequest.getFileMap().get("file:" + field.getName());
                     if ((multipartFile != null) && (multipartFile.getSize() > 0)) {
-                        FilePath filePath = new FilePath();
+                        final FilePath filePath = new FilePath();
                         filePath.setFile(multipartFile);
                         filePath.setVariableName(field.getName());
                         filePath.setFileName(String.valueOf(multipartFile.getOriginalFilename()));
@@ -196,20 +217,21 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
 
         // validating next step
-        String taskTitle = buildTaskTitle(form, stepReference);
+        final String taskTitle = buildTaskTitle(form, stepReference);
+        final List<String> groups = getGroups(form, stepReference);
 
         if (taskTitle != null) {
             if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
                 // if there is no instance, create it
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-                procedureService.createProcedureInstance(nuxeoController, form.getProcedureModel(), form.getProcedureInstance(), taskTitle);
+                procedureService.createProcedureInstance(nuxeoController, form.getProcedureModel(), form.getProcedureInstance(), taskTitle, groups);
                 // redirect to end of step page
                 response.setRenderParameter("action", "endStep");
             } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
                 // update the instance
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-                ProcedureInstance procedureInstance = procedureService.updateProcedureInstance(nuxeoController, form.getProcedureModel(),
-                        form.getProcedureInstance(), getPath(request), taskTitle);
+                final ProcedureInstance procedureInstance = procedureService.updateProcedureInstance(nuxeoController, form.getProcedureModel(),
+                        form.getProcedureInstance(), getPath(request), taskTitle, groups);
                 form.setProcedureInstance(procedureInstance);
 
                 // redirect to end of step page
@@ -238,7 +260,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 taskTitle = StringUtils.EMPTY;
             } else {
                 // check step exist
-                for (Step step : form.getProcedureModel().getSteps()) {
+                for (final Step step : form.getProcedureModel().getSteps()) {
                     if (StringUtils.equals(stepReference, step.getReference())) {
                         form.getProcedureInstance().setCurrentStep(stepReference);
                         taskTitle = step.getStepName();
@@ -250,11 +272,22 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return taskTitle;
     }
 
+    private List<String> getGroups(Form form, String stepReference) {
+        final List<String> groups = null;
+        for (final Step step : form.getProcedureModel().getSteps()) {
+            if (StringUtils.equals(stepReference, step.getReference())) {
+                form.getProcedureInstance().setCurrentStep(stepReference);
+                return step.getGroups();
+            }
+        }
+        return groups;
+    }
+
 
     @ActionMapping(value = "editProcedure", params = "saveProcedure")
     public void saveProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
 
-        String path = getPath(request);
+        final String path = getPath(request);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
@@ -264,10 +297,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
         } else {
             // if the procedure doesn't exist in database, create it
-            ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel());
+            final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel());
 
 
-            Map<String, String> windowProperties = new HashMap<String, String>();
+            final Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(Constants.WINDOW_PROP_URI, createdProcedure.getPath());
             windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
             windowProperties.put("osivia.title", "Éditer une procedure");
@@ -291,15 +324,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.deleteProcedure(nuxeoController, form.getProcedureModel());
 
-        String redirectUrl = getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
+        final String redirectUrl = getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
         response.sendRedirect(redirectUrl);
     }
 
     @ActionMapping(value = "editProcedure", params = "addStep")
     public void addStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
 
-        Integer newIndex = Integer.valueOf(form.getProcedureModel().getSteps().size());
-        String path = getPath(request);
+        final Integer newIndex = Integer.valueOf(form.getProcedureModel().getSteps().size());
+        final String path = getPath(request);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
@@ -311,11 +344,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editStep");
         } else {
             // if the procedure doesn't exist in database, create it
-            ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel());
+            final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel());
             createdProcedure.getSteps().add(new Step(newIndex));
             procedureService.updateProcedure(nuxeoController, createdProcedure);
 
-            Map<String, String> windowProperties = new HashMap<String, String>();
+            final Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(Constants.WINDOW_PROP_URI, createdProcedure.getPath());
             windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
             windowProperties.put("osivia.title", "Éditer une procedure");
@@ -337,7 +370,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void addObject(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
 
 
-        String path = getPath(request);
+        final String path = getPath(request);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
@@ -348,11 +381,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
         } else {
             // if the procedure doesn't exist in database, create it
-            ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel());
+            final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel());
             createdProcedure.getProcedureObjects().add(new ProcedureObject());
             procedureService.updateProcedure(nuxeoController, createdProcedure);
 
-            Map<String, String> windowProperties = new HashMap<String, String>();
+            final Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(Constants.WINDOW_PROP_URI, createdProcedure.getPath());
             windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
             windowProperties.put("osivia.title", "Éditer une procedure");
@@ -372,7 +405,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editProcedure", params = "deleteObject")
     public void deleteObject(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedObject",
-            required = false) String selectedObject) throws PortletException, IOException {
+    required = false) String selectedObject) throws PortletException, IOException {
 
         form.getProcedureModel().getProcedureObjects().remove(Integer.valueOf(selectedObject).intValue());
 
@@ -386,8 +419,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      * @return
      */
     private String getPath(PortletRequest request) {
-        PortalWindow window = WindowFactory.getWindow(request);
-        String path = window.getProperty(Constants.WINDOW_PROP_URI);
+        final PortalWindow window = WindowFactory.getWindow(request);
+        final String path = window.getProperty(Constants.WINDOW_PROP_URI);
         return path;
     }
 
@@ -396,8 +429,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      * @return
      */
     private String getDocType(PortletRequest request) {
-        PortalWindow window = WindowFactory.getWindow(request);
-        String path = window.getProperty("osivia.doctype");
+        final PortalWindow window = WindowFactory.getWindow(request);
+        final String path = window.getProperty("osivia.doctype");
         return path;
     }
 
@@ -406,8 +439,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      * @return
      */
     private String getAction(PortletRequest request) {
-        PortalWindow window = WindowFactory.getWindow(request);
-        String path = window.getProperty("osivia.procedure.admin");
+        final PortalWindow window = WindowFactory.getWindow(request);
+        final String path = window.getProperty("osivia.procedure.admin");
         return path;
     }
 
@@ -439,7 +472,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editProcedure", params = "deleteStep")
     public void deleteStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedStep",
-            required = false) String selectedStep) throws PortletException {
+    required = false) String selectedStep) throws PortletException {
 
         form.getProcedureModel().getSteps().remove(Integer.valueOf(selectedStep).intValue());
         form.getProcedureModel().updateStepsIndexes();
@@ -451,16 +484,16 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editStep", params = "editField")
     public void editField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedField",
-            required = false) String selectedField) throws PortletException {
+    required = false) String selectedField) throws PortletException {
 
 
-        Field editedField = form.getTheSelectedStep().getFields().get((Integer.valueOf(selectedField).intValue()));
-        Variable variable = new Variable(editedField.getName(), editedField.getLabel(), editedField.getType());
+        final Field editedField = form.getTheSelectedStep().getFields().get((Integer.valueOf(selectedField).intValue()));
+        final Variable variable = new Variable(editedField.getName(), editedField.getLabel(), editedField.getType());
 
         form.getProcedureModel().getVariables().put(editedField.getName(), variable);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        ProcedureModel updatedProcedure = procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+        final ProcedureModel updatedProcedure = procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
         form.setProcedureModel(updatedProcedure);
         response.setRenderParameter("action", "editStep");
     }
@@ -468,18 +501,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editStep", params = "addField")
     public void addField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        AddField addField = form.getNewField();
+        final AddField addField = form.getNewField();
 
-        Variable variable = new Variable(addField.getVariableName(), addField.getLabel(), addField.getType());
+        final Variable variable = new Variable(addField.getVariableName(), addField.getLabel(), addField.getType());
 
         form.getProcedureModel().getVariables().put(addField.getVariableName(), variable);
 
-        Field field = new Field(form.getTheSelectedStep().getHighestOrder() + 1);
+        final Field field = new Field(form.getTheSelectedStep().getHighestOrder() + 1);
         field.setInput(true);
         field.setName(addField.getVariableName());
         form.getTheSelectedStep().getFields().add(field);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        ProcedureModel updatedProcedure = procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+        final ProcedureModel updatedProcedure = procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
         form.setProcedureModel(updatedProcedure);
         form.setNewField(new AddField());
 

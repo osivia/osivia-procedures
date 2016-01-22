@@ -27,3 +27,7 @@ function selector(button, index, name) {
 		value : index
 	}).appendTo(form);
 };
+
+function formatProfil (group) {
+	return group.text + ' (' + group.id + ')';
+};

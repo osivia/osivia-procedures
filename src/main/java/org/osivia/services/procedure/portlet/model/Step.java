@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
-        creatorVisibility = Visibility.NONE)
+creatorVisibility = Visibility.NONE)
 public class Step implements Comparable<Step> {
 
     /** stepName */
@@ -31,6 +31,9 @@ public class Step implements Comparable<Step> {
     /** id */
     @JsonProperty("reference")
     private String reference;
+
+    @JsonProperty("authorizedGroups")
+    private List<String> groups;
 
 
     public Step() {
@@ -88,9 +91,9 @@ public class Step implements Comparable<Step> {
 
     public Integer getHighestOrder() {
         Integer highestOrder = -1;
-        Iterator<Field> it = getFields().iterator();
+        final Iterator<Field> it = getFields().iterator();
         while (it.hasNext()) {
-            Field stepField = it.next();
+            final Field stepField = it.next();
             if (stepField.getOrder() > highestOrder) {
                 highestOrder = stepField.getOrder();
             }
@@ -155,6 +158,26 @@ public class Step implements Comparable<Step> {
      */
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+
+    /**
+     * Getter for groups.
+     * 
+     * @return the groups
+     */
+    public List<String> getGroups() {
+        return groups;
+    }
+
+
+    /**
+     * Setter for groups.
+     * 
+     * @param groups the groups to set
+     */
+    public void setGroups(List<String> groups) {
+        this.groups = groups;
     }
 
 }

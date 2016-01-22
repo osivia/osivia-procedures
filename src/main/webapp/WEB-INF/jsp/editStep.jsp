@@ -7,6 +7,38 @@
 <portlet:actionURL name="editStep" var="editStepUrl">
 </portlet:actionURL>
 
+<portlet:resourceURL id="groupSearch" var="groupSearchUrl" ></portlet:resourceURL>
+
+<script type="text/javascript">
+$JQry(document).ready(function(){
+	$JQry(".groupSelect-select2").select2({
+	    ajax: {
+	      url: "${groupSearchUrl}",
+	      dataType: 'json',
+	      delay: 300,
+	      data: function (params) {
+	        return {
+	          filter: params.term, // search term
+	        };
+	      },
+	      processResults: function (data, params) {
+	        return {
+	          results: $JQry.map(data, function(group) {
+	        	  return { id: group.cn, text: group.displayName };
+	          })
+	        };
+	      },
+	      cache: true
+	    },
+	    escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+	    minimumInputLength: 3,
+	    theme: "bootstrap",
+   	  templateResult: formatProfil,
+   	  templateSelection: formatProfil,
+	});
+});
+</script>
+
 <form:form modelAttribute="form" action="${editStepUrl}" method="post" cssClass="form-horizontal" role="form">
 
         <div class="panel panel-default">
@@ -220,6 +252,26 @@
                         <button type="submit" name="addButton" class="btn btn-default">Ajouter un bouton</button>
                     </div>
                 </div>
+            </div>
+        </div>
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Droits d'accès</h3>
+            </div>
+            <div class="panel-body">
+            	<ul class="list-unstyled">
+            		<li class="form-group">
+            			<div class="col-sm-2">
+            				<label class="control-label">Utilisateurs ou groupes</label>
+           				</div>
+           				<div class="col-sm-10">
+                        	<form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 col-sm-10">
+                        		<form:options items="${form.theSelectedStep.groups}" />
+                        	</form:select>
+	                    </div>
+           			</li>
+            	</ul>
             </div>
         </div>
 

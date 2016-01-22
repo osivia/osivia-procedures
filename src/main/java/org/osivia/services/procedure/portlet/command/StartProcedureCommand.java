@@ -20,10 +20,13 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 public class StartProcedureCommand implements INuxeoCommand {
 
     /** taskTitle */
-    private String taskTitle;
+    private final String taskTitle;
+
+    /** groups */
+    private final String groups;
 
     /** properties */
-    private PropertyMap properties;
+    private final PropertyMap properties;
 
     /** blobs */
     private Blobs blobs;
@@ -31,15 +34,17 @@ public class StartProcedureCommand implements INuxeoCommand {
     /**
      * Constructor.
      */
-    public StartProcedureCommand(String taskTitle, PropertyMap properties) {
+    public StartProcedureCommand(String taskTitle, String groups, PropertyMap properties) {
         super();
         this.taskTitle = taskTitle;
+        this.groups = groups;
         this.properties = properties;
     }
 
-    public StartProcedureCommand(String taskTitle, PropertyMap properties, Blobs blobs) {
+    public StartProcedureCommand(String taskTitle, String groups, PropertyMap properties, Blobs blobs) {
         super();
         this.taskTitle = taskTitle;
+        this.groups = groups;
         this.properties = properties;
         this.blobs = blobs;
     }
@@ -47,9 +52,10 @@ public class StartProcedureCommand implements INuxeoCommand {
     @Override
     public Document execute(Session nuxeoSession) throws Exception {
 
-        OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.StartProcedure.getId());
+        final OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.StartProcedure.getId());
         request.set("taskTitle", taskTitle);
         request.set("properties", properties);
+        request.set("groups", groups);
         if (blobs != null) {
             request.setInput(blobs);
         }
@@ -59,7 +65,7 @@ public class StartProcedureCommand implements INuxeoCommand {
 
     @Override
     public String getId() {
-        return "StartProcedureCommand/" + taskTitle + "/" + properties;
+        return "StartProcedureCommand/" + taskTitle + "/" +groups + "/"+ properties;
     }
 
 }

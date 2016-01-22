@@ -10,6 +10,11 @@
         <description>procedure portlet</description>
         <portlet-name>osivia-services-procedure</portlet-name>
         <display-name>Osivia services procedure portlet</display-name>
+        
+        <init-param>
+			<name>contextConfigLocation</name>
+			<value>classpath:directory-beans.xml /WEB-INF/osivia-services-procedure-portlet.xml</value>
+		</init-param>
 
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 

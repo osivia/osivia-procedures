@@ -24,28 +24,31 @@ public class JSONAdapterTest {
 
     public static void main(String[] args) throws JsonGenerationException, JsonMappingException, IOException {
 
-        ProcedureModel procedure = new ProcedureModel();
+        final ProcedureModel procedure = new ProcedureModel();
         procedure.setDescription("description");
         procedure.setName("nameW");
         procedure.setPath("path//");
-        Step step = new Step();
+        final Step step = new Step();
         step.setStepName("stepName");
+        final List<String> groups = new ArrayList<String>();
+        groups.add("equipe-dev");
+        step.setGroups(groups);
         step.setIndex(1);
-        Action action = new Action();
+        final Action action = new Action();
         action.setStepReference("actionPath");
         step.getActions().add(action);
-        Field field = new Field();
+        final Field field = new Field();
         field.setInput(false);
         field.setName("fieldName");
         field.setOrder(0);
         step.getFields().add(field);
-        Field field2 = new Field();
+        final Field field2 = new Field();
         field2.setInput(true);
         field2.setName("fieldName2");
         field2.setOrder(1);
         step.getFields().add(field2);
         procedure.getSteps().add(step);
-        Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT);
+        final Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT);
         procedure.getVariables().put("fieldName", variable);
 
         String json = ProcedureJSONAdapter.getInstance().toJSON(procedure.getVariables().values());
@@ -55,14 +58,14 @@ public class JSONAdapterTest {
         json = ProcedureJSONAdapter.getInstance().toJSON(procedure.getSteps());
         System.out.println("steps: " + json);
 
-        ProcedureInstance procedureInstance = new ProcedureInstance();
+        final ProcedureInstance procedureInstance = new ProcedureInstance();
         procedureInstance.setGlobalVariablesValues(new HashMap<String, String>());
         procedureInstance.getGlobalVariablesValues().put("plop", "plopoui");
         procedureInstance.getGlobalVariablesValues().put("plip", "plipoui");
 
 
-        List<GlobalVariablesValuesType> gvvList = new ArrayList<GlobalVariablesValuesType>();
-        for (Entry<String, String> entry : procedureInstance.getGlobalVariablesValues().entrySet()) {
+        final List<GlobalVariablesValuesType> gvvList = new ArrayList<GlobalVariablesValuesType>();
+        for (final Entry<String, String> entry : procedureInstance.getGlobalVariablesValues().entrySet()) {
             gvvList.add(new GlobalVariablesValuesType(entry.getKey(), entry.getValue()));
         }
 
@@ -71,11 +74,11 @@ public class JSONAdapterTest {
         System.out.println(json);
 
 
-        FilePath filepath1 = new FilePath();
+        final FilePath filepath1 = new FilePath();
         filepath1.setFileName("XKLJHSDFJK");
         filepath1.setVariableName("comentaire");
         procedureInstance.getFilesPath().put("comentaire", filepath1);
-        FilePath filepath2 = new FilePath();
+        final FilePath filepath2 = new FilePath();
         filepath2.setFileName("sdfLJHSDFJDGSD");
         filepath2.setVariableName("comentaire2");
         procedureInstance.getFilesPath().put("comentaire2", filepath2);

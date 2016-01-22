@@ -13,35 +13,40 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 public class UpdateProcedureCommand implements INuxeoCommand {
 
     /** document the document to update */
-    private Document document;
+    private final Document document;
 
     /** properties to update */
-    private PropertyMap properties;
+    private final PropertyMap properties;
 
     /** taskTitle */
-    private String taskTitle;
+    private final String taskTitle;
 
-    public UpdateProcedureCommand(Document document, PropertyMap properties, String taskTitle) {
+    /** groups */
+    private final String groups;
+
+    public UpdateProcedureCommand(Document document, PropertyMap properties, String taskTitle, String groups) {
         super();
         this.document = document;
         this.properties = properties;
         this.taskTitle = taskTitle;
+        this.groups = groups;
     }
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.UpdateProcedure.getId());
+        final OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.UpdateProcedure.getId());
         request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
         request.setInput(document);
         request.set("properties", properties);
         request.set("taskTitle", taskTitle);
+        request.set("groups", groups);
 
         return request.execute();
     }
 
     @Override
     public String getId() {
-        return "UpdateProcedureCommand/" + document + "/" + properties + "/" + taskTitle;
+        return "UpdateProcedureCommand/" + document + "/" + taskTitle + "/" + groups + "/" + properties;
     }
 
 }
