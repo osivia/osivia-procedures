@@ -34,7 +34,7 @@ $JQry(document).ready(function(){
 	    minimumInputLength: 3,
 	    theme: "bootstrap",
    	  templateResult: formatProfil,
-   	  templateSelection: formatProfil,
+   	  templateSelection: formatProfil
 	});
 });
 </script>
@@ -74,7 +74,7 @@ $JQry(document).ready(function(){
                         <div class="col-sm-1"></div>
                         <div class="col-sm-9">
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-2">
                                     <label class="control-label">Nom</label>
                                 </div>
                                 <div class="col-sm-3">
@@ -85,6 +85,9 @@ $JQry(document).ready(function(){
                                 </div>
                                 <div class="col-sm-2">
                                     <label class="control-label">Éditable</label>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="control-label">Requis</label>
                                 </div>
                             </div>
                         </div>
@@ -98,7 +101,7 @@ $JQry(document).ready(function(){
                             </div>
                             <div class="col-sm-9">
                                 <div class="row">
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-2">
                                         ${form.theSelectedStep.fields[status.index].name}
                                     </div>
                                     <div class="col-sm-3">
@@ -109,6 +112,9 @@ $JQry(document).ready(function(){
                                     </div>
                                     <div class="col-sm-2">
                                         <form:checkbox path="theSelectedStep.fields[${status.index}].input" cssClass="form-control"/>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <form:checkbox path="theSelectedStep.fields[${status.index}].required" cssClass="form-control"/>
                                     </div>
                                 </div>
                             </div>
