@@ -15,15 +15,6 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 /**
  * @author dorian
  */
-/**
- * @author dorian
- */
-/**
- * @author dorian
- */
-/**
- * @author dorian
- */
 public interface IProcedureService {
 
 
@@ -97,6 +88,13 @@ public interface IProcedureService {
      * @throws PortletException
      */
     public void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @param form
+     * @throws PortletException
+     */
+    public void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException;
 
     /**
      * @param nuxeoController

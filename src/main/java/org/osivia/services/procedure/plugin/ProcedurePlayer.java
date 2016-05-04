@@ -26,10 +26,8 @@ import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.player.Player;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
-
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
-
 
 
 /**
@@ -56,21 +54,21 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
      * @return procedure thread player
      */
     private Player getProcedurePlayer(DocumentContext<Document> docCtx) {
-        Document document = docCtx.getDoc();
+        final Document document = docCtx.getDoc();
 
-        Map<String, String> windowProperties = new HashMap<String, String>();
+        final Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
         windowProperties.put("osivia.doctype", document.getType());
-        windowProperties.put("osivia.title", "Éditer une procédure");
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("osivia.ajaxLink", "1");
 
-        BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
+        final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
         if (StringUtils.equals(publicationInfos.getDisplayContext(), "adminproc")) {
             windowProperties.put("osivia.procedure.admin", publicationInfos.getDisplayContext());
+            windowProperties.put("osivia.title", "Éditer une procédure");
         }
 
-        Player linkProps = new Player();
+        final Player linkProps = new Player();
         linkProps.setWindowProperties(windowProperties);
         linkProps.setPortletInstance("osivia-services-procedure-portletInstance");
 
@@ -79,8 +77,8 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
 
     @Override
     public Player getCMSPlayer(DocumentContext<Document> docCt) {
-        Document doc = docCt.getDoc();
-        String docType = doc.getType();
+        final Document doc = docCt.getDoc();
+        final String docType = doc.getType();
 
         if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getName()) || StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
             return getProcedurePlayer(docCt);

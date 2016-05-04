@@ -58,8 +58,15 @@ public class ProcedureModel {
             Variable var;
             for (final Object globalVariableO : globalVariablesList.list()) {
                 final PropertyMap globalVariable = (PropertyMap) globalVariableO;
+
+                final List<Object> varOptionsPL = globalVariable.getList("varOptions").list();
+                final List<String> varOptionsL = new ArrayList<String>(varOptionsPL.size());
+                for (final Object varOption : varOptionsPL) {
+                    varOptionsL.add((String) varOption);
+                }
+
                 var = new Variable(globalVariable.getString("name"), globalVariable.getString("label"), VariableTypesEnum.valueOf(globalVariable
-                        .getString("type")));
+                        .getString("type")), varOptionsL);
                 getVariables().put(var.getName(), var);
             }
         }
@@ -77,12 +84,14 @@ public class ProcedureModel {
                         final PropertyMap widget = (PropertyMap) widgetO;
                         field = new Field();
                         field.setInput(widget.getBoolean("isInput"));
+                        field.setRequired(widget.getBoolean("required"));
                         field.setOrder(Integer.valueOf(widget.getString("order")));
                         final Variable variable = getVariables().get(widget.getString("variableName"));
                         if (variable != null) {
                             field.setName(variable.getName());
                             field.setLabel(variable.getLabel());
                             field.setType(variable.getType());
+                            field.setVarOptions(StringUtils.join(variable.getVarOptions(), ","));
                         }
                         step.getFields().add(field);
                     }

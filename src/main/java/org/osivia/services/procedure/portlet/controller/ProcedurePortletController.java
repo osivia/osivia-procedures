@@ -1,6 +1,7 @@
 package org.osivia.services.procedure.portlet.controller;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,11 +160,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             } else {
                 form.setSelectedStep("0");
             }
+            if (!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")) {
+                procedureService.updateVocabulariesWithValues(nuxeoController, form);
+            }
         } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, getPath(request));
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, procedureInstance.getProcedureModelPath());
             form = new Form(procedureModel, procedureInstance);
             procedureService.updateFormWithObjectsValues(nuxeoController, form);
+            procedureService.updateVocabulariesWithValues(nuxeoController, form);
         } else {
             final List<ProcedureModel> listProcedures = procedureService.listProcedures(nuxeoController, getPortalUrlFactory());
             form = new Form(listProcedures);
@@ -187,7 +192,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editProcedure", params = "launchProcedure")
-    public void launchProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
+    public void launchProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
         form.setProcedureInstance(new ProcedureInstance());
         form.getProcedureInstance().setProcedureModelPath(form.getProcedureModel().getPath());
@@ -488,7 +493,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
 
         final Field editedField = form.getTheSelectedStep().getFields().get((Integer.valueOf(selectedField).intValue()));
-        final Variable variable = new Variable(editedField.getName(), editedField.getLabel(), editedField.getType());
+        final String[] varOptionsTab = editedField.getVarOptions().split(",");
+
+        final Variable variable = new Variable(editedField.getName(), editedField.getLabel(), editedField.getType(), Arrays.asList(varOptionsTab));
 
         form.getProcedureModel().getVariables().put(editedField.getName(), variable);
 
@@ -503,7 +510,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         final AddField addField = form.getNewField();
 
-        final Variable variable = new Variable(addField.getVariableName(), addField.getLabel(), addField.getType());
+        final String[] varOptionsTab = addField.getVarOptions().split(",");
+        final Variable variable = new Variable(addField.getVariableName(), addField.getLabel(), addField.getType(), Arrays.asList(varOptionsTab));
 
         form.getProcedureModel().getVariables().put(addField.getVariableName(), variable);
 

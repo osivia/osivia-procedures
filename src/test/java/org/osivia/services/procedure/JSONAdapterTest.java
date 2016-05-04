@@ -48,7 +48,7 @@ public class JSONAdapterTest {
         field2.setOrder(1);
         step.getFields().add(field2);
         procedure.getSteps().add(step);
-        final Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT);
+        final Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT, null);
         procedure.getVariables().put("fieldName", variable);
 
         String json = ProcedureJSONAdapter.getInstance().toJSON(procedure.getVariables().values());

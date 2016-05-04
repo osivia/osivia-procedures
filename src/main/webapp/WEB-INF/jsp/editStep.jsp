@@ -84,7 +84,7 @@ $JQry(document).ready(function(){
                                     <label class="control-label">Label</label>
                                 </div>
                                 <div class="col-sm-2">
-                                    <label class="control-label">Éditable</label>
+                                    <label class="control-label">Saisissable</label>
                                 </div>
                                 <div class="col-sm-2">
                                     <label class="control-label">Requis</label>
@@ -156,6 +156,12 @@ $JQry(document).ready(function(){
                                         <div class="col-sm-9">
                                             <form:input path="theSelectedStep.fields[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
                                         </div>
+                                        <div class="col-sm-3">
+                                        	<label for="${form.theSelectedStep.fields[status.index].varOptions}">Options</label>
+                                        </div>
+                                        <div class="col-sm-9">
+                                        	<form:input path="theSelectedStep.fields[${status.index}].varOptions" type="text" cssClass="form-control" placeholder="Options" />
+                                        </div>
                                     </div>
                                   </div>
                                   <div class="modal-footer">
@@ -201,6 +207,12 @@ $JQry(document).ready(function(){
                         </div>
                         <div class="col-sm-9">
                             <form:input path="newField.label" type="text" cssClass="form-control" placeholder="Label" />
+                        </div>
+                        <div class="col-sm-3">
+                        	<label for="${form.newField.varOptions}">Options</label>
+                        </div>
+                        <div class="col-sm-9">
+                        	<form:input path="newField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
                         </div>
                     </div>
                   </div>

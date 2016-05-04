@@ -15,6 +15,8 @@ public class AddField {
     /** label */
     private String label;
 
+    private String varOptions;
+
     /**
      * Getter for variableName.
      *
@@ -67,6 +69,14 @@ public class AddField {
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getVarOptions() {
+        return varOptions;
+    }
+
+    public void setVarOptions(String varOptions) {
+        this.varOptions = varOptions;
     }
 
 }

@@ -1,6 +1,7 @@
 package org.osivia.services.procedure.portlet.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,9 @@ import java.util.Map.Entry;
 import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -39,6 +43,9 @@ import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.ProcedureObjectInstance;
+import org.osivia.services.procedure.portlet.model.Select2Entry;
+import org.osivia.services.procedure.portlet.model.Variable;
+import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.osivia.services.procedure.portlet.util.ObjetMetierUtil;
 import org.springframework.stereotype.Service;
@@ -46,6 +53,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.VocabularyEntry;
+import fr.toutatice.portail.cms.nuxeo.api.VocabularyHelper;
 
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
@@ -404,6 +413,42 @@ public class ProcedureServiceImpl implements IProcedureService {
                         .put(field.getName(), objetMetier.getProperties().getString(ObjetMetierUtil.getObjectProperty(field.getName())));
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException {
+
+        final ObjectMapper mapper = new ObjectMapper();
+        final Map<String, Variable> variables = form.getProcedureModel().getVariables();
+
+        List<Select2Entry> varOptionsJson;
+        List<String> varOptions;
+        for (final Entry<String, Variable> entryV : variables.entrySet()) {
+            if (VariableTypesEnum.SELECTVOCAB.equals(entryV.getValue().getType()) || VariableTypesEnum.SELECTVOCABMULTI.equals(entryV.getValue().getType())) {
+                varOptionsJson = new ArrayList<Select2Entry>();
+                final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions().get(0));
+                for (final VocabularyEntry entry : vocabularyEntry.getChildren().values()) {
+                    varOptionsJson.add(new Select2Entry(entry.getLabel()));
+                }
+                try {
+                    entryV.getValue().setVarOptionsJson(mapper.writeValueAsString(varOptionsJson));
+                    entryV.getValue().setVarOptions(null);
+                } catch (final JsonGenerationException e) {
+                    throw new PortletException(e);
+                } catch (final JsonMappingException e) {
+                    throw new PortletException(e);
+                } catch (final IOException e) {
+                    throw new PortletException(e);
+                }
+            } else if (VariableTypesEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
+                varOptions = new ArrayList<String>();
+                final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions().get(0));
+                for (final VocabularyEntry entry : vocabularyEntry.getChildren().values()) {
+                    varOptions.add(entry.getLabel());
+                }
+                entryV.getValue().setVarOptions(varOptions);
             }
         }
     }

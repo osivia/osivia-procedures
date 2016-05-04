@@ -2,5 +2,5 @@ package org.osivia.services.procedure.portlet.model;
 
 
 public enum VariableTypesEnum {
-    TEXT, FILE
+    TEXT, TEXTAREA, DATE, NUMBER, FILE, RADIOLIST, RADIOVOCAB, CHECKBOXLIST, CHECKBOXVOCAB, SELECTLIST, SELECTVOCAB, SELECTVOCABMULTI
 }

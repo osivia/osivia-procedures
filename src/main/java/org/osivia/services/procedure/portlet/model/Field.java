@@ -7,13 +7,18 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
-        creatorVisibility = Visibility.NONE)
+creatorVisibility = Visibility.NONE)
 public class Field implements Comparable<Field> {
 
     /** isInput */
     @JsonProperty("isInput")
     @JsonSerialize(include = JsonSerialize.Inclusion.ALWAYS)
     private boolean isInput;
+
+    /** isInput */
+    @JsonProperty("required")
+    @JsonSerialize(include = JsonSerialize.Inclusion.ALWAYS)
+    private boolean required;
 
     /**
      * the name of the field
@@ -38,6 +43,9 @@ public class Field implements Comparable<Field> {
     /** value */
     @JsonIgnore
     private String value;
+
+    @JsonIgnore
+    private String varOptions;
 
 
     public Field() {
@@ -131,7 +139,7 @@ public class Field implements Comparable<Field> {
 
     /**
      * Getter for type.
-     * 
+     *
      * @return the type
      */
     public VariableTypesEnum getType() {
@@ -141,7 +149,7 @@ public class Field implements Comparable<Field> {
 
     /**
      * Setter for type.
-     * 
+     *
      * @param type the type to set
      */
     public void setType(VariableTypesEnum type) {
@@ -151,7 +159,7 @@ public class Field implements Comparable<Field> {
 
     /**
      * Getter for label.
-     * 
+     *
      * @return the label
      */
     public String getLabel() {
@@ -161,11 +169,39 @@ public class Field implements Comparable<Field> {
 
     /**
      * Setter for label.
-     * 
+     *
      * @param label the label to set
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+
+    /**
+     * Getter for required.
+     *
+     * @return the required
+     */
+    public boolean isRequired() {
+        return required;
+    }
+
+
+    /**
+     * Setter for required.
+     *
+     * @param required the required to set
+     */
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public String getVarOptions() {
+        return varOptions;
+    }
+
+    public void setVarOptions(String varOptions) {
+        this.varOptions = varOptions;
     }
 
 }
