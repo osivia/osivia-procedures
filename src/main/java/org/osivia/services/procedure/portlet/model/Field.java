@@ -1,10 +1,16 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
@@ -24,13 +30,18 @@ public class Field implements Comparable<Field> {
      * the name of the field
      */
     @JsonProperty("variableName")
+    @JsonSerialize(include = JsonSerialize.Inclusion.ALWAYS)
     private String name;
 
-    /**
-     * sorting order of the field
-     */
-    @JsonProperty("order")
-    private Integer order;
+    @JsonProperty("superLabel")
+    private String superLabel;
+
+    @JsonProperty("isFieldSet")
+    @JsonSerialize(include = JsonSerialize.Inclusion.ALWAYS)
+    private boolean isFieldSet;
+
+    @JsonProperty("nestedGlobalVariablesReferences")
+    private List<Field> fields;
 
     /** type */
     @JsonIgnore
@@ -47,17 +58,36 @@ public class Field implements Comparable<Field> {
     @JsonIgnore
     private String varOptions;
 
+    @JsonProperty("path")
+    private String path;
+
 
     public Field() {
     }
 
+    public Field(PropertyMap propertyMap, Map<String, Variable> variables) {
+        setInput(propertyMap.getBoolean("isInput"));
+        setRequired(propertyMap.getBoolean("required"));
+        setSuperLabel(propertyMap.getString("superLabel"));
+        setFieldSet(BooleanUtils.isTrue(propertyMap.getBoolean("isFieldSet")));
+        setPath(propertyMap.getString("path"));
+
+        final Variable variable = variables.get(propertyMap.getString("variableName"));
+        if (variable != null) {
+            setName(variable.getName());
+            setLabel(variable.getLabel());
+            setType(variable.getType());
+            setVarOptions(StringUtils.join(variable.getVarOptions(), ","));
+        }
+    }
+
     /**
-     * constructors with order
+     * constructors with path
      *
-     * @param order
+     * @param path
      */
-    public Field(Integer order) {
-        this.order = order;
+    public Field(String path) {
+        this.path = path;
     }
 
     /**
@@ -78,24 +108,9 @@ public class Field implements Comparable<Field> {
         this.isInput = isInput;
     }
 
-    /**
-     * @return the sorting order of the field
-     */
-    public Integer getOrder() {
-        return order;
-    }
-
-    /**
-     * @param set
-     *            the sorting order of the field
-     */
-    public void setOrder(Integer order) {
-        this.order = order;
-    }
-
     @Override
     public int compareTo(Field field) {
-        return getOrder().compareTo(field.getOrder());
+        return StringUtils.substringAfterLast(getPath(), ",").compareTo(StringUtils.substringAfterLast(field.getPath(), ","));
     }
 
 
@@ -202,6 +217,76 @@ public class Field implements Comparable<Field> {
 
     public void setVarOptions(String varOptions) {
         this.varOptions = varOptions;
+    }
+
+
+    /**
+     * Getter for superLabel.
+     *
+     * @return the superLabel
+     */
+    public String getSuperLabel() {
+        return superLabel;
+    }
+
+
+    /**
+     * Setter for superLabel.
+     *
+     * @param superLabel the superLabel to set
+     */
+    public void setSuperLabel(String superLabel) {
+        this.superLabel = superLabel;
+    }
+
+
+    /**
+     * Getter for isFieldSet.
+     *
+     * @return the isFieldSet
+     */
+    public boolean isFieldSet() {
+        return isFieldSet;
+    }
+
+
+    /**
+     * Setter for isFieldSet.
+     *
+     * @param isFieldSet the isFieldSet to set
+     */
+    public void setFieldSet(boolean isFieldSet) {
+        this.isFieldSet = isFieldSet;
+    }
+
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+
+    /**
+     * Getter for fields.
+     *
+     * @return the fields
+     */
+    public List<Field> getFields() {
+        return fields;
+    }
+
+
+
+    /**
+     * Setter for fields.
+     *
+     * @param fields the fields to set
+     */
+    public void setFields(List<Field> fields) {
+        this.fields = fields;
     }
 
 }

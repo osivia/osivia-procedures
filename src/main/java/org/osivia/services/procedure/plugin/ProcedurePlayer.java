@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.DocumentContext;
@@ -60,6 +61,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
         windowProperties.put("osivia.doctype", document.getType());
         windowProperties.put("osivia.hideDecorators", "1");
+        windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
         windowProperties.put("osivia.ajaxLink", "1");
 
         final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);

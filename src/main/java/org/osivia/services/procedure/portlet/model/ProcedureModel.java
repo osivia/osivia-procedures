@@ -76,50 +76,7 @@ public class ProcedureModel {
             Step step;
             for (final Object stepO : stepsList.list()) {
                 final PropertyMap stepM = (PropertyMap) stepO;
-                final PropertyList widgetList = stepM.getList("globalVariablesReferences");
-                step = new Step();
-                if (widgetList != null) {
-                    Field field;
-                    for (final Object widgetO : widgetList.list()) {
-                        final PropertyMap widget = (PropertyMap) widgetO;
-                        field = new Field();
-                        field.setInput(widget.getBoolean("isInput"));
-                        field.setRequired(widget.getBoolean("required"));
-                        field.setOrder(Integer.valueOf(widget.getString("order")));
-                        final Variable variable = getVariables().get(widget.getString("variableName"));
-                        if (variable != null) {
-                            field.setName(variable.getName());
-                            field.setLabel(variable.getLabel());
-                            field.setType(variable.getType());
-                            field.setVarOptions(StringUtils.join(variable.getVarOptions(), ","));
-                        }
-                        step.getFields().add(field);
-                    }
-                }
-                Collections.sort(step.getFields());
-
-                final PropertyList actionsList = stepM.getList("actions");
-                if (actionsList != null) {
-                    Action action;
-                    for (final Object actionO : actionsList.list()) {
-                        final PropertyMap actionN = (PropertyMap) actionO;
-                        action = new Action();
-                        action.setLabel(actionN.getString("label"));
-                        action.setStepReference(actionN.getString("stepReference"));
-                        step.getActions().add(action);
-                    }
-                }
-                final PropertyList groupsObjectsList = stepM.getList("authorizedGroups");
-                if (groupsObjectsList != null) {
-                    final List<String> groups = new ArrayList<String>();
-                    for (final Object groupsObject : groupsObjectsList.list()) {
-                        groups.add((String) groupsObject);
-                    }
-                    step.setGroups(groups);
-                }
-                step.setStepName(stepM.getString("name"));
-                step.setIndex(stepM.getLong("index").intValue());
-                step.setReference(stepM.getString("reference"));
+                step = new Step(stepM, getVariables());
                 getSteps().add(step.getIndex(), step);
             }
         }

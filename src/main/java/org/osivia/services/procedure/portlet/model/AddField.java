@@ -17,6 +17,8 @@ public class AddField {
 
     private String varOptions;
 
+    private boolean isFieldSet;
+
     /**
      * Getter for variableName.
      *
@@ -77,6 +79,26 @@ public class AddField {
 
     public void setVarOptions(String varOptions) {
         this.varOptions = varOptions;
+    }
+
+
+    /**
+     * Getter for isFieldSet.
+     * 
+     * @return the isFieldSet
+     */
+    public boolean isFieldSet() {
+        return isFieldSet;
+    }
+
+
+    /**
+     * Setter for isFieldSet.
+     * 
+     * @param isFieldSet the isFieldSet to set
+     */
+    public void setFieldSet(boolean isFieldSet) {
+        this.isFieldSet = isFieldSet;
     }
 
 }

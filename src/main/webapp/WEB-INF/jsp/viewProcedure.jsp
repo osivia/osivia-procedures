@@ -15,6 +15,17 @@
 
 <portlet:actionURL name="actionProcedure" var="actionProcedureUrl">
 </portlet:actionURL>
+<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl" ></portlet:resourceURL>
+
+<!-- Message -->
+<c:if test="${not empty form.filterMessage}">
+	<div class="alert alert-danger">
+		<p class="text-danger">
+			<i class="halflings halflings-exclamation-sign"></i>
+			<span>${form.filterMessage}</span>
+		</p>
+	</div>
+</c:if>
 
 <form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" cssClass="form-horizontal" role="form" enctype="multipart/form-data">
 
@@ -85,7 +96,8 @@
                                         <div class="col-sm-9">
                                         	<c:forEach items="${form.procedureModel.variables[field.name].varOptions}" var="varOption">
 	                                        	<label class="radio-inline">
-												  <input type="radio" name="procedureInstance.globalVariablesValues['${field.name}']" value="${varOption}"> ${varOption}
+												  <input type="radio" name="procedureInstance.globalVariablesValues['${field.name}']" value="${varOption}" 
+													  <c:if test="${form.procedureInstance.globalVariablesValues[field.name] eq varOption}">checked="checked"</c:if>> ${varOption}
 												</label>
                                         	</c:forEach>
                                     	</div>
@@ -97,7 +109,8 @@
                                         <div class="col-sm-9">
                                         	<c:forEach items="${form.procedureModel.variables[field.name].varOptions}" var="varOption">
 	                                        	<label class="checkbox-inline">
-												  <input type="checkbox" name="procedureInstance.globalVariablesValues['${field.name}']" value="${varOption}"> ${varOption}
+												  <input type="checkbox" name="procedureInstance.globalVariablesValues['${field.name}']" value="${varOption}"
+												  <c:if test="${form.procedureInstance.globalVariablesValues[field.name] eq varOption}">checked="checked"</c:if>> ${varOption}
 												</label>
                                         	</c:forEach>
                                         </div>
@@ -119,35 +132,31 @@
                                     	</div>
                                     </c:when>
                                     <c:when test="${fieldType eq 'SELECTVOCAB'}">
+                                    	<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl" >
+                                    		<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions[0]}"/>
+                                    	</portlet:resourceURL>
                                     	<script type="text/javascript">
-                                    		$JQry(document).ready(function(){
-                                    			$JQry("#selectVariable_${status.index}").select2({
-								                	data : ${form.procedureModel.variables[field.name].varOptionsJson},
-								                	theme: "bootstrap"
-							                	});
-                                    		});
+                                    		select2Vocab("${vocabularySearchUrl}","selectVariable_${status.index}");
 						                </script>
                                     	<div class="col-sm-3">
                                             <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${form.procedureModel.variables[field.name].label}</label>
                                         </div>
                                     	<div class="col-sm-9">
-	                                    	<form:select path="procedureInstance.globalVariablesValues['${field.name}']" id="selectVariable_${status.index}"/>
+	                                    	<form:select path="procedureInstance.globalVariablesValues['${field.name}']" id="selectVariable_${status.index}" class="form-control select2"/>
                                     	</div>
                                     </c:when>
                                     <c:when test="${fieldType eq 'SELECTVOCABMULTI'}">
+                                    	<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl" >
+                                    		<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions[0]}"/>
+                                    	</portlet:resourceURL>
                                     	<script type="text/javascript">
-                                    		$JQry(document).ready(function(){
-                                    			$JQry("#selectVariable_${status.index}").select2({
-								                	data : ${form.procedureModel.variables[field.name].varOptionsJson},
-								                	theme: "bootstrap"
-							                	});
-                                    		});
+                                    		select2Vocab("${vocabularySearchUrl}","selectVariable_${status.index}", "${form.procedureModel.variables[field.name].varOptions[0]}");
 						                </script>
                                     	<div class="col-sm-3">
                                             <label for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${form.procedureModel.variables[field.name].label}</label>
                                         </div>
                                     	<div class="col-sm-9">
-	                                    	<form:select path="procedureInstance.globalVariablesValues['${field.name}']" id="selectVariable_${status.index}" multiple="true"/>
+	                                    	<form:select path="procedureInstance.globalVariablesValues['${field.name}']" id="selectVariable_${status.index}" multiple="true" class="form-control select2"/>
                                     	</div>
                                     </c:when>
                                     <c:when test="${fieldType eq 'FILE'}">
@@ -168,13 +177,21 @@
                             </c:when>
                             <c:otherwise>
                                 <c:choose>
-                                    <c:when test="${(fieldType eq 'TEXT') or (fieldType eq 'TEXTAREA') or (fieldType eq 'DATE') or (fieldType eq 'SELECTLIST') or (fieldType eq 'SELECTVOCAB') or (fieldType eq 'RADIOLIST')
-                                    				or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER') or (fieldType eq 'SELECTVOCABMULTI')}">
+                                    <c:when test="${(fieldType eq 'TEXT') or (fieldType eq 'TEXTAREA') or (fieldType eq 'DATE') or (fieldType eq 'SELECTLIST') or (fieldType eq 'RADIOLIST')
+                                    				or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
                                         <div class="col-sm-3">
                                             ${form.procedureModel.variables[field.name].label} : 
                                         </div>
                                         <div class="col-sm-3">
                                         	${form.procedureInstance.globalVariablesValues[field.name]}
+                                        </div>
+                                    </c:when>
+                                    <c:when test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
+                                    	<div class="col-sm-3">
+                                            ${form.procedureModel.variables[field.name].label} : 
+                                        </div>
+                                        <div class="col-sm-3">
+		                                    	<ttc:vocabularyLabel name="${form.procedureModel.variables[field.name].varOptions[0]}" key="[${form.procedureInstance.globalVariablesValues[field.name]}]"/>
                                         </div>
                                     </c:when>
                                     <c:when test="${fieldType eq 'FILE'}">

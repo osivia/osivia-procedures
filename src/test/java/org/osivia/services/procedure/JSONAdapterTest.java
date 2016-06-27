@@ -40,12 +40,10 @@ public class JSONAdapterTest {
         final Field field = new Field();
         field.setInput(false);
         field.setName("fieldName");
-        field.setOrder(0);
         step.getFields().add(field);
         final Field field2 = new Field();
         field2.setInput(true);
         field2.setName("fieldName2");
-        field2.setOrder(1);
         step.getFields().add(field2);
         procedure.getSteps().add(step);
         final Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT, null);

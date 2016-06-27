@@ -1,8 +1,5 @@
 package org.osivia.services.procedure.portlet.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 
 
@@ -23,30 +20,24 @@ public class Form {
     /** alertSuccess */
     private String alertSuccess;
 
-    /** procedureList */
-    private List<ProcedureModel> procedureList;
-
-    /** addUrl */
-    private String addUrl;
-
     /** addField */
     private AddField newField;
 
+    private String filterMessage;
+
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
-        procedureList = new ArrayList<ProcedureModel>();
         newField = new AddField();
     }
 
     public Form(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
         this.procedureModel = procedureModel;
         this.procedureInstance = procedureInstance;
-        procedureList = new ArrayList<ProcedureModel>();
         newField = new AddField();
     }
 
-    public Form(List<ProcedureModel> procedureList) {
-        this.procedureList = procedureList;
+
+    public Form() {
         newField = new AddField();
     }
 
@@ -72,7 +63,7 @@ public class Form {
         } else {
             returnStep = getProcedureModel().getStartingStep();
         }
-        for (Step step : getProcedureModel().getSteps()) {
+        for (final Step step : getProcedureModel().getSteps()) {
             if (StringUtils.equals(returnStep, step.getReference())) {
                 return step;
             }
@@ -155,42 +146,6 @@ public class Form {
     }
 
     /**
-     * Getter for procedureList.
-     *
-     * @return the procedureList
-     */
-    public List<ProcedureModel> getProcedureList() {
-        return procedureList;
-    }
-
-    /**
-     * Setter for procedureList.
-     *
-     * @param procedureList the procedureList to set
-     */
-    public void setProcedureList(List<ProcedureModel> procedureList) {
-        this.procedureList = procedureList;
-    }
-
-    /**
-     * Getter for addUrl.
-     *
-     * @return the addUrl
-     */
-    public String getAddUrl() {
-        return addUrl;
-    }
-
-    /**
-     * Setter for addUrl.
-     *
-     * @param addUrl the addUrl to set
-     */
-    public void setAddUrl(String addUrl) {
-        this.addUrl = addUrl;
-    }
-
-    /**
      * Getter for addField.
      *
      * @return the addField
@@ -206,6 +161,14 @@ public class Form {
      */
     public void setNewField(AddField newField) {
         this.newField = newField;
+    }
+
+    public String getFilterMessage() {
+        return filterMessage;
+    }
+
+    public void setFilterMessage(String filterMessage) {
+        this.filterMessage = filterMessage;
     }
 
 }

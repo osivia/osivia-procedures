@@ -36,6 +36,9 @@
                             <button type="submit" name="editStep" onclick="selector(this,'${status.index}','selectedStep')" class="btn btn-default">
                                 <i class="glyphicons glyphicons-edit"></i>
                             </button>
+                            <button type="submit" name="duplicateStep" class="btn btn-default" onclick="selector(this,'${status.index}','selectedStep')">
+                                <i class="glyphicons glyphicons-duplicate"></i>
+                            </button>
                             <button type="submit" name="deleteStep" class="btn btn-default" onclick="selector(this,'${status.index}','selectedStep')">
                                 <i class="glyphicons glyphicons-remove-2"></i>
                             </button>

@@ -8,15 +8,15 @@
 <portlet:actionURL name="editProcedure" var="editProcedureUrl">
 </portlet:actionURL>
 
-<a class="btn btn-default btn-sm pull-right" href="${form.addUrl}" role="button" title="Créer une procedure" data-toggle="tooltip" data-placement="auto bottom"><i class="glyphicons glyphicons-circle-plus"></i></a>
+<a class="btn btn-default btn-sm pull-right" href="${addUrl}" role="button" title="Créer une procedure" data-toggle="tooltip" data-placement="auto bottom"><i class="glyphicons glyphicons-circle-plus"></i></a>
 
 <form:form modelAttribute="form" action="${editProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
 
 
     <ul class="list-unstyled">
-        <c:forEach var="procedure" items="${form.procedureList}">
+        <c:forEach var="procedure" items="${procedureList}">
             <li>
-                <a href="${procedure.url}">${procedure.name}</a>
+                <a href="${procedure.url}" class="no-ajax-link">${procedure.name}</a>
             </li>
         </c:forEach>
     </ul>

@@ -4,7 +4,10 @@ import java.util.List;
 
 import javax.portlet.PortletException;
 
+import net.sf.json.JSONArray;
+
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.procedure.portlet.exception.FilterException;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
@@ -51,15 +54,13 @@ public interface IProcedureService {
 
     /**
      * @param nuxeoController
-     * @param procedureModel
-     * @param procedureInstance
-     * @param taskTitle
-     * @param groups
+     * @param form
+     * @param stepReference
      * @return
      * @throws PortletException
+     * @throws FilterException
      */
-    public ProcedureInstance createProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
-            String taskTitle, List<String> groups) throws PortletException;
+    public ProcedureInstance createProcedureInstance(NuxeoController nuxeoController, Form form, String stepReference) throws PortletException, FilterException;
 
     /**
      * @param nuxeoController
@@ -70,16 +71,15 @@ public interface IProcedureService {
 
     /**
      * @param nuxeoController
-     * @param procedureModel
-     * @param procedureInstance
+     * @param form
      * @param procedureInstancePath
-     * @param taskTitle
-     * @param groups
+     * @param stepReference
      * @return
      * @throws PortletException
+     * @throws FilterException
      */
-    public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
-            String procedureInstancePath, String taskTitle, List<String> groups) throws PortletException;
+    public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, Form form, String procedureInstancePath, String stepReference)
+            throws PortletException, FilterException;
 
 
     /**
@@ -95,6 +95,15 @@ public interface IProcedureService {
      * @throws PortletException
      */
     public void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @param filter
+     * @param vocabularyName
+     * @return
+     * @throws PortletException
+     */
+    public JSONArray getVocabularyValues(NuxeoController nuxeoController, String filter, String vocabularyName) throws PortletException;
 
     /**
      * @param nuxeoController

@@ -11,10 +11,11 @@ import java.util.Map.Entry;
 
 import javax.portlet.PortletException;
 
+import net.sf.json.JSONArray;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -29,11 +30,17 @@ import org.osivia.services.procedure.portlet.command.CreateDocumentCommand;
 import org.osivia.services.procedure.portlet.command.CreateDocumentFromBlobCommand;
 import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
 import org.osivia.services.procedure.portlet.command.ListDocumentsCommand;
+import org.osivia.services.procedure.portlet.command.LoadVocabularyCommand;
 import org.osivia.services.procedure.portlet.command.RetrieveDocumentCommand;
 import org.osivia.services.procedure.portlet.command.StartProcedureCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentFromBlobCommand;
 import org.osivia.services.procedure.portlet.command.UpdateProcedureCommand;
+import org.osivia.services.procedure.portlet.exception.FilterException;
+import org.osivia.services.procedure.portlet.filter.IFilter;
+import org.osivia.services.procedure.portlet.filter.impl.NotificationInspecteurFilter;
+import org.osivia.services.procedure.portlet.filter.impl.NumberLessThanFilter;
+import org.osivia.services.procedure.portlet.model.Action;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.Field;
 import org.osivia.services.procedure.portlet.model.FilePath;
@@ -43,11 +50,12 @@ import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.ProcedureObjectInstance;
-import org.osivia.services.procedure.portlet.model.Select2Entry;
+import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.osivia.services.procedure.portlet.util.ObjetMetierUtil;
+import org.osivia.services.procedure.portlet.util.VocabularySelect2Util;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,8 +71,7 @@ public class ProcedureServiceImpl implements IProcedureService {
     private static final String path = "/default-domain/procedures-models";
 
     /** defaultFIlesPath */
-    private static final String defaultFIlesPath = "/default-domain/procedurefiles";
-
+    private static final String defaultFilesPath = "/default-domain/procedurefiles";
 
     @Override
     public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
@@ -132,8 +139,13 @@ public class ProcedureServiceImpl implements IProcedureService {
     }
 
     @Override
-    public ProcedureInstance createProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
-            String taskTitle, List<String> groups) throws PortletException {
+    public ProcedureInstance createProcedureInstance(NuxeoController nuxeoController, Form form, String stepReference) throws PortletException, FilterException {
+
+        // validating next step
+        final String taskTitle = buildTaskTitle(form, stepReference);
+        final List<String> groups = getGroups(form, stepReference);
+        final ProcedureModel procedureModel = form.getProcedureModel();
+        final ProcedureInstance procedureInstance = form.getProcedureInstance();
 
         // build objet metiers from the supplied values
         final Map<String, ObjetMetier> objetMetiers = ObjetMetierUtil.buildObjetMetiers(procedureModel, procedureInstance);
@@ -144,12 +156,17 @@ public class ProcedureServiceImpl implements IProcedureService {
         // abstract action applied at every step
         defaultAction(nuxeoController, procedureModel, procedureInstance, objetMetiers);
 
+
+
         INuxeoCommand command;
         try {
+
+            final String nextStep = stepReference;
+            applyFiltersAndActions(form, objetMetiers, nextStep, groups);
             final PropertyMap propMap = new PropertyMap();
             final String groupsList = StringUtils.join(groups, ",");
 
-            propMap.set("pi:currentStep", procedureInstance.getCurrentStep());
+            propMap.set("pi:currentStep", nextStep);
             propMap.set("pi:procedureModelPath", procedureModel.getPath());
 
             final List<GlobalVariablesValuesType> gvvList = new ArrayList<GlobalVariablesValuesType>();
@@ -174,6 +191,8 @@ public class ProcedureServiceImpl implements IProcedureService {
                 command = new StartProcedureCommand(taskTitle, groupsList, propMap);
             }
 
+        } catch (final FilterException e) {
+            throw e;
         } catch (final Exception e) {
             throw new PortletException(e);
         }
@@ -182,12 +201,37 @@ public class ProcedureServiceImpl implements IProcedureService {
         return new ProcedureInstance(documentInstance);
     }
 
+    private void applyFiltersAndActions(Form form, final Map<String, ObjetMetier> objetMetiers,
+            String nextStep, List<String> groups) throws PortalException,
+            FilterException {
+
+        for (final Action action : form.getTheCurrentStep().getActions()) {
+            if (StringUtils.equals(action.getStepReference(), nextStep)) {
+                final List<IFilter> listeFiltres = action.getListeFiltres();
+                for (final IFilter filter : listeFiltres) {
+                    filter.validate(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers);
+                }
+
+                for (final IFilter filter : listeFiltres) {
+                    filter.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
+                }
+                // FIXME for test:
+                final NumberLessThanFilter filtera = new NumberLessThanFilter("visitNbr", 21);
+                filtera.validate(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers);
+                final NotificationInspecteurFilter filterb = new NotificationInspecteurFilter();
+                filterb.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
+                break;
+            }
+        }
+
+    }
+
     private void applyActions(Map<String, ObjetMetier> objetMetiers) {
         for (final ObjetMetier objetMetier : objetMetiers.values()) {
 
             if (StringUtils.isEmpty(objetMetier.getProcedureObject().getPath())) {
                 // si le path n'est pas renseigné on place celui par défaut
-                objetMetier.getProcedureObject().setPath(defaultFIlesPath);
+                objetMetier.getProcedureObject().setPath(defaultFilesPath);
             }
 
             if (StringUtils.isEmpty(objetMetier.getProperties().getString("dc:title"))) {
@@ -217,8 +261,7 @@ public class ProcedureServiceImpl implements IProcedureService {
                     final InputStream in = new ByteArrayInputStream(file.getBytes());
                     final Blob blob = new StreamBlob(in, file.getOriginalFilename(), file.getContentType());
 
-                    command = new CreateDocumentFromBlobCommand(objetMetier.getProcedureObject().getPath(), objetMetier.getProperties(),
-                            blob);
+                    command = new CreateDocumentFromBlobCommand(objetMetier.getProcedureObject().getPath(), objetMetier.getProperties(), blob);
                 } catch (final Exception e) {
                     throw new PortletException(e);
                 }
@@ -274,8 +317,14 @@ public class ProcedureServiceImpl implements IProcedureService {
     }
 
     @Override
-    public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, ProcedureModel procedureModel, ProcedureInstance procedureInstance,
-            String procedureInstancePath, String taskTitle, List<String> groups) throws PortletException {
+    public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, Form form, String procedureInstancePath, String stepReference)
+            throws PortletException, FilterException {
+
+        // validating next step
+        final String taskTitle = buildTaskTitle(form, stepReference);
+        final List<String> groups = getGroups(form, stepReference);
+        final ProcedureModel procedureModel = form.getProcedureModel();
+        final ProcedureInstance procedureInstance = form.getProcedureInstance();
 
         // build objet metiers from the supplied values
         final Map<String, ObjetMetier> objetMetiers = ObjetMetierUtil.buildObjetMetiers(procedureModel, procedureInstance);
@@ -288,11 +337,15 @@ public class ProcedureServiceImpl implements IProcedureService {
 
         INuxeoCommand command;
         try {
+            final String nextStep = stepReference;
+            if (!StringUtils.equals(nextStep, "endStep")) {
+                applyFiltersAndActions(form, objetMetiers, nextStep, groups);
+            }
             final String groupsList = StringUtils.join(groups, ",");
             command = new RetrieveDocumentCommand(procedureInstancePath);
             final Document currentDocument = (Document) nuxeoController.executeNuxeoCommand(command);
             final PropertyMap propMap = new PropertyMap();
-            propMap.set("pi:currentStep", procedureInstance.getCurrentStep());
+            propMap.set("pi:currentStep", nextStep);
             propMap.set("pi:procedureModelPath", procedureInstance.getProcedureModelPath());
 
             final List<GlobalVariablesValuesType> gvvList = new ArrayList<GlobalVariablesValuesType>();
@@ -358,6 +411,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         final Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
         windowProperties.put("osivia.hideDecorators", "1");
+        windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
         windowProperties.put("osivia.ajaxLink", "1");
         windowProperties.put("osivia.procedure.admin", "adminproc");
         return windowProperties;
@@ -378,9 +432,24 @@ public class ProcedureServiceImpl implements IProcedureService {
     public void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException {
 
         final Map<String, ObjetMetier> ojMap = new HashMap<String, ObjetMetier>();
-
-        ObjetMetier objetMetier;
         for (final Field field : form.getTheCurrentStep().getFields()) {
+            updateFormWithObjectsValues(field, ojMap, nuxeoController, form);
+        }
+    }
+
+    /**
+     * permet de traverser la liste récursive en mettant à jour les objets métiers
+     *
+     * @param field
+     * @param ojMap
+     * @param nuxeoController
+     * @param form
+     * @throws PortletException
+     */
+    private void updateFormWithObjectsValues(Field field, Map<String, ObjetMetier> ojMap, NuxeoController nuxeoController, Form form) throws PortletException {
+
+        if (!field.isFieldSet()) {
+            final ObjetMetier objetMetier;
             if (ObjetMetierUtil.isObject(field.getName())) {
                 if (form.getProcedureInstance().getProcedureObjects().containsKey(ObjetMetierUtil.getObjectName(field.getName()))) {
                     if (ojMap.containsKey(field.getName())) {
@@ -414,35 +483,21 @@ public class ProcedureServiceImpl implements IProcedureService {
                     }
                 }
             }
+        } else {
+            for (final Field nestedField : field.getFields()) {
+                updateFormWithObjectsValues(nestedField, ojMap, nuxeoController, form);
+            }
         }
     }
 
     @Override
     public void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException {
 
-        final ObjectMapper mapper = new ObjectMapper();
         final Map<String, Variable> variables = form.getProcedureModel().getVariables();
 
-        List<Select2Entry> varOptionsJson;
         List<String> varOptions;
         for (final Entry<String, Variable> entryV : variables.entrySet()) {
-            if (VariableTypesEnum.SELECTVOCAB.equals(entryV.getValue().getType()) || VariableTypesEnum.SELECTVOCABMULTI.equals(entryV.getValue().getType())) {
-                varOptionsJson = new ArrayList<Select2Entry>();
-                final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions().get(0));
-                for (final VocabularyEntry entry : vocabularyEntry.getChildren().values()) {
-                    varOptionsJson.add(new Select2Entry(entry.getLabel()));
-                }
-                try {
-                    entryV.getValue().setVarOptionsJson(mapper.writeValueAsString(varOptionsJson));
-                    entryV.getValue().setVarOptions(null);
-                } catch (final JsonGenerationException e) {
-                    throw new PortletException(e);
-                } catch (final JsonMappingException e) {
-                    throw new PortletException(e);
-                } catch (final IOException e) {
-                    throw new PortletException(e);
-                }
-            } else if (VariableTypesEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
+            if (VariableTypesEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
                 varOptions = new ArrayList<String>();
                 final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions().get(0));
                 for (final VocabularyEntry entry : vocabularyEntry.getChildren().values()) {
@@ -451,5 +506,58 @@ public class ProcedureServiceImpl implements IProcedureService {
                 entryV.getValue().setVarOptions(varOptions);
             }
         }
+    }
+
+    @Override
+    public JSONArray getVocabularyValues(NuxeoController nuxeoController, String filter, String vocabularyName) throws PortletException {
+        JSONArray values = new JSONArray();
+
+        final INuxeoCommand command = new LoadVocabularyCommand(vocabularyName);
+        final Object object = nuxeoController.executeNuxeoCommand(command);
+        if (object instanceof Blob) {
+            final Blob blob = (Blob) object;
+            try {
+                final String content = IOUtils.toString(blob.getStream(), "UTF-8");
+                final JSONArray array = JSONArray.fromObject(content);
+                values = VocabularySelect2Util.parse(array, filter);
+            } catch (final IOException e) {
+                throw new PortletException(e);
+            }
+        }
+
+
+        return values;
+    }
+
+    private String buildTaskTitle(Form form, String stepReference) {
+        String taskTitle = null;
+        if (StringUtils.isNotEmpty(stepReference)) {
+            if (StringUtils.equals(stepReference, "endStep")) {
+                // if it's the final step
+                // form.getProcedureInstance().setCurrentStep(stepReference);
+                taskTitle = StringUtils.EMPTY;
+            } else {
+                // check step exist
+                for (final Step step : form.getProcedureModel().getSteps()) {
+                    if (StringUtils.equals(stepReference, step.getReference())) {
+                        // form.getProcedureInstance().setCurrentStep(stepReference);
+                        taskTitle = step.getStepName();
+                        break;
+                    }
+                }
+            }
+        }
+        return taskTitle;
+    }
+
+    private List<String> getGroups(Form form, String stepReference) {
+        final List<String> groups = null;
+        for (final Step step : form.getProcedureModel().getSteps()) {
+            if (StringUtils.equals(stepReference, step.getReference())) {
+                // form.getProcedureInstance().setCurrentStep(stepReference);
+                return step.getGroups();
+            }
+        }
+        return groups;
     }
 }
