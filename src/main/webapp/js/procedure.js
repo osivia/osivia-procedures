@@ -1,13 +1,20 @@
 
-function updateOrdersAndPath(order, currentpath, element) {
+function updatePath(index, currentpath, element) {
 	var elementPath = currentpath.slice();
-	elementPath.push(order);
-	$JQry(element).find("input[name$='path']").val(elementPath);
+	elementPath.push(index);
+//	if(!$JQry(element).find("input[name$='canary']").length){
+		$JQry(element).find("input[name$='path']").val(elementPath);
+//		$JQry('<input>').attr({
+//			type : 'hidden',
+//			name : 'canary',
+//			value : 'true'
+//		}).appendTo(element);
+//	}
 	
 	var nestedPath = elementPath.slice();
 	if($JQry(element).find("ul").length){
-		$JQry(element).find("ul").children("li").each(function(index,element){
-			updateOrdersAndPath(index, nestedPath, element);
+		$JQry(element).find("ul").children("li").each(function(loopIndex,element){
+			updatePath(loopIndex, nestedPath, element);
 		});
 	}
 }
@@ -15,19 +22,21 @@ function updateOrdersAndPath(order, currentpath, element) {
 $JQry(function() {
 	// Sortable
 	$JQry("#procedure-sortable ul").sortable({
-		connectWith : "#procedure-sortable ul",
+//		connectWith : "#procedure-sortable ul",
+		 helper: "original",
 		cursor : "move",
 		handle : ".sortable-handle",
-		helper : "clone",
 		tolerance : "pointer",
 		axis: "y",
 		forcePlaceholderSize: true,
 		placeholder: "bg-info",
-		update: function( event, ui ) {
-			$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
-				updateOrdersAndPath(index, [], element);
-			});
-			$JQry(this).closest("form").find("input[name='updateForm']").click();
+		stop: function( event, ui ) {
+//			if (this === ui.item.parent()[0]) {
+				$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
+					updatePath(index, [], element);
+				});	
+				$JQry(this).closest("form").find("input[name='updateForm']").click();
+//			}
 		}
 	});
 });
@@ -35,11 +44,6 @@ $JQry(function() {
 function selectPath(button, name) {
 	var path =$JQry(button).parents("li").find("input[name='path']").val();
 	selector(button, path, name)
-}
-
-function selectOrder(button, name) {
-	var order =$JQry(button).parents("li").find("input[name='order']").val();
-	selector(button, order, name)
 }
 
 function selector(button, value, name) {

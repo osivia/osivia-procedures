@@ -675,7 +675,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             final ListIterator<Field> listIterator = fields.listIterator();
             while (listIterator.hasNext()) {
                 final Field field = listIterator.next();
-                if (Integer.valueOf(StringUtils.substringAfterLast(field.getPath(), ",")) == index) {
+                final String[] pathArray = StringUtils.split(field.getPath(), ',');
+                if ((pathArray.length > 0) && (Integer.parseInt(pathArray[pathArray.length - 1]) == index)) {
                     listIterator.remove();
                 }
             }

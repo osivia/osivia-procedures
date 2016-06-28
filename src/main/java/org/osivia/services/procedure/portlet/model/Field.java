@@ -110,7 +110,19 @@ public class Field implements Comparable<Field> {
 
     @Override
     public int compareTo(Field field) {
-        return StringUtils.substringAfterLast(getPath(), ",").compareTo(StringUtils.substringAfterLast(field.getPath(), ","));
+
+        int returnValue;
+        final String[] pathArray = StringUtils.split(getPath(), ',');
+        final String[] comparedPathArray = StringUtils.split(field.getPath(), ',');
+        if ((pathArray.length > 0) && (comparedPathArray.length > 0)) {
+            final Integer order = Integer.parseInt(pathArray[pathArray.length - 1]);
+            final Integer comparedOrder = Integer.parseInt(comparedPathArray[comparedPathArray.length - 1]);
+            returnValue = order.compareTo(comparedOrder);
+        } else {
+            returnValue = 0;
+        }
+
+        return returnValue;
     }
 
 

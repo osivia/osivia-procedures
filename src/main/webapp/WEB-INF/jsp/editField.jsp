@@ -228,6 +228,4 @@
 <c:forEach var="pathPart" items="${field.path}" varStatus="status">
 	<c:set var="springPath" value="${status.first ? 'theSelectedStep' : springPath}.fields[${pathPart}]" scope="request"/>
 </c:forEach>
-<c:out value="springPath : ${springPath}"></c:out>
-
 <form:hidden path="${springPath}.path"/>
