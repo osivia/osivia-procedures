@@ -3,3 +3,7 @@
 .procedure-sortable{
 	min-height: 15px;
 }
+
+fieldset {
+	padding-bottom: 15px;
+}
