@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -147,9 +148,14 @@ public class Step implements Comparable<Step> {
 
 
     public String getNextPath() {
-        int lastPath = Integer.parseInt(getFields().get(getFields().size() - 1).getPath());
-        lastPath++;
-        return String.valueOf(lastPath);
+        int nextPath;
+        if (CollectionUtils.isEmpty(getFields())) {
+            nextPath = 0;
+        } else {
+            int lastPath = Integer.parseInt(getFields().get(getFields().size() - 1).getPath());
+            nextPath = lastPath++;
+        }
+        return String.valueOf(nextPath);
     }
 
     /**
