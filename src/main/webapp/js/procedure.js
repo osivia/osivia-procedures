@@ -2,14 +2,14 @@
 function updatePath(index, currentpath, element) {
 	var elementPath = currentpath.slice();
 	elementPath.push(index);
-//	if(!$JQry(element).find("input[name$='canary']").length){
+	if(!$JQry(element).find("input[name$='canary']").length){
 		$JQry(element).find("input[name$='path']").val(elementPath);
-//		$JQry('<input>').attr({
-//			type : 'hidden',
-//			name : 'canary',
-//			value : 'true'
-//		}).appendTo(element);
-//	}
+		$JQry('<input>').attr({
+			type : 'hidden',
+			name : 'canary',
+			value : 'true'
+		}).appendTo(element);
+	}
 	
 	var nestedPath = elementPath.slice();
 	if($JQry(element).find("ul").length){
@@ -22,8 +22,7 @@ function updatePath(index, currentpath, element) {
 $JQry(function() {
 	// Sortable
 	$JQry("#procedure-sortable ul").sortable({
-//		connectWith : "#procedure-sortable ul",
-		 helper: "original",
+		connectWith : "#procedure-sortable ul",
 		cursor : "move",
 		handle : ".sortable-handle",
 		tolerance : "pointer",
