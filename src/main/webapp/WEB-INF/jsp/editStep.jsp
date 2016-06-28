@@ -131,7 +131,7 @@ initGroupSelect("${groupSearchUrl}");
 			                    
 			             	</li>
 			             </c:forEach>
-			             <li class="form-group procedure-sortable"/></li>
+<!-- 			             <li class="form-group procedure-sortable"/></li> -->
 			             <form:input path="selectedStep" type="hidden" name="selectedStep"/>
 			        </ul>
 		        </div>
@@ -173,7 +173,7 @@ initGroupSelect("${groupSearchUrl}");
 	                  </div>
 	                  <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-	                    <button type="submit" name="addField" class="btn btn-primary">Ajouter</button>
+	                    <button type="submit" name="addField" data-dismiss="modal" class="btn btn-primary">Ajouter</button>
 	                  </div>
 	                </div>
 	              </div>
