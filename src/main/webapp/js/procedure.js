@@ -30,18 +30,16 @@ $JQry(function() {
 		forcePlaceholderSize: true,
 		placeholder: "bg-info",
 		stop: function( event, ui ) {
-//			if (this === ui.item.parent()[0]) {
 				$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
 					updatePath(index, [], element);
 				});	
 				$JQry(this).closest("form").find("input[name='updateForm']").click();
-//			}
 		}
 	});
 });
 
 function selectPath(button, name) {
-	var path =$JQry(button).parents("li").find("input[name='path']").val();
+	var path =$JQry(button).parents("li").find("input[name$='path']").val();
 	selector(button, path, name)
 }
 
@@ -112,6 +110,10 @@ function initGroupSelect(groupSearchUrl){
 	   	  templateSelection: formatProfil
 		});
 	});
+}
+
+function hideModal(element){
+	$JQry(element).parents(".modal").modal('hide');
 }
 
 

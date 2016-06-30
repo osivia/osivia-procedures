@@ -228,4 +228,67 @@
 <c:forEach var="pathPart" items="${field.path}" varStatus="status">
 	<c:set var="springPath" value="${status.first ? 'theSelectedStep' : springPath}.fields[${pathPart}]" scope="request"/>
 </c:forEach>
+
+<div class="modal fade" id="editFieldModal${field.name}" tabindex="-1" role="dialog" aria-labelledby="editFieldModalLabel">
+	<div class="modal-dialog" role="document">
+	  <div class="modal-content">
+	    <div class="modal-header">
+	      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      <h4 class="modal-title" id="editFieldModalLabel">Modifier un champ</h4>
+	    </div>
+	    <div class="modal-body">
+	      <div class="form-group">
+	          <form:label path="${springPath}.name" cssClass="col-sm-3 control-label">Nom</form:label>
+	          <div class="col-sm-9">
+	              <form:input path="${springPath}.name" type="text" cssClass="form-control" placeholder="Nom" />
+	          </div>
+	         </div>
+	         <div class="form-group">
+	          <form:label path="${springPath}.type" cssClass="col-sm-3 control-label">Type</form:label>
+	          <div class="col-sm-9">
+	              <form:select path="${springPath}.type" cssClass="form-control">
+	                  <form:options/>
+	              </form:select>
+	          </div>
+	         </div>
+	        	<div class="form-group">
+	          <form:label path="${springPath}.label" cssClass="col-sm-3 control-label">Label</form:label>
+	          <div class="col-sm-9">
+	              <form:input path="${springPath}.label" type="text" cssClass="form-control" placeholder="Label" />
+	          </div>
+	         </div>
+	         <div class="form-group">
+	          <form:label path="${springPath}.label" cssClass="col-sm-3 control-label">SuperLabel</form:label>
+	          <div class="col-sm-9">
+	              <form:input path="${springPath}.superLabel" type="text" cssClass="form-control" placeholder="SuperLabel" />
+	          </div>
+	         </div>
+	         <div class="form-group">
+	         	<form:label path="${springPath}.input" cssClass="col-sm-3 control-label">Saisissable</form:label>
+	          <div class="col-sm-9">
+	                 <form:checkbox path="${springPath}.input" cssClass="form-control"/>
+	             </div>
+	         </div>
+	         <div class="form-group">
+	          <form:label path="${springPath}.required" cssClass="col-sm-3 control-label">Requis</form:label>
+	             <div class="col-sm-9">
+	                 <form:checkbox path="${springPath}.required" cssClass="form-control"/>
+	             </div>
+	         </div>
+	         <div class="form-group">
+	          <form:label path="${springPath}.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
+	          <div class="col-sm-9">
+	          	<form:input path="${springPath}.varOptions" type="text" cssClass="form-control" placeholder="Options" />
+	          </div>
+	      </div>
+	    </div>
+	    <div class="modal-footer">
+	      <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+	      <button type="submit" name="editField" class="btn btn-primary" data-dismiss="modal" onclick="selector(this,'${field.path}','selectedField');hideModal(this);">Modifier</button>
+	      </div>
+	    </div>
+	  </div>
+</div>
+
+
 <form:hidden path="${springPath}.path"/>

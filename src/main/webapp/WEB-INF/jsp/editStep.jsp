@@ -68,70 +68,8 @@ initGroupSelect("${groupSearchUrl}");
 			                      </c:otherwise>
 		                      	</c:choose>
 			                    
-			                    <div class="modal fade" id="editFieldModal${field.name}" tabindex="-1" role="dialog" aria-labelledby="editFieldModalLabel">
-			                      <div class="modal-dialog" role="document">
-			                        <div class="modal-content">
-			                          <div class="modal-header">
-			                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			                            <h4 class="modal-title" id="editFieldModalLabel">Modifier un champ</h4>
-			                          </div>
-			                          <div class="modal-body">
-			                            <div class="form-group">
-			                                <form:label path="theSelectedStep.fields[${status.index}].name" cssClass="col-sm-3 control-label">Nom</form:label>
-			                                <div class="col-sm-9">
-			                                    <form:input path="theSelectedStep.fields[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
-			                                </div>
-		                                </div>
-		                                <div class="form-group">
-			                                <form:label path="theSelectedStep.fields[${status.index}].type" cssClass="col-sm-3 control-label">Type</form:label>
-			                                <div class="col-sm-9">
-			                                    <form:select path="theSelectedStep.fields[${status.index}].type" cssClass="form-control">
-			                                        <form:options/>
-			                                    </form:select>
-			                                </div>
-		                                </div>
-		                               	<div class="form-group">
-			                                <form:label path="theSelectedStep.fields[${status.index}].label" cssClass="col-sm-3 control-label">Label</form:label>
-			                                <div class="col-sm-9">
-			                                    <form:input path="theSelectedStep.fields[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
-			                                </div>
-		                                </div>
-		                                <div class="form-group">
-			                                <form:label path="theSelectedStep.fields[${status.index}].label" cssClass="col-sm-3 control-label">SuperLabel</form:label>
-			                                <div class="col-sm-9">
-			                                    <form:input path="theSelectedStep.fields[${status.index}].superLabel" type="text" cssClass="form-control" placeholder="SuperLabel" />
-			                                </div>
-		                                </div>
-		                                <div class="form-group">
-		                                	<form:label path="theSelectedStep.fields[${status.index}].input" cssClass="col-sm-3 control-label">Saisissable</form:label>
-			                                <div class="col-sm-9">
-		                                        <form:checkbox path="theSelectedStep.fields[${status.index}].input" cssClass="form-control"/>
-		                                    </div>
-		                                </div>
-		                                <div class="form-group">
-			                                <form:label path="theSelectedStep.fields[${status.index}].required" cssClass="col-sm-3 control-label">Requis</form:label>
-		                                    <div class="col-sm-9">
-		                                        <form:checkbox path="theSelectedStep.fields[${status.index}].required" cssClass="form-control"/>
-		                                    </div>
-		                                </div>
-		                                <div class="form-group">
-			                                <form:label path="theSelectedStep.fields[${status.index}].varOptions" cssClass="col-sm-3 control-label">Options</form:label>
-			                                <div class="col-sm-9">
-			                                	<form:input path="theSelectedStep.fields[${status.index}].varOptions" type="text" cssClass="form-control" placeholder="Options" />
-			                                </div>
-			                            </div>
-			                          </div>
-			                          <div class="modal-footer">
-			                            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-			                            <button type="submit" name="editField" class="btn btn-primary" onclick="selector(this,'${field.name}','selectedField')">Modifier</button>
-			                          </div>
-			                        </div>
-			                      </div>
-			                    </div>
-			                    
 			             	</li>
 			             </c:forEach>
-<!-- 			             <li class="form-group procedure-sortable"/></li> -->
 			             <form:input path="selectedStep" type="hidden" name="selectedStep"/>
 			        </ul>
 		        </div>
@@ -173,7 +111,7 @@ initGroupSelect("${groupSearchUrl}");
 	                  </div>
 	                  <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-	                    <button type="submit" name="addField" data-dismiss="modal" class="btn btn-primary">Ajouter</button>
+	                    <button type="submit" name="addField" data-dismiss="modal" class="btn btn-primary" onclick="hideModal(this);">Ajouter</button>
 	                  </div>
 	                </div>
 	              </div>
@@ -196,7 +134,7 @@ initGroupSelect("${groupSearchUrl}");
 	                  </div>
 	                  <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-	                    <button type="submit" name="addFieldSet" class="btn btn-primary">Ajouter</button>
+	                    <button type="submit" name="addFieldSet" data-dismiss="modal" class="btn btn-primary" onclick="hideModal(this);">Ajouter</button>
 	                  </div>
 	                </div>
 	              </div>
