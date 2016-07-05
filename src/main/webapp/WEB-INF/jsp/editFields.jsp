@@ -8,31 +8,30 @@
 
 <c:choose>
 	<c:when test="${field.fieldSet eq true}">
-		<fieldset class="col-sm-9">
+		<div class="procedure-hover">
+   		</div>
+		<fieldset>
 			<legend>${field.superLabel}</legend>
 			<ul class="procedure-sortable list-unstyled">
 				<c:set var="fieldBkp" value="${field}" scope="page"/>
 				<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
 					<li class="form-group">
-						<div class="col-sm-1 sortable-handle">
-	                        <i class="glyphicons glyphicons-sorting pull-right"></i>
-	                    </div>
 						<c:set var="field" value="${nestedField}" scope="request"/>
 						<jsp:include page="editFields.jsp" />
 					</li>
 				</c:forEach>
 			</ul>
+			<div class="btn-group col-sm-2">
+				<button type="button" class="btn btn-default" data-toggle="modal"
+					data-target="#editFieldModal${fieldBkp.name}">
+					<i class="glyphicons glyphicons-edit"></i>
+				</button>
+				<button type="submit" name="deleteField" class="btn btn-default"
+					onclick="selectPath(this,'selectedField')">
+					<i class="glyphicons glyphicons-remove-2"></i>
+				</button>
+			</div>
 		</fieldset>
-		<div class="btn-group col-sm-2">
-			<button type="button" class="btn btn-default" data-toggle="modal"
-				data-target="#editFieldModal${fieldBkp.name}">
-				<i class="glyphicons glyphicons-edit"></i>
-			</button>
-			<button type="submit" name="deleteField" class="btn btn-default"
-				onclick="selectPath(this,'selectedField')">
-				<i class="glyphicons glyphicons-remove-2"></i>
-			</button>
-		</div>
 		
 		<c:forEach var="pathPart" items="${fieldBkp.path}" varStatus="status">
 			<c:set var="springPathNested" value="${status.first ? 'theSelectedStep' : springPathNested}.fields[${pathPart}]" scope="request"/>

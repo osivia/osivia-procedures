@@ -43,6 +43,7 @@ import org.osivia.services.procedure.portlet.model.AddField;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.Field;
 import org.osivia.services.procedure.portlet.model.FilePath;
+import org.osivia.services.procedure.portlet.model.Filter;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
@@ -153,11 +154,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return EDIT_VIEW;
     }
 
-    @RenderMapping(params = "editAction")
+    @RenderMapping(params = "action=editAction")
     public String endStepView(RenderRequest request, RenderResponse response, @RequestParam(value = "editAction", required = false) String editAction)
             throws PortletException, CMSException {
-
-        request.setAttribute("editAction", editAction);
         return VIEW_ACTION;
     }
 
@@ -674,6 +673,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
+    @ActionMapping(value = "editStep", params = "editButton")
+    public void editAction(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
+            @RequestParam(value = "selectedButton") String index) throws PortletException {
+
+        form.setSelectedAction(index);
+        response.setRenderParameter("action", "editAction");
+    }
+
     @ActionMapping(value = "editStep", params = "addButton")
     public void addButton(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         form.getTheSelectedStep().getActions().add(new Action());
@@ -686,6 +693,26 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         form.getTheSelectedStep().getActions().remove(Integer.valueOf(index).intValue());
 
         response.setRenderParameter("action", "editStep");
+    }
+
+    @ActionMapping(value = "editAction", params = "addFilter")
+    public void addFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+
+        form.getTheSelectedAction().getFiltersList().add(new Filter());
+        response.setRenderParameter("action", "editAction");
+    }
+
+    @ActionMapping(value = "editAction", params = "saveAction")
+    public void saveAction(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+            throws PortletException {
+
+        addAllFieldsToSet(form);
+        // form.getProcedureModel().getSteps().set(Integer.valueOf(form.getTheSelectedStep().getIndex()), form.getTheSelectedStep());
+
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+        response.setRenderParameter("action", "editAction");
+        sessionStatus.setComplete();
     }
 
     @ActionMapping(value = "editStep", params = "deleteField")

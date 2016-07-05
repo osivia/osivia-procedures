@@ -38,8 +38,6 @@ import org.osivia.services.procedure.portlet.command.UpdateDocumentFromBlobComma
 import org.osivia.services.procedure.portlet.command.UpdateProcedureCommand;
 import org.osivia.services.procedure.portlet.exception.FilterException;
 import org.osivia.services.procedure.portlet.filter.IFilter;
-import org.osivia.services.procedure.portlet.filter.impl.NotificationInspecteurFilter;
-import org.osivia.services.procedure.portlet.filter.impl.NumberLessThanFilter;
 import org.osivia.services.procedure.portlet.model.Action;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.Field;
@@ -184,11 +182,12 @@ public class ProcedureServiceImpl implements IProcedureService {
                 }
             }
             propMap.set("pi:procedureObjectInstances", ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getProcedureObjects().values()));
+            final String users = "jssteux";
             if (blobs.size() > 0) {
                 propMap.set("pi:attachments", ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getFilesPath().values()));
-                command = new StartProcedureCommand(taskTitle, groupsList, propMap, blobs);
+                command = new StartProcedureCommand(taskTitle, groupsList, users, propMap, blobs);
             } else {
-                command = new StartProcedureCommand(taskTitle, groupsList, propMap);
+                command = new StartProcedureCommand(taskTitle, groupsList, users, propMap);
             }
 
         } catch (final FilterException e) {
@@ -216,10 +215,10 @@ public class ProcedureServiceImpl implements IProcedureService {
                     filter.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
                 }
                 // FIXME for test:
-                final NumberLessThanFilter filtera = new NumberLessThanFilter("visitNbr", 21);
-                filtera.validate(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers);
-                final NotificationInspecteurFilter filterb = new NotificationInspecteurFilter();
-                filterb.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
+                // final NumberLessThanFilter filtera = new NumberLessThanFilter("visitNbr", 21);
+                // filtera.validate(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers);
+                // final NotificationInspecteurFilter filterb = new NotificationInspecteurFilter();
+                // filterb.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
                 break;
             }
         }
@@ -354,7 +353,8 @@ public class ProcedureServiceImpl implements IProcedureService {
             }
             propMap.set("pi:procedureObjectInstances", ProcedureJSONAdapter.getInstance().toJSON(procedureInstance.getProcedureObjects().values()));
             propMap.set("pi:globalVariablesValues", ProcedureJSONAdapter.getInstance().toJSON(gvvList));
-            command = new UpdateProcedureCommand(currentDocument, propMap, taskTitle, groupsList);
+            final String users = "jssteux";
+            command = new UpdateProcedureCommand(currentDocument, propMap, taskTitle, groupsList, users);
         } catch (final Exception e) {
             throw new PortletException(e);
         }

@@ -14,6 +14,9 @@ public class Form {
     /** selectedStep */
     private String selectedStep;
 
+    /** selectedAction */
+    private String selectedAction;
+
     /** procedureInstance */
     private ProcedureInstance procedureInstance;
 
@@ -69,6 +72,15 @@ public class Form {
             }
         }
         return null;
+    }
+
+    /**
+     * gets the Action being curently edited
+     *
+     * @return the selected Action
+     */
+    public Action getTheSelectedAction() {
+        return getTheCurrentStep().getActions().get(Integer.valueOf(selectedAction));
     }
 
 
@@ -169,6 +181,14 @@ public class Form {
 
     public void setFilterMessage(String filterMessage) {
         this.filterMessage = filterMessage;
+    }
+
+    public String getSelectedAction() {
+        return selectedAction;
+    }
+
+    public void setSelectedAction(String selectedAction) {
+        this.selectedAction = selectedAction;
     }
 
 }

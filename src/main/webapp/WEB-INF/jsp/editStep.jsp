@@ -53,10 +53,8 @@ initGroupSelect("${groupSearchUrl}");
 			        <ul class="procedure-sortable list-unstyled">
 			             <c:forEach var="field" items="${form.theSelectedStep.fields}" varStatus="status">
 			             	<li class="form-group">
-			             		<div class="col-sm-1 sortable-handle">
-			                        <i class="glyphicons glyphicons-sorting pull-right"></i>
-			                    </div>
-	                    
+			             		<div class="procedure-hover">
+			             		</div>
 		                       	<c:choose>
 			                      <c:when test="${field.fieldSet eq true}">
 			                      	<c:set var="field" value="${field}" scope="request"/>
@@ -67,7 +65,6 @@ initGroupSelect("${groupSearchUrl}");
 			                      	<jsp:include page="editField.jsp"/>
 			                      </c:otherwise>
 		                      	</c:choose>
-			                    
 			             	</li>
 			             </c:forEach>
 			             <form:input path="selectedStep" type="hidden" name="selectedStep"/>
@@ -167,22 +164,20 @@ initGroupSelect("${groupSearchUrl}");
 	                       </div>
 	                    </li>
 	                    <c:forEach var="action" items="${form.theSelectedStep.actions}" varStatus="status">
-	                    	
-	                    	<portlet:renderURL var="editActionUrl" >
-	                    		<portlet:param name="editAction" value="${status.index}"/>
-	                    	</portlet:renderURL>
-	                    
 	                        <li class="form-group">
 	                            <div class="col-sm-2">
 	                                <form:input path="theSelectedStep.actions[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
 	                            </div>
-	                            <div class="col-sm-8">
+	                            <div class="col-sm-4">
+	                                <form:input path="theSelectedStep.actions[${status.index}].actionId" type="text" cssClass="form-control" placeholder="actionId" />
+	                            </div>
+	                            <div class="col-sm-4">
 	                                <form:input path="theSelectedStep.actions[${status.index}].stepReference" type="text" cssClass="form-control" placeholder="stepReference" />
 	                            </div>
 	                            <div class="btn-group col-sm-2">
-	                            	<a class="btn btn-default" href="${editActionUrl}">
-		                                <i class="glyphicons glyphicons-edit"></i>
-	                            	</a>
+	                            	<button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
+	                                    <i class="glyphicons glyphicons-edit"></i>
+	                                </button>
 	                                <button type="submit" name="deleteButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
 	                                    <i class="glyphicons glyphicons-remove-2"></i>
 	                                </button>

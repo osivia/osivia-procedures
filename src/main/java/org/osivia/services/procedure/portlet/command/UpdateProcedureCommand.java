@@ -24,12 +24,16 @@ public class UpdateProcedureCommand implements INuxeoCommand {
     /** groups */
     private final String groups;
 
-    public UpdateProcedureCommand(Document document, PropertyMap properties, String taskTitle, String groups) {
+    /** users */
+    private final String users;
+
+    public UpdateProcedureCommand(Document document, PropertyMap properties, String taskTitle, String groups, String users) {
         super();
         this.document = document;
         this.properties = properties;
         this.taskTitle = taskTitle;
         this.groups = groups;
+        this.users = users;
     }
 
     @Override
@@ -40,13 +44,13 @@ public class UpdateProcedureCommand implements INuxeoCommand {
         request.set("properties", properties);
         request.set("taskTitle", taskTitle);
         request.set("groups", groups);
-
+        request.set("users", users);
         return request.execute();
     }
 
     @Override
     public String getId() {
-        return "UpdateProcedureCommand/" + document + "/" + taskTitle + "/" + groups + "/" + properties;
+        return "UpdateProcedureCommand/" + document + "/" + taskTitle + "/" + groups + "/" + users + "/" + properties;
     }
 
 }

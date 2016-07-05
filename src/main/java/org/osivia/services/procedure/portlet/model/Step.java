@@ -92,9 +92,7 @@ public class Step implements Comparable<Step> {
             Action action;
             for (final Object actionO : actionsList.list()) {
                 final PropertyMap actionN = (PropertyMap) actionO;
-                action = new Action();
-                action.setLabel(actionN.getString("label"));
-                action.setStepReference(actionN.getString("stepReference"));
+                action = new Action(actionN);
                 getActions().add(action);
             }
         }
