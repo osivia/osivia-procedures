@@ -159,7 +159,10 @@ initGroupSelect("${groupSearchUrl}");
 	                       <div class="col-sm-2">
 	                           <label class="control-label">Label</label>
 	                       </div>
-	                       <div class="col-sm-10">
+	                       <div class="col-sm-4">
+	                           <label class="control-label">Identifiant de l'action</label>
+	                       </div>
+	                       <div class="col-sm-4">
 	                           <label class="control-label">Référence de l'étape cible</label>
 	                       </div>
 	                    </li>
@@ -194,6 +197,60 @@ initGroupSelect("${groupSearchUrl}");
 	                </div>
 	            </div>
 	        </div>
+	        
+	        
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Métadonnées</h3>
+            </div>
+            <div class="panel-body">
+            	<div class="form-group">
+                    <form:label path="theSelectedStep.acquitable" cssClass="col-sm-2 control-label">notifiable</form:label>
+                    <div class="col-sm-10">
+                        <form:checkbox path="theSelectedStep.notifiable" cssClass="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <form:label path="theSelectedStep.acquitable" cssClass="col-sm-2 control-label">acquitable</form:label>
+                    <div class="col-sm-10">
+                        <form:checkbox path="theSelectedStep.acquitable" cssClass="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">stringMsg</form:label>
+                    <div class="col-sm-10">
+                        <form:input path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <form:label path="theSelectedStep.actionIdYes" cssClass="col-sm-2 control-label">actionIdYes</form:label>
+                    <div class="col-sm-10">
+                        <form:input path="theSelectedStep.actionIdYes" type="text" cssClass="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <form:label path="theSelectedStep.displayFormYes" cssClass="col-sm-2 control-label">displayFormYes</form:label>
+                    <div class="col-sm-10">
+                        <form:checkbox path="theSelectedStep.displayFormYes" cssClass="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <form:label path="theSelectedStep.actionIdNo" cssClass="col-sm-2 control-label">actionIdNo</form:label>
+                    <div class="col-sm-10">
+                        <form:input path="theSelectedStep.actionIdNo" type="text" cssClass="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <form:label path="theSelectedStep.displayFormNo" cssClass="col-sm-2 control-label">displayFormNo</form:label>
+                    <div class="col-sm-10">
+                        <form:checkbox path="theSelectedStep.displayFormNo" cssClass="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+            
+            </div>
+        </div>
         
         
         <div class="panel panel-default">

@@ -1,9 +1,23 @@
-
-
 .procedure-sortable{
-	min-height: 15px;
+	min-height: 20px;
 }
 
-fieldset {
-	padding-bottom: 15px;
+.procedure-sortable li{
+	padding-bottom: 20px;
 }
+
+.procedure-sortable li:hover{
+/* 	border-color:lightgrey; */
+/* 	border-style: dashed; */
+/* 	border-width:2px; */
+/* 	box-shadow: 5px 0px 1px lightgray inset; */
+}
+
+.procedure-sortable .procedure-hover:hover{
+/* 	box-shadow: 5px 0px 1px lightgray inset; */
+}
+
+.procedure-hover + .procedure-sortable:hover {
+	box-shadow: 0 0 10px 1px lightgray inset;
+}
+
