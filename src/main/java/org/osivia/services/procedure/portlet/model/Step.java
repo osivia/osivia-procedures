@@ -44,6 +44,27 @@ public class Step implements Comparable<Step> {
     @JsonProperty("authorizedGroups")
     private List<String> groups;
 
+    @JsonProperty("notifiable")
+    private Boolean notifiable;
+
+    @JsonProperty("acquitable")
+    private Boolean acquitable;
+
+    @JsonProperty("stringMsg")
+    private String stringMsg;
+
+    @JsonProperty("actionIdYes")
+    private String actionIdYes;
+
+    @JsonProperty("displayFormYes")
+    private Boolean displayFormYes;
+
+    @JsonProperty("actionIdNo")
+    private String actionIdNo;
+
+    @JsonProperty("displayFormNo")
+    private Boolean displayFormNo;
+
 
     public Step() {
         fields = new ArrayList<Field>();
@@ -107,6 +128,13 @@ public class Step implements Comparable<Step> {
         setStepName(stepM.getString("name"));
         setIndex(stepM.getLong("index").intValue());
         setReference(stepM.getString("reference"));
+        setNotifiable(stepM.getBoolean("notifiable"));
+        setAcquitable(stepM.getBoolean("acquitable"));
+        setStringMsg(stepM.getString("stringMsg"));
+        setActionIdYes(stepM.getString("actionIdYes"));
+        setDisplayFormYes(stepM.getBoolean("displayFormYes"));
+        setActionIdNo(stepM.getString("actionIdNo"));
+        setDisplayFormNo(stepM.getBoolean("displayFormNo"));
     }
 
 
@@ -286,6 +314,146 @@ public class Step implements Comparable<Step> {
      */
     public void setFieldsSet(Set<Field> fieldsSet) {
         this.fieldsSet = fieldsSet;
+    }
+
+
+    /**
+     * Getter for notifiable.
+     *
+     * @return the notifiable
+     */
+    public Boolean getNotifiable() {
+        return notifiable;
+    }
+
+
+    /**
+     * Setter for notifiable.
+     *
+     * @param notifiable the notifiable to set
+     */
+    public void setNotifiable(Boolean notifiable) {
+        this.notifiable = notifiable;
+    }
+
+
+    /**
+     * Getter for acquitable.
+     *
+     * @return the acquitable
+     */
+    public Boolean getAcquitable() {
+        return acquitable;
+    }
+
+
+    /**
+     * Setter for acquitable.
+     *
+     * @param acquitable the acquitable to set
+     */
+    public void setAcquitable(Boolean acquitable) {
+        this.acquitable = acquitable;
+    }
+
+
+    /**
+     * Getter for stringMsg.
+     *
+     * @return the stringMsg
+     */
+    public String getStringMsg() {
+        return stringMsg;
+    }
+
+
+    /**
+     * Setter for stringMsg.
+     *
+     * @param stringMsg the stringMsg to set
+     */
+    public void setStringMsg(String stringMsg) {
+        this.stringMsg = stringMsg;
+    }
+
+
+    /**
+     * Getter for actionIdYes.
+     *
+     * @return the actionIdYes
+     */
+    public String getActionIdYes() {
+        return actionIdYes;
+    }
+
+
+    /**
+     * Setter for actionIdYes.
+     *
+     * @param actionIdYes the actionIdYes to set
+     */
+    public void setActionIdYes(String actionIdYes) {
+        this.actionIdYes = actionIdYes;
+    }
+
+
+    /**
+     * Getter for displayFormYes.
+     *
+     * @return the displayFormYes
+     */
+    public Boolean getDisplayFormYes() {
+        return displayFormYes;
+    }
+
+
+    /**
+     * Setter for displayFormYes.
+     *
+     * @param displayFormYes the displayFormYes to set
+     */
+    public void setDisplayFormYes(Boolean displayFormYes) {
+        this.displayFormYes = displayFormYes;
+    }
+
+
+    /**
+     * Getter for actionIdNo.
+     *
+     * @return the actionIdNo
+     */
+    public String getActionIdNo() {
+        return actionIdNo;
+    }
+
+
+    /**
+     * Setter for actionIdNo.
+     *
+     * @param actionIdNo the actionIdNo to set
+     */
+    public void setActionIdNo(String actionIdNo) {
+        this.actionIdNo = actionIdNo;
+    }
+
+
+    /**
+     * Getter for displayFormNo.
+     *
+     * @return the displayFormNo
+     */
+    public Boolean getDisplayFormNo() {
+        return displayFormNo;
+    }
+
+
+    /**
+     * Setter for displayFormNo.
+     *
+     * @param displayFormNo the displayFormNo to set
+     */
+    public void setDisplayFormNo(Boolean displayFormNo) {
+        this.displayFormNo = displayFormNo;
     }
 
 }
