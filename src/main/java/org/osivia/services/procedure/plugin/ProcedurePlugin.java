@@ -23,9 +23,12 @@ import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.services.procedure.portlet.filter.impl.SetActorsFilterModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormFilterModule;
 
 
 /**
@@ -87,6 +90,12 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
         MenubarModule menubarModule = new ProcedureMenubarModule();
         menubarModules.add(menubarModule);
+        
+        
+        List<FormFilter> filters = this.getFormFilters(context);
+        FormFilter actorFilter = new FormFilter(SetActorsFilterModule.KEY, "Changement d'acteur", new SetActorsFilterModule());
+        filters.add(actorFilter);
+        
     }
 
 
