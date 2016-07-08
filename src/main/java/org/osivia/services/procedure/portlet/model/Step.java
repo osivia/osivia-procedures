@@ -65,6 +65,9 @@ public class Step implements Comparable<Step> {
     @JsonProperty("displayFormNo")
     private Boolean displayFormNo;
 
+    @JsonProperty("actionIdDefault")
+    private String actionIdDefault;
+
 
     public Step() {
         fields = new ArrayList<Field>();
@@ -135,6 +138,7 @@ public class Step implements Comparable<Step> {
         setDisplayFormYes(stepM.getBoolean("displayFormYes"));
         setActionIdNo(stepM.getString("actionIdNo"));
         setDisplayFormNo(stepM.getBoolean("displayFormNo"));
+        setActionIdDefault(stepM.getString("actionIdDefault"));
     }
 
 
@@ -454,6 +458,26 @@ public class Step implements Comparable<Step> {
      */
     public void setDisplayFormNo(Boolean displayFormNo) {
         this.displayFormNo = displayFormNo;
+    }
+
+
+    /**
+     * Getter for actionIdDefault.
+     * 
+     * @return the actionIdDefault
+     */
+    public String getActionIdDefault() {
+        return actionIdDefault;
+    }
+
+
+    /**
+     * Setter for actionIdDefault.
+     * 
+     * @param actionIdDefault the actionIdDefault to set
+     */
+    public void setActionIdDefault(String actionIdDefault) {
+        this.actionIdDefault = actionIdDefault;
     }
 
 }

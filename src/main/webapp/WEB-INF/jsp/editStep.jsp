@@ -246,6 +246,12 @@ initGroupSelect("${groupSearchUrl}");
                         <form:checkbox path="theSelectedStep.displayFormNo" cssClass="form-control" />
                     </div>
                 </div>
+                <div class="form-group">
+                    <form:label path="theSelectedStep.displayFormNo" cssClass="col-sm-2 control-label">actionIdDefault</form:label>
+                    <div class="col-sm-10">
+                        <form:checkbox path="theSelectedStep.actionIdDefault" cssClass="form-control" />
+                    </div>
+                </div>
             </div>
             <div class="panel-footer">
             
