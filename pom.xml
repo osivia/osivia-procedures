@@ -11,7 +11,10 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>4.2.0-SNAPSHOT</toutatice.version>
+        <toutatice.version>4.4.0-SNAPSHOT</toutatice.version>
+        
+        <!-- Directory -->
+        <directory.version>4.4.0-SNAPSHOT</directory.version>
 
     </properties>
 
@@ -24,6 +27,14 @@
             <artifactId>toutatice-portail-cms-nuxeo-dependencies</artifactId>
             <version>${toutatice.version}</version>
             <scope>provided</scope>
+        </dependency>
+        
+        <!-- Directory -->
+        <dependency>
+            <groupId>org.osivia.services.directory.socle</groupId>
+            <artifactId>osivia-services-directory-compat-socle-interfaces</artifactId>
+            <version>${directory.version}</version>
+            <scope>provided</scope>        
         </dependency>
         
     </dependencies>
