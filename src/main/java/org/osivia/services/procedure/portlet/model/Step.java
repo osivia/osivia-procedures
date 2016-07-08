@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -131,13 +132,13 @@ public class Step implements Comparable<Step> {
         setStepName(stepM.getString("name"));
         setIndex(stepM.getLong("index").intValue());
         setReference(stepM.getString("reference"));
-        setNotifiable(stepM.getBoolean("notifiable"));
-        setAcquitable(stepM.getBoolean("acquitable"));
+        setNotifiable(BooleanUtils.isTrue(stepM.getBoolean("notifiable")));
+        setAcquitable(BooleanUtils.isTrue(stepM.getBoolean("acquitable")));
         setStringMsg(stepM.getString("stringMsg"));
         setActionIdYes(stepM.getString("actionIdYes"));
-        setDisplayFormYes(stepM.getBoolean("displayFormYes"));
+        setDisplayFormYes(BooleanUtils.isTrue(stepM.getBoolean("displayFormYes")));
         setActionIdNo(stepM.getString("actionIdNo"));
-        setDisplayFormNo(stepM.getBoolean("displayFormNo"));
+        setDisplayFormNo(BooleanUtils.isTrue(stepM.getBoolean("displayFormNo")));
         setActionIdDefault(stepM.getString("actionIdDefault"));
     }
 
@@ -463,7 +464,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Getter for actionIdDefault.
-     * 
+     *
      * @return the actionIdDefault
      */
     public String getActionIdDefault() {
@@ -473,7 +474,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Setter for actionIdDefault.
-     * 
+     *
      * @param actionIdDefault the actionIdDefault to set
      */
     public void setActionIdDefault(String actionIdDefault) {
