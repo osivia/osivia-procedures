@@ -34,6 +34,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -217,7 +218,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void getProfils(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
             throws PortletException {
 
-        final List<Profil> listeProfils = profil.findProfilByFiltre("(&(objectClass=groupOfNames)(cn=*" + filter + "*))");
+//        final List<Profil> listeProfils = profil.findProfilByFiltre("(&(objectClass=groupOfNames)(cn=*" + filter + "*))");
+    	final List<Map<String, String>> listeProfils = new ArrayList<Map<String, String>>();
+    	Map<String, String> demoGroup = new HashMap<String, String>(1);
+    	demoGroup.put("cn", "demo-group");
+    	demoGroup.put("displayName", "demo-group");
+    	listeProfils.add(demoGroup);
         response.setContentType("application/json");
         try {
             final ObjectMapper mapper = new ObjectMapper();
@@ -325,7 +331,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             String redirectUrl;
             try {
                 redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-                        windowProperties, false);
+                        windowProperties, PortalUrlType.DEFAULT);
             } catch (final PortalException e) {
                 throw new PortletException(e);
             }
@@ -378,7 +384,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             String redirectUrl;
             try {
                 redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-                        windowProperties, false);
+                        windowProperties, PortalUrlType.DEFAULT);
             } catch (final PortalException e) {
                 throw new PortletException(e);
             }
@@ -416,7 +422,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             String redirectUrl;
             try {
                 redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-                        windowProperties, false);
+                        windowProperties, PortalUrlType.DEFAULT);
             } catch (final PortalException e) {
                 throw new PortletException(e);
             }

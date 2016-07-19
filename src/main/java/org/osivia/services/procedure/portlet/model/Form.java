@@ -80,7 +80,7 @@ public class Form {
      * @return the selected Action
      */
     public Action getTheSelectedAction() {
-        return getTheCurrentStep().getActions().get(Integer.valueOf(selectedAction));
+        return getTheSelectedStep().getActions().get(Integer.valueOf(selectedAction));
     }
 
 

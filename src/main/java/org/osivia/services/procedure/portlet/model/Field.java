@@ -108,23 +108,66 @@ public class Field implements Comparable<Field> {
         this.isInput = isInput;
     }
 
-    @Override
+//    @Override
+//    public int compareTo(Field field) {
+//
+//        int returnValue;
+//        final String[] pathArray = StringUtils.split(getPath(), ',');
+//        final String[] comparedPathArray = StringUtils.split(field.getPath(), ',');
+//        if ((pathArray.length > 0) && (comparedPathArray.length > 0)) {
+//            final Integer order = Integer.parseInt(pathArray[pathArray.length - 1]);
+//            final Integer comparedOrder = Integer.parseInt(comparedPathArray[comparedPathArray.length - 1]);
+//            returnValue = order.compareTo(comparedOrder);
+//        } else {
+//            returnValue = 0;
+//        }
+//
+//        return returnValue;
+//    }
+
     public int compareTo(Field field) {
-
-        int returnValue;
-        final String[] pathArray = StringUtils.split(getPath(), ',');
-        final String[] comparedPathArray = StringUtils.split(field.getPath(), ',');
-        if ((pathArray.length > 0) && (comparedPathArray.length > 0)) {
-            final Integer order = Integer.parseInt(pathArray[pathArray.length - 1]);
-            final Integer comparedOrder = Integer.parseInt(comparedPathArray[comparedPathArray.length - 1]);
-            returnValue = order.compareTo(comparedOrder);
-        } else {
-            returnValue = 0;
-        }
-
-        return returnValue;
+    	int returnValue;
+    	
+    	int index=0;
+    	final String[] pathArray = StringUtils.split(getPath(), ',');
+    	final String[] comparedPathArray = StringUtils.split(field.getPath(), ',');
+    	Integer pathPart = Integer.parseInt(pathArray[index]);
+    	Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
+    	returnValue = pathPart.compareTo(comparedPathPart);
+    	boolean deeperPath = pathArray.length>index+1;
+		boolean deeperComparedPath = comparedPathArray.length>index+1;
+		if(returnValue==0 && (deeperPath ||deeperComparedPath)){
+    		if(deeperPath && !deeperComparedPath){
+    			returnValue = 1;
+    		}else if(!deeperPath && deeperComparedPath){
+    			returnValue = -1;
+    		}else{
+    			index++;
+    			returnValue =compare(pathArray, comparedPathArray, index);
+    		}
+    	}
+    	return returnValue;
     }
-
+    
+    private int compare(String[] pathArray, String[] comparedPathArray, int index){
+    	Integer pathPart = Integer.parseInt(pathArray[index]);
+    	Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
+    	int returnValue = pathPart.compareTo(comparedPathPart);
+    	boolean deeperPath = pathArray.length>index+1;
+		boolean deeperComparedPath = comparedPathArray.length>index+1;
+		if(returnValue==0 && (deeperPath ||deeperComparedPath)){
+    		if(deeperPath && !deeperComparedPath){
+    			returnValue = 1;
+    		}else if(!deeperPath && deeperComparedPath){
+    			returnValue = -1;
+    		}else{
+    			index++;
+    			returnValue =compare(pathArray, comparedPathArray, index);
+    		}
+    	}
+    	return returnValue;
+    }
+    
 
     /**
      * Getter for name.
