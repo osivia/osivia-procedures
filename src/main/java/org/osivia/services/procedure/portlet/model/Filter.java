@@ -2,11 +2,15 @@ package org.osivia.services.procedure.portlet.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 
 /**
@@ -36,6 +40,21 @@ public class Filter {
 
 
     public Filter() {
+    }
+
+    public Filter(FormFilter formFilter, String path) {
+        setFilterPath(path);
+        setFilterId(formFilter.getId());
+        if (formFilter.getParameters() != null) {
+            final List<Argument> argumentsList = new ArrayList<Argument>(formFilter.getParameters().entrySet().size());
+            for (Entry<String, FormFilterParameterType> argumentEntry : formFilter.getParameters().entrySet()) {
+                Argument argument = new Argument();
+                argument.setArgumentName(argumentEntry.getKey());
+                argument.setType(argumentEntry.getValue());
+                argumentsList.add(argument);
+            }
+            setArgumentsList(argumentsList);
+        }
     }
 
     public Filter(PropertyMap propertyMap) {

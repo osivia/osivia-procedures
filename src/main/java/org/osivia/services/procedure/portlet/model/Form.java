@@ -17,6 +17,9 @@ public class Form {
     /** selectedAction */
     private String selectedAction;
 
+    /** selectedFilter */
+    private String selectedFilter;
+
     /** procedureInstance */
     private ProcedureInstance procedureInstance;
 
@@ -189,6 +192,24 @@ public class Form {
 
     public void setSelectedAction(String selectedAction) {
         this.selectedAction = selectedAction;
+    }
+
+    /**
+     * Getter for selectedFilter.
+     * 
+     * @return the selectedFilter
+     */
+    public String getSelectedFilter() {
+        return selectedFilter;
+    }
+
+    /**
+     * Setter for selectedFilter.
+     * 
+     * @param selectedFilter the selectedFilter to set
+     */
+    public void setSelectedFilter(String selectedFilter) {
+        this.selectedFilter = selectedFilter;
     }
 
 }

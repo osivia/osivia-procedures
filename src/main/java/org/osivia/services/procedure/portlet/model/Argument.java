@@ -3,6 +3,8 @@ package org.osivia.services.procedure.portlet.model;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
+
 
 /**
  * @author dorian
@@ -16,6 +18,9 @@ public class Argument {
     /** argumentValue */
     @JsonProperty("argumentValue")
     private String argumentValue;
+
+    /** type */
+    private FormFilterParameterType type;
 
 
     public Argument() {
@@ -63,5 +68,23 @@ public class Argument {
      */
     public void setArgumentValue(String argumentValue) {
         this.argumentValue = argumentValue;
+    }
+
+    /**
+     * Getter for type.
+     * 
+     * @return the type
+     */
+    public FormFilterParameterType getType() {
+        return type;
+    }
+
+    /**
+     * Setter for type.
+     * 
+     * @param type the type to set
+     */
+    public void setType(FormFilterParameterType type) {
+        this.type = type;
     }
 }

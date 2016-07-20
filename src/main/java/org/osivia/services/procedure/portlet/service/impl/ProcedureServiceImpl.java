@@ -37,8 +37,6 @@ import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentFromBlobCommand;
 import org.osivia.services.procedure.portlet.command.UpdateProcedureCommand;
 import org.osivia.services.procedure.portlet.exception.FilterException;
-import org.osivia.services.procedure.portlet.filter.IFilter;
-import org.osivia.services.procedure.portlet.model.Action;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.Field;
 import org.osivia.services.procedure.portlet.model.FilePath;
@@ -160,7 +158,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         try {
 
             final String nextStep = stepReference;
-            applyFiltersAndActions(form, objetMetiers, nextStep, groups);
+            // applyFiltersAndActions(form, objetMetiers, nextStep, groups);
             final PropertyMap propMap = new PropertyMap();
             final String groupsList = StringUtils.join(groups, ",");
 
@@ -190,8 +188,8 @@ public class ProcedureServiceImpl implements IProcedureService {
                 command = new StartProcedureCommand(taskTitle, groupsList, users, propMap);
             }
 
-        } catch (final FilterException e) {
-            throw e;
+            // } catch (final FilterException e) {
+            // throw e;
         } catch (final Exception e) {
             throw new PortletException(e);
         }
@@ -200,30 +198,30 @@ public class ProcedureServiceImpl implements IProcedureService {
         return new ProcedureInstance(documentInstance);
     }
 
-    private void applyFiltersAndActions(Form form, final Map<String, ObjetMetier> objetMetiers,
-            String nextStep, List<String> groups) throws PortalException,
-            FilterException {
-
-        for (final Action action : form.getTheCurrentStep().getActions()) {
-            if (StringUtils.equals(action.getStepReference(), nextStep)) {
-                final List<IFilter> listeFiltres = action.getListeFiltres();
-                for (final IFilter filter : listeFiltres) {
-                    filter.validate(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers);
-                }
-
-                for (final IFilter filter : listeFiltres) {
-                    filter.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
-                }
-                // FIXME for test:
-                // final NumberLessThanFilter filtera = new NumberLessThanFilter("visitNbr", 21);
-                // filtera.validate(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers);
-                // final NotificationInspecteurFilter filterb = new NotificationInspecteurFilter();
-                // filterb.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
-                break;
-            }
-        }
-
-    }
+    // private void applyFiltersAndActions(Form form, final Map<String, ObjetMetier> objetMetiers,
+    // String nextStep, List<String> groups) throws PortalException,
+    // FilterException {
+    //
+    // for (final Action action : form.getTheCurrentStep().getActions()) {
+    // if (StringUtils.equals(action.getStepReference(), nextStep)) {
+    // final List<IFilter> listeFiltres = action.getListeFiltres();
+    // for (final IFilter filter : listeFiltres) {
+    // filter.validate(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers);
+    // }
+    //
+    // for (final IFilter filter : listeFiltres) {
+    // filter.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
+    // }
+    // // FIXME for test:
+    // // final NumberLessThanFilter filtera = new NumberLessThanFilter("visitNbr", 21);
+    // // filtera.validate(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers);
+    // // final NotificationInspecteurFilter filterb = new NotificationInspecteurFilter();
+    // // filterb.action(form.getProcedureInstance().getGlobalVariablesValues(), objetMetiers, nextStep, groups);
+    // break;
+    // }
+    // }
+    //
+    // }
 
     private void applyActions(Map<String, ObjetMetier> objetMetiers) {
         for (final ObjetMetier objetMetier : objetMetiers.values()) {
@@ -337,9 +335,9 @@ public class ProcedureServiceImpl implements IProcedureService {
         INuxeoCommand command;
         try {
             final String nextStep = stepReference;
-            if (!StringUtils.equals(nextStep, "endStep")) {
-                applyFiltersAndActions(form, objetMetiers, nextStep, groups);
-            }
+            // if (!StringUtils.equals(nextStep, "endStep")) {
+            // applyFiltersAndActions(form, objetMetiers, nextStep, groups);
+            // }
             final String groupsList = StringUtils.join(groups, ",");
             command = new RetrieveDocumentCommand(procedureInstancePath);
             final Document currentDocument = (Document) nuxeoController.executeNuxeoCommand(command);

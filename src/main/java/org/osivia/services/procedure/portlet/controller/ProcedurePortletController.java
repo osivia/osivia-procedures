@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -70,6 +71,7 @@ import org.springframework.web.portlet.multipart.MultipartActionRequest;
 import fr.toutatice.outils.ldap.entity.Profil;
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
 @Controller
@@ -98,6 +100,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     private PortletContext portletContext;
     /** Portlet config. */
     private PortletConfig portletConfig;
+
 
     /** procedureService */
     @Autowired
@@ -213,6 +216,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return procedureService.getAddUrl(nuxeoController, getPortalUrlFactory());
     }
 
+    @ModelAttribute(value = "listeFiltres")
+    public List<FormFilter> getListeFiltres(PortletRequest request, PortletResponse response) throws PortletException {
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        // formsFilters
+        Map<String, FormFilter> formsFilters = nuxeoController.getNuxeoCMSService().getCMSCustomizer().getFormsFilters();
+        ArrayList<FormFilter> listeFiltres = new ArrayList<FormFilter>(formsFilters.size());
+        for (Entry<String, FormFilter> entryFilter : formsFilters.entrySet()) {
+            listeFiltres.add(entryFilter.getValue());
+        }
+        return listeFiltres;
+    }
+
 
     @ResourceMapping(value = "groupSearch")
     public void getProfils(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
@@ -315,6 +330,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (StringUtils.isNotEmpty(path)) {
             // if the procedure exist in database, update it
             addAllFieldsToSet(form);
+            addAllFiltersToSet(form);
             procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
             response.setRenderParameter("action", "editProcedure");
         } else {
@@ -362,6 +378,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
         addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         if (StringUtils.isNotEmpty(path)) {
             // if the procedure exist in database, update it
             form.getProcedureModel().getSteps().add(new Step(newIndex));
@@ -401,6 +418,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         if (StringUtils.isNotEmpty(path)) {
             // if the procedure exist in database, update it
             form.getProcedureModel().getProcedureObjects().add(new ProcedureObject());
@@ -437,6 +455,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         form.getProcedureModel().getProcedureObjects().remove(Integer.valueOf(selectedObject).intValue());
         addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
         response.setRenderParameter("action", "editProcedure");
@@ -484,7 +503,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             throws PortletException {
 
         addAllFieldsToSet(form);
-
+        addAllFiltersToSet(form);
 
         form.getProcedureModel().getSteps().set(Integer.valueOf(form.getTheSelectedStep().getIndex()), form.getTheSelectedStep());
 
@@ -494,6 +513,24 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         sessionStatus.setComplete();
     }
 
+    private void addAllFiltersToSet(Form form) {
+        for (final Step step : form.getProcedureModel().getSteps()) {
+            for (Action action : step.getActions()) {
+                Set<Filter> filtersList = new HashSet<Filter>();
+                addAllFiltersToSet(filtersList, action.getFilters());
+                action.setFiltersList(filtersList);
+            }
+        }
+    }
+
+    private void addAllFiltersToSet(Set<Filter> filtersList, List<Filter> filters) {
+        filtersList.addAll(filters);
+        for (final Filter filter : filters) {
+            if (filter.getFiltersList() != null) {
+                addAllFiltersToSet(filtersList, filter.getFiltersList());
+            }
+        }
+    }
 
     private void addAllFieldsToSet(Form form) {
         for (final Step step : form.getProcedureModel().getSteps()) {
@@ -518,6 +555,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         form.getProcedureModel().getSteps().remove(Integer.valueOf(form.getSelectedStep()).intValue());
         form.getProcedureModel().updateStepsIndexes();
         addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
         response.setRenderParameter("action", "editProcedure");
@@ -531,6 +569,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         form.getProcedureModel().getSteps().remove(Integer.valueOf(selectedStep).intValue());
         form.getProcedureModel().updateStepsIndexes();
         addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
         response.setRenderParameter("action", "editProcedure");
@@ -546,6 +585,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         final Step copiedStep = form.getProcedureModel().getSteps().get(Integer.valueOf(selectedStep).intValue());
         addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         form.getProcedureModel().getSteps().add(new Step(newIndex, copiedStep));
         form.setSelectedStep(String.valueOf(newIndex));
         procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
@@ -702,10 +742,48 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editAction", params = "addFilter")
-    public void addFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+    public void addFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
+            value = "selectedFilter") String filterId) throws PortletException {
 
-        form.getTheSelectedAction().getFiltersList().add(new Filter());
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        // formsFilters
+        Map<String, FormFilter> formsFilters = nuxeoController.getNuxeoCMSService().getCMSCustomizer().getFormsFilters();
+        FormFilter selectedFilter = formsFilters.get(filterId);
+
+        int newPath;
+        if (form.getTheSelectedAction().getFilters().isEmpty()) {
+            newPath = 0;
+        } else {
+            String lastPath = form.getTheSelectedAction().getFilters().get(form.getTheSelectedAction().getFilters().size() - 1).getFilterPath();
+            newPath = Integer.parseInt(lastPath) + 1;
+        }
+        Filter newFilter = new Filter(selectedFilter, String.valueOf(newPath));
+        form.getTheSelectedAction().getFilters().add(newFilter);
         response.setRenderParameter("action", "editAction");
+    }
+
+    @ActionMapping(value = "editAction", params = "deleteFilter")
+    public void deleteFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
+            value = "selectedFilter") String filterId) throws PortletException {
+
+        removeFilterByFilterId(form.getTheSelectedAction().getFilters(), filterId);
+        response.setRenderParameter("action", "editAction");
+    }
+
+    private boolean removeFilterByFilterId(List<Filter> filters, String filterId) {
+        if (filters != null) {
+            ListIterator<Filter> filtersI = filters.listIterator();
+            boolean removed = false;
+            while (filtersI.hasNext() || !removed) {
+                Filter filter = (Filter) filtersI.next();
+                if (StringUtils.equals(filter.getFilterId(), filterId)) {
+                    filtersI.remove();
+                    return true;
+                }
+                return removeFilterByFilterId(filter.getFiltersList(), filterId);
+            }
+        }
+        return false;
     }
 
     @ActionMapping(value = "editAction", params = "saveAction")
@@ -713,6 +791,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             throws PortletException {
 
         addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         // form.getProcedureModel().getSteps().set(Integer.valueOf(form.getTheSelectedStep().getIndex()), form.getTheSelectedStep());
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
