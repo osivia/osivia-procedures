@@ -25,7 +25,7 @@ $JQry(function() {
 		cursor : "move",
 		tolerance : "pointer",
 		axis: "y",
-		forcePlaceholderSize: true,
+//		forcePlaceholderSize: true,
 		placeholder: "bg-info",
 		stop: function( event, ui ) {
 				$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
@@ -35,15 +35,15 @@ $JQry(function() {
 		}
 	});
 	
-	$JQry(".filter-sortable").sortable({
-		connectWith : ".filter-sortable",
+	$JQry("#filter-sortable ul").sortable({
+		connectWith : "#filter-sortable ul",
 		cursor : "move",
 		tolerance : "pointer",
 		axis: "y",
-		forcePlaceholderSize: true,
-		placeholder: "bg-info",
+//		forcePlaceholderSize: true,
+		placeholder: "filter-sortable-placeHolder",
 		stop: function( event, ui ) {
-				$JQry(".filter-sortable").children("li").each(function(index, element){
+				$JQry("#filter-sortable > ul").children("li").each(function(index, element){
 					updatePath(index, [], element);
 				});	
 				$JQry(this).closest("form").find("input[name='updateForm']").click();

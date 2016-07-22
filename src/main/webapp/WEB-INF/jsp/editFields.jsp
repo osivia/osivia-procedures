@@ -3,9 +3,6 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<%@ page import="org.osivia.services.procedure.portlet.model.Field" %>
-<%@ page import="org.apache.commons.lang.StringUtils" %>
-
 <c:choose>
 	<c:when test="${field.fieldSet eq true}">
 		<div class="procedure-hover">

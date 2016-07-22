@@ -35,11 +35,11 @@
 				</li>
 			</ul>
 		</div>
-		<div class="panel-body">
+		<div class="panel-body" id="filter-sortable">
             <ul class="list-unstyled filter-sortable">
                 <c:forEach var="filter" items="${form.theSelectedAction.filters}" varStatus="status">
                     <li>
-                        <c:set var="filter" value="${filter}" scope="request"/>
+                        <c:set var="nestedFilter" value="${filter}" scope="request"/>
                         <jsp:include page="editFilters.jsp"/>
                     </li>
                 </c:forEach>
