@@ -494,7 +494,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editProcedure", params = "editStep")
     public void editStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
-
         response.setRenderParameter("action", "editStep");
     }
 
@@ -526,8 +525,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     private void addAllFiltersToSet(Set<Filter> filtersList, List<Filter> filters) {
         filtersList.addAll(filters);
         for (final Filter filter : filters) {
-            if (filter.getFiltersList() != null) {
-                addAllFiltersToSet(filtersList, filter.getFiltersList());
+            if (filter.getFilters() != null) {
+                addAllFiltersToSet(filtersList, filter.getFilters());
             }
         }
     }
@@ -668,7 +667,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editStep", params = "updateForm")
-    public void updateForm(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+    public void updateFormStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
         final Map<String, List<Field>> allFieldsMap = new HashMap<String, List<Field>>();
         addAllFields(allFieldsMap, form.getTheSelectedStep().getFields());
@@ -764,27 +763,41 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editAction", params = "deleteFilter")
     public void deleteFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
-            value = "selectedFilter") String filterId) throws PortletException {
+            value = "selectedFilter") String filterInstanceId) throws PortletException {
 
-        removeFilterByFilterId(form.getTheSelectedAction().getFilters(), filterId);
+        if (removeFilterByFilterInstanceId(form.getTheSelectedAction().getFilters(), filterInstanceId)) {
+            updateFiltersPath(form.getTheSelectedAction().getFilters(), StringUtils.EMPTY);
+        }
         response.setRenderParameter("action", "editAction");
     }
 
-    private boolean removeFilterByFilterId(List<Filter> filters, String filterId) {
+    private void updateFiltersPath(List<Filter> filters, String currentPath) {
+        if (filters != null) {
+            for (int i = 0; i < filters.size(); i++) {
+                String newPath = currentPath.length() > 0 ? currentPath.concat(",").concat(String.valueOf(i)) : String.valueOf(i);
+                filters.get(i).updateFilterPath(newPath);
+                updateFiltersPath(filters.get(i).getFilters(), newPath);
+            }
+        }
+    }
+
+    private boolean removeFilterByFilterInstanceId(List<Filter> filters, String filterInstanceId) {
         if (filters != null) {
             ListIterator<Filter> filtersI = filters.listIterator();
-            boolean removed = false;
-            while (filtersI.hasNext() || !removed) {
+            while (filtersI.hasNext()) {
                 Filter filter = (Filter) filtersI.next();
-                if (StringUtils.equals(filter.getFilterId(), filterId)) {
+                if (StringUtils.equals(filter.getFilterInstanceId(), filterInstanceId)) {
                     filtersI.remove();
                     return true;
                 }
-                return removeFilterByFilterId(filter.getFiltersList(), filterId);
+                if (removeFilterByFilterInstanceId(filter.getFilters(), filterInstanceId)) {
+                    return true;
+                }
             }
         }
         return false;
     }
+
 
     @ActionMapping(value = "editAction", params = "saveAction")
     public void saveAction(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
@@ -796,11 +809,61 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-        response.setRenderParameter("action", "editAction");
+        response.setRenderParameter("action", "editStep");
         sessionStatus.setComplete();
     }
 
-    @ActionMapping(value = "editStep", params = "deleteField")
+    @ActionMapping(value = "editAction", params = "updateForm")
+    public void updateFormAction(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+
+        final Map<String, List<Filter>> allFiltersMap = new HashMap<String, List<Filter>>();
+        addAllFilters(allFiltersMap, form.getTheSelectedAction().getFilters());
+        rebuildAction(allFiltersMap, form.getTheSelectedAction());
+        response.setRenderParameter("action", "editAction");
+    }
+
+    private void addAllFilters(Map<String, List<Filter>> allFiltersMap, List<Filter> filters) {
+        if (filters != null) {
+            for (final Filter filter : filters) {
+                if (filter.getFilterPath() != null) {
+                    // on ajoute la filter dans la map avec le path parent comme clé
+                    final String parentPath = filter.getFilterPath().length() > 1 ? StringUtils.substringBeforeLast(filter.getFilterPath(), ",")
+                            : StringUtils.EMPTY;
+                    List<Filter> parentFilters = allFiltersMap.get(parentPath);
+                    if (parentFilters == null) {
+                        parentFilters = new ArrayList<Filter>();
+                    }
+                    parentFilters.add(filter);
+                    Collections.sort(parentFilters);
+                    allFiltersMap.put(parentPath, parentFilters);
+                    addAllFilters(allFiltersMap, filter.getFilters());
+                }
+            }
+        }
+    }
+
+    private void rebuildAction(Map<String, List<Filter>> allFiltersMap, Action action) {
+        final List<Filter> baseFilters = new ArrayList<Filter>();
+
+        final List<Filter> filtersList = allFiltersMap.get(StringUtils.EMPTY);
+        if (filtersList != null) {
+            baseFilters.addAll(filtersList);
+            Collections.sort(baseFilters);
+        }
+        rebuildFilters(allFiltersMap, baseFilters);
+
+        action.setFilters(baseFilters);
+    }
+
+    private void rebuildFilters(Map<String, List<Filter>> allFiltersMap, List<Filter> baseFilters) {
+        if (baseFilters != null) {
+            for (final Filter filter : baseFilters) {
+                filter.setFilters(allFiltersMap.get(filter.getFilterPath()));
+                rebuildFilters(allFiltersMap, filter.getFilters());
+            }
+        }
+    }
+
     public void deleteField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
             @RequestParam(value = "selectedField") String selectedField) throws PortletException {
 

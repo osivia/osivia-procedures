@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
@@ -16,15 +17,19 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 /**
  * @author dorian
  */
-public class Filter {
+public class Filter implements Comparable<Filter> {
 
     /** filterName */
-    @JsonProperty("filterName")
+    @JsonIgnore
     private String filterName;
 
     /** filterPath */
     @JsonProperty("filterPath")
     private String filterPath;
+
+    /** filterInstanceId */
+    @JsonProperty("filterInstanceId")
+    private String filterInstanceId;
 
     /** filterId */
     @JsonProperty("filterId")
@@ -34,9 +39,9 @@ public class Filter {
     @JsonProperty("argumentsList")
     private List<Argument> argumentsList;
 
-    /** filtersList */
+    /** filters */
     @JsonIgnore
-    private List<Filter> filtersList;
+    private List<Filter> filters;
 
 
     public Filter() {
@@ -45,6 +50,8 @@ public class Filter {
     public Filter(FormFilter formFilter, String path) {
         setFilterPath(path);
         setFilterId(formFilter.getId());
+        setFilterInstanceId(getFilterId().concat(getFilterPath()));
+        setFilterName(formFilter.getLabelKey());
         if (formFilter.getParameters() != null) {
             final List<Argument> argumentsList = new ArrayList<Argument>(formFilter.getParameters().entrySet().size());
             for (Entry<String, FormFilterParameterType> argumentEntry : formFilter.getParameters().entrySet()) {
@@ -61,6 +68,7 @@ public class Filter {
         setFilterName(propertyMap.getString("filterName"));
         setFilterPath(propertyMap.getString("filterPath"));
         setFilterId(propertyMap.getString("filterId"));
+        setFilterInstanceId(propertyMap.getString("filterInstanceId"));
 
         final PropertyList argumentsPptyList = propertyMap.getList("argumentsList");
         if (argumentsPptyList != null) {
@@ -72,6 +80,12 @@ public class Filter {
             setArgumentsList(argumentsList);
         }
     }
+
+    public void updateFilterPath(String newPath) {
+        setFilterPath(newPath);
+        setFilterInstanceId(getFilterId().concat(getFilterPath()));
+    }
+
 
     /**
      * Getter for filterName.
@@ -114,26 +128,6 @@ public class Filter {
 
 
     /**
-     * Getter for filtersList.
-     *
-     * @return the filtersList
-     */
-    public List<Filter> getFiltersList() {
-        return filtersList;
-    }
-
-
-    /**
-     * Setter for filtersList.
-     *
-     * @param filtersList the filtersList to set
-     */
-    public void setFiltersList(List<Filter> filtersList) {
-        this.filtersList = filtersList;
-    }
-
-
-    /**
      * Getter for argumentsList.
      *
      * @return the argumentsList
@@ -160,4 +154,85 @@ public class Filter {
         this.filterId = filterId;
     }
 
+    @Override
+    public int compareTo(Filter filter) {
+        int returnValue;
+
+        int index = 0;
+        final String[] pathArray = StringUtils.split(getFilterPath(), ',');
+        final String[] comparedPathArray = StringUtils.split(filter.getFilterPath(), ',');
+        Integer pathPart = Integer.parseInt(pathArray[index]);
+        Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
+        returnValue = pathPart.compareTo(comparedPathPart);
+        boolean deeperPath = pathArray.length > index + 1;
+        boolean deeperComparedPath = comparedPathArray.length > index + 1;
+        if (returnValue == 0 && (deeperPath || deeperComparedPath)) {
+            if (deeperPath && !deeperComparedPath) {
+                returnValue = 1;
+            } else if (!deeperPath && deeperComparedPath) {
+                returnValue = -1;
+            } else {
+                index++;
+                returnValue = compare(pathArray, comparedPathArray, index);
+            }
+        }
+        return returnValue;
+    }
+
+    private int compare(String[] pathArray, String[] comparedPathArray, int index) {
+        Integer pathPart = Integer.parseInt(pathArray[index]);
+        Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
+        int returnValue = pathPart.compareTo(comparedPathPart);
+        boolean deeperPath = pathArray.length > index + 1;
+        boolean deeperComparedPath = comparedPathArray.length > index + 1;
+        if (returnValue == 0 && (deeperPath || deeperComparedPath)) {
+            if (deeperPath && !deeperComparedPath) {
+                returnValue = 1;
+            } else if (!deeperPath && deeperComparedPath) {
+                returnValue = -1;
+            } else {
+                index++;
+                returnValue = compare(pathArray, comparedPathArray, index);
+            }
+        }
+        return returnValue;
+    }
+
+    /**
+     * Getter for filterInstanceId.
+     * 
+     * @return the filterInstanceId
+     */
+    public String getFilterInstanceId() {
+        return filterInstanceId;
+    }
+
+    /**
+     * Setter for filterInstanceId.
+     * 
+     * @param filterInstanceId the filterInstanceId to set
+     */
+    public void setFilterInstanceId(String filterInstanceId) {
+        this.filterInstanceId = filterInstanceId;
+    }
+
+
+    /**
+     * Getter for filters.
+     * 
+     * @return the filters
+     */
+    public List<Filter> getFilters() {
+        return filters;
+    }
+
+
+    /**
+     * Setter for filters.
+     * 
+     * @param filters the filters to set
+     */
+    public void setFilters(List<Filter> filters) {
+        this.filters = filters;
+    }
 }

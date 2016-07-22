@@ -1,8 +1,7 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal"
-	prefix="op"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal"	prefix="op"%>
 
 <portlet:defineObjects />
 
@@ -37,57 +36,14 @@
 			</ul>
 		</div>
 		<div class="panel-body">
-			<c:forEach var="filter" items="${form.theSelectedAction.filters}"
-				varStatus="status">
-				<ul class="list-unstyled">
-					<li class="form-group">
-						<div class="col-sm-2">
-							<label class="control-label">Nom du filtre</label>
-						</div>
-						<div class="col-sm-2">
-							<form:input
-								path="theSelectedAction.filters[${status.index}].filterName"
-								type="text" cssClass="form-control" placeholder="filterName" />
-						</div>
-						<div class="col-sm-2">
-							<label class="control-label">Identifiant du filtre</label>
-						</div>
-						<div class="col-sm-2">${filter.filterId}</div>
-						<div class="col-sm-2">
-							<label class="control-label">Path du filtre</label>
-						</div>
-						<div class="col-sm-2">${filter.filterPath}</div>
-					</li>
-					<li class="form-group">
-						<ul class="list-unstyled">
-							<c:forEach var="argument" items="${filter.argumentsList}"
-								varStatus="argStatus">
-								<li class="form-group">
-									<div class="col-sm-3">
-										<label class="control-label">${argument.argumentName}</label>
-									</div>
-									<div class="col-sm-3">
-										<c:if test="${argument.type eq 'TEXT'}">
-											<form:input
-												path="theSelectedAction.filters[${status.index}].argumentsList[${argStatus.index}].argumentValue"
-												type="text" cssClass="form-control"
-												placeholder="argumentValue" />
-										</c:if>
-										<c:if test="${argument.type eq 'BOOLEAN'}">
-											<form:checkbox
-												path="theSelectedAction.filters[${status.index}].argumentsList[${argStatus.index}].argumentValue"
-												cssClass="form-control" />
-										</c:if>
-									</div>
-								</li>
-							</c:forEach>
-						</ul>
-					</li>
-				</ul>
-				<button type="submit" name="deleteFilter" class="btn btn-default pull-right" onclick="selector(this,'${filter.filterId}','selectedFilter');">
-                    <i class="glyphicons glyphicons-bin"></i>
-                </button>
-			</c:forEach>
+            <ul class="list-unstyled filter-sortable">
+                <c:forEach var="filter" items="${form.theSelectedAction.filters}" varStatus="status">
+                    <li>
+                        <c:set var="filter" value="${filter}" scope="request"/>
+                        <jsp:include page="editFilters.jsp"/>
+                    </li>
+                </c:forEach>
+            </ul>
 		</div>
 
 		<div class="panel-footer">
@@ -96,6 +52,7 @@
 					<button type="submit" class="btn btn-primary" name="saveAction">Sauvegarder</button>
 					<button type="button" class="btn btn-default" data-toggle="modal"
 						data-target="#filtreModal">Ajouter un filtre</button>
+					<input type="submit" class="hidden" name="updateForm">
 				</div>
 			</div>
 		</div>

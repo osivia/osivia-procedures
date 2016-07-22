@@ -182,7 +182,7 @@ initGroupSelect("${groupSearchUrl}");
 	                                    <i class="glyphicons glyphicons-edit"></i>
 	                                </button>
 	                                <button type="submit" name="deleteButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
-	                                    <i class="glyphicons glyphicons-remove-2"></i>
+	                                    <i class="glyphicons glyphicons-remove"></i>
 	                                </button>
 	                            </div>
 	                        </li>

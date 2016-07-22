@@ -40,7 +40,7 @@
                                 <i class="glyphicons glyphicons-duplicate"></i>
                             </button>
                             <button type="submit" name="deleteStep" class="btn btn-default" onclick="selector(this,'${status.index}','selectedStep')">
-                                <i class="glyphicons glyphicons-remove-2"></i>
+                                <i class="glyphicons glyphicons-remove"></i>
                             </button>
                         </div>
                     </li>
@@ -88,7 +88,7 @@
                             </div>
                             <div class="btn-group col-sm-1">
                                 <button type="submit" name="deleteObject" class="btn btn-default" onclick="selector(this,'${status.index}','selectedObject')">
-                                    <i class="glyphicons glyphicons-remove-2"></i>
+                                    <i class="glyphicons glyphicons-remove"></i>
                                 </button>
                             </div>
                          </li>

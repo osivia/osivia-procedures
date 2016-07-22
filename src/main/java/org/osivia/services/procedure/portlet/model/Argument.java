@@ -20,6 +20,7 @@ public class Argument {
     private String argumentValue;
 
     /** type */
+    @JsonProperty("argumentType")
     private FormFilterParameterType type;
 
 
@@ -29,6 +30,9 @@ public class Argument {
     public Argument(PropertyMap argumentMap) {
         setArgumentName(argumentMap.getString("argumentName"));
         setArgumentValue(argumentMap.getString("argumentValue"));
+        if (argumentMap.getString("argumentType") != null) {
+            setType(FormFilterParameterType.valueOf(argumentMap.getString("argumentType")));
+        }
     }
 
     /**

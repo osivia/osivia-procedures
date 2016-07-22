@@ -3,7 +3,7 @@ function updatePath(index, currentpath, element) {
 	var elementPath = currentpath.slice();
 	elementPath.push(index);
 	if(!$JQry(element).find("input[name$='canary']").length){
-		$JQry(element).find("input[name$='path']").val(elementPath);
+		$JQry(element).find("input[name$='path'],input[name$='filterPath']").val(elementPath);
 		$JQry('<input>').attr({
 			type : 'hidden',
 			name : 'canary',
@@ -20,7 +20,6 @@ function updatePath(index, currentpath, element) {
 }
 
 $JQry(function() {
-	// Sortable
 	$JQry("#procedure-sortable ul").sortable({
 		connectWith : "#procedure-sortable ul",
 		cursor : "move",
@@ -30,6 +29,21 @@ $JQry(function() {
 		placeholder: "bg-info",
 		stop: function( event, ui ) {
 				$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
+					updatePath(index, [], element);
+				});	
+				$JQry(this).closest("form").find("input[name='updateForm']").click();
+		}
+	});
+	
+	$JQry(".filter-sortable").sortable({
+		connectWith : ".filter-sortable",
+		cursor : "move",
+		tolerance : "pointer",
+		axis: "y",
+		forcePlaceholderSize: true,
+		placeholder: "bg-info",
+		stop: function( event, ui ) {
+				$JQry(".filter-sortable").children("li").each(function(index, element){
 					updatePath(index, [], element);
 				});	
 				$JQry(this).closest("form").find("input[name='updateForm']").click();

@@ -92,11 +92,11 @@ public class Action {
                 // nested fields
                 fillFilter(fieldMap, mapFilter);
 
-                if (filter.getFiltersList() == null) {
-                    filter.setFiltersList(new ArrayList<Filter>());
+                if (filter.getFilters() == null) {
+                    filter.setFilters(new ArrayList<Filter>());
                 }
                 // add to parent
-                filter.getFiltersList().add(mapFilter);
+                filter.getFilters().add(mapFilter);
                 i++;
             } else {
                 completed = true;

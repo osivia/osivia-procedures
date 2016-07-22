@@ -221,7 +221,7 @@
 	</button>
 	<button type="submit" name="deleteField" class="btn btn-default"
 		onclick="selectPath(this,'selectedField')">
-		<i class="glyphicons glyphicons-remove-2"></i>
+		<i class="glyphicons glyphicons-remove"></i>
 	</button>
 </div>
 

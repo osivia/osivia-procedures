@@ -6,6 +6,10 @@
 	padding-bottom: 20px;
 }
 
+.filter-sortable{
+	min-height: 20px;
+}
+
 .procedure-sortable li:hover{
 /* 	border-color:lightgrey; */
 /* 	border-style: dashed; */
