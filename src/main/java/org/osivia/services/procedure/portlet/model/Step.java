@@ -42,30 +42,39 @@ public class Step implements Comparable<Step> {
     @JsonProperty("reference")
     private String reference;
 
+    /** groups */
     @JsonProperty("authorizedGroups")
     private List<String> groups;
 
+    /** notifiable */
     @JsonProperty("notifiable")
     private Boolean notifiable;
 
+    /** acquitable */
     @JsonProperty("acquitable")
     private Boolean acquitable;
 
+    /** closable */
+    @JsonProperty("closable")
+    private Boolean closable;
+
+    /** actionIdClosable */
+    @JsonProperty("actionIdClosable")
+    private String actionIdClosable;
+
+    /** stringMsg */
     @JsonProperty("stringMsg")
     private String stringMsg;
 
+    /** actionIdYes */
     @JsonProperty("actionIdYes")
     private String actionIdYes;
 
-    @JsonProperty("displayFormYes")
-    private Boolean displayFormYes;
-
+    /** actionIdNo */
     @JsonProperty("actionIdNo")
     private String actionIdNo;
 
-    @JsonProperty("displayFormNo")
-    private Boolean displayFormNo;
-
+    /** actionIdDefault */
     @JsonProperty("actionIdDefault")
     private String actionIdDefault;
 
@@ -133,13 +142,13 @@ public class Step implements Comparable<Step> {
         setIndex(stepM.getLong("index").intValue());
         setReference(stepM.getString("reference"));
         setNotifiable(BooleanUtils.isTrue(stepM.getBoolean("notifiable")));
+        setClosable(BooleanUtils.isTrue(stepM.getBoolean("closable")));
         setAcquitable(BooleanUtils.isTrue(stepM.getBoolean("acquitable")));
         setStringMsg(stepM.getString("stringMsg"));
         setActionIdYes(stepM.getString("actionIdYes"));
-        setDisplayFormYes(BooleanUtils.isTrue(stepM.getBoolean("displayFormYes")));
         setActionIdNo(stepM.getString("actionIdNo"));
-        setDisplayFormNo(BooleanUtils.isTrue(stepM.getBoolean("displayFormNo")));
         setActionIdDefault(stepM.getString("actionIdDefault"));
+        setActionIdClosable(stepM.getString("actionIdClosable"));
     }
 
 
@@ -402,25 +411,6 @@ public class Step implements Comparable<Step> {
     }
 
 
-    /**
-     * Getter for displayFormYes.
-     *
-     * @return the displayFormYes
-     */
-    public Boolean getDisplayFormYes() {
-        return displayFormYes;
-    }
-
-
-    /**
-     * Setter for displayFormYes.
-     *
-     * @param displayFormYes the displayFormYes to set
-     */
-    public void setDisplayFormYes(Boolean displayFormYes) {
-        this.displayFormYes = displayFormYes;
-    }
-
 
     /**
      * Getter for actionIdNo.
@@ -443,26 +433,6 @@ public class Step implements Comparable<Step> {
 
 
     /**
-     * Getter for displayFormNo.
-     *
-     * @return the displayFormNo
-     */
-    public Boolean getDisplayFormNo() {
-        return displayFormNo;
-    }
-
-
-    /**
-     * Setter for displayFormNo.
-     *
-     * @param displayFormNo the displayFormNo to set
-     */
-    public void setDisplayFormNo(Boolean displayFormNo) {
-        this.displayFormNo = displayFormNo;
-    }
-
-
-    /**
      * Getter for actionIdDefault.
      *
      * @return the actionIdDefault
@@ -479,6 +449,46 @@ public class Step implements Comparable<Step> {
      */
     public void setActionIdDefault(String actionIdDefault) {
         this.actionIdDefault = actionIdDefault;
+    }
+
+
+    /**
+     * Getter for closable.
+     * 
+     * @return the closable
+     */
+    public Boolean getClosable() {
+        return closable;
+    }
+
+
+    /**
+     * Setter for closable.
+     * 
+     * @param closable the closable to set
+     */
+    public void setClosable(Boolean closable) {
+        this.closable = closable;
+    }
+
+
+    /**
+     * Getter for actionIdClosable.
+     * 
+     * @return the actionIdClosable
+     */
+    public String getActionIdClosable() {
+        return actionIdClosable;
+    }
+
+
+    /**
+     * Setter for actionIdClosable.
+     * 
+     * @param actionIdClosable the actionIdClosable to set
+     */
+    public void setActionIdClosable(String actionIdClosable) {
+        this.actionIdClosable = actionIdClosable;
     }
 
 }
