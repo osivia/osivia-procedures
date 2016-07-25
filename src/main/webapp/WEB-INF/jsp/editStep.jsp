@@ -108,7 +108,7 @@ initGroupSelect("${groupSearchUrl}");
 	                  </div>
 	                  <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-	                    <button type="submit" name="addField" data-dismiss="modal" class="btn btn-primary" onclick="hideModal(this);">Ajouter</button>
+	                    <button type="submit" name="addField" data-dismiss="modal" class="btn btn-primary" onclick="hideModal();">Ajouter</button>
 	                  </div>
 	                </div>
 	              </div>
@@ -131,7 +131,7 @@ initGroupSelect("${groupSearchUrl}");
 	                  </div>
 	                  <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-	                    <button type="submit" name="addFieldSet" data-dismiss="modal" class="btn btn-primary" onclick="hideModal(this);">Ajouter</button>
+	                    <button type="submit" name="addFieldSet" data-dismiss="modal" class="btn btn-primary" onclick="hideModal();">Ajouter</button>
 	                  </div>
 	                </div>
 	              </div>
@@ -217,6 +217,18 @@ initGroupSelect("${groupSearchUrl}");
                     </div>
                 </div>
                 <div class="form-group">
+                    <form:label path="theSelectedStep.closable" cssClass="col-sm-2 control-label">closable</form:label>
+                    <div class="col-sm-10">
+                        <form:checkbox path="theSelectedStep.closable" cssClass="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <form:label path="theSelectedStep.actionIdClosable" cssClass="col-sm-2 control-label">actionIdClosable</form:label>
+                    <div class="col-sm-10">
+                        <form:input path="theSelectedStep.actionIdClosable" type="text" cssClass="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
                     <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">stringMsg</form:label>
                     <div class="col-sm-10">
                         <form:input path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
@@ -229,25 +241,13 @@ initGroupSelect("${groupSearchUrl}");
                     </div>
                 </div>
                 <div class="form-group">
-                    <form:label path="theSelectedStep.displayFormYes" cssClass="col-sm-2 control-label">displayFormYes</form:label>
-                    <div class="col-sm-10">
-                        <form:checkbox path="theSelectedStep.displayFormYes" cssClass="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
                     <form:label path="theSelectedStep.actionIdNo" cssClass="col-sm-2 control-label">actionIdNo</form:label>
                     <div class="col-sm-10">
                         <form:input path="theSelectedStep.actionIdNo" type="text" cssClass="form-control" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <form:label path="theSelectedStep.displayFormNo" cssClass="col-sm-2 control-label">displayFormNo</form:label>
-                    <div class="col-sm-10">
-                        <form:checkbox path="theSelectedStep.displayFormNo" cssClass="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <form:label path="theSelectedStep.displayFormNo" cssClass="col-sm-2 control-label">actionIdDefault</form:label>
+                    <form:label path="theSelectedStep.actionIdDefault" cssClass="col-sm-2 control-label">actionIdDefault</form:label>
                     <div class="col-sm-10">
                         <form:input path="theSelectedStep.actionIdDefault" cssClass="form-control" />
                     </div>

@@ -80,7 +80,7 @@
 							<div class="panel-body">
 								<op:translate key="${filtre.descriptionKey}"/>
 								<button type="submit" name="addFilter" class="btn btn-default pull-right"
-									onclick="selector(this,'${filtre.id}','selectedFilter');hideModal(this);" data-dismiss="modal">
+									onclick="selector(this,'${filtre.id}','selectedFilter');hideModal();" data-dismiss="modal">
 									<i class="glyphicons glyphicons-plus"></i>
 								</button>
 							</div>

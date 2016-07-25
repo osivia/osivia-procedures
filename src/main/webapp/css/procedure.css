@@ -3,6 +3,11 @@
 	padding-bottom: 50px;
 }
 
+.procedure-sortable-placeHolder{
+    background-color: rgba(217, 237, 247, 0.8);
+    min-height: 30px;
+}
+
 .procedure-sortable li{
 /* 	padding-bottom: 20px; */
 }

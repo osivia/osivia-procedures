@@ -284,7 +284,7 @@
 	    </div>
 	    <div class="modal-footer">
 	      <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-	      <button type="submit" name="editField" class="btn btn-primary" data-dismiss="modal" onclick="selector(this,'${field.path}','selectedField');hideModal(this);">Modifier</button>
+	      <button type="submit" name="editField" class="btn btn-primary" data-dismiss="modal" onclick="selector(this,'${field.path}','selectedField');hideModal();">Modifier</button>
 	      </div>
 	    </div>
 	  </div>

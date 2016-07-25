@@ -26,7 +26,7 @@ $JQry(function() {
 		tolerance : "pointer",
 		axis: "y",
 //		forcePlaceholderSize: true,
-		placeholder: "bg-info",
+		placeholder: "procedure-sortable-placeHolder",
 		stop: function( event, ui ) {
 				$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
 					updatePath(index, [], element);
@@ -125,22 +125,6 @@ function initGroupSelect(groupSearchUrl){
 	});
 }
 
-function hideModal(element){
-	$JQry(element).parents(".modal").modal('hide');
+function hideModal(){
+	$JQry(".modal-open").removeClass("modal-open");
 }
-
-//$JQry(document).ready(function(){
-//	$JQry(".procedure-sortable li").hover(
-//			function() {
-//				// on retire la class hover aux elements qui l'ont
-//				$JQry(".procedure-hover").removeClass("procedure-hover");
-//				// on l'ajoute à l'élément courant
-//				$JQry(this).addClass("procedure-hover");
-//			}, function() {
-//				// on retire la class hover à l'élément courant
-//				$JQry(this).removeClass("procedure-hover");
-//				// on simule un nouvel hover sur le parent direct si applicable
-//				$JQry(this).parent().closest(".procedure-sortable li").mouseenter();
-//			}
-//	);
-//});
