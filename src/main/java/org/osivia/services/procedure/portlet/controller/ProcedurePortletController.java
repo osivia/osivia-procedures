@@ -864,6 +864,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
+    @ActionMapping(value = "editStep", params = "deleteField")
     public void deleteField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
             @RequestParam(value = "selectedField") String selectedField) throws PortletException {
 
