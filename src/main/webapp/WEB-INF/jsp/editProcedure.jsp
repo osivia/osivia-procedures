@@ -12,12 +12,19 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Nom de la procédure</h3>
+            <h3 class="panel-title">Identification de la procédure</h3>
         </div>
         <div class="panel-body">
             <div class="form-group">
-                <div class="col-sm-6">
-                    <form:input path="procedureModel.name" type="text" cssClass="form-control" />
+				<form:label path="procedureModel.name" cssClass="col-sm-3 control-label">Nom</form:label>
+				<div class="col-sm-9">
+                    <form:input path="procedureModel.name" type="text" cssClass="form-control" placeholder="Nom" />
+			    </div>
+			</div>
+			<div class="form-group">
+                <form:label path="procedureModel.webId" cssClass="col-sm-3 control-label">Identifiant</form:label>
+                <div class="col-sm-9">
+                    <form:input path="procedureModel.webId" type="text" cssClass="form-control" placeholder="Identifiant" />
                 </div>
             </div>
         </div>

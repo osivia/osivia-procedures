@@ -34,7 +34,11 @@ public class ProcedureModel {
     /** path of the document */
     private String path;
 
+    /** url */
     private String url;
+
+    /** webId */
+    private String webId;
 
     public ProcedureModel() {
         variables = new HashMap<String, Variable>();
@@ -49,6 +53,7 @@ public class ProcedureModel {
 
         final PropertyMap properties = document.getProperties();
         name = properties.getString("dc:title");
+        webId = properties.getString("ttc:webid");
         path = document.getPath();
         startingStep = properties.getString("pcd:startingStep");
 
@@ -251,6 +256,24 @@ public class ProcedureModel {
      */
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * Getter for webId.
+     * 
+     * @return the webId
+     */
+    public String getWebId() {
+        return webId;
+    }
+
+    /**
+     * Setter for webId.
+     * 
+     * @param webId the webId to set
+     */
+    public void setWebId(String webId) {
+        this.webId = webId;
     }
 
 }

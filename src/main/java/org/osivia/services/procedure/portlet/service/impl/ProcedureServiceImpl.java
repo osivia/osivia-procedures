@@ -108,6 +108,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             final Document currentDocument = (Document) nuxeoController.executeNuxeoCommand(command);
             final PropertyMap propMap = new PropertyMap();
             propMap.set("dc:title", procedureModel.getName());
+            propMap.set("ttc:webid", procedureModel.getWebId());
             propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
             propMap.set("pcd:globalVariablesDefinitions", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getVariables().values()));
             propMap.set("pcd:startingStep", procedureModel.getStartingStep());
