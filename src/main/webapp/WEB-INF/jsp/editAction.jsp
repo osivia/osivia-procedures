@@ -52,10 +52,10 @@
 		            <button type="submit" class="btn btn-default" name="cancelAction">Annuler</button>
 		        </div>
 				<div class="col-sm-1 pull-right">
-					<button type="submit" class="btn btn-primary" name="saveAction">Sauvegarder</button>
+					<button type="submit" class="btn btn-primary pull-right" name="saveAction">Sauvegarder</button>
 				</div>
 				<div class="col-sm-1 pull-right">
-					<button type="button" class="btn btn-default" data-toggle="modal" data-target="#filtreModal">Ajouter un filtre</button>
+					<button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#filtreModal">Ajouter un filtre</button>
 				</div>
 				<input type="submit" class="hidden" name="updateForm">
 			</div>

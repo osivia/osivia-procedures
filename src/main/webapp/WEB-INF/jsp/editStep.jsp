@@ -237,7 +237,7 @@ initGroupSelect("${groupSearchUrl}");
                <li class="form-group">
                    <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Groupes</form:label>
                    <div class="col-sm-10">
-                       <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2">
+                       <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;">
                            <form:options items="${form.theSelectedStep.groups}" />
                        </form:select>
                    </div>
@@ -251,10 +251,10 @@ initGroupSelect("${groupSearchUrl}");
             <button type="submit" class="btn btn-default" name="cancelStep">Annuler</button>
         </div>
         <div class="col-sm-1 pull-right">
-            <button type="submit" class="btn btn-primary" name="saveStep">Sauvegarder</button>
+            <button type="submit" class="btn btn-danger pull-right" name="deleteStep">Supprimer</button>
         </div>
         <div class="col-sm-1 pull-right">
-            <button type="submit" class="btn btn-danger pull-right" name="deleteStep">Supprimer</button>
+            <button type="submit" class="btn btn-primary pull-right" name="saveStep">Sauvegarder</button>
         </div>
         <input type="submit" class="hidden" name="updateForm">
     </div>
