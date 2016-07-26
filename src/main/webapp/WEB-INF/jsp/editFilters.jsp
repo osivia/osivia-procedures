@@ -33,13 +33,15 @@
 				</div>
 			</div>
 		</c:forEach>
-        <ul class="list-unstyled filter-sortable">
-            <c:forEach var="nestedFilter" items="${filterBkp.filters}" varStatus="status">
-	            <li>
-                    <c:set var="nestedFilter" value="${nestedFilter}" scope="request" />
-	                <jsp:include page="editFilters.jsp"/>
-	            </li>
-            </c:forEach>
-		</ul>
+		<c:if test="${filterBkp.hasChildren}">
+	        <ul class="list-unstyled filter-sortable">
+	            <c:forEach var="nestedFilter" items="${filterBkp.filters}" varStatus="status">
+		            <li>
+	                    <c:set var="nestedFilter" value="${nestedFilter}" scope="request" />
+		                <jsp:include page="editFilters.jsp"/>
+		            </li>
+	            </c:forEach>
+			</ul>
+		</c:if>
 	</div>
 </div>

@@ -155,6 +155,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @RenderMapping(params = "action=editStep")
     public String editStepView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+        request.setAttribute("activeTab", request.getParameter("activeTab"));
         return EDIT_VIEW;
     }
 
@@ -497,6 +498,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "editStep");
     }
 
+    @ActionMapping(value = "editStep", params = "cancelStep")
+    public void cancelStep(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+        response.setRenderParameter("action", "editProcedure");
+        sessionStatus.setComplete();
+    }
+
     @ActionMapping(value = "editStep", params = "saveStep")
     public void saveStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
             throws PortletException {
@@ -663,6 +670,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         field.setPath(String.valueOf(form.getTheSelectedStep().getFields().size()));
         form.getTheSelectedStep().getFields().add(field);
         form.setNewField(new AddField());
+        response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("action", "editStep");
     }
 
@@ -674,6 +682,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         rebuildStep(allFieldsMap, form.getTheSelectedStep());
 
+        response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("action", "editStep");
     }
 
@@ -771,6 +780,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "editAction");
     }
 
+    @ActionMapping(value = "editAction", params = "cancelAction")
+    public void cancelAction(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+        response.setRenderParameter("action", "editStep");
+        sessionStatus.setComplete();
+    }
+
     private void updateFiltersPath(List<Filter> filters, String currentPath) {
         if (filters != null) {
             for (int i = 0; i < filters.size(); i++) {
@@ -826,7 +841,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (filters != null) {
             for (final Filter filter : filters) {
                 if (filter.getFilterPath() != null) {
-                    // on ajoute la filter dans la map avec le path parent comme clé
+                    // on ajoute le filtre dans la map avec le path parent comme clé
                     final String parentPath = filter.getFilterPath().length() > 1 ? StringUtils.substringBeforeLast(filter.getFilterPath(), ",")
                             : StringUtils.EMPTY;
                     List<Filter> parentFilters = allFiltersMap.get(parentPath);
@@ -871,6 +886,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final String[] path = selectedField.split(",");
         removeFieldByPath(form.getTheSelectedStep().getFields(), path);
 
+        response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("action", "editStep");
     }
 

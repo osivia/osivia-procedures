@@ -48,12 +48,16 @@
 
 		<div class="panel-footer">
 			<div class="form-group">
-				<div class="col-sm-11">
+			    <div class="col-sm-1">
+		            <button type="submit" class="btn btn-default" name="cancelAction">Annuler</button>
+		        </div>
+				<div class="col-sm-1 pull-right">
 					<button type="submit" class="btn btn-primary" name="saveAction">Sauvegarder</button>
-					<button type="button" class="btn btn-default" data-toggle="modal"
-						data-target="#filtreModal">Ajouter un filtre</button>
-					<input type="submit" class="hidden" name="updateForm">
 				</div>
+				<div class="col-sm-1 pull-right">
+					<button type="button" class="btn btn-default" data-toggle="modal" data-target="#filtreModal">Ajouter un filtre</button>
+				</div>
+				<input type="submit" class="hidden" name="updateForm">
 			</div>
 		</div>
 	</div>

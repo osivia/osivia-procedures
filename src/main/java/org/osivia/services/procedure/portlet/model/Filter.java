@@ -20,7 +20,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 public class Filter implements Comparable<Filter> {
 
     /** filterName */
-    @JsonIgnore
+    @JsonProperty("filterName")
     private String filterName;
 
     /** filterPath */
@@ -39,6 +39,10 @@ public class Filter implements Comparable<Filter> {
     @JsonProperty("argumentsList")
     private List<Argument> argumentsList;
 
+    /** hasChildren */
+    @JsonIgnore
+    private boolean hasChildren;
+
     /** filters */
     @JsonIgnore
     private List<Filter> filters;
@@ -52,6 +56,7 @@ public class Filter implements Comparable<Filter> {
         setFilterId(formFilter.getId());
         setFilterInstanceId(getFilterId().concat(getFilterPath()));
         setFilterName(formFilter.getLabelKey());
+        setHasChildren(formFilter.hasChildren());
         if (formFilter.getParameters() != null) {
             final List<Argument> argumentsList = new ArrayList<Argument>(formFilter.getParameters().entrySet().size());
             for (Entry<String, FormFilterParameterType> argumentEntry : formFilter.getParameters().entrySet()) {
@@ -234,5 +239,23 @@ public class Filter implements Comparable<Filter> {
      */
     public void setFilters(List<Filter> filters) {
         this.filters = filters;
+    }
+
+    /**
+     * Getter for hasChildren.
+     * 
+     * @return the hasChildren
+     */
+    public boolean isHasChildren() {
+        return hasChildren;
+    }
+
+    /**
+     * Setter for hasChildren.
+     * 
+     * @param hasChildren the hasChildren to set
+     */
+    public void setHasChildren(boolean hasChildren) {
+        this.hasChildren = hasChildren;
     }
 }
