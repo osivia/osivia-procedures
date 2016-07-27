@@ -14,6 +14,8 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
 public class Action {
@@ -43,7 +45,7 @@ public class Action {
         filters = new ArrayList<Filter>();
     }
 
-    public Action(PropertyMap propertyMap) {
+    public Action(PropertyMap propertyMap, NuxeoController nuxeoController) {
         setLabel(propertyMap.getString("label"));
         setActionId(propertyMap.getString("actionId"));
         setStepReference(propertyMap.getString("stepReference"));
@@ -56,7 +58,7 @@ public class Action {
             Filter filter;
             for (final Object fltrO : filtersPList.list()) {
                 final PropertyMap fltrMap = (PropertyMap) fltrO;
-                filter = new Filter(fltrMap);
+                filter = new Filter(fltrMap, nuxeoController);
                 filterMap.put(filter.getFilterPath(), filter);
                 filtersList.add(filter);
             }

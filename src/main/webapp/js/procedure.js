@@ -25,7 +25,7 @@ $JQry(function() {
 		cursor : "move",
 		tolerance : "pointer",
 		axis: "y",
-//		forcePlaceholderSize: true,
+		forcePlaceholderSize: true,
 		placeholder: "procedure-sortable-placeHolder",
 		stop: function( event, ui ) {
 				$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
@@ -40,20 +40,42 @@ $JQry(function() {
 		cursor : "move",
 		tolerance : "pointer",
 		axis: "y",
-//		forcePlaceholderSize: true,
+		forcePlaceholderSize: true,
 		placeholder: "filter-sortable-placeHolder",
-		stop: function( event, ui ) {
+		start : function(event, ui) {
+			// empêche la sélection du filtre
+			$JQry(event.originalEvent.target).off();
+			$JQry(event.originalEvent.target).on('click',function(e){
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+			});
+		},
+		stop: function(event, ui) {
 				$JQry("#filter-sortable > ul").children("li").each(function(index, element){
 					updatePath(index, [], element);
-				});	
+				});
+				// soumet la mise à jour du formulaire
 				$JQry(this).closest("form").find("input[name='updateForm']").click();
 		}
 	});
+	
+	$JQry("#filter-sortable li").click(function(event) {
+		// find hidden input by end name
+		var path = $JQry(this).children("input[name$='filterInstanceId']").val();
+		// add value to form as selected
+		selector(this,path,'selectedFilterId');
+		// click hidden selectFilter button
+		$JQry(this).closest('form').find("input[name='selectFilter']").click();
+		// empêche de lancer l'évènement click sur le parent
+		event.stopPropagation();
+	});
+	
 });
+
 
 function selectPath(button, name) {
 	var path =$JQry(button).parents("li").find("input[name$='path']").val();
-	selector(button, path, name)
+	selector(button, path, name);
 }
 
 function selector(button, value, name) {
@@ -123,8 +145,8 @@ function initGroupSelect(groupSearchUrl){
 	   	  templateSelection: formatProfil
 		});
 	});
-}
+};
 
 function hideModal(){
 	$JQry(".modal-open").removeClass("modal-open");
-}
+};

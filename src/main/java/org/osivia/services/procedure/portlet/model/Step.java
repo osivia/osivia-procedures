@@ -15,6 +15,8 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
 public class Step implements Comparable<Step> {
@@ -84,7 +86,7 @@ public class Step implements Comparable<Step> {
         actions = new ArrayList<Action>();
     }
 
-    public Step(final PropertyMap stepM, Map<String, Variable> variables) {
+    public Step(final PropertyMap stepM, Map<String, Variable> variables, NuxeoController nuxeoController) {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
 
@@ -126,7 +128,7 @@ public class Step implements Comparable<Step> {
             Action action;
             for (final Object actionO : actionsList.list()) {
                 final PropertyMap actionN = (PropertyMap) actionO;
-                action = new Action(actionN);
+                action = new Action(actionN, nuxeoController);
                 getActions().add(action);
             }
         }

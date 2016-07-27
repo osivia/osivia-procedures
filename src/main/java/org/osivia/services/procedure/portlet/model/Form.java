@@ -17,9 +17,6 @@ public class Form {
     /** selectedAction */
     private String selectedAction;
 
-    /** selectedFilter */
-    private String selectedFilter;
-
     /** procedureInstance */
     private ProcedureInstance procedureInstance;
 
@@ -29,7 +26,11 @@ public class Form {
     /** addField */
     private AddField newField;
 
+    /** filterMessage */
     private String filterMessage;
+
+    /** selectedFilter */
+    private Filter selectedFilter;
 
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
@@ -196,19 +197,17 @@ public class Form {
 
     /**
      * Getter for selectedFilter.
-     * 
      * @return the selectedFilter
      */
-    public String getSelectedFilter() {
+    public Filter getSelectedFilter() {
         return selectedFilter;
     }
 
     /**
      * Setter for selectedFilter.
-     * 
      * @param selectedFilter the selectedFilter to set
      */
-    public void setSelectedFilter(String selectedFilter) {
+    public void setSelectedFilter(Filter selectedFilter) {
         this.selectedFilter = selectedFilter;
     }
 

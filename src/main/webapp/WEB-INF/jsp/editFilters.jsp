@@ -8,40 +8,29 @@
 <c:forEach var="pathPart" items="${filterBkp.filterPath}" varStatus="status">
 	<c:set var="springPath"	value="${status.first ? 'theSelectedAction' : springPath}.filters[${pathPart}]"	scope="request" />
 </c:forEach>
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<op:translate key="${filterBkp.filterName}" />
-		<button type="submit" name="deleteFilter" class="btn btn-default pull-right" onclick="selector(this,'${filterBkp.filterInstanceId}','selectedFilter');">
-			<i class="glyphicons glyphicons-bin"></i>
-		</button>
-	</div>
-	<div class="panel-body">
+<!-- <div class="panel panel-default"> -->
+<!-- 	<div class="panel-heading"> -->
+	   <c:if test="${empty filterBkp.filterName}">
+			<op:translate key="${filterBkp.labelKey}" />
+	   </c:if>
+	   <c:if test="${not empty filterBkp.filterName}">
+            ${filterBkp.filterName}
+       </c:if>
+<!-- 	</div> -->
+<!-- 	<div class="panel-body"> -->
+        <form:hidden path="${springPath}.filterInstanceId" />
 		<form:hidden path="${springPath}.filterId" />
 		<form:hidden path="${springPath}.filterPath" />
-		<c:forEach var="argument" items="${filterBkp.argumentsList}" varStatus="argStatus">
-			<div class="form-group">
-				<div class="col-sm-3">
-					<label class="control-label">${argument.argumentName}</label>
-				</div>
-				<div class="col-sm-3">
-					<c:if test="${argument.type eq 'TEXT'}">
-						<form:input	path="${springPath}.argumentsList[${argStatus.index}].argumentValue" type="text" cssClass="form-control" placeholder="argumentValue" />
-					</c:if>
-					<c:if test="${argument.type eq 'BOOLEAN'}">
-						<form:checkbox path="${springPath}.argumentsList[${argStatus.index}].argumentValue"	cssClass="form-control" />
-					</c:if>
-				</div>
-			</div>
-		</c:forEach>
 		<c:if test="${filterBkp.hasChildren}">
-	        <ul class="list-unstyled filter-sortable">
+	        <ul class="filter-sortable">
 	            <c:forEach var="nestedFilter" items="${filterBkp.filters}" varStatus="status">
 		            <li>
+		              <i class="halflings halflings-menu-right"></i>
 	                    <c:set var="nestedFilter" value="${nestedFilter}" scope="request" />
 		                <jsp:include page="editFilters.jsp"/>
 		            </li>
 	            </c:forEach>
 			</ul>
 		</c:if>
-	</div>
-</div>
+<!-- 	</div> -->
+<!-- </div> -->

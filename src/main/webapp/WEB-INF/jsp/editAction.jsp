@@ -9,91 +9,116 @@
 </portlet:actionURL>
 
 
-<form:form modelAttribute="form" action="${editActionUrl}" method="post"
-	cssClass="form-horizontal" role="form">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<ul class="list-unstyled">
-				<li class="form-group">
-					<div class="col-sm-2">
-						<label class="control-label">Label</label>
-					</div>
-					<div class="col-sm-8">${form.theSelectedAction.label}</div>
-				</li>
-				<li class="form-group">
-					<div class="col-sm-2">
-						<label class="control-label">Identifiant de l'action</label>
-					</div>
-					<div class="col-sm-8">${form.theSelectedAction.actionId}</div>
-				</li>
-				<li class="form-group">
-					<div class="col-sm-2">
-						<label class="control-label">Référence de l'étape cible</label>
-					</div>
-					<div class="col-sm-8">
-						${form.theSelectedAction.stepReference}</div>
-				</li>
-			</ul>
-		</div>
-		<div class="panel-body" id="filter-sortable">
-            <ul class="list-unstyled filter-sortable">
-                <c:forEach var="filter" items="${form.theSelectedAction.filters}" varStatus="status">
-                    <li>
-                        <c:set var="nestedFilter" value="${filter}" scope="request"/>
-                        <jsp:include page="editFilters.jsp"/>
-                    </li>
-                </c:forEach>
+<form:form modelAttribute="form" action="${editActionUrl}" method="post" cssClass="form-horizontal" role="form">
+    <div class="form-group">
+        <div class="col-sm-2">
+            <label class="control-label">Label</label>
+        </div>
+        <div class="col-sm-8">${form.theSelectedAction.label}</div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            <label class="control-label">Identifiant de l'action</label>
+        </div>
+        <div class="col-sm-8">${form.theSelectedAction.actionId}</div>
+    </div>
+    <div class="form-group">
+	    <div class="col-sm-2">
+	        <label class="control-label">Référence de l'étape cible</label>
+	    </div>
+	    <div class="col-sm-8">${form.theSelectedAction.stepReference}</div>
+    </div>
+    <hr>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="<c:if test="${empty activeTab or 'edit' ne activeTab}">active</c:if>"><a href="#Create" role="tab" data-toggle="tab" class="no-ajax-link">Ajouter un filtre</a></li>
+                <c:if test="${not empty form.selectedFilter}">
+	                <li role="presentation" class="<c:if test="${'edit' eq activeTab}">active</c:if>"><a href="#Edit" role="tab" data-toggle="tab" class="no-ajax-link">Actions</a></li>
+                </c:if>
             </ul>
-		</div>
-
-		<div class="panel-footer">
-			<div class="form-group">
-			    <div class="col-sm-1">
-		            <button type="submit" class="btn btn-default" name="cancelAction">Annuler</button>
-		        </div>
-				<div class="col-sm-1 pull-right">
-					<button type="submit" class="btn btn-primary pull-right" name="saveAction">Sauvegarder</button>
-				</div>
-				<div class="col-sm-1 pull-right">
-					<button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#filtreModal">Ajouter un filtre</button>
-				</div>
-				<input type="submit" class="hidden" name="updateForm">
-			</div>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane <c:if test="${empty activeTab or 'edit' ne activeTab}">active</c:if>" id="Create">
+                    <h4>Filtres disponibles : </h4>
+                    <c:forEach var="filtre" items="${listeFiltres}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><op:translate key="${filtre.labelKey}"/></h3>
+                            </div>
+                            <div class="panel-body">
+                                <op:translate key="${filtre.descriptionKey}"/>
+                                <button type="submit" name="addFilter" class="btn btn-default pull-right" onclick="selector(this,'${filtre.id}','selectedFilterId');" >
+                                    <i class="glyphicons glyphicons-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+                <c:if test="${not empty form.selectedFilter}">
+                    <div role="tabpanel" class="tab-pane <c:if test="${'edit' eq activeTab}">active</c:if>" id="Edit">
+                        <div class="col-sm-12">
+	                        <div class="form-group">
+				                <form:label path="selectedFilter.filterName">Nom du filtre</form:label>
+			                    <form:input path="selectedFilter.filterName" type="text" cssClass="form-control" placeholder="Nom du filtre" />
+		                    </div>
+                        </div>
+                        <hr>
+                        <c:if test="${not empty form.selectedFilter.argumentsList}">
+                            <h3>Arguments:</h3>
+                        </c:if>
+                        <c:forEach var="argument" items="${form.selectedFilter.argumentsList}" varStatus="argStatus">
+				            <div class="form-group">
+				                <div class="col-sm-4">
+				                    <label class="control-label">${argument.argumentName}</label>
+				                </div>
+				                <div class="col-sm-8">
+				                    <c:if test="${argument.type eq 'TEXT'}">
+				                        <form:input path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" type="text" cssClass="form-control" placeholder="argumentValue" />
+				                    </c:if>
+				                    <c:if test="${argument.type eq 'BOOLEAN'}">
+				                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" />
+				                    </c:if>
+				                </div>
+				            </div>
+				        </c:forEach>
+				        <div class="row">
+					        <div class="col-sm-1 pull-right">
+			                   <button type="submit" name="deleteFilter" class="btn btn-default pull-right">
+						            <i class="glyphicons glyphicons-bin"></i>
+						        </button>
+					        </div>
+					        <div class="col-sm-1 pull-right">
+		                       <button type="submit" name="editFilter" class="btn btn-default pull-right">Modifier</button>
+		                   </div>
+	                   </div>
+	                </div>
+                </c:if>
+            </div>
+        </div>
+		<div id="filter-sortable" class="col-sm-8">
+		  <h4>Filtres installés : </h4>
+	        <ul class="filter-sortable">
+	            <c:forEach var="filter" items="${form.theSelectedAction.filters}" varStatus="status">
+	                <li>
+	                   <i class="halflings halflings-menu-right"></i>
+	                    <c:set var="nestedFilter" value="${filter}" scope="request"/>
+	                    <jsp:include page="editFilters.jsp"/>
+	                </li>
+	            </c:forEach>
+	        </ul>
 		</div>
 	</div>
-
-
-	<div class="modal fade" id="filtreModal" tabindex="-1" role="dialog"
-		aria-labelledby="filtreModalLabel">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title" id="filtreModalLabel">Filtres
-						disponibles</h4>
-				</div>
-				<div class="modal-body">
-					<c:forEach var="filtre" items="${listeFiltres}">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h3 class="panel-title"><op:translate key="${filtre.labelKey}"/></h3>
-							</div>
-							<div class="panel-body">
-								<op:translate key="${filtre.descriptionKey}"/>
-								<button type="submit" name="addFilter" class="btn btn-default pull-right"
-									onclick="selector(this,'${filtre.id}','selectedFilter');hideModal();" data-dismiss="modal">
-									<i class="glyphicons glyphicons-plus"></i>
-								</button>
-							</div>
-						</div>
-					</c:forEach>
-				</div>
-			</div>
+    <hr>
+	<div class="row">
+	    <div class="col-sm-1">
+            <button type="submit" class="btn btn-default" name="cancelAction">Annuler</button>
+        </div>
+		<div class="col-sm-1 pull-right">
+			<button type="submit" class="btn btn-primary pull-right" name="saveAction">Sauvegarder</button>
 		</div>
+		<input type="submit" class="hidden" name="updateForm">
+		<input type="submit" class="hidden" name="selectFilter">
 	</div>
-
 
 </form:form>

@@ -25,14 +25,14 @@ initGroupSelect("${groupSearchUrl}");
 <form:form modelAttribute="form" action="${editStepUrl}" method="post" cssClass="form-horizontal" role="form">
     
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="<c:if test="${empty activeTab or 'form' ne activeTab}">active</c:if>"><a href="#Identification" role="tab" data-toggle="tab" class="no-ajax-link">Identification</a></li>
+        <li role="presentation" class="<c:if test="${empty activeTab or ('form' ne activeTab && 'action' ne activeTab)}">active</c:if>"><a href="#Identification" role="tab" data-toggle="tab" class="no-ajax-link">Identification</a></li>
         <li role="presentation" class="<c:if test="${'form' eq activeTab}">active</c:if>"><a href="#Formulaire" role="tab" data-toggle="tab" class="no-ajax-link">Formulaire</a></li>
-        <li role="presentation"><a href="#Actions" role="tab" data-toggle="tab" class="no-ajax-link">Actions</a></li>
+        <li role="presentation" class="<c:if test="${'action' eq activeTab}">active</c:if>"><a href="#Actions" role="tab" data-toggle="tab" class="no-ajax-link">Actions</a></li>
         <li role="presentation"><a href="#Métadonnées" role="tab" data-toggle="tab" class="no-ajax-link">Métadonnées</a></li>
     </ul>
 
     <div class="tab-content">
-	    <div role="tabpanel" class="tab-pane <c:if test="${empty activeTab or 'form' ne activeTab}">active</c:if>" id="Identification">
+	    <div role="tabpanel" class="tab-pane <c:if test="${empty activeTab or ('form' ne activeTab && 'action' ne activeTab)}">active</c:if>" id="Identification">
 	       <div class="form-group">
                <form:label path="theSelectedStep.stepName" cssClass="col-sm-2 control-label">Titre de l'étape</form:label>
                <div class="col-sm-10">
@@ -143,7 +143,7 @@ initGroupSelect("${groupSearchUrl}");
                 </div>
             </div>
 	    </div>
-	    <div role="tabpanel" class="tab-pane" id="Actions">
+	    <div role="tabpanel" class="tab-pane <c:if test="${'action' eq activeTab}">active</c:if>" id="Actions">
 	       <ul class="list-unstyled">
 	              <li class="form-group">
 	                 <div class="col-sm-2">
@@ -180,7 +180,7 @@ initGroupSelect("${groupSearchUrl}");
 	          </ul>
            <div class="form-group">
 		       <div class="col-sm-1">
-	               <button type="submit" name="addButton" class="btn btn-default">Ajouter un bouton</button>
+	               <button type="submit" name="addButton" class="btn btn-default">Ajouter une action</button>
 	           </div>
            </div>
 	    </div>

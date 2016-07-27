@@ -13,12 +13,11 @@
 }
 
 .filter-sortable{
+	list-style: outside none none;
 	min-height: 30px;
-/* 	padding-bottom: 50px; */
 }
 
 .filter-sortable li{
-    padding-bottom: 10px;
     padding-top: 10px;
 }
 

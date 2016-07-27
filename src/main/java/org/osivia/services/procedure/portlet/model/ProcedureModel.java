@@ -11,6 +11,8 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+
 public class ProcedureModel {
 
     /** the name of the procedure */
@@ -46,7 +48,7 @@ public class ProcedureModel {
         procedureObjects = new ArrayList<ProcedureObject>();
     }
 
-    public ProcedureModel(Document document) {
+    public ProcedureModel(Document document, NuxeoController nuxeoController) {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();
         procedureObjects = new ArrayList<ProcedureObject>();
@@ -81,7 +83,7 @@ public class ProcedureModel {
             Step step;
             for (final Object stepO : stepsList.list()) {
                 final PropertyMap stepM = (PropertyMap) stepO;
-                step = new Step(stepM, getVariables());
+                step = new Step(stepM, getVariables(), nuxeoController);
                 getSteps().add(step.getIndex(), step);
             }
         }

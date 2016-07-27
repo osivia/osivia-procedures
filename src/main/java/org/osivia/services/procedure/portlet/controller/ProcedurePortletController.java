@@ -162,6 +162,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @RenderMapping(params = "action=editAction")
     public String endStepView(RenderRequest request, RenderResponse response, @RequestParam(value = "editAction", required = false) String editAction)
             throws PortletException, CMSException {
+        request.setAttribute("activeTab", request.getParameter("activeTab"));
         return VIEW_ACTION;
     }
 
@@ -751,7 +752,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editAction", params = "addFilter")
     public void addFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
-            value = "selectedFilter") String filterId) throws PortletException {
+            value = "selectedFilterId") String filterId) throws PortletException {
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         // formsFilters
@@ -771,18 +772,19 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editAction", params = "deleteFilter")
-    public void deleteFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
-            value = "selectedFilter") String filterInstanceId) throws PortletException {
+    public void deleteFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        if (removeFilterByFilterInstanceId(form.getTheSelectedAction().getFilters(), filterInstanceId)) {
+        if (removeFilterByFilterInstanceId(form.getTheSelectedAction().getFilters(), form.getSelectedFilter().getFilterInstanceId())) {
             updateFiltersPath(form.getTheSelectedAction().getFilters(), StringUtils.EMPTY);
         }
+        form.setSelectedFilter(null);
         response.setRenderParameter("action", "editAction");
     }
 
     @ActionMapping(value = "editAction", params = "cancelAction")
     public void cancelAction(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
         response.setRenderParameter("action", "editStep");
+        response.setRenderParameter("activeTab", "action");
         sessionStatus.setComplete();
     }
 
@@ -813,6 +815,49 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return false;
     }
 
+    @ActionMapping(value = "editAction", params = "editFilter")
+    public void editFilter(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
+        updateFilterByFilterInstanceId(form.getTheSelectedAction().getFilters(), form.getSelectedFilter());
+        response.setRenderParameter("action", "editAction");
+        response.setRenderParameter("activeTab", "edit");
+    }
+
+    @ActionMapping(value = "editAction", params = "selectFilter")
+    public void fillEditTab(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
+            @RequestParam(value = "selectedFilterId") String selectedFilterId) {
+        
+        Filter filterByFilterInstanceId = getFilterByFilterInstanceId(form.getTheSelectedAction().getFilters(), selectedFilterId);
+        form.setSelectedFilter(filterByFilterInstanceId);
+        response.setRenderParameter("action", "editAction");
+        response.setRenderParameter("activeTab", "edit");
+    }
+
+    private Filter getFilterByFilterInstanceId(List<Filter> filtersList, String filterInstanceId) {
+        if (filtersList != null) {
+            for (Filter filter : filtersList) {
+                if (StringUtils.equals(filter.getFilterInstanceId(), filterInstanceId)) {
+                    return filter;
+                }
+                Filter filterbyId = getFilterByFilterInstanceId(filter.getFilters(), filterInstanceId);
+                if (filterbyId != null) {
+                    return filterbyId;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void updateFilterByFilterInstanceId(List<Filter> filtersList, Filter filterUpdate) {
+        if (filtersList != null) {
+            for (Filter filter : filtersList) {
+                if (StringUtils.equals(filter.getFilterInstanceId(), filterUpdate.getFilterInstanceId())) {
+                    filter.updateFilter(filterUpdate);
+                    return;
+                }
+                updateFilterByFilterInstanceId(filter.getFilters(), filterUpdate);
+            }
+        }
+    }
 
     @ActionMapping(value = "editAction", params = "saveAction")
     public void saveAction(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
@@ -820,11 +865,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        // form.getProcedureModel().getSteps().set(Integer.valueOf(form.getTheSelectedStep().getIndex()), form.getTheSelectedStep());
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
         response.setRenderParameter("action", "editStep");
+        response.setRenderParameter("activeTab", "action");
         sessionStatus.setComplete();
     }
 
@@ -834,6 +879,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final Map<String, List<Filter>> allFiltersMap = new HashMap<String, List<Filter>>();
         addAllFilters(allFiltersMap, form.getTheSelectedAction().getFilters());
         rebuildAction(allFiltersMap, form.getTheSelectedAction());
+        form.setSelectedFilter(null);
         response.setRenderParameter("action", "editAction");
     }
 
@@ -848,6 +894,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     if (parentFilters == null) {
                         parentFilters = new ArrayList<Filter>();
                     }
+                    filter.setFilterInstanceId(filter.getFilterId().concat(filter.getFilterPath()));
                     parentFilters.add(filter);
                     Collections.sort(parentFilters);
                     allFiltersMap.put(parentPath, parentFilters);

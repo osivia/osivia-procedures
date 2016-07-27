@@ -2,6 +2,7 @@ package org.osivia.services.procedure.portlet.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
@@ -10,6 +11,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
@@ -47,6 +49,14 @@ public class Filter implements Comparable<Filter> {
     @JsonIgnore
     private List<Filter> filters;
 
+    /** labelKey */
+    @JsonIgnore
+    private String labelKey;
+
+    /** decriptionKey */
+    @JsonIgnore
+    private String decriptionKey;
+
 
     public Filter() {
     }
@@ -55,8 +65,9 @@ public class Filter implements Comparable<Filter> {
         setFilterPath(path);
         setFilterId(formFilter.getId());
         setFilterInstanceId(getFilterId().concat(getFilterPath()));
-        setFilterName(formFilter.getLabelKey());
         setHasChildren(formFilter.hasChildren());
+        setLabelKey(formFilter.getLabelKey());
+        setDecriptionKey(formFilter.getDescriptionKey());
         if (formFilter.getParameters() != null) {
             final List<Argument> argumentsList = new ArrayList<Argument>(formFilter.getParameters().entrySet().size());
             for (Entry<String, FormFilterParameterType> argumentEntry : formFilter.getParameters().entrySet()) {
@@ -69,12 +80,19 @@ public class Filter implements Comparable<Filter> {
         }
     }
 
-    public Filter(PropertyMap propertyMap) {
+    public Filter(PropertyMap propertyMap, NuxeoController nuxeoController) {
         setFilterName(propertyMap.getString("filterName"));
         setFilterPath(propertyMap.getString("filterPath"));
         setFilterId(propertyMap.getString("filterId"));
         setFilterInstanceId(propertyMap.getString("filterInstanceId"));
 
+        Map<String, FormFilter> formsFilters = nuxeoController.getNuxeoCMSService().getCMSCustomizer().getFormsFilters();
+        FormFilter formFilter = formsFilters.get(getFilterId());
+        if (formFilter != null) {
+            setLabelKey(formFilter.getLabelKey());
+            setDecriptionKey(formFilter.getDescriptionKey());
+            setHasChildren(formFilter.hasChildren());
+        }
         final PropertyList argumentsPptyList = propertyMap.getList("argumentsList");
         if (argumentsPptyList != null) {
             final List<Argument> argumentsList = new ArrayList<Argument>();
@@ -84,6 +102,11 @@ public class Filter implements Comparable<Filter> {
             }
             setArgumentsList(argumentsList);
         }
+    }
+
+    public void updateFilter(Filter filter) {
+        setFilterName(filter.getFilterName());
+        setArgumentsList(filter.getArgumentsList());
     }
 
     public void updateFilterPath(String newPath) {
@@ -257,5 +280,41 @@ public class Filter implements Comparable<Filter> {
      */
     public void setHasChildren(boolean hasChildren) {
         this.hasChildren = hasChildren;
+    }
+
+    /**
+     * Getter for labelKey.
+     * 
+     * @return the labelKey
+     */
+    public String getLabelKey() {
+        return labelKey;
+    }
+
+    /**
+     * Setter for labelKey.
+     * 
+     * @param labelKey the labelKey to set
+     */
+    public void setLabelKey(String labelKey) {
+        this.labelKey = labelKey;
+    }
+
+    /**
+     * Getter for decriptionKey.
+     * 
+     * @return the decriptionKey
+     */
+    public String getDecriptionKey() {
+        return decriptionKey;
+    }
+
+    /**
+     * Setter for decriptionKey.
+     * 
+     * @param decriptionKey the decriptionKey to set
+     */
+    public void setDecriptionKey(String decriptionKey) {
+        this.decriptionKey = decriptionKey;
     }
 }
