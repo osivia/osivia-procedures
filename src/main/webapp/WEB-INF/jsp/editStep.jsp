@@ -79,23 +79,27 @@ initGroupSelect("${groupSearchUrl}");
 	                            </div>
 	                        </div>
 	                        <div class="form-group">
-                               <form:label path="newField.input" cssClass="col-sm-3 control-label">Saisissable</form:label>
-                                 <div class="col-sm-9">
-                                        <form:checkbox path="newField.input" cssClass="form-control"/>
-                                    </div>
-                            </div>
-                            <div class="form-group">
-                                 <form:label path="newField.required" cssClass="col-sm-3 control-label">Requis</form:label>
-                                    <div class="col-sm-9">
-                                        <form:checkbox path="newField.required" cssClass="form-control"/>
-                                    </div>
-                            </div>
-	                        <div class="form-group">
 	                            <form:label path="newField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
 	                            <div class="col-sm-9">
 	                                <form:input path="newField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
 	                            </div>
 	                        </div>
+	                        <div class="form-group">
+	                           <div class="col-sm-offset-3 col-sm-3">
+	                               <div class="checkbox">
+	                                    <label>
+	                                        <input type="checkbox" name="newField.input"><span>Saisissable</span>
+	                                    </label>
+	                                </div>
+	                            </div>
+	                            <div class="col-sm-3">
+                                   <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="newField.required"><span>Requis</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         
                             <button type="submit" name="addField" class="btn btn-default pull-right">Ajouter</button>
                         
@@ -155,23 +159,27 @@ initGroupSelect("${groupSearchUrl}");
 					                      </div>
 				                     </div>
 				                     <div class="form-group">
-		                                <form:label path="selectedField.input" cssClass="col-sm-3 control-label">Saisissable</form:label>
-					                      <div class="col-sm-9">
-					                             <form:checkbox path="selectedField.input" cssClass="form-control"/>
-					                         </div>
-				                     </div>
-				                     <div class="form-group">
-					                      <form:label path="selectedField.required" cssClass="col-sm-3 control-label">Requis</form:label>
-					                         <div class="col-sm-9">
-					                             <form:checkbox path="selectedField.required" cssClass="form-control"/>
-					                         </div>
-				                     </div>
-				                     <div class="form-group">
 					                      <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
 					                      <div class="col-sm-9">
 					                        <form:input path="selectedField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
 					                      </div>
 					                  </div>
+                                      <div class="form-group">
+			                               <div class="col-sm-offset-3 col-sm-3">
+			                                   <div class="checkbox">
+			                                        <label>
+			                                            <input type="checkbox" name="selectedField.input" <c:if test="${form.selectedField.input}">checked="checked"</c:if>><span>Saisissable</span>
+			                                        </label>
+			                                    </div>
+			                                </div>
+			                                <div class="col-sm-3">
+			                                   <div class="checkbox">
+			                                        <label>
+			                                            <input type="checkbox" name="selectedField.required" <c:if test="${form.selectedField.required}">checked="checked"</c:if>><span>Requis</span>
+			                                        </label>
+			                                    </div>
+			                                </div>
+			                            </div>
                                 </c:if>
 			                  <div class="row">
 		                            <div class="col-sm-1 pull-right">
