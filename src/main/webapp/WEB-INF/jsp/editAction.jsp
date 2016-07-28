@@ -77,7 +77,8 @@
 				                        <form:input path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" type="text" cssClass="form-control" placeholder="argumentValue" />
 				                    </c:if>
 				                    <c:if test="${argument.type eq 'BOOLEAN'}">
-				                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" />
+				                        <c:set var="boolArgumentValue" value="${form.selectedFilter.argumentsList[argStatus.index].argumentValue eq 'true'}"/>
+				                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" value="${boolArgumentValue}"/>
 				                    </c:if>
 				                </div>
 				            </div>

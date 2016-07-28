@@ -726,6 +726,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editStep", params = "addButton")
     public void addButton(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         form.getTheSelectedStep().getActions().add(new Action());
+        response.setRenderParameter("activeTab", "action");
         response.setRenderParameter("action", "editStep");
     }
 
@@ -733,7 +734,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void deleteButton(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
             @RequestParam(value = "selectedButton") String index) throws PortletException {
         form.getTheSelectedStep().getActions().remove(Integer.valueOf(index).intValue());
-
+        response.setRenderParameter("activeTab", "action");
         response.setRenderParameter("action", "editStep");
     }
 
