@@ -27,12 +27,33 @@ $JQry(function() {
 		axis: "y",
 		forcePlaceholderSize: true,
 		placeholder: "procedure-sortable-placeHolder",
+		start : function(event, ui) {
+			// empêche la sélection du champ
+			$JQry(event.originalEvent.target).off();
+			$JQry(event.originalEvent.target).on('click',function(e){
+				e.preventDefault(); // cas control-label
+				e.stopImmediatePropagation();
+			});
+		},
 		stop: function( event, ui ) {
 				$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
 					updatePath(index, [], element);
-				});	
+				});
+				// soumet la mise à jour du formulaire
 				$JQry(this).closest("form").find("input[name='updateForm']").click();
 		}
+	});
+	
+	$JQry("#procedure-sortable li").click(function(event) {
+		// find hidden input by end name
+		var path = $JQry(this).children("input[name$='path']").val();
+		// add value to form as selected
+		selector(this,path,'selectedFieldPath');
+		// click hidden selectFilter button
+		$JQry(this).closest('form').find("input[name='selectField']").click();
+		// empêche de lancer l'évènement click sur le parent
+		event.stopPropagation();
+		event.preventDefault(); // cas control-label
 	});
 	
 	$JQry("#filter-sortable ul").sortable({
@@ -46,7 +67,6 @@ $JQry(function() {
 			// empêche la sélection du filtre
 			$JQry(event.originalEvent.target).off();
 			$JQry(event.originalEvent.target).on('click',function(e){
-				e.stopPropagation();
 				e.stopImmediatePropagation();
 			});
 		},
@@ -61,15 +81,20 @@ $JQry(function() {
 	
 	$JQry("#filter-sortable li").click(function(event) {
 		// find hidden input by end name
-		var path = $JQry(this).children("input[name$='filterInstanceId']").val();
+		var path = $JQry(this).children("input[name$='filterPath']").val();
 		// add value to form as selected
-		selector(this,path,'selectedFilterId');
+		selector(this,path,'selectedFilterPath');
 		// click hidden selectFilter button
 		$JQry(this).closest('form').find("input[name='selectFilter']").click();
 		// empêche de lancer l'évènement click sur le parent
 		event.stopPropagation();
 	});
 	
+	// nested bootstrap tabs
+	$JQry("ul.nav-tabs a").click(function (e) {
+		e.preventDefault();  
+		$JQry(this).tab('show');
+	});
 });
 
 

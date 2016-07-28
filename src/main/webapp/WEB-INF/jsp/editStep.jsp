@@ -47,100 +47,167 @@ initGroupSelect("${groupSearchUrl}");
            </div>
 	    </div>
 	    <div role="tabpanel" class="tab-pane <c:if test="${'form' eq activeTab}">active</c:if>" id="Formulaire">
-	       <div id="procedure-sortable">
-               <ul class="procedure-sortable list-unstyled">
-                   <c:forEach var="field" items="${form.theSelectedStep.fields}" varStatus="status">
-                      <li class="form-group">
-                          <div class="procedure-hover">
-                          </div>
-                          <c:choose>
-                            <c:when test="${field.fieldSet eq true}">
-                              <c:set var="field" value="${field}" scope="request"/>
-                              <jsp:include page="editFields.jsp"/>
-                            </c:when>
-                            <c:otherwise>
-                              <c:set var="field" value="${field}" scope="request"/>
-                              <jsp:include page="editField.jsp"/>
-                            </c:otherwise>
-                          </c:choose>
-                      </li>
-                   </c:forEach>
-                   <form:input path="selectedStep" type="hidden" name="selectedStep"/>
-               </ul>
-           </div>
-        
-            <div class="modal fade" id="addFieldModal" tabindex="-1" role="dialog" aria-labelledby="addFieldModalLabel">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="addFieldModalLabel">Ajouter un champ</h4>
-                  </div>
-                  <div class="modal-body">
-                    <div class="form-group">
-                        <form:label path="newField.variableName" cssClass="col-sm-3 control-label">Nom</form:label>
-                        <div class="col-sm-9">
-                            <form:input path="newField.variableName" type="text" cssClass="form-control" placeholder="Nom" />
+	       <div class="row">
+	           <div class="col-sm-4">
+                   <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="<c:if test="${empty activeFormTab or 'edit' ne activeFormTab}">active</c:if>"><a href="#CreateField" role="tab" data-toggle="tab" class="no-ajax-link">Ajouter un champ</a></li>
+                        <li role="presentation"><a href="#CreateFieldset" role="tab" data-toggle="tab" class="no-ajax-link">Ajouter un Fieldset</a></li>
+		                <c:if test="${not empty form.selectedField}">
+		                    <li role="presentation" class="<c:if test="${'edit' eq activeFormTab}">active</c:if>"><a href="#Edit" role="tab" data-toggle="tab" class="no-ajax-link">Édition</a></li>
+		                </c:if>
+                   </ul>
+                   <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane <c:if test="${empty activeFormTab or 'edit' ne activeFormTab}">active</c:if>" id="CreateField">
+                            <div class="form-group">
+	                            <form:label path="newField.variableName" cssClass="col-sm-3 control-label">Nom</form:label>
+	                            <div class="col-sm-9">
+	                                <form:input path="newField.variableName" type="text" cssClass="form-control" placeholder="Nom" />
+	                            </div>
+	                        </div>
+	                        <div class="form-group">
+	                            <form:label path="newField.label" cssClass="col-sm-3 control-label">Label</form:label>
+	                            <div class="col-sm-9">
+	                                <form:input path="newField.label" type="text" cssClass="form-control" placeholder="Label" />
+	                            </div>
+	                        </div>
+	                        <div class="form-group">
+	                            <form:label path="newField.type" cssClass="col-sm-3 control-label">Type</form:label>
+	                            <div class="col-sm-9">
+	                                <form:select path="newField.type" cssClass="form-control">
+	                                    <form:options/>
+	                                </form:select>
+	                            </div>
+	                        </div>
+	                        <div class="form-group">
+                               <form:label path="newField.input" cssClass="col-sm-3 control-label">Saisissable</form:label>
+                                 <div class="col-sm-9">
+                                        <form:checkbox path="newField.input" cssClass="form-control"/>
+                                    </div>
+                            </div>
+                            <div class="form-group">
+                                 <form:label path="newField.required" cssClass="col-sm-3 control-label">Requis</form:label>
+                                    <div class="col-sm-9">
+                                        <form:checkbox path="newField.required" cssClass="form-control"/>
+                                    </div>
+                            </div>
+	                        <div class="form-group">
+	                            <form:label path="newField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
+	                            <div class="col-sm-9">
+	                                <form:input path="newField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
+	                            </div>
+	                        </div>
+                        
+                            <button type="submit" name="addField" class="btn btn-default pull-right">Ajouter</button>
+                        
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <form:label path="newField.type" cssClass="col-sm-3 control-label">Type</form:label>
-                        <div class="col-sm-9">
-                            <form:select path="newField.type" cssClass="form-control">
-                                <form:options/>
-                            </form:select>
+                        <div role="tabpanel" class="tab-pane" id="CreateFieldset">
+                            <div class="form-group">
+                                <form:label path="newFieldSet.variableName" cssClass="col-sm-3 control-label">Nom</form:label>
+                                <div class="col-sm-9">
+                                    <form:input path="newFieldSet.variableName" type="text" cssClass="form-control" placeholder="Nom" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <form:label path="newFieldSet.label" cssClass="col-sm-3 control-label">Label</form:label>
+                                <div class="col-sm-9">
+                                    <form:input path="newFieldSet.label" type="text" cssClass="form-control" placeholder="Label" />
+                                </div>
+                            </div>
+                            <button type="submit" name="addFieldSet" class="btn btn-default pull-right">Ajouter</button>
+                        
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <form:label path="newField.label" cssClass="col-sm-3 control-label">Label</form:label>
-                        <div class="col-sm-9">
-                            <form:input path="newField.label" type="text" cssClass="form-control" placeholder="Label" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <form:label path="newField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
-                        <div class="col-sm-9">
-                            <form:input path="newField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
-                        </div>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="submit" name="addField" data-dismiss="modal" class="btn btn-primary" onclick="hideModal();">Ajouter</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-        
-            <div class="modal fade" id="addFieldSetModal" tabindex="-1" role="dialog" aria-labelledby="addFielSetdModalLabel">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="addFieldSetModalLabel">Ajouter un FieldSet</h4>
-                  </div>
-                  <div class="modal-body">
-                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="newFieldSetLabel">Label</label>
-                        <div class="col-sm-9">
-                            <input name="newFieldSetLabel" type="text" class="form-control" placeholder="Label">
-                        </div>
-                       </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="submit" name="addFieldSet" data-dismiss="modal" class="btn btn-primary" onclick="hideModal();">Ajouter</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-1">
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addFieldModal">Ajouter un champ</button>
-                </div>
-                <div class="col-sm-1">
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addFieldSetModal">Ajouter un FieldSet</button>
-                </div>
+                        <c:if test="${not empty form.selectedField}">
+                            <div role="tabpanel" class="tab-pane <c:if test="${'edit' eq activeFormTab}">active</c:if>" id="Edit">
+                                <c:if test="${form.selectedField.fieldSet eq true}">
+                                    <div class="form-group">
+                                      <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
+                                      <div class="col-sm-9">
+                                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" />
+                                      </div>
+                                     </div>
+                                    <div class="form-group">
+		                                  <form:label path="selectedField.label" cssClass="col-sm-3 control-label">Label</form:label>
+		                                  <div class="col-sm-9">
+		                                      <form:input path="selectedField.superLabel" type="text" cssClass="form-control" placeholder="Label" />
+		                                  </div>
+		                             </div>
+		                             
+                                </c:if>
+                                <c:if test="${form.selectedField.fieldSet ne true}">
+	                               <div class="form-group">
+				                      <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
+				                      <div class="col-sm-9">
+				                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" />
+				                      </div>
+			                         </div>
+			                        <div class="form-group">
+					                      <form:label path="selectedField.label" cssClass="col-sm-3 control-label">Label</form:label>
+					                      <div class="col-sm-9">
+					                          <form:input path="selectedField.label" type="text" cssClass="form-control" placeholder="Label" />
+					                      </div>
+				                     </div>
+				                     <div class="form-group">
+					                      <form:label path="selectedField.type" cssClass="col-sm-3 control-label">Type</form:label>
+					                      <div class="col-sm-9">
+					                          <form:select path="selectedField.type" cssClass="form-control">
+					                              <form:options/>
+					                          </form:select>
+					                      </div>
+				                     </div>
+				                     <div class="form-group">
+		                                <form:label path="selectedField.input" cssClass="col-sm-3 control-label">Saisissable</form:label>
+					                      <div class="col-sm-9">
+					                             <form:checkbox path="selectedField.input" cssClass="form-control"/>
+					                         </div>
+				                     </div>
+				                     <div class="form-group">
+					                      <form:label path="selectedField.required" cssClass="col-sm-3 control-label">Requis</form:label>
+					                         <div class="col-sm-9">
+					                             <form:checkbox path="selectedField.required" cssClass="form-control"/>
+					                         </div>
+				                     </div>
+				                     <div class="form-group">
+					                      <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
+					                      <div class="col-sm-9">
+					                        <form:input path="selectedField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
+					                      </div>
+					                  </div>
+                                </c:if>
+			                  <div class="row">
+		                            <div class="col-sm-1 pull-right">
+		                               <button type="submit" name="deleteField" class="btn btn-default pull-right">
+		                                    <i class="glyphicons glyphicons-bin"></i>
+		                                </button>
+		                            </div>
+		                            <div class="col-sm-1 pull-right">
+		                               <button type="submit" name="editField" class="btn btn-default pull-right">Modifier</button>
+		                           </div>
+		                       </div>
+                            </div>
+                        </c:if>
+                   
+                   </div>
+	           </div>
+	           
+		       <div id="procedure-sortable" class="col-sm-8">
+	               <ul class="procedure-sortable list-unstyled">
+	                   <c:forEach var="field" items="${form.theSelectedStep.fields}" varStatus="status">
+	                      <li class="form-group">
+	                          <c:choose>
+	                            <c:when test="${field.fieldSet eq true}">
+	                              <c:set var="field" value="${field}" scope="request"/>
+	                              <jsp:include page="editFields.jsp"/>
+	                            </c:when>
+	                            <c:otherwise>
+	                              <c:set var="field" value="${field}" scope="request"/>
+	                              <jsp:include page="editField.jsp"/>
+	                            </c:otherwise>
+	                          </c:choose>
+	                      </li>
+	                   </c:forEach>
+	                   <form:input path="selectedStep" type="hidden" name="selectedStep"/>
+	               </ul>
+	           </div>
             </div>
 	    </div>
 	    <div role="tabpanel" class="tab-pane <c:if test="${'action' eq activeTab}">active</c:if>" id="Actions">
@@ -186,23 +253,28 @@ initGroupSelect("${groupSearchUrl}");
 	    </div>
 	    <div role="tabpanel" class="tab-pane" id="Métadonnées">
 	       <div class="form-group">
-               <form:label path="theSelectedStep.acquitable" cssClass="col-sm-2 control-label">notifiable</form:label>
-               <div class="col-sm-10">
-                   <form:checkbox path="theSelectedStep.notifiable" cssClass="form-control" />
-               </div>
-           </div>
-           <div class="form-group">
-               <form:label path="theSelectedStep.acquitable" cssClass="col-sm-2 control-label">acquitable</form:label>
-               <div class="col-sm-10">
-                   <form:checkbox path="theSelectedStep.acquitable" cssClass="form-control" />
-               </div>
-           </div>
-           <div class="form-group">
-               <form:label path="theSelectedStep.closable" cssClass="col-sm-2 control-label">closable</form:label>
-               <div class="col-sm-10">
-                   <form:checkbox path="theSelectedStep.closable" cssClass="form-control" />
-               </div>
-           </div>
+	           <div class="col-sm-offset-2 col-sm-1">
+		           <div class="checkbox">
+	                    <label>
+	                        <input type="checkbox" <c:if test="${form.theSelectedStep.notifiable}">checked="checked"</c:if> name="theSelectedStep.notifiable"><span>notifiable</span>
+	                    </label>
+	                </div>
+                </div>
+                <div class="col-sm-1">
+	                <div class="checkbox">
+	                    <label>
+	                        <input type="checkbox" <c:if test="${form.theSelectedStep.acquitable}">checked="checked"</c:if> name="theSelectedStep.acquitable"><span>acquitable</span>
+	                    </label>
+	                </div>
+                </div>
+	           <div class="col-sm-1">
+		           <div class="checkbox">
+		                <label>
+		                    <input type="checkbox" <c:if test="${form.theSelectedStep.closable}">checked="checked"</c:if> name="theSelectedStep.closable"><span>closable</span>
+		                </label>
+	                </div>
+                </div>
+	       </div>
            <div class="form-group">
                <form:label path="theSelectedStep.actionIdClosable" cssClass="col-sm-2 control-label">actionIdClosable</form:label>
                <div class="col-sm-10">
@@ -245,7 +317,7 @@ initGroupSelect("${groupSearchUrl}");
            </ul>
 	    </div>
 	</div>
-
+    <hr>
     <div class="row">
         <div class="col-sm-1">
             <button type="submit" class="btn btn-default" name="cancelStep">Annuler</button>
@@ -257,5 +329,6 @@ initGroupSelect("${groupSearchUrl}");
             <button type="submit" class="btn btn-primary pull-right" name="saveStep">Sauvegarder</button>
         </div>
         <input type="submit" class="hidden" name="updateForm">
+        <input type="submit" class="hidden" name="selectField">
     </div>
 </form:form>

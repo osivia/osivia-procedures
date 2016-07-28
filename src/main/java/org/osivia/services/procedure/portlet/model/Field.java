@@ -86,8 +86,16 @@ public class Field implements Comparable<Field> {
      *
      * @param path
      */
-    public Field(String path) {
-        this.path = path;
+    public Field(String path, AddField addField, boolean isFieldSet) {
+        setPath(path);
+        setInput(addField.isInput());
+        setRequired(addField.isRequired());
+        setSuperLabel(addField.getLabel());
+        setFieldSet(isFieldSet);
+        setName(addField.getVariableName());
+        setLabel(addField.getLabel());
+        setType(addField.getType());
+        setVarOptions(addField.getVarOptions());
     }
 
     /**

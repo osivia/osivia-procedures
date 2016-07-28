@@ -26,26 +26,35 @@ public class Form {
     /** addField */
     private AddField newField;
 
+    /** newFieldSet */
+    private AddField newFieldSet;
+
     /** filterMessage */
     private String filterMessage;
 
     /** selectedFilter */
     private Filter selectedFilter;
 
+    /** selectedField */
+    private Field selectedField;
+
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
         newField = new AddField();
+        newFieldSet = new AddField();
     }
 
     public Form(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
         this.procedureModel = procedureModel;
         this.procedureInstance = procedureInstance;
         newField = new AddField();
+        newFieldSet = new AddField();
     }
 
 
     public Form() {
         newField = new AddField();
+        newFieldSet = new AddField();
     }
 
     /**
@@ -167,7 +176,11 @@ public class Form {
      * @return the addField
      */
     public AddField getNewField() {
-        return newField;
+        if (newField != null) {
+            return newField;
+        } else {
+            return new AddField();
+        }
     }
 
     /**
@@ -209,6 +222,44 @@ public class Form {
      */
     public void setSelectedFilter(Filter selectedFilter) {
         this.selectedFilter = selectedFilter;
+    }
+
+    /**
+     * Getter for selectedField.
+     * @return the selectedField
+     */
+    public Field getSelectedField() {
+        return selectedField;
+    }
+
+    /**
+     * Setter for selectedField.
+     * @param selectedField the selectedField to set
+     */
+    public void setSelectedField(Field selectedField) {
+        this.selectedField = selectedField;
+    }
+
+    /**
+     * Getter for newFieldSet.
+     * 
+     * @return the newFieldSet
+     */
+    public AddField getNewFieldSet() {
+        if (newFieldSet != null) {
+            return newFieldSet;
+        } else {
+            return new AddField();
+        }
+    }
+
+    /**
+     * Setter for newFieldSet.
+     * 
+     * @param newFieldSet the newFieldSet to set
+     */
+    public void setNewFieldSet(AddField newFieldSet) {
+        this.newFieldSet = newFieldSet;
     }
 
 }

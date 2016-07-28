@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
@@ -30,6 +31,23 @@ public class Variable {
     private String varOptionsJson;
 
     public Variable() {
+    }
+
+    public Variable(Field field) {
+        this.name = field.getName();
+        this.label = field.getLabel();
+        this.type = field.getType();
+        String varOptions = field.getVarOptions();
+        if (varOptions != null) {
+            this.varOptions = Arrays.asList(varOptions.split(","));
+        }
+    }
+
+    public Variable(AddField field) {
+        this.name = field.getVariableName();
+        this.label = field.getLabel();
+        this.type = field.getType();
+        this.varOptions = Arrays.asList(field.getVarOptions().split(","));
     }
 
     public Variable(String name, String label, VariableTypesEnum type, List<String> varOptions) {

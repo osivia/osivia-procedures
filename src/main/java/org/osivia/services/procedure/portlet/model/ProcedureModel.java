@@ -42,6 +42,9 @@ public class ProcedureModel {
     /** webId */
     private String webId;
 
+    /** originalDocument */
+    private Document originalDocument;
+
     public ProcedureModel() {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();
@@ -52,6 +55,8 @@ public class ProcedureModel {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();
         procedureObjects = new ArrayList<ProcedureObject>();
+
+        setOriginalDocument(document);
 
         final PropertyMap properties = document.getProperties();
         name = properties.getString("dc:title");
@@ -276,6 +281,24 @@ public class ProcedureModel {
      */
     public void setWebId(String webId) {
         this.webId = webId;
+    }
+
+    /**
+     * Getter for originalDocument.
+     * 
+     * @return the originalDocument
+     */
+    public Document getOriginalDocument() {
+        return originalDocument;
+    }
+
+    /**
+     * Setter for originalDocument.
+     * 
+     * @param originalDocument the originalDocument to set
+     */
+    public void setOriginalDocument(Document originalDocument) {
+        this.originalDocument = originalDocument;
     }
 
 }

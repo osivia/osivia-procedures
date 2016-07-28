@@ -17,7 +17,50 @@ public class AddField {
 
     private String varOptions;
 
-    private boolean isFieldSet;
+    private boolean isInput;
+
+    private boolean isRequired;
+
+
+    /**
+     * Getter for isInput.
+     * 
+     * @return the isInput
+     */
+    public boolean isInput() {
+        return isInput;
+    }
+
+
+    /**
+     * Setter for isInput.
+     * 
+     * @param isInput the isInput to set
+     */
+    public void setInput(boolean isInput) {
+        this.isInput = isInput;
+    }
+
+
+    /**
+     * Getter for isRequired.
+     * 
+     * @return the isRequired
+     */
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+
+    /**
+     * Setter for isRequired.
+     * 
+     * @param isRequired the isRequired to set
+     */
+    public void setRequired(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
+
 
     /**
      * Getter for variableName.
@@ -80,25 +123,4 @@ public class AddField {
     public void setVarOptions(String varOptions) {
         this.varOptions = varOptions;
     }
-
-
-    /**
-     * Getter for isFieldSet.
-     * 
-     * @return the isFieldSet
-     */
-    public boolean isFieldSet() {
-        return isFieldSet;
-    }
-
-
-    /**
-     * Setter for isFieldSet.
-     * 
-     * @param isFieldSet the isFieldSet to set
-     */
-    public void setFieldSet(boolean isFieldSet) {
-        this.isFieldSet = isFieldSet;
-    }
-
 }

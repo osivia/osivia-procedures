@@ -33,13 +33,6 @@
 /* 	box-shadow: 5px 0px 1px lightgray inset; */
 }
 
-.procedure-sortable .procedure-hover:hover{
-/* 	box-shadow: 5px 0px 1px lightgray inset; */
-}
-
-.procedure-hover + .procedure-sortable:hover {
-	box-shadow: 0 0 10px 1px lightgray inset;
-}
 
 .groupSelect-select2{
 	width: 100%;

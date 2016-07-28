@@ -3,7 +3,6 @@ package org.osivia.services.procedure.portlet.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,9 +32,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
-import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -156,6 +153,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @RenderMapping(params = "action=editStep")
     public String editStepView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
         request.setAttribute("activeTab", request.getParameter("activeTab"));
+        request.setAttribute("activeFormTab", request.getParameter("activeFormTab"));
         return EDIT_VIEW;
     }
 
@@ -346,13 +344,16 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             windowProperties.put("osivia.hideDecorators", "1");
             windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.procedure.admin", "adminproc");
+            nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminproc");
+            
             String redirectUrl;
-            try {
-                redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-                        windowProperties, PortalUrlType.DEFAULT);
-            } catch (final PortalException e) {
-                throw new PortletException(e);
-            }
+            // try {
+                redirectUrl =nuxeoController.getLink(createdProcedure.getOriginalDocument(),"adminproc").getUrl();
+//                redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
+//                        windowProperties, PortalUrlType.DEFAULT);
+            // } catch (final PortalException e) {
+            // throw new PortletException(e);
+            // }
             response.sendRedirect(redirectUrl);
         }
         sessionStatus.setComplete();
@@ -400,13 +401,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             windowProperties.put("osivia.hideDecorators", "1");
             windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.procedure.admin", "adminprocstep");
-            String redirectUrl;
-            try {
-                redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-                        windowProperties, PortalUrlType.DEFAULT);
-            } catch (final PortalException e) {
-                throw new PortletException(e);
-            }
+            String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminprocstep").getUrl();
+            // try {
+            // redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
+            // windowProperties, PortalUrlType.DEFAULT);
+            // } catch (final PortalException e) {
+            // throw new PortletException(e);
+            // }
             response.sendRedirect(redirectUrl);
         }
         sessionStatus.setComplete();
@@ -439,13 +440,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             windowProperties.put("osivia.hideDecorators", "1");
             windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.procedure.admin", "adminproc");
-            String redirectUrl;
-            try {
-                redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-                        windowProperties, PortalUrlType.DEFAULT);
-            } catch (final PortalException e) {
-                throw new PortletException(e);
-            }
+            String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminproc").getUrl();
+            // try {
+            // redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
+            // windowProperties, PortalUrlType.DEFAULT);
+            // } catch (final PortalException e) {
+            // throw new PortletException(e);
+            // }
             response.sendRedirect(redirectUrl);
         }
         sessionStatus.setComplete();
@@ -602,18 +603,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
 
     @ActionMapping(value = "editStep", params = "editField")
-    public void editField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedField",
-    required = false) String selectedField) throws PortletException {
+    public void editField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        final String[] path = selectedField.split(",");
-        getFieldByPath(form.getTheSelectedStep().getFields(), path);
-
+        final String[] path = form.getSelectedField().getPath().split(",");
         final Field editedField = getFieldByPath(form.getTheSelectedStep().getFields(), path);
         if (editedField != null) {
-            final String[] varOptionsTab = editedField.getVarOptions().split(",");
-            final Variable variable = new Variable(editedField.getName(), editedField.getLabel(), editedField.getType(), Arrays.asList(varOptionsTab));
-            form.getProcedureModel().getVariables().put(editedField.getName(), variable);
+            form.getProcedureModel().getVariables().put(editedField.getName(), new Variable(editedField));
         }
+        response.setRenderParameter("activeTab", "form");
+        response.setRenderParameter("activeFormTab", "edit");
         response.setRenderParameter("action", "editStep");
     }
 
@@ -643,27 +641,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void addField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
         final AddField addField = form.getNewField();
-
-        final Variable variable;
-        final Field field = new Field(form.getTheSelectedStep().getNextPath());
-        final String[] varOptionsTab = addField.getVarOptions().split(",");
-        variable = new Variable(addField.getVariableName(), addField.getLabel(), addField.getType(), Arrays.asList(varOptionsTab));
-        form.getProcedureModel().getVariables().put(addField.getVariableName(), variable);
-        field.setInput(true);
-        field.setName(addField.getVariableName());
-
+        final Field field = new Field(form.getTheSelectedStep().getNextPath(), addField, false);
+        form.getProcedureModel().getVariables().put(addField.getVariableName(), new Variable(addField));
         updateProcedureWithForm(request, response, form, field);
     }
 
     @ActionMapping(value = "editStep", params = "addFieldSet")
-    public void addFieldSet(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
-            value = "newFieldSetLabel", required = false) String newFieldSetLabel) throws PortletException {
+    public void addFieldSet(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        final Field field = new Field(form.getTheSelectedStep().getNextPath());
-        field.setFieldSet(true);
-        field.setSuperLabel(newFieldSetLabel);
-        field.setName(newFieldSetLabel);
-
+        final Field field = new Field(form.getTheSelectedStep().getNextPath(), form.getNewFieldSet(), true);
         updateProcedureWithForm(request, response, form, field);
     }
 
@@ -671,6 +657,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         field.setPath(String.valueOf(form.getTheSelectedStep().getFields().size()));
         form.getTheSelectedStep().getFields().add(field);
         form.setNewField(new AddField());
+        form.setNewFieldSet(new AddField());
         response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("action", "editStep");
     }
@@ -750,6 +737,32 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "editStep");
     }
 
+    @ActionMapping(value = "editStep", params = "selectField")
+    public void fillEditFieldTab(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
+            value = "selectedFieldPath") String selectedFieldPath) {
+
+        Field fieldByFieldPath = getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
+        form.setSelectedField(fieldByFieldPath);
+        response.setRenderParameter("action", "editStep");
+        response.setRenderParameter("activeTab", "form");
+        response.setRenderParameter("activeFormTab", "edit");
+    }
+    
+    private Field getFieldByFieldPath(List<Field> fields, String selectedFieldPath) {
+        if (fields != null) {
+            for (Field field : fields) {
+                if (StringUtils.equals(field.getPath(), selectedFieldPath)) {
+                    return field;
+                }
+                Field fieldByPath = getFieldByFieldPath(field.getFields(), selectedFieldPath);
+                if (fieldByPath != null) {
+                    return fieldByPath;
+                }
+            }
+        }
+        return null;
+    }
+
     @ActionMapping(value = "editAction", params = "addFilter")
     public void addFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "selectedFilterId") String filterId) throws PortletException {
@@ -774,7 +787,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editAction", params = "deleteFilter")
     public void deleteFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        if (removeFilterByFilterInstanceId(form.getTheSelectedAction().getFilters(), form.getSelectedFilter().getFilterInstanceId())) {
+        if (removeFilterByFilterPath(form.getTheSelectedAction().getFilters(), form.getSelectedFilter().getFilterPath())) {
             updateFiltersPath(form.getTheSelectedAction().getFilters(), StringUtils.EMPTY);
         }
         form.setSelectedFilter(null);
@@ -798,16 +811,16 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
-    private boolean removeFilterByFilterInstanceId(List<Filter> filters, String filterInstanceId) {
+    private boolean removeFilterByFilterPath(List<Filter> filters, String filterPath) {
         if (filters != null) {
             ListIterator<Filter> filtersI = filters.listIterator();
             while (filtersI.hasNext()) {
                 Filter filter = (Filter) filtersI.next();
-                if (StringUtils.equals(filter.getFilterInstanceId(), filterInstanceId)) {
+                if (StringUtils.equals(filter.getFilterPath(), filterPath)) {
                     filtersI.remove();
                     return true;
                 }
-                if (removeFilterByFilterInstanceId(filter.getFilters(), filterInstanceId)) {
+                if (removeFilterByFilterPath(filter.getFilters(), filterPath)) {
                     return true;
                 }
             }
@@ -817,28 +830,29 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editAction", params = "editFilter")
     public void editFilter(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
-        updateFilterByFilterInstanceId(form.getTheSelectedAction().getFilters(), form.getSelectedFilter());
+        updateFilterByFilterPath(form.getTheSelectedAction().getFilters(), form.getSelectedFilter());
         response.setRenderParameter("action", "editAction");
         response.setRenderParameter("activeTab", "edit");
     }
 
     @ActionMapping(value = "editAction", params = "selectFilter")
     public void fillEditTab(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam(value = "selectedFilterId") String selectedFilterId) {
+ @RequestParam(
+            value = "selectedFilterPath") String selectedFilterPath) {
         
-        Filter filterByFilterInstanceId = getFilterByFilterInstanceId(form.getTheSelectedAction().getFilters(), selectedFilterId);
-        form.setSelectedFilter(filterByFilterInstanceId);
+        Filter filterByFilterPath = getFilterByFilterPath(form.getTheSelectedAction().getFilters(), selectedFilterPath);
+        form.setSelectedFilter(filterByFilterPath);
         response.setRenderParameter("action", "editAction");
         response.setRenderParameter("activeTab", "edit");
     }
 
-    private Filter getFilterByFilterInstanceId(List<Filter> filtersList, String filterInstanceId) {
+    private Filter getFilterByFilterPath(List<Filter> filtersList, String selectedFilterPath) {
         if (filtersList != null) {
             for (Filter filter : filtersList) {
-                if (StringUtils.equals(filter.getFilterInstanceId(), filterInstanceId)) {
+                if (StringUtils.equals(filter.getFilterPath(), selectedFilterPath)) {
                     return filter;
                 }
-                Filter filterbyId = getFilterByFilterInstanceId(filter.getFilters(), filterInstanceId);
+                Filter filterbyId = getFilterByFilterPath(filter.getFilters(), selectedFilterPath);
                 if (filterbyId != null) {
                     return filterbyId;
                 }
@@ -847,14 +861,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return null;
     }
 
-    private void updateFilterByFilterInstanceId(List<Filter> filtersList, Filter filterUpdate) {
+    private void updateFilterByFilterPath(List<Filter> filtersList, Filter filterUpdate) {
         if (filtersList != null) {
             for (Filter filter : filtersList) {
-                if (StringUtils.equals(filter.getFilterInstanceId(), filterUpdate.getFilterInstanceId())) {
+                if (StringUtils.equals(filter.getFilterPath(), filterUpdate.getFilterPath())) {
                     filter.updateFilter(filterUpdate);
                     return;
                 }
-                updateFilterByFilterInstanceId(filter.getFilters(), filterUpdate);
+                updateFilterByFilterPath(filter.getFilters(), filterUpdate);
             }
         }
     }
@@ -927,10 +941,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editStep", params = "deleteField")
-    public void deleteField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam(value = "selectedField") String selectedField) throws PortletException {
+    public void deleteField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        final String[] path = selectedField.split(",");
+        final String[] path = form.getSelectedField().getPath().split(",");
         removeFieldByPath(form.getTheSelectedStep().getFields(), path);
 
         response.setRenderParameter("activeTab", "form");

@@ -10,15 +10,16 @@
 </c:forEach>
 <!-- <div class="panel panel-default"> -->
 <!-- 	<div class="panel-heading"> -->
-	   <c:if test="${empty filterBkp.filterName}">
-			<op:translate key="${filterBkp.labelKey}" />
-	   </c:if>
-	   <c:if test="${not empty filterBkp.filterName}">
-            ${filterBkp.filterName}
-       </c:if>
+        <span class="filter-title">
+		   <c:if test="${empty filterBkp.filterName}">
+				<op:translate key="${filterBkp.labelKey}" />
+		   </c:if>
+		   <c:if test="${not empty filterBkp.filterName}">
+	            ${filterBkp.filterName}
+	       </c:if>
+       </span>
 <!-- 	</div> -->
 <!-- 	<div class="panel-body"> -->
-        <form:hidden path="${springPath}.filterInstanceId" />
 		<form:hidden path="${springPath}.filterId" />
 		<form:hidden path="${springPath}.filterPath" />
 		<c:if test="${filterBkp.hasChildren}">
