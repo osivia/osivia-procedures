@@ -88,14 +88,14 @@ initGroupSelect("${groupSearchUrl}");
 	                           <div class="col-sm-offset-3 col-sm-3">
 	                               <div class="checkbox">
 	                                    <label>
-	                                        <input type="checkbox" name="newField.input"><span>Saisissable</span>
+	                                       <form:checkbox path="newField.input"/><span>Saisissable</span>
 	                                    </label>
 	                                </div>
 	                            </div>
 	                            <div class="col-sm-3">
                                    <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" name="newField.required"><span>Requis</span>
+                                            <form:checkbox path="newField.required"/><span>Requis</span>
                                         </label>
                                     </div>
                                 </div>
@@ -168,14 +168,14 @@ initGroupSelect("${groupSearchUrl}");
 			                               <div class="col-sm-offset-3 col-sm-3">
 			                                   <div class="checkbox">
 			                                        <label>
-			                                            <input type="checkbox" name="selectedField.input" <c:if test="${form.selectedField.input}">checked="checked"</c:if>><span>Saisissable</span>
+			                                             <form:checkbox path="selectedField.input"/><span>Saisissable</span>
 			                                        </label>
 			                                    </div>
 			                                </div>
 			                                <div class="col-sm-3">
 			                                   <div class="checkbox">
 			                                        <label>
-			                                            <input type="checkbox" name="selectedField.required" <c:if test="${form.selectedField.required}">checked="checked"</c:if>><span>Requis</span>
+			                                             <form:checkbox path="selectedField.required"/><span>Requis</span>
 			                                        </label>
 			                                    </div>
 			                                </div>
@@ -264,21 +264,21 @@ initGroupSelect("${groupSearchUrl}");
 	           <div class="col-sm-offset-2 col-sm-1">
 		           <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" <c:if test="${form.theSelectedStep.notifiable}">checked="checked"</c:if> name="theSelectedStep.notifiable"><span>notifiable</span>
+	                       <form:checkbox path="theSelectedStep.notifiable"/><span>notifiable</span>
 	                    </label>
 	                </div>
                 </div>
                 <div class="col-sm-1">
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" <c:if test="${form.theSelectedStep.acquitable}">checked="checked"</c:if> name="theSelectedStep.acquitable"><span>acquitable</span>
+	                       <form:checkbox path="theSelectedStep.acquitable"/><span>acquitable</span>
 	                    </label>
 	                </div>
                 </div>
 	           <div class="col-sm-1">
 		           <div class="checkbox">
 		                <label>
-		                    <input type="checkbox" <c:if test="${form.theSelectedStep.closable}">checked="checked"</c:if> name="theSelectedStep.closable"><span>closable</span>
+		                      <form:checkbox path="theSelectedStep.closable"/><span>closable</span>
 		                </label>
 	                </div>
                 </div>
