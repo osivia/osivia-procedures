@@ -12,7 +12,7 @@
 <!-- 	<div class="panel-heading"> -->
         <span class="filter-title">
 		   <c:if test="${empty filterBkp.filterName}">
-				<op:translate key="${filterBkp.labelKey}" />
+				<op:translate key="${filterBkp.labelKey}" classLoader="${filterBkp.classLoader}"/>
 		   </c:if>
 		   <c:if test="${not empty filterBkp.filterName}">
 	            ${filterBkp.filterName}

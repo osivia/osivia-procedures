@@ -57,6 +57,10 @@ public class Filter implements Comparable<Filter> {
     @JsonIgnore
     private String decriptionKey;
 
+    /** classLoader */
+    @JsonIgnore
+    private ClassLoader classLoader;
+
 
     public Filter() {
     }
@@ -68,6 +72,7 @@ public class Filter implements Comparable<Filter> {
         setHasChildren(formFilter.hasChildren());
         setLabelKey(formFilter.getLabelKey());
         setDecriptionKey(formFilter.getDescriptionKey());
+        setClassLoader(formFilter.getClass().getClassLoader());
         if (formFilter.getParameters() != null) {
             final List<Argument> argumentsList = new ArrayList<Argument>(formFilter.getParameters().entrySet().size());
             for (Entry<String, FormFilterParameterType> argumentEntry : formFilter.getParameters().entrySet()) {
@@ -92,6 +97,7 @@ public class Filter implements Comparable<Filter> {
             setLabelKey(formFilter.getLabelKey());
             setDecriptionKey(formFilter.getDescriptionKey());
             setHasChildren(formFilter.hasChildren());
+            setClassLoader(formFilter.getClass().getClassLoader());
         }
         final PropertyList argumentsPptyList = propertyMap.getList("argumentsList");
         if (argumentsPptyList != null) {
@@ -316,5 +322,23 @@ public class Filter implements Comparable<Filter> {
      */
     public void setDecriptionKey(String decriptionKey) {
         this.decriptionKey = decriptionKey;
+    }
+
+    /**
+     * Getter for classLoader.
+     * 
+     * @return the classLoader
+     */
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    /**
+     * Setter for classLoader.
+     * 
+     * @param classLoader the classLoader to set
+     */
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 }

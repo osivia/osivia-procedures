@@ -44,10 +44,12 @@
                     <c:forEach var="filtre" items="${listeFiltres}">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><op:translate key="${filtre.labelKey}"/></h3>
+                                <h3 class="panel-title"><op:translate key="${filtre.labelKey}" classLoader="${filtre.class.classLoader}"/></h3>
                             </div>
                             <div class="panel-body">
-                                <op:translate key="${filtre.descriptionKey}"/>
+                                <c:if test="${not empty filtre.descriptionKey}">
+	                                <op:translate key="${filtre.descriptionKey}" classLoader="${filtre.class.classLoader}"/>
+                                </c:if>
                                 <button type="submit" name="addFilter" class="btn btn-default pull-right" onclick="selector(this,'${filtre.id}','selectedFilterId');" >
                                     <i class="glyphicons glyphicons-plus"></i>
                                 </button>
