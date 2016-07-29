@@ -68,7 +68,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
         ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
         docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
-                "glyphicons glyphicons-conversation"));
+                "glyphicons glyphicons-flowchart"));
 
 
         Map<String, ListTemplate> templates = getListTemplates(context);
