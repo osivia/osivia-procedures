@@ -126,7 +126,7 @@ function select2Vocab(vocabularySearchUrl,selectId){
 				delay: 300,
 				data: function (params) {
 					return {
-						filter: params.term // search term
+						filter: params.term
 					};
 				},
 				processResults: function (data, params) {
@@ -136,7 +136,7 @@ function select2Vocab(vocabularySearchUrl,selectId){
 				},
 				cache: true
 			},
-			escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+			escapeMarkup: function (markup) { return markup; },
 			theme: "bootstrap",
 		});
 	});
@@ -151,7 +151,7 @@ function initGroupSelect(groupSearchUrl){
 		      delay: 300,
 		      data: function (params) {
 		        return {
-		          filter: params.term // search term
+		          filter: params.term
 		        };
 		      },
 		      processResults: function (data, params) {
@@ -163,7 +163,7 @@ function initGroupSelect(groupSearchUrl){
 		      },
 		      cache: true
 		    },
-		    escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+		    escapeMarkup: function (markup) { return markup; },
 		    minimumInputLength: 3,
 		    theme: "bootstrap",
 	   	  templateResult: formatProfil,
@@ -172,6 +172,29 @@ function initGroupSelect(groupSearchUrl){
 	});
 };
 
-function hideModal(){
-	$JQry(".modal-open").removeClass("modal-open");
+function initStepSelect(stepSearchUrl){
+	$JQry(document).ready(function(){
+		$JQry(".stepSelect-select2").select2({
+			ajax: {
+		      url: stepSearchUrl,
+		      dataType: 'json',
+		      delay: 300,
+		      data: function (params) {
+		        return {
+		          filter: params.term
+		        };
+		      },
+		      processResults: function (data, params) {
+		        return {
+		          results: data
+		        };
+		      },
+		      cache: true
+		    },
+		    escapeMarkup: function (markup) { return markup; },
+		    theme: "bootstrap",
+	   	  templateResult: formatProfil,
+	   	  templateSelection: formatProfil
+		});
+	});
 };

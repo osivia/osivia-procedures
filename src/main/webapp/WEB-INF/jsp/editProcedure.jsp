@@ -7,6 +7,13 @@
 <portlet:actionURL name="editProcedure" var="editProcedureUrl">
 </portlet:actionURL>
 
+<c:if test="${!form.advancedMode}">
+	<portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
+	<script type="text/javascript">
+	   initStepSelect("${stepSearchUrl}");
+	</script>
+</c:if>
+
 
 <form:form modelAttribute="form" action="${editProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
 
@@ -21,12 +28,14 @@
                     <form:input path="procedureModel.name" type="text" cssClass="form-control" placeholder="Nom" />
 			    </div>
 			</div>
-			<div class="form-group">
-                <form:label path="procedureModel.webId" cssClass="col-sm-3 control-label">Identifiant</form:label>
-                <div class="col-sm-9">
-                    <form:input path="procedureModel.webId" type="text" cssClass="form-control" placeholder="Identifiant" />
-                </div>
-            </div>
+			<c:if test="${form.advancedMode}">
+				<div class="form-group">
+	                <form:label path="procedureModel.webId" cssClass="col-sm-3 control-label">Identifiant</form:label>
+	                <div class="col-sm-9">
+	                    <form:input path="procedureModel.webId" type="text" cssClass="form-control" placeholder="Identifiant" />
+	                </div>
+	            </div>
+            </c:if>
         </div>
     </div>
         
@@ -62,6 +71,8 @@
             </div>
         </div>
     </div>
+    
+    <c:if test="${form.advancedMode}">
     
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -111,6 +122,8 @@
             </div>
         </div>
     
+    </c:if>
+    
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Étape de départ</h3>
@@ -118,7 +131,14 @@
         <div class="panel-body">
             <div class="form-group">
                 <div class="col-sm-6">
-                    <form:input path="procedureModel.startingStep" type="text" cssClass="form-control" />
+                    <c:if test="${form.advancedMode}">
+	                    <form:input path="procedureModel.startingStep" type="text" cssClass="form-control" />
+                    </c:if>
+                    <c:if test="${!form.advancedMode}">
+                        <form:select path="procedureModel.startingStep" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;">
+                           <form:option value="${form.procedureModel.startingStep}" />
+                        </form:select>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -128,8 +148,18 @@
         <div class="col-sm-1">
             <button type="submit" class="btn btn-primary" name="saveProcedure">Sauvegarder</button>
         </div>
+        <c:if test="${!form.advancedMode}">
+            <div class="col-sm-1">
+	            <button type="submit" class="btn btn-info" name="changeMode">Mode avançé</button>
+	        </div>
+        </c:if>
+        <c:if test="${form.advancedMode}">
+            <div class="col-sm-1">
+                <button type="submit" class="btn btn-info" name="changeMode">Mode simplifié</button>
+            </div>
+        </c:if>
         <div class="col-sm-1">
-            <button type="submit" class="btn btn-default" name="launchProcedure">Lancer le procedure</button>
+            <button type="submit" class="btn btn-default" name="launchProcedure">Lancer la procédure</button>
         </div>
         <div class="col-sm-1 pull-right">
             <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure">Supprimer</button>

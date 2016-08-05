@@ -38,6 +38,8 @@ public class Form {
     /** selectedField */
     private Field selectedField;
 
+    private boolean advancedMode;
+
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
         newField = new AddField();
@@ -47,6 +49,14 @@ public class Form {
     public Form(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
         this.procedureModel = procedureModel;
         this.procedureInstance = procedureInstance;
+        if (procedureInstance != null && procedureModel != null) {
+            for (Step step : procedureModel.getSteps()) {
+                if (StringUtils.equals(procedureInstance.getCurrentStep(), step.getReference())) {
+                    selectedStep = String.valueOf(step.getIndex());
+                    break;
+                }
+            }
+        }
         newField = new AddField();
         newFieldSet = new AddField();
     }
@@ -260,6 +270,22 @@ public class Form {
      */
     public void setNewFieldSet(AddField newFieldSet) {
         this.newFieldSet = newFieldSet;
+    }
+
+    /**
+     * Getter for advancedMode.
+     * @return the advancedMode
+     */
+    public boolean isAdvancedMode() {
+        return advancedMode;
+    }
+
+    /**
+     * Setter for advancedMode.
+     * @param advancedMode the advancedMode to set
+     */
+    public void setAdvancedMode(boolean advancedMode) {
+        this.advancedMode = advancedMode;
     }
 
 }

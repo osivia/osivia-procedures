@@ -44,6 +44,10 @@ public class Step implements Comparable<Step> {
     @JsonProperty("reference")
     private String reference;
 
+    /** oldReference */
+    @JsonIgnore
+    private String oldReference;
+
     /** groups */
     @JsonProperty("authorizedGroups")
     private List<String> groups;
@@ -143,6 +147,7 @@ public class Step implements Comparable<Step> {
         setStepName(stepM.getString("name"));
         setIndex(stepM.getLong("index").intValue());
         setReference(stepM.getString("reference"));
+        setOldReference(stepM.getString("reference"));
         setNotifiable(BooleanUtils.isTrue(stepM.getBoolean("notifiable")));
         setClosable(BooleanUtils.isTrue(stepM.getBoolean("closable")));
         setAcquitable(BooleanUtils.isTrue(stepM.getBoolean("acquitable")));
@@ -299,6 +304,25 @@ public class Step implements Comparable<Step> {
         this.reference = reference;
     }
 
+
+    /**
+     * Getter for oldReference.
+     * 
+     * @return the oldReference
+     */
+    public String getOldReference() {
+        return oldReference;
+    }
+
+
+    /**
+     * Setter for oldReference.
+     * 
+     * @param oldReference the oldReference to set
+     */
+    public void setOldReference(String oldReference) {
+        this.oldReference = oldReference;
+    }
 
     /**
      * Getter for groups.

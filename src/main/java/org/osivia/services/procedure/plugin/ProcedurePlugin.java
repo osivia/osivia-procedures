@@ -23,9 +23,12 @@ import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.services.procedure.formFilters.GoToStepFilter;
+import org.osivia.services.procedure.formFilters.IfFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 
 
 /**
@@ -87,6 +90,11 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
         MenubarModule menubarModule = new ProcedureMenubarModule();
         menubarModules.add(menubarModule);
+
+
+        Map<String, FormFilter> formFilters = getFormFilters(context);
+        formFilters.put(IfFilter.ID, new IfFilter());
+        formFilters.put(GoToStepFilter.ID, new GoToStepFilter());
     }
 
 
