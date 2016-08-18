@@ -13,7 +13,7 @@
         
         <init-param>
 			<name>contextConfigLocation</name>
-			<value>classpath:directory-beans.xml /WEB-INF/osivia-services-procedure-portlet.xml</value>
+			<value>classpath:annuaire-beans.xml /WEB-INF/osivia-services-procedure-portlet.xml</value>
 		</init-param>
 
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>

@@ -19,10 +19,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osivia.portal.api.cms.DocumentType;
+//import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
-import org.osivia.portal.api.menubar.MenubarModule;
-import org.osivia.portal.api.player.IPlayerModule;
+//import org.osivia.portal.api.menubar.MenubarModule;
+//import org.osivia.portal.api.player.IPlayerModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
@@ -64,29 +64,30 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     @Override
     protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
 
-        Map<String, DocumentType> docTypes = getDocTypes(context);
+//        Map<String, DocumentType> docTypes = getDocTypes(context);
+//
+//        ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
+//        docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
+//                "glyphicons glyphicons-flowchart"));
+//
+//
+//        Map<String, ListTemplate> templates = getListTemplates(context);
+//
+//        ListTemplate picturebookTemplate = new ListTemplate(STYLE_ADMIN, "admin téléprocédure", SCHEMAS_ADMIN);
+//        templates.put(STYLE_ADMIN, picturebookTemplate);
+//
+//
+//        List<IPlayerModule> modules = getPlayers(context);
+//        // ! insertion au début
+//        modules.add(0, new ProcedurePlayer(getPortletContext()));
+//
+//
+//        // Menubar modules
+//        List<MenubarModule> menubarModules = this.getMenubarModules(context);
+//
+//        MenubarModule menubarModule = new ProcedureMenubarModule();
+//        menubarModules.add(menubarModule);
 
-        ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
-        docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
-                "glyphicons glyphicons-flowchart"));
-
-
-        Map<String, ListTemplate> templates = getListTemplates(context);
-
-        ListTemplate picturebookTemplate = new ListTemplate(STYLE_ADMIN, "admin téléprocédure", SCHEMAS_ADMIN);
-        templates.put(STYLE_ADMIN, picturebookTemplate);
-
-
-        List<IPlayerModule> modules = getPlayers(context);
-        // ! insertion au début
-        modules.add(0, new ProcedurePlayer(getPortletContext()));
-
-
-        // Menubar modules
-        List<MenubarModule> menubarModules = this.getMenubarModules(context);
-
-        MenubarModule menubarModule = new ProcedureMenubarModule();
-        menubarModules.add(menubarModule);
     }
 
 

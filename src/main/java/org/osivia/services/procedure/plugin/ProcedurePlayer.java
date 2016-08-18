@@ -22,13 +22,13 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
-import org.osivia.portal.api.player.Player;
+//import org.osivia.portal.api.cms.DocumentContext;
+//import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
+//import org.osivia.portal.api.player.Player;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
-import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
-import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
+//import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
+//import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 
 
 /**
@@ -36,57 +36,58 @@ import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
  *
  * @author Jean-Sébastien Steux
  */
-public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule {
+public class ProcedurePlayer { 
+//extends PluginModule implements INuxeoPlayerModule {
 
 
-    /**
-     * Instantiates a new player module.
-     *
-     * @param portletContext the portlet context
-     */
-    public ProcedurePlayer(PortletContext portletContext) {
-        super(portletContext);
-    }
-
-    /**
-     * Get procedure thread player.
-     *
-     * @param cmsContext CMS context
-     * @return procedure thread player
-     */
-    private Player getProcedurePlayer(DocumentContext<Document> docCtx) {
-        final Document document = docCtx.getDoc();
-
-        final Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
-        windowProperties.put("osivia.doctype", document.getType());
-        windowProperties.put("osivia.hideDecorators", "1");
-        windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-        windowProperties.put("osivia.ajaxLink", "1");
-
-        final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
-        if (StringUtils.equals(publicationInfos.getDisplayContext(), "adminproc")) {
-            windowProperties.put("osivia.procedure.admin", publicationInfos.getDisplayContext());
-            windowProperties.put("osivia.title", "Éditer une procédure");
-        }
-
-        final Player linkProps = new Player();
-        linkProps.setWindowProperties(windowProperties);
-        linkProps.setPortletInstance("osivia-services-procedure-portletInstance");
-
-        return linkProps;
-    }
-
-    @Override
-    public Player getCMSPlayer(DocumentContext<Document> docCt) {
-        final Document doc = docCt.getDoc();
-        final String docType = doc.getType();
-
-        if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getName()) || StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
-            return getProcedurePlayer(docCt);
-        }
-
-        return null;
-    }
+//    /**
+//     * Instantiates a new player module.
+//     *
+//     * @param portletContext the portlet context
+//     */
+//    public ProcedurePlayer(PortletContext portletContext) {
+//        super(portletContext);
+//    }
+//
+//    /**
+//     * Get procedure thread player.
+//     *
+//     * @param cmsContext CMS context
+//     * @return procedure thread player
+//     */
+//    private Player getProcedurePlayer(DocumentContext<Document> docCtx) {
+//        final Document document = docCtx.getDoc();
+//
+//        final Map<String, String> windowProperties = new HashMap<String, String>();
+//        windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
+//        windowProperties.put("osivia.doctype", document.getType());
+//        windowProperties.put("osivia.hideDecorators", "1");
+//        windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
+//        windowProperties.put("osivia.ajaxLink", "1");
+//
+//        final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
+//        if (StringUtils.equals(publicationInfos.getDisplayContext(), "adminproc")) {
+//            windowProperties.put("osivia.procedure.admin", publicationInfos.getDisplayContext());
+//            windowProperties.put("osivia.title", "Éditer une procédure");
+//        }
+//
+//        final Player linkProps = new Player();
+//        linkProps.setWindowProperties(windowProperties);
+//        linkProps.setPortletInstance("osivia-services-procedure-portletInstance");
+//
+//        return linkProps;
+//    }
+//
+//    @Override
+//    public Player getCMSPlayer(DocumentContext<Document> docCt) {
+//        final Document doc = docCt.getDoc();
+//        final String docType = doc.getType();
+//
+//        if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getName()) || StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
+//            return getProcedurePlayer(docCt);
+//        }
+//
+//        return null;
+//    }
 
 }
