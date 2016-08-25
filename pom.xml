@@ -30,13 +30,14 @@
         </dependency>
         
         <!-- Directory -->
+        <!-- 
         <dependency>
             <groupId>org.osivia.services.directory.socle</groupId>
             <artifactId>osivia-services-directory-compat-socle-interfaces</artifactId>
             <version>${directory.version}</version>
             <scope>provided</scope>        
         </dependency>
-        
+         -->
     </dependencies>
 
 

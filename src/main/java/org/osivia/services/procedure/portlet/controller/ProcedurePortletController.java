@@ -65,7 +65,6 @@ import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.portlet.multipart.MultipartActionRequest;
 
-import fr.toutatice.outils.ldap.entity.Profil;
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
@@ -103,8 +102,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @Autowired
     private IProcedureService procedureService;
 
-    @Autowired
-    private Profil profil;
+//    @Autowired
+//    private Profil profil;
 
     public ProcedurePortletController() {
         super();
