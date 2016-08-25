@@ -94,7 +94,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.2.1</version>
                 <configuration>
-                    <tagBase>http://www.osivia.org/repos/osivia-services/procedure/branches/4.0-backport-workspaces</tagBase>
+                    <tagBase>http://www.osivia.org/repos/osivia-services/procedure/tags</tagBase>
                     <useReleaseProfile>false</useReleaseProfile>
                     <preparationGoals>clean install</preparationGoals>
                     <goals>deploy</goals>
@@ -119,7 +119,7 @@
 
 
     <scm>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/procedure/trunk</developerConnection>
+        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/procedure/4.0-backport-workspaces</developerConnection>
     </scm>
 
 
