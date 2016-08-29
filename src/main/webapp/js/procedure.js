@@ -95,8 +95,128 @@ $JQry(function() {
 		e.preventDefault();  
 		$JQry(this).tab('show');
 	});
+	
+	$JQry(".vocabularySelect-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		var vocabularySearchUrl = $element.data("url");
+		
+		$element.select2({
+			ajax: {
+				url: $element.data("url"),
+				dataType: 'json',
+				delay: 300,
+				data: function (params) {
+					return {
+						filter: params.term
+					};
+				},
+				processResults: function (data, params) {
+					return {
+						results: data
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			theme: "bootstrap",
+		});
+		
+	});
+	
+	$JQry(".fieldSelect-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		var vocabularySearchUrl = $element.data("url");
+		
+		$element.select2({
+			ajax: {
+				url: $element.data("url"),
+				dataType: 'json',
+				delay: 300,
+				data: function (params) {
+					return {
+						filter: params.term
+					};
+				},
+				processResults: function (data, params) {
+					return {
+						results: data
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			theme: "bootstrap",
+		});
+		
+		$element.change(function(event) {
+			var data = $JQry(this).select2('data');
+			console.log(data);
+			$form = $JQry(this).closest("form");
+			$form.find("input[name$='newField.label']").val(data[0].label);
+			$form.find("select[name$='newField.type']").val(data[0].type);
+			$form.find("input[name$='newField.varOptions']").val(data[0].varOptions);		
+		});
+	});
+	
+	$JQry(".groupSelect-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		var groupSearchUrl = $element.data("url");
+		
+		$element.select2({
+			ajax: {
+				url: groupSearchUrl,
+				dataType: 'json',
+				delay: 300,
+				data: function (params) {
+					return {
+						filter: params.term
+					};
+				},
+				processResults: function (data, params) {
+					return {
+						results: $JQry.map(data, function(group) {
+							return { id: group.cn, text: group.displayName };
+						})
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			minimumInputLength: 3,
+			theme: "bootstrap",
+			templateResult: formatProfil,
+			templateSelection: formatProfil
+		});
+	});
+	
+	$JQry(".stepSelect-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		var stepSearchUrl = $element.data("url");
+		
+		$element.select2({
+			ajax: {
+				url: stepSearchUrl,
+				dataType: 'json',
+				delay: 300,
+				data: function (params) {
+					return {
+						filter: params.term
+					};
+				},
+				processResults: function (data, params) {
+					return {
+						results: data
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			theme: "bootstrap",
+			templateResult: formatProfil,
+			templateSelection: formatProfil
+		});
+	});
 });
-
 
 function selectPath(button, name) {
 	var path =$JQry(button).parents("li").find("input[name$='path']").val();
@@ -116,129 +236,7 @@ function formatProfil (group) {
 	return group.text + ' (' + group.id + ')';
 };
 
-function select2Vocab(vocabularySearchUrl,selectId){
-	
-	$JQry(document).ready(function(){
-		$JQry("#"+selectId).select2({
-			ajax: {
-				url: vocabularySearchUrl,
-				dataType: 'json',
-				delay: 300,
-				data: function (params) {
-					return {
-						filter: params.term
-					};
-				},
-				processResults: function (data, params) {
-					return {
-						results: data
-					};
-				},
-				cache: true
-			},
-			escapeMarkup: function (markup) { return markup; },
-			theme: "bootstrap",
-		});
-	});
-};
-
-function initGroupSelect(groupSearchUrl){
-	$JQry(document).ready(function(){
-		$JQry(".groupSelect-select2").select2({
-		    ajax: {
-		      url: groupSearchUrl,
-		      dataType: 'json',
-		      delay: 300,
-		      data: function (params) {
-		        return {
-		          filter: params.term
-		        };
-		      },
-		      processResults: function (data, params) {
-		        return {
-		          results: $JQry.map(data, function(group) {
-		        	  return { id: group.cn, text: group.displayName };
-		          })
-		        };
-		      },
-		      cache: true
-		    },
-		    escapeMarkup: function (markup) { return markup; },
-		    minimumInputLength: 3,
-		    theme: "bootstrap",
-	   	  templateResult: formatProfil,
-	   	  templateSelection: formatProfil
-		});
-	});
-};
-
-function initStepSelect(stepSearchUrl){
-	$JQry(document).ready(function(){
-		$JQry(".stepSelect-select2").select2({
-			ajax: {
-		      url: stepSearchUrl,
-		      dataType: 'json',
-		      delay: 300,
-		      data: function (params) {
-		        return {
-		          filter: params.term
-		        };
-		      },
-		      processResults: function (data, params) {
-		        return {
-		          results: data
-		        };
-		      },
-		      cache: true
-		    },
-		    escapeMarkup: function (markup) { return markup; },
-		    theme: "bootstrap",
-	   	  templateResult: formatProfil,
-	   	  templateSelection: formatProfil
-		});
-	});
-};
-
-function initFieldSelect(fieldSearchUrl){
-	$JQry(document).ready(function(){
-		$JQry(".fieldSelect-select2").select2({
-			ajax: {
-		      url: fieldSearchUrl,
-		      dataType: 'json',
-		      delay: 300,
-		      data: function (params) {
-		        return {
-		          filter: params.term
-		        };
-		      },
-		      processResults: function (data, params) {
-		        return {
-		          results: $JQry.map(data, function(variable) {
-		        	  variable.id = variable.name;
-		        	  variable.text = variable.name;
-		        	  return variable;
-		          })
-		        };
-		      },
-		      cache: true
-		    },
-		    escapeMarkup: function (markup) { return markup; },
-		    theme: "bootstrap",
-	   	  templateResult: formatField,
-		});
-		
-		$JQry(".fieldSelect-select2").change(function(event) {
-			var data = $JQry(this).select2('data');
-			console.log(data);
-			$form = $JQry(this).closest("form");
-			$form.find("input[name$='newField.label']").val(data[0].label);
-			$form.find("select[name$='newField.type']").val(data[0].type);
-			$form.find("input[name$='newField.varOptions']").val(data[0].varOptions);		
-		});
-	});
-}
-
-function formatField (variable) {
+function formatField(variable) {
 	$result = $JQry(document.createElement("div"));
 	
 	if (variable.loading) {

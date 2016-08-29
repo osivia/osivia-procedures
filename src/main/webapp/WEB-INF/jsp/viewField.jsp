@@ -128,39 +128,26 @@
 					<portlet:param name="vocabularyName"
 						value="${form.procedureModel.variables[field.name].varOptions[0]}" />
 				</portlet:resourceURL>
-				<script type="text/javascript">
-					select2Vocab("${vocabularySearchUrl}",
-							"selectVariable_${status.index}");
-				</script>
 				<div class="col-sm-3">
 					<label
 						for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${form.procedureModel.variables[field.name].label}</label>
 				</div>
 				<div class="col-sm-9">
 					<form:select
-						path="procedureInstance.globalVariablesValues['${field.name}']"
-						id="selectVariable_${status.index}" class="form-control select2" />
+						path="procedureInstance.globalVariablesValues['${field.name}']" class="form-control select2" data-url="${vocabularySearchUrl}" />
 				</div>
 			</c:when>
 			<c:when test="${fieldType eq 'SELECTVOCABMULTI'}">
 				<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl">
-					<portlet:param name="vocabularyName"
-						value="${form.procedureModel.variables[field.name].varOptions[0]}" />
+					<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions[0]}" />
 				</portlet:resourceURL>
-				<script type="text/javascript">
-					select2Vocab("${vocabularySearchUrl}",
-							"selectVariable_${status.index}",
-							"${form.procedureModel.variables[field.name].varOptions[0]}");
-				</script>
 				<div class="col-sm-3">
 					<label
 						for="${form.procedureInstance.globalVariablesValues['{field.name}']}">${form.procedureModel.variables[field.name].label}</label>
 				</div>
 				<div class="col-sm-9">
 					<form:select
-						path="procedureInstance.globalVariablesValues['${field.name}']"
-						id="selectVariable_${status.index}" multiple="true"
-						class="form-control select2" />
+						path="procedureInstance.globalVariablesValues['${field.name}']" multiple="true" data-url="${vocabularySearchUrl}" class="form-control select2" />
 				</div>
 			</c:when>
 			<c:when test="${fieldType eq 'FILE'}">

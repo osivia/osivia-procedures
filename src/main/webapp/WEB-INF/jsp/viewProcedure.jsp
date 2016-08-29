@@ -15,7 +15,6 @@
 
 <portlet:actionURL name="actionProcedure" var="actionProcedureUrl">
 </portlet:actionURL>
-<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl" ></portlet:resourceURL>
 
 <!-- Message -->
 <c:if test="${not empty form.filterMessage}">

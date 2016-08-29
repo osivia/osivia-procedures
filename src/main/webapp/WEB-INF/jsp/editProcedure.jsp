@@ -9,9 +9,6 @@
 
 <c:if test="${!form.advancedMode}">
 	<portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
-	<script type="text/javascript">
-	   initStepSelect("${stepSearchUrl}");
-	</script>
 </c:if>
 
 
@@ -135,7 +132,7 @@
 	                    <form:input path="procedureModel.startingStep" type="text" cssClass="form-control" />
                     </c:if>
                     <c:if test="${!form.advancedMode}">
-                        <form:select path="procedureModel.startingStep" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;">
+                        <form:select path="procedureModel.startingStep" class="stepSelect-select2 form-control select2" data-url="${stepSearchUrl}" cssStyle="width: 100%;">
                            <form:option value="${form.procedureModel.startingStep}" />
                         </form:select>
                     </c:if>

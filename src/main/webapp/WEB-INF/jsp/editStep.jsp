@@ -14,22 +14,14 @@
     <script type="text/javascript" src="/osivia-portal-custom-web-assets/components/jquery-ui/i18n/datepicker-${datepickerLanguage}.js"></script>
 </c:if>
 
-<portlet:resourceURL id="groupSearch" var="groupSearchUrl" ></portlet:resourceURL>
-<script type="text/javascript">
-initGroupSelect("${groupSearchUrl}");
-</script>
-
+<c:if test="${form.advancedMode}">
+    <portlet:resourceURL id="groupSearch" var="groupSearchUrl" ></portlet:resourceURL>
+</c:if>
 
 <portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" ></portlet:resourceURL>
-<script type="text/javascript">
-initFieldSelect("${fieldSearchUrl}");
-</script>
 
 <c:if test="${!form.advancedMode}">
     <portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
-    <script type="text/javascript">
-       initStepSelect("${stepSearchUrl}");
-    </script>
 </c:if>
 
 <portlet:actionURL name="editStep" var="editStepUrl">
@@ -76,7 +68,7 @@ initFieldSelect("${fieldSearchUrl}");
                             <div class="form-group">
 	                            <form:label path="newField.variableName" cssClass="col-sm-3 control-label">Nom</form:label>
 	                            <div class="col-sm-9">
-	                                <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;">
+	                                <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
                                     </form:select>
 	                            </div>
 	                        </div>
@@ -262,7 +254,7 @@ initFieldSelect("${fieldSearchUrl}");
 	                      </c:if>
 	                      <c:if test="${!form.advancedMode}">
 	                           <div class="col-sm-4">
-			                        <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;">
+			                        <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
 			                           <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
 			                        </form:select>
 		                        </div>
@@ -344,7 +336,7 @@ initFieldSelect("${fieldSearchUrl}");
 	               <li class="form-group">
 	                   <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Groupes</form:label>
 	                   <div class="col-sm-10">
-	                       <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;">
+	                       <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
 	                           <form:options items="${form.theSelectedStep.groups}" />
 	                       </form:select>
 	                   </div>
