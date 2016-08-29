@@ -270,7 +270,37 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (final IOException e) {
             throw new PortletException(e);
         }
+    }
 
+    @ResourceMapping(value = "fieldSearch")
+    public void getFields(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
+            required = false) String filter) throws PortletException {
+
+        List<Variable> listeVar = new ArrayList<Variable>();
+        if (filter != null) {
+            boolean exactMath = false;
+            for (Entry<String, Variable> entryVar : form.getProcedureModel().getVariables().entrySet()) {
+                if (StringUtils.equals(entryVar.getValue().getName(), filter)) {
+                    listeVar.add(0, entryVar.getValue());
+                    exactMath = true;
+                } else if (StringUtils.contains(entryVar.getValue().getName(), filter) || StringUtils.contains(entryVar.getValue().getLabel(), filter)) {
+                    listeVar.add(entryVar.getValue());
+                }
+            }
+            if (!exactMath) {
+                listeVar.add(0, new Variable(filter, null, null, null));
+            }
+        } else {
+            listeVar.addAll(form.getProcedureModel().getVariables().values());
+        }
+
+        response.setContentType("application/json");
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getPortletOutputStream(), listeVar);
+        } catch (final IOException e) {
+            throw new PortletException(e);
+        }
     }
 
     @ResourceMapping(value = "vocabularySearch")

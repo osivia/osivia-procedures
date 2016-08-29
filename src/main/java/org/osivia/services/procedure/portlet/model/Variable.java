@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
@@ -26,9 +25,6 @@ public class Variable {
 
     @JsonProperty("varOptions")
     private List<String> varOptions;
-
-    @JsonIgnore
-    private String varOptionsJson;
 
     public Variable() {
     }
@@ -135,14 +131,5 @@ public class Variable {
     public void setVarOptions(List<String> varOptions) {
         this.varOptions = varOptions;
     }
-
-    public String getVarOptionsJson() {
-        return varOptionsJson;
-    }
-
-    public void setVarOptionsJson(String varOptionsJson) {
-        this.varOptionsJson = varOptionsJson;
-    }
-
 
 }

@@ -35,7 +35,7 @@
 				<script type="text/javascript">
 					$JQry(document).ready(function() {
 						$JQry("#selectVariable_${status.index}").datepicker({
-							dateFormat : "DD d MM yy"
+							dateFormat : "W3C"
 						});
 					});
 				</script>

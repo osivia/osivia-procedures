@@ -19,6 +19,12 @@
 initGroupSelect("${groupSearchUrl}");
 </script>
 
+
+<portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" ></portlet:resourceURL>
+<script type="text/javascript">
+initFieldSelect("${fieldSearchUrl}");
+</script>
+
 <c:if test="${!form.advancedMode}">
     <portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
     <script type="text/javascript">
@@ -70,7 +76,8 @@ initGroupSelect("${groupSearchUrl}");
                             <div class="form-group">
 	                            <form:label path="newField.variableName" cssClass="col-sm-3 control-label">Nom</form:label>
 	                            <div class="col-sm-9">
-	                                <form:input path="newField.variableName" type="text" cssClass="form-control" placeholder="Nom" />
+	                                <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;">
+                                    </form:select>
 	                            </div>
 	                        </div>
 	                        <div class="form-group">
