@@ -1,8 +1,6 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice"
-	prefix="ttc"%>
 
 
 <c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
@@ -183,9 +181,7 @@
 				<div class="col-sm-3">
 					${form.procedureModel.variables[field.name].label} :</div>
 				<div class="col-sm-3">
-					<ttc:vocabularyLabel
-						name="${form.procedureModel.variables[field.name].varOptions[0]}"
-						key="[${form.procedureInstance.globalVariablesValues[field.name]}]" />
+					TODO backport vocab
 				</div>
 			</c:when>
 			<c:when test="${fieldType eq 'FILE'}">
