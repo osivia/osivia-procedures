@@ -234,7 +234,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
 //        final List<Profil> listeProfils = profil.findProfilByFiltre("(&(objectClass=groupOfNames)(cn=*" + filter + "*))");
     	final List<Map<String, String>> listeProfils = new ArrayList<Map<String, String>>();
-    	Map<String, String> demoGroup = new HashMap<String, String>(1);
+        Map<String, String> demoGroup = new HashMap<String, String>(2);
     	demoGroup.put("cn", "demo-group");
     	demoGroup.put("displayName", "demo-group");
     	listeProfils.add(demoGroup);
@@ -242,6 +242,61 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         try {
             final ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(response.getPortletOutputStream(), listeProfils);
+        } catch (final IOException e) {
+            throw new PortletException(e);
+        }
+    }
+
+    @ResourceMapping(value = "stepSearch")
+    public void getSteps(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
+            required = false) String filter) throws PortletException {
+
+        final List<Map<String, String>> listeSteps = new ArrayList<Map<String, String>>();
+
+        List<Step> steps = form.getProcedureModel().getSteps();
+        for (Step step : steps) {
+            if (filter == null || (StringUtils.contains(step.getStepName(), filter) && StringUtils.contains(step.getReference(), filter))) {
+                Map<String, String> demoGroup = new HashMap<String, String>(2);
+                demoGroup.put("id", step.getReference());
+                demoGroup.put("text", step.getStepName());
+                listeSteps.add(demoGroup);
+            }
+        }
+        response.setContentType("application/json");
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getPortletOutputStream(), listeSteps);
+        } catch (final IOException e) {
+            throw new PortletException(e);
+        }
+    }
+
+    @ResourceMapping(value = "fieldSearch")
+    public void getFields(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
+            required = false) String filter) throws PortletException {
+
+        List<Variable> listeVar = new ArrayList<Variable>();
+        if (filter != null) {
+            boolean exactMatch = false;
+            for (Entry<String, Variable> entryVar : form.getProcedureModel().getVariables().entrySet()) {
+                if (StringUtils.equals(entryVar.getValue().getName(), filter)) {
+                    listeVar.add(0, entryVar.getValue());
+                    exactMatch = true;
+                } else if (StringUtils.contains(entryVar.getValue().getName(), filter) || StringUtils.contains(entryVar.getValue().getLabel(), filter)) {
+                    listeVar.add(entryVar.getValue());
+                }
+            }
+            if (!exactMatch) {
+                listeVar.add(0, new Variable(filter, null, null, null));
+            }
+        } else {
+            listeVar.addAll(form.getProcedureModel().getVariables().values());
+        }
+
+        response.setContentType("application/json");
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getPortletOutputStream(), listeVar);
         } catch (final IOException e) {
             throw new PortletException(e);
         }
@@ -276,6 +331,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         form.getProcedureInstance().setProcedureModelPath(form.getProcedureModel().getPath());
 
         response.setRenderParameter("action", "viewProcedure");
+    }
+
+    @ActionMapping(value = "editProcedure", params = "changeMode")
+    public void changeModeProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
+        form.setAdvancedMode(!form.isAdvancedMode());
+        response.setRenderParameter("action", "editProcedure");
+    }
+
+    @ActionMapping(value = "editStep", params = "changeMode")
+    public void changeModeStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
+        form.setAdvancedMode(!form.isAdvancedMode());
+        response.setRenderParameter("action", "editStep");
     }
 
     @ActionMapping(value = "actionProcedure", params = "proceedProcedure")
@@ -511,6 +578,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
+        updateStartingStep(form);
 
         form.getProcedureModel().getSteps().set(Integer.valueOf(form.getTheSelectedStep().getIndex()), form.getTheSelectedStep());
 
@@ -552,6 +620,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         for (final Field field : fields) {
             if (field.getFields() != null) {
                 addAllFieldsToSet(fieldsSet, field.getFields());
+            }
+        }
+    }
+
+    private void updateStartingStep(Form form) {
+        if (!StringUtils.equals(form.getTheSelectedStep().getReference(), form.getTheSelectedStep().getOldReference())) {
+            if (StringUtils.equals(form.getProcedureModel().getStartingStep(), form.getTheSelectedStep().getOldReference())) {
+                form.getProcedureModel().setStartingStep(form.getTheSelectedStep().getReference());
             }
         }
     }

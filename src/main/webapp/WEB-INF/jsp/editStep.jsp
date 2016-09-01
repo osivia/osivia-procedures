@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 
@@ -13,10 +14,15 @@
     <script type="text/javascript" src="/osivia-portal-custom-web-assets/components/jquery-ui/i18n/datepicker-${datepickerLanguage}.js"></script>
 </c:if>
 
-<portlet:resourceURL id="groupSearch" var="groupSearchUrl" ></portlet:resourceURL>
-<script type="text/javascript">
-initGroupSelect("${groupSearchUrl}");
-</script>
+<c:if test="${form.advancedMode}">
+    <portlet:resourceURL id="groupSearch" var="groupSearchUrl" ></portlet:resourceURL>
+</c:if>
+
+<portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" ></portlet:resourceURL>
+
+<c:if test="${!form.advancedMode}">
+    <portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
+</c:if>
 
 <portlet:actionURL name="editStep" var="editStepUrl">
 </portlet:actionURL>
@@ -27,7 +33,9 @@ initGroupSelect("${groupSearchUrl}");
         <li role="presentation" class="<c:if test="${empty activeTab or ('form' ne activeTab && 'action' ne activeTab)}">active</c:if>"><a href="#Identification" role="tab" data-toggle="tab" class="no-ajax-link">Identification</a></li>
         <li role="presentation" class="<c:if test="${'form' eq activeTab}">active</c:if>"><a href="#Formulaire" role="tab" data-toggle="tab" class="no-ajax-link">Formulaire</a></li>
         <li role="presentation" class="<c:if test="${'action' eq activeTab}">active</c:if>"><a href="#Actions" role="tab" data-toggle="tab" class="no-ajax-link">Actions</a></li>
-        <li role="presentation"><a href="#Métadonnées" role="tab" data-toggle="tab" class="no-ajax-link">Métadonnées</a></li>
+        <c:if test="${form.advancedMode}">
+            <li role="presentation"><a href="#Métadonnées" role="tab" data-toggle="tab" class="no-ajax-link">Métadonnées</a></li>
+        </c:if>
     </ul>
 
     <div class="tab-content">
@@ -60,7 +68,8 @@ initGroupSelect("${groupSearchUrl}");
                             <div class="form-group">
 	                            <form:label path="newField.variableName" cssClass="col-sm-3 control-label">Nom</form:label>
 	                            <div class="col-sm-9">
-	                                <form:input path="newField.variableName" type="text" cssClass="form-control" placeholder="Nom" />
+	                                <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
+                                    </form:select>
 	                            </div>
 	                        </div>
 	                        <div class="form-group">
@@ -227,7 +236,7 @@ initGroupSelect("${groupSearchUrl}");
 	                     <label class="control-label">Identifiant de l'action</label>
 	                 </div>
 	                 <div class="col-sm-4">
-	                     <label class="control-label">Référence de l'étape cible</label>
+	                     <label class="control-label">Étape cible</label>
 	                 </div>
 	              </li>
 	              <c:forEach var="action" items="${form.theSelectedStep.actions}" varStatus="status">
@@ -238,15 +247,25 @@ initGroupSelect("${groupSearchUrl}");
 	                      <div class="col-sm-4">
 	                          <form:input path="theSelectedStep.actions[${status.index}].actionId" type="text" cssClass="form-control" placeholder="actionId" />
 	                      </div>
-	                      <div class="col-sm-4">
-	                          <form:input path="theSelectedStep.actions[${status.index}].stepReference" type="text" cssClass="form-control" placeholder="stepReference" />
-	                      </div>
+	                      <c:if test="${form.advancedMode}">
+		                      <div class="col-sm-4">
+		                          <form:input path="theSelectedStep.actions[${status.index}].stepReference" type="text" cssClass="form-control" placeholder="stepReference" />
+		                      </div>
+	                      </c:if>
+	                      <c:if test="${!form.advancedMode}">
+	                           <div class="col-sm-4">
+			                        <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
+			                           <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
+			                        </form:select>
+		                        </div>
+	                       </c:if>
+	                      
 	                      <div class="btn-group col-sm-2">
 	                          <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
 	                              <i class="glyphicons glyphicons-edit"></i>
 	                          </button>
 	                          <button type="submit" name="deleteButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
-	                              <i class="glyphicons glyphicons-remove"></i>
+	                              <i class="glyphicons glyphicons-remove-2"></i>
 	                          </button>
 	                      </div>
 	                  </li>
@@ -258,77 +277,89 @@ initGroupSelect("${groupSearchUrl}");
 	           </div>
            </div>
 	    </div>
-	    <div role="tabpanel" class="tab-pane" id="Métadonnées">
-	       <div class="form-group">
-	           <div class="col-sm-offset-2 col-sm-1">
-		           <div class="checkbox">
-	                    <label>
-	                       <form:checkbox path="theSelectedStep.notifiable"/><span>notifiable</span>
-	                    </label>
+	    <c:if test="${form.advancedMode}">
+		    <div role="tabpanel" class="tab-pane" id="Métadonnées">
+		       <div class="form-group">
+		           <div class="col-sm-offset-2 col-sm-1">
+			           <div class="checkbox">
+		                    <label>
+		                       <form:checkbox path="theSelectedStep.notifiable"/><span>notifiable</span>
+		                    </label>
+		                </div>
 	                </div>
-                </div>
-                <div class="col-sm-1">
-	                <div class="checkbox">
-	                    <label>
-	                       <form:checkbox path="theSelectedStep.acquitable"/><span>acquitable</span>
-	                    </label>
+	                <div class="col-sm-1">
+		                <div class="checkbox">
+		                    <label>
+		                       <form:checkbox path="theSelectedStep.acquitable"/><span>acquitable</span>
+		                    </label>
+		                </div>
 	                </div>
-                </div>
-	           <div class="col-sm-1">
-		           <div class="checkbox">
-		                <label>
-		                      <form:checkbox path="theSelectedStep.closable"/><span>closable</span>
-		                </label>
+		           <div class="col-sm-1">
+			           <div class="checkbox">
+			                <label>
+			                      <form:checkbox path="theSelectedStep.closable"/><span>closable</span>
+			                </label>
+		                </div>
 	                </div>
-                </div>
-	       </div>
-           <div class="form-group">
-               <form:label path="theSelectedStep.actionIdClosable" cssClass="col-sm-2 control-label">actionIdClosable</form:label>
-               <div class="col-sm-10">
-                   <form:input path="theSelectedStep.actionIdClosable" type="text" cssClass="form-control" />
-               </div>
-           </div>
-           <div class="form-group">
-               <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">stringMsg</form:label>
-               <div class="col-sm-10">
-                   <form:input path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
-               </div>
-           </div>
-           <div class="form-group">
-               <form:label path="theSelectedStep.actionIdYes" cssClass="col-sm-2 control-label">actionIdYes</form:label>
-               <div class="col-sm-10">
-                   <form:input path="theSelectedStep.actionIdYes" type="text" cssClass="form-control" />
-               </div>
-           </div>
-           <div class="form-group">
-               <form:label path="theSelectedStep.actionIdNo" cssClass="col-sm-2 control-label">actionIdNo</form:label>
-               <div class="col-sm-10">
-                   <form:input path="theSelectedStep.actionIdNo" type="text" cssClass="form-control" />
-               </div>
-           </div>
-           <div class="form-group">
-               <form:label path="theSelectedStep.actionIdDefault" cssClass="col-sm-2 control-label">actionIdDefault</form:label>
-               <div class="col-sm-10">
-                   <form:input path="theSelectedStep.actionIdDefault" cssClass="form-control" />
-               </div>
-           </div>
-	       <ul class="list-unstyled">
-               <li class="form-group">
-                   <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Groupes</form:label>
-                   <div class="col-sm-10">
-                       <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;">
-                           <form:options items="${form.theSelectedStep.groups}" />
-                       </form:select>
-                   </div>
-               </li>
-           </ul>
-	    </div>
+		       </div>
+	           <div class="form-group">
+	               <form:label path="theSelectedStep.actionIdClosable" cssClass="col-sm-2 control-label">actionIdClosable</form:label>
+	               <div class="col-sm-10">
+	                   <form:input path="theSelectedStep.actionIdClosable" type="text" cssClass="form-control" />
+	               </div>
+	           </div>
+	           <div class="form-group">
+	               <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">stringMsg</form:label>
+	               <div class="col-sm-10">
+	                   <form:input path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
+	               </div>
+	           </div>
+	           <div class="form-group">
+	               <form:label path="theSelectedStep.actionIdYes" cssClass="col-sm-2 control-label">actionIdYes</form:label>
+	               <div class="col-sm-10">
+	                   <form:input path="theSelectedStep.actionIdYes" type="text" cssClass="form-control" />
+	               </div>
+	           </div>
+	           <div class="form-group">
+	               <form:label path="theSelectedStep.actionIdNo" cssClass="col-sm-2 control-label">actionIdNo</form:label>
+	               <div class="col-sm-10">
+	                   <form:input path="theSelectedStep.actionIdNo" type="text" cssClass="form-control" />
+	               </div>
+	           </div>
+	           <div class="form-group">
+	               <form:label path="theSelectedStep.actionIdDefault" cssClass="col-sm-2 control-label">actionIdDefault</form:label>
+	               <div class="col-sm-10">
+	                   <form:input path="theSelectedStep.actionIdDefault" cssClass="form-control" />
+	               </div>
+	           </div>
+		       <ul class="list-unstyled">
+	               <li class="form-group">
+	                   <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Groupes</form:label>
+	                   <div class="col-sm-10">
+	                       <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
+	                           <form:options items="${form.theSelectedStep.groups}" />
+	                       </form:select>
+	                   </div>
+	               </li>
+	           </ul>
+		    </div>
+	    </c:if>
 	</div>
     <hr>
     <div class="row">
         <div class="col-sm-1">
             <button type="submit" class="btn btn-default" name="cancelStep">Annuler</button>
         </div>
+        <c:if test="${!form.advancedMode}">
+            <div class="col-sm-1">
+                <button type="submit" class="btn btn-info" name="changeMode">Mode avançé</button>
+            </div>
+        </c:if>
+        <c:if test="${form.advancedMode}">
+            <div class="col-sm-1">
+                <button type="submit" class="btn btn-info" name="changeMode">Mode simplifié</button>
+            </div>
+        </c:if>
         <div class="col-sm-1 pull-right">
             <button type="submit" class="btn btn-danger pull-right" name="deleteStep">Supprimer</button>
         </div>

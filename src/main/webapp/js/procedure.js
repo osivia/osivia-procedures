@@ -95,8 +95,135 @@ $JQry(function() {
 		e.preventDefault();  
 		$JQry(this).tab('show');
 	});
+	
+	$JQry(".vocabularySelect-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		var vocabularySearchUrl = $element.data("url");
+		
+		$element.select2({
+			ajax: {
+				url: $element.data("url"),
+				dataType: 'json',
+				delay: 300,
+				data: function (params) {
+					return {
+						filter: params.term
+					};
+				},
+				processResults: function (data, params) {
+					return {
+						results: data
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			theme: "bootstrap",
+			templateResult: formatProfil,
+			templateSelection: formatProfil
+		});
+		
+	});
+	
+	$JQry(".fieldSelect-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		var vocabularySearchUrl = $element.data("url");
+		
+		$element.select2({
+			ajax: {
+				url: $element.data("url"),
+				dataType: 'json',
+				delay: 300,
+				data: function (params) {
+					return {
+						filter: params.term
+					};
+				},
+				processResults: function (data, params) {
+					return {
+			          results: $JQry.map(data, function(variable) {
+			        	  variable.id = variable.name;
+			        	  variable.text = variable.name;
+			        	  return variable;
+			          })
+			        };
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			theme: "bootstrap",
+			templateResult: formatField,
+		});
+		
+		$element.change(function(event) {
+			var data = $JQry(this).select2('data');
+			console.log(data);
+			$form = $JQry(this).closest("form");
+			$form.find("input[name$='newField.label']").val(data[0].label);
+			$form.find("select[name$='newField.type']").val(data[0].type);
+			$form.find("input[name$='newField.varOptions']").val(data[0].varOptions);		
+		});
+	});
+	
+	$JQry(".groupSelect-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		var groupSearchUrl = $element.data("url");
+		
+		$element.select2({
+			ajax: {
+				url: groupSearchUrl,
+				dataType: 'json',
+				delay: 300,
+				data: function (params) {
+					return {
+						filter: params.term
+					};
+				},
+				processResults: function (data, params) {
+					return {
+						results: $JQry.map(data, function(group) {
+							return { id: group.cn, text: group.displayName };
+						})
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			minimumInputLength: 3,
+			theme: "bootstrap",
+			templateResult: formatProfil,
+			templateSelection: formatProfil
+		});
+	});
+	
+	$JQry(".stepSelect-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		var stepSearchUrl = $element.data("url");
+		
+		$element.select2({
+			ajax: {
+				url: stepSearchUrl,
+				dataType: 'json',
+				delay: 300,
+				data: function (params) {
+					return {
+						filter: params.term
+					};
+				},
+				processResults: function (data, params) {
+					return {
+						results: data
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			theme: "bootstrap",
+			templateResult: formatProfil,
+			templateSelection: formatProfil
+		});
+	});
 });
-
 
 function selectPath(button, name) {
 	var path =$JQry(button).parents("li").find("input[name$='path']").val();
@@ -116,62 +243,57 @@ function formatProfil (group) {
 	return group.text + ' (' + group.id + ')';
 };
 
-function select2Vocab(vocabularySearchUrl,selectId){
+function formatField(variable) {
+	$result = $JQry(document.createElement("div"));
 	
-	$JQry(document).ready(function(){
-		$JQry("#"+selectId).select2({
-			ajax: {
-				url: vocabularySearchUrl,
-				dataType: 'json',
-				delay: 300,
-				data: function (params) {
-					return {
-						filter: params.term // search term
-					};
-				},
-				processResults: function (data, params) {
-					return {
-						results: data
-					};
-				},
-				cache: true
-			},
-			escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-			theme: "bootstrap",
-		});
-	});
-};
-
-function initGroupSelect(groupSearchUrl){
-	$JQry(document).ready(function(){
-		$JQry(".groupSelect-select2").select2({
-		    ajax: {
-		      url: groupSearchUrl,
-		      dataType: 'json',
-		      delay: 300,
-		      data: function (params) {
-		        return {
-		          filter: params.term // search term
-		        };
-		      },
-		      processResults: function (data, params) {
-		        return {
-		          results: $JQry.map(data, function(group) {
-		        	  return { id: group.cn, text: group.displayName };
-		          })
-		        };
-		      },
-		      cache: true
-		    },
-		    escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-		    minimumInputLength: 3,
-		    theme: "bootstrap",
-	   	  templateResult: formatProfil,
-	   	  templateSelection: formatProfil
-		});
-	});
-};
-
-function hideModal(){
-	$JQry(".modal-open").removeClass("modal-open");
+	if (variable.loading) {
+		$result.text(variable.text);
+	} else {
+		$result.addClass("variable-select2");
+		
+		$namerow = $JQry(document.createElement("div")).addClass("row");
+		$namelabel = $JQry(document.createElement("label")).addClass("col-sm-3");
+		$namelabel.text("Nom");
+		$namelabel.appendTo($namerow);
+		$namediv = $JQry(document.createElement("div")).addClass("col-sm-9");
+		$namediv.text(variable.name);
+		$namediv.appendTo($namerow);
+		$namerow.appendTo($result);
+		
+		if (variable.label != null) {
+			$labelrow = $JQry(document.createElement("div")).addClass("row");
+			$labellabel = $JQry(document.createElement("label")).addClass(
+					"col-sm-3");
+			$labellabel.text("Label");
+			$labellabel.appendTo($labelrow);
+			$labeldiv = $JQry(document.createElement("div")).addClass(
+					"col-sm-9");
+			$labeldiv.text(variable.label);
+			$labeldiv.appendTo($labelrow);
+			$labelrow.appendTo($result);
+		}
+		
+		if (variable.type != null) {
+			$typerow = $JQry(document.createElement("div")).addClass("row");
+			$typelabel = $JQry(document.createElement("label")).addClass("col-sm-3");
+			$typelabel.text("Type");
+			$typelabel.appendTo($typerow);
+			$typediv = $JQry(document.createElement("div")).addClass("col-sm-9");
+			$typediv.text(variable.type);
+			$typediv.appendTo($typerow);
+			$typerow.appendTo($result);
+		}
+		
+		if (variable.varOptions != null) {
+			$optionsrow = $JQry(document.createElement("div")).addClass("row");
+			$optionslabel = $JQry(document.createElement("label")).addClass("col-sm-3");
+			$optionslabel.text("Options");
+			$optionslabel.appendTo($optionsrow);
+			$optionsdiv = $JQry(document.createElement("div")).addClass("col-sm-9");
+			$optionsdiv.text(variable.varOptions);
+			$optionsdiv.appendTo($optionsrow);
+			$optionsrow.appendTo($result);
+		}
+	}
+	return $result;
 };

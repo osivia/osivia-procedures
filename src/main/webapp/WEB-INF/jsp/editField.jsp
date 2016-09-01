@@ -127,43 +127,25 @@
 						</div>
 					</c:when>
 					<c:when test="${fieldType eq 'SELECTVOCAB'}">
-						<portlet:resourceURL id="vocabularySearch"
-							var="vocabularySearchUrl">
-							<portlet:param name="vocabularyName"
-								value="${form.procedureModel.variables[field.name].varOptions[0]}" />
+						<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl">
+							<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions[0]}" />
 						</portlet:resourceURL>
-						<script type="text/javascript">
-							select2Vocab("${vocabularySearchUrl}",
-									"selectVariable_${status.index}");
-						</script>
 						<form:label
 							path="procedureInstance.globalVariablesValues['${field.name}']"
 							cssClass="col-sm-3 control-label">${form.procedureModel.variables[field.name].label}</form:label>
 						<div class="col-sm-9">
-							<form:select
-								path="procedureInstance.globalVariablesValues['${field.name}']"
-								id="selectVariable_${status.index}" class="form-control select2" />
+							<form:select path="procedureInstance.globalVariablesValues['${field.name}']" class="form-control select2 vocabularySelect-select2" cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
 						</div>
 					</c:when>
 					<c:when test="${fieldType eq 'SELECTVOCABMULTI'}">
-						<portlet:resourceURL id="vocabularySearch"
-							var="vocabularySearchUrl">
-							<portlet:param name="vocabularyName"
-								value="${form.procedureModel.variables[field.name].varOptions[0]}" />
+						<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl">
+							<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions[0]}" />
 						</portlet:resourceURL>
-						<script type="text/javascript">
-							select2Vocab("${vocabularySearchUrl}",
-									"selectVariable_${status.index}",
-									"${form.procedureModel.variables[field.name].varOptions[0]}");
-						</script>
 						<form:label
 							path="procedureInstance.globalVariablesValues['${field.name}']"
 							cssClass="col-sm-3 control-label">${form.procedureModel.variables[field.name].label}</form:label>
 						<div class="col-sm-9">
-							<form:select
-								path="procedureInstance.globalVariablesValues['${field.name}']"
-								id="selectVariable_${status.index}" multiple="true"
-								class="form-control select2" />
+							<form:select path="procedureInstance.globalVariablesValues['${field.name}']" multiple="true" class="form-control select2 vocabularySelect-select2" cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
 						</div>
 					</c:when>
 					<c:when test="${fieldType eq 'FILE'}">
