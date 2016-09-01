@@ -152,7 +152,7 @@ $JQry(function() {
 			},
 			escapeMarkup: function (markup) { return markup; },
 			theme: "bootstrap",
-			templateResult: formatField,
+			templateResult: formatField
 		});
 		
 		$element.change(function(event) {
