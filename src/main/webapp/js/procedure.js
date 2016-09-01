@@ -119,6 +119,8 @@ $JQry(function() {
 			},
 			escapeMarkup: function (markup) { return markup; },
 			theme: "bootstrap",
+			templateResult: formatProfil,
+			templateSelection: formatProfil
 		});
 		
 	});
@@ -139,13 +141,18 @@ $JQry(function() {
 				},
 				processResults: function (data, params) {
 					return {
-						results: data
-					};
+			          results: $JQry.map(data, function(variable) {
+			        	  variable.id = variable.name;
+			        	  variable.text = variable.name;
+			        	  return variable;
+			          })
+			        };
 				},
 				cache: true
 			},
 			escapeMarkup: function (markup) { return markup; },
 			theme: "bootstrap",
+			templateResult: formatField,
 		});
 		
 		$element.change(function(event) {

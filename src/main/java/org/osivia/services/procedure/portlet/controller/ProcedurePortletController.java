@@ -278,16 +278,16 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         List<Variable> listeVar = new ArrayList<Variable>();
         if (filter != null) {
-            boolean exactMath = false;
+            boolean exactMatch = false;
             for (Entry<String, Variable> entryVar : form.getProcedureModel().getVariables().entrySet()) {
                 if (StringUtils.equals(entryVar.getValue().getName(), filter)) {
                     listeVar.add(0, entryVar.getValue());
-                    exactMath = true;
+                    exactMatch = true;
                 } else if (StringUtils.contains(entryVar.getValue().getName(), filter) || StringUtils.contains(entryVar.getValue().getLabel(), filter)) {
                     listeVar.add(entryVar.getValue());
                 }
             }
-            if (!exactMath) {
+            if (!exactMatch) {
                 listeVar.add(0, new Variable(filter, null, null, null));
             }
         } else {
