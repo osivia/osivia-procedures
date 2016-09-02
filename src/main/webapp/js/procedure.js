@@ -152,12 +152,11 @@ $JQry(function() {
 			},
 			escapeMarkup: function (markup) { return markup; },
 			theme: "bootstrap",
-			templateResult: formatField,
+			templateResult: formatField
 		});
 		
 		$element.change(function(event) {
 			var data = $JQry(this).select2('data');
-			console.log(data);
 			$form = $JQry(this).closest("form");
 			$form.find("input[name$='newField.label']").val(data[0].label);
 			$form.find("select[name$='newField.type']").val(data[0].type);
