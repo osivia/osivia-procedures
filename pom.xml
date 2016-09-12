@@ -11,7 +11,7 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>4.0.22-RC3</toutatice.version>
+        <toutatice.version>4.0.22-SNAPSHOT</toutatice.version>
         
         <!-- Directory -->
         <directory.version>4.4.0-RC5</directory.version>

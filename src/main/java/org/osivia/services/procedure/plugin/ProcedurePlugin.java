@@ -13,19 +13,22 @@
  */
 package org.osivia.services.procedure.plugin;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 //import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.services.procedure.formFilters.DefineVariableFilter;
+import org.osivia.services.procedure.formFilters.IfFilter;
 //import org.osivia.portal.api.menubar.MenubarModule;
 //import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.services.procedure.formFilters.SendMailFilter;
+import org.osivia.services.procedure.formFilters.SetVariableAsActorFilter;
+import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
-import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 
 
 /**
@@ -50,11 +53,27 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     private static final Log LOGGER = LogFactory.getLog(ProcedurePlugin.class);
 
 
+    private final FormFilter sendMailFilter;
+
+    private final FormFilter ifFilter;
+
+    private final FormFilter setVariableAsActorFilter;
+
+    private final FormFilter defineVariableFilter;
+
+    private final FormFilter throwException;
+
+
     /**
      * Constructor.
      */
     public ProcedurePlugin() {
         super();
+        sendMailFilter = new SendMailFilter();
+        ifFilter = new IfFilter();
+        setVariableAsActorFilter = new SetVariableAsActorFilter();
+        defineVariableFilter = new DefineVariableFilter();
+        throwException = new ThrowExceptionFilter();
     }
 
 
@@ -64,29 +83,37 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     @Override
     protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
 
-//        Map<String, DocumentType> docTypes = getDocTypes(context);
-//
-//        ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
-//        docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
-//                "glyphicons glyphicons-flowchart"));
-//
-//
-//        Map<String, ListTemplate> templates = getListTemplates(context);
-//
-//        ListTemplate picturebookTemplate = new ListTemplate(STYLE_ADMIN, "admin téléprocédure", SCHEMAS_ADMIN);
-//        templates.put(STYLE_ADMIN, picturebookTemplate);
-//
-//
-//        List<IPlayerModule> modules = getPlayers(context);
-//        // ! insertion au début
-//        modules.add(0, new ProcedurePlayer(getPortletContext()));
-//
-//
-//        // Menubar modules
-//        List<MenubarModule> menubarModules = this.getMenubarModules(context);
-//
-//        MenubarModule menubarModule = new ProcedureMenubarModule();
-//        menubarModules.add(menubarModule);
+        Map<String, FormFilter> filters = getFormFilters(context);
+
+        filters.put(SendMailFilter.ID, sendMailFilter);
+        filters.put(IfFilter.ID, ifFilter);
+        filters.put(SetVariableAsActorFilter.ID, setVariableAsActorFilter);
+        filters.put(DefineVariableFilter.ID, defineVariableFilter);
+        filters.put(ThrowExceptionFilter.ID, throwException);
+
+        //        Map<String, DocumentType> docTypes = getDocTypes(context);
+        //
+        //        ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
+        //        docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
+        //                "glyphicons glyphicons-flowchart"));
+        //
+        //
+        //        Map<String, ListTemplate> templates = getListTemplates(context);
+        //
+        //        ListTemplate picturebookTemplate = new ListTemplate(STYLE_ADMIN, "admin téléprocédure", SCHEMAS_ADMIN);
+        //        templates.put(STYLE_ADMIN, picturebookTemplate);
+        //
+        //
+        //        List<IPlayerModule> modules = getPlayers(context);
+        //        // ! insertion au début
+        //        modules.add(0, new ProcedurePlayer(getPortletContext()));
+        //
+        //
+        //        // Menubar modules
+        //        List<MenubarModule> menubarModules = this.getMenubarModules(context);
+        //
+        //        MenubarModule menubarModule = new ProcedureMenubarModule();
+        //        menubarModules.add(menubarModule);
 
     }
 

@@ -49,7 +49,7 @@
             <div class="form-group">
                 <div class="col-sm-10">
                     <c:forEach var="action" items="${form.theCurrentStep.actions}" varStatus="status">
-                        <button type="submit" name="proceedProcedure" class="btn btn-default" onclick="selector(this,'${action.stepReference}','stepReference')" >${action.label}</button>
+                        <button type="submit" name="proceedProcedure" class="btn btn-default" onclick="selector(this,'${action.actionId}','actionId')" >${action.label}</button>
                     </c:forEach>
                 </div>
             </div>

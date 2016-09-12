@@ -24,9 +24,9 @@ public class RetrieveDocumentCommand implements INuxeoCommand {
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.RetrieveDocument.getId());
+        OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.QueryElasticSearch.getId());
         request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
-        request.set("value", fetchBY);
+        request.set("query", "SELECT * FROM Document WHERE ecm:path = '" + fetchBY + "'");
         return request.execute();
     }
 

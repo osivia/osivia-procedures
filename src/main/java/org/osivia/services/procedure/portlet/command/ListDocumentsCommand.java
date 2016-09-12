@@ -20,7 +20,7 @@ public class ListDocumentsCommand implements INuxeoCommand {
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.QueryDocument.getId());
+        OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.Query.getId());
         request.set("query", query.concat(path).concat("'"));
         return request.execute();
     }
