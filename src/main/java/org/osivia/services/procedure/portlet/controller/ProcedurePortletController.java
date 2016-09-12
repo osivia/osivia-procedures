@@ -184,7 +184,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         Form form;
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
-            final ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, getPath(request));
+            final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getPath(request));
             form = new Form(procedureModel);
             if (StringUtils.isNotEmpty(selectedStep)) {
                 form.setSelectedStep(selectedStep);
@@ -196,7 +196,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
         } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, getPath(request));
-            final ProcedureModel procedureModel = procedureService.retrieveProcedureByPath(nuxeoController, procedureInstance.getProcedureModelWebId());
+            final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
             form = new Form(procedureModel, procedureInstance);
             procedureService.updateFormWithObjectsValues(nuxeoController, form);
             procedureService.updateVocabulariesWithValues(nuxeoController, form);
@@ -382,7 +382,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 nuxeoController.getNuxeoCMSService().getFormsService()
-                        .start(portalControllerContext, NuxeoController.webIdToFetchPath(form.getProcedureModel().getWebId()), actionId, globalVariablesValues);
+                .start(portalControllerContext, NuxeoController.webIdToFetchPath(form.getProcedureModel().getWebId()), actionId, globalVariablesValues);
                 // redirect to end of step page
                 response.setRenderParameter("action", "endStep");
                 sessionStatus.setComplete();

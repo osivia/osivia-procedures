@@ -25,7 +25,7 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public ProcedureModel retrieveProcedureByPath(NuxeoController nuxeoController, String path) throws PortletException;
+    public ProcedureModel retrieveProcedureByWebId(NuxeoController nuxeoController, String path) throws PortletException;
 
     /**
      * @param nuxeoController
@@ -51,36 +51,12 @@ public interface IProcedureService {
      */
     public void deleteProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException;
 
-    // /**
-    // * @param nuxeoController
-    // * @param form
-    // * @param stepReference
-    // * @return
-    // * @throws PortletException
-    // * @throws FilterException
-    // */
-    // public ProcedureInstance createProcedureInstance(NuxeoController nuxeoController, Form form, String stepReference) throws PortletException,
-    // FilterException;
-
     /**
      * @param nuxeoController
      * @return
      * @throws PortletException
      */
     public ProcedureInstance retrieveProcedureInstanceByPath(NuxeoController nuxeoController, String path) throws PortletException;
-
-    // /**
-    // * @param nuxeoController
-    // * @param form
-    // * @param procedureInstancePath
-    // * @param stepReference
-    // * @return
-    // * @throws PortletException
-    // * @throws FilterException
-    // */
-    // public ProcedureInstance updateProcedureInstance(NuxeoController nuxeoController, Form form, String procedureInstancePath, String stepReference)
-    // throws PortletException, FilterException;
-
 
     /**
      * @param nuxeoController

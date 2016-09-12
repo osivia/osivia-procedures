@@ -11,13 +11,13 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 /**
  * @author dorian
  */
-public class RetrieveDocumentCommand implements INuxeoCommand {
+public class RetrieveDocumentByPathCommand implements INuxeoCommand {
 
-    /** path the location of the document to retrieve */
+    /** the location of the document to retrieve */
     private String fetchBY;
 
 
-    public RetrieveDocumentCommand(String fetchBY) {
+    public RetrieveDocumentByPathCommand(String fetchBY) {
         super();
         this.fetchBY = fetchBY;
     }
