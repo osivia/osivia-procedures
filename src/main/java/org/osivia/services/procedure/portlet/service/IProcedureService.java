@@ -30,10 +30,11 @@ public interface IProcedureService {
     /**
      * @param nuxeoController
      * @param procedureModel
+     * @param Procedurepath
      * @return
      * @throws PortletException
      */
-    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException;
+    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String Procedurepath) throws PortletException;
 
     /**
      * @param nuxeoController
@@ -84,16 +85,19 @@ public interface IProcedureService {
     /**
      * @param nuxeoController
      * @param portalUrlFactory
+     * @param Procedurepath
      * @return
      * @throws PortletException
      */
-    public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory) throws PortletException;
+    public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String Procedurepath)
+            throws PortletException;
 
     /**
      * @param nuxeoController
      * @param portalUrlFactory
+     * @param procedurePath
      * @return
      * @throws PortletException
      */
-    public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory) throws PortletException;
+    public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String procedurePath) throws PortletException;
 }

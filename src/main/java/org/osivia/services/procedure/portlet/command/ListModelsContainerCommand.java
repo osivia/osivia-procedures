@@ -7,27 +7,27 @@ import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 
-public class ListDocumentsCommand implements INuxeoCommand {
+public class ListModelsContainerCommand implements INuxeoCommand {
 
-    private static final String query = "SELECT * FROM Document WHERE ecm:path startswith '";
+    private static final String query = "SELECT * FROM ProceduresModelsContainer WHERE ecm:path startswith '";
 
     private String path;
 
 
-    public ListDocumentsCommand(String path) {
+    public ListModelsContainerCommand(String path) {
         this.path = path;
     }
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.Query.getId());
+        OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.QueryElasticSearch.getId());
         request.set("query", query.concat(path).concat("'"));
         return request.execute();
     }
 
     @Override
     public String getId() {
-        return "ListDocumentsCommand/" + path;
+        return "ListModelsContainerCommand/" + path;
     }
 
 }
