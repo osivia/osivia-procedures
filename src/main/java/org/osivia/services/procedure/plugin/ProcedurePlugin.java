@@ -25,6 +25,8 @@ import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.services.procedure.formFilters.GoToStepFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
+import org.osivia.services.procedure.formFilters.SendMailFilter;
+import org.osivia.services.procedure.formFilters.SetActorFormFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
@@ -95,6 +97,8 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         Map<String, FormFilter> formFilters = getFormFilters(context);
         formFilters.put(IfFilter.ID, new IfFilter());
         formFilters.put(GoToStepFilter.ID, new GoToStepFilter());
+        formFilters.put(SendMailFilter.ID, new SendMailFilter());
+        formFilters.put(SetActorFormFilter.ID, new SetActorFormFilter());
     }
 
 
