@@ -9,7 +9,9 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 public class ListProceduresInstancesCommand implements INuxeoCommand {
 
-    private static final String query = "SELECT * ProcedureInstance Document WHERE ecm:path startswith '";
+    private static final String select = "SELECT * FROM ProcedureInstance";
+    private static final String where = " WHERE ecm:path startswith '";
+    private static final String end = "'";
 
     private String path;
 
@@ -21,7 +23,11 @@ public class ListProceduresInstancesCommand implements INuxeoCommand {
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.QueryElasticSearch.getId());
-        request.set("query", query.concat(path).concat("'"));
+        StringBuilder sbQuery = new StringBuilder(select);
+        if (path != null) {
+            sbQuery.append(where).append(path).append(end);
+        }
+        request.set("query", sbQuery.toString());
         return request.execute();
     }
 

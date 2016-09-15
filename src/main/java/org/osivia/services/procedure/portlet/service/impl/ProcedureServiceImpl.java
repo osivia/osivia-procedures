@@ -27,7 +27,6 @@ import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
 import org.osivia.services.procedure.portlet.command.ListModelsContainerCommand;
 import org.osivia.services.procedure.portlet.command.ListProceduresModelsCommand;
 import org.osivia.services.procedure.portlet.command.LoadVocabularyCommand;
-import org.osivia.services.procedure.portlet.command.RetrieveDocumentByPathCommand;
 import org.osivia.services.procedure.portlet.command.RetrieveDocumentByWebIdCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
 import org.osivia.services.procedure.portlet.controller.ProcedurePortletAdminController;
@@ -126,7 +125,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         INuxeoCommand command;
         ProcedureInstance procedureInstance = null;
         try {
-            command = new RetrieveDocumentByPathCommand(path);
+            command = new RetrieveDocumentByWebIdCommand(path);
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
             procedureInstance = new ProcedureInstance(currentDocument);
         } catch (final Exception e) {
