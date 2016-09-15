@@ -11,10 +11,10 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>4.0.22-SNAPSHOT</toutatice.version>
+        <toutatice.version>4.0.22-RC6</toutatice.version>
         
         <!-- Directory -->
-        <directory.version>4.4.0-RC5</directory.version>
+        <directory.version>4.4.0-RC7</directory.version>
 
     </properties>
 
