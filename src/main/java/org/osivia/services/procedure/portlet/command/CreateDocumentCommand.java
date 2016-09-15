@@ -45,7 +45,7 @@ public class CreateDocumentCommand implements INuxeoCommand {
         PropertyMap properties = new PropertyMap();
         properties.set("dc:title", name);
         properties.set("ttc:webid", webId);
-        request.set("type", type.getName()).set("name", name).set("properties", properties);
+        request.set("type", type.getName()).set("properties", properties);
 
         return request.execute();
     }
