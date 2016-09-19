@@ -33,7 +33,7 @@
 				<script type="text/javascript">
 					$JQry(document).ready(function() {
 						$JQry("#selectVariable_${status.index}").datepicker({
-							dateFormat : "W3C"
+							dateFormat : "ISO_8601"
 						});
 					});
 				</script>
