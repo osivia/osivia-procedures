@@ -39,7 +39,7 @@
 														"#selectVariable_${status.index}")
 														.datepicker(
 																{
-																	dateFormat : "DD d MM yy"
+																	dateFormat : "yy-mm-dd"
 																});
 											});
 						</script>
