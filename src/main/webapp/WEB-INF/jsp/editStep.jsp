@@ -91,12 +91,14 @@
 	                            <div class="col-sm-9">
 	                                <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
                                     </form:select>
+                                    <span class="help-block">Le nom ne doit pas contenir d'espace.</span>
 	                            </div>
 	                        </div>
 	                        <div class="form-group">
 	                            <form:label path="newField.label" cssClass="col-sm-3 control-label">Label</form:label>
 	                            <div class="col-sm-9">
 	                                <form:input path="newField.label" type="text" cssClass="form-control" placeholder="Label" />
+	                                <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
 	                            </div>
 	                        </div>
 	                        <div class="form-group">

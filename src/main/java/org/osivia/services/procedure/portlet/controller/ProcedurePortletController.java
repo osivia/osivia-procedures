@@ -299,7 +299,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     required = false) String filter) throws PortletException {
 
         List<Variable> listeVar = new ArrayList<Variable>();
-        if (filter != null) {
+        if (StringUtils.isNotBlank(filter)) {
             boolean exactMatch = false;
             for (Entry<String, Variable> entryVar : form.getProcedureModel().getVariables().entrySet()) {
                 if (StringUtils.equals(entryVar.getValue().getName(), filter)) {
@@ -310,7 +310,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 }
             }
             if (!exactMatch) {
-                listeVar.add(0, new Variable(filter, null, null, null));
+                listeVar.add(0, new Variable(StringUtils.deleteWhitespace(filter), null, null, null));
             }
         } else {
             listeVar.addAll(form.getProcedureModel().getVariables().values());
