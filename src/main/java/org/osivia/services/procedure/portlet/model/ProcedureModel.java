@@ -12,6 +12,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 public class ProcedureModel {
 
@@ -40,10 +41,16 @@ public class ProcedureModel {
     private String url;
 
     /** webId */
-    private String webId;
+    private String currentWebId;
+
+    /** newWebId */
+    private String newWebId;
 
     /** originalDocument */
     private Document originalDocument;
+
+
+    
 
     public ProcedureModel() {
         variables = new HashMap<String, Variable>();
@@ -60,7 +67,8 @@ public class ProcedureModel {
 
         final PropertyMap properties = document.getProperties();
         name = properties.getString("dc:title");
-        webId = properties.getString("ttc:webid");
+        currentWebId = properties.getString("ttc:webid");
+        newWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
         path = document.getPath();
         startingStep = properties.getString("pcd:startingStep");
 
@@ -266,26 +274,8 @@ public class ProcedureModel {
     }
 
     /**
-     * Getter for webId.
-     * 
-     * @return the webId
-     */
-    public String getWebId() {
-        return webId;
-    }
-
-    /**
-     * Setter for webId.
-     * 
-     * @param webId the webId to set
-     */
-    public void setWebId(String webId) {
-        this.webId = webId;
-    }
-
-    /**
      * Getter for originalDocument.
-     * 
+     *
      * @return the originalDocument
      */
     public Document getOriginalDocument() {
@@ -294,11 +284,50 @@ public class ProcedureModel {
 
     /**
      * Setter for originalDocument.
-     * 
+     *
      * @param originalDocument the originalDocument to set
      */
     public void setOriginalDocument(Document originalDocument) {
         this.originalDocument = originalDocument;
+    }
+    
+    /**
+     * Getter for currentWebId.
+     *
+     * @return the currentWebId
+     */
+    public String getCurrentWebId() {
+        return currentWebId;
+    }
+
+
+    /**
+     * Setter for currentWebId.
+     *
+     * @param currentWebId the currentWebId to set
+     */
+    public void setCurrentWebId(String currentWebId) {
+        this.currentWebId = currentWebId;
+    }
+
+
+    /**
+     * Getter for newWebId.
+     *
+     * @return the newWebId
+     */
+    public String getNewWebId() {
+        return newWebId;
+    }
+
+
+    /**
+     * Setter for newWebId.
+     *
+     * @param newWebId the newWebId to set
+     */
+    public void setNewWebId(String newWebId) {
+        this.newWebId = newWebId;
     }
 
 }

@@ -70,6 +70,7 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
 @Controller
@@ -230,6 +231,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return listeFiltres;
     }
 
+    @ModelAttribute(value = "webIdPrefix")
+    public String getWebIdPrefix(PortletRequest request, PortletResponse response) {
+        return IFormsService.FORMS_WEB_ID_PREFIX;
+    }
 
     @ResourceMapping(value = "groupSearch")
     public void getProfils(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
@@ -346,7 +351,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void launchProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
         form.setProcedureInstance(new ProcedureInstance());
-        form.getProcedureInstance().setProcedureModelWebId(form.getProcedureModel().getWebId());
+        form.getProcedureInstance().setProcedureModelWebId(form.getProcedureModel().getCurrentWebId());
 
         response.setRenderParameter("action", "viewProcedure");
     }
@@ -382,7 +387,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 nuxeoController.getNuxeoCMSService().getFormsService()
-                .start(portalControllerContext, NuxeoController.webIdToFetchPath(form.getProcedureModel().getWebId()), actionId, globalVariablesValues);
+                .start(portalControllerContext, NuxeoController.webIdToFetchPath(form.getProcedureModel().getCurrentWebId()), actionId,
+                        globalVariablesValues);
                 // redirect to end of step page
                 response.setRenderParameter("action", "endStep");
                 sessionStatus.setComplete();
@@ -422,29 +428,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             addAllFieldsToSet(form);
             addAllFiltersToSet(form);
             procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-            response.setRenderParameter("action", "editProcedure");
         } else {
             // if the procedure doesn't exist in database, create it
             final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
-
-            final Map<String, String> windowProperties = new HashMap<String, String>();
-            windowProperties.put("osivia.services.procedure.webid", createdProcedure.getWebId());
-            windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, getProcedurePath(request));
-            windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
-            windowProperties.put("osivia.title", "Éditer une procedure");
-            windowProperties.put("osivia.hideDecorators", "1");
-            windowProperties.put("osivia.ajaxLink", "1");
-            windowProperties.put("osivia.procedure.admin", "adminproc");
-            String redirectUrl=            nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
-            //            try {
-            //                redirectUrl = getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-            //                        windowProperties, PortalUrlType.DEFAULT);
-            //            } catch (final PortalException e) {
-            //                throw new PortletException(e);
-            //            }
-            // String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminproc").getUrl();
-            response.sendRedirect(redirectUrl);
         }
+        String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
+        response.sendRedirect(redirectUrl);
         sessionStatus.setComplete();
     }
 
@@ -483,14 +472,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             createdProcedure.getSteps().add(new Step(newIndex));
             procedureService.updateProcedure(nuxeoController, createdProcedure);
 
-            final Map<String, String> windowProperties = new HashMap<String, String>();
-            windowProperties.put("osivia.services.procedure.webid", createdProcedure.getWebId());
-            windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, getProcedurePath(request));
-            windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
-            windowProperties.put("osivia.title", "Éditer une procedure");
-            windowProperties.put("osivia.hideDecorators", "1");
-            windowProperties.put("osivia.ajaxLink", "1");
-            windowProperties.put("osivia.procedure.admin", "adminprocstep");
             String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminprocstep").getUrl();
             response.sendRedirect(redirectUrl);
         }
@@ -517,14 +498,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             createdProcedure.getProcedureObjects().add(new ProcedureObject());
             procedureService.updateProcedure(nuxeoController, createdProcedure);
 
-            final Map<String, String> windowProperties = new HashMap<String, String>();
-            windowProperties.put("osivia.services.procedure.webid", createdProcedure.getWebId());
-            windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, getProcedurePath(request));
-            windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
-            windowProperties.put("osivia.title", "Éditer une procedure");
-            windowProperties.put("osivia.hideDecorators", "1");
-            windowProperties.put("osivia.ajaxLink", "1");
-            windowProperties.put("osivia.procedure.admin", "adminproc");
             String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminproc").getUrl();
             response.sendRedirect(redirectUrl);
         }
@@ -892,6 +865,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void cancelAction(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
         response.setRenderParameter("action", "editStep");
         response.setRenderParameter("activeTab", "action");
+        sessionStatus.setComplete();
+    }
+
+    @ActionMapping(value = "editAction", params = "cancelAction=toStep")
+    public void cancelActionToEditStep(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+        response.setRenderParameter("action", "editStep");
+        sessionStatus.setComplete();
+    }
+
+    @ActionMapping(value = "editAction", params = "cancelAction=toProc")
+    public void cancelActionToEditProcedure(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+        response.setRenderParameter("action", "editProcedure");
         sessionStatus.setComplete();
     }
 

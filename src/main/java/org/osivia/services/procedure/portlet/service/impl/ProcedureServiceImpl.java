@@ -48,6 +48,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyEntry;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyHelper;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
@@ -59,7 +60,8 @@ public class ProcedureServiceImpl implements IProcedureService {
         try {
             command = new ListModelsContainerCommand(Procedurepath);
             final Document container = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            command = new CreateDocumentCommand(container, procedureModel.getName(), procedureModel.getWebId(), DocumentTypeEnum.PROCEDUREMODEL);
+            command = new CreateDocumentCommand(container, procedureModel.getName(), IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId(),
+                    DocumentTypeEnum.PROCEDUREMODEL);
         } catch (final Exception e) {
             throw new PortletException(e);
         }
@@ -87,11 +89,11 @@ public class ProcedureServiceImpl implements IProcedureService {
     public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
         INuxeoCommand command;
         try {
-            command = new RetrieveDocumentByWebIdCommand(procedureModel.getWebId());
+            command = new RetrieveDocumentByWebIdCommand(procedureModel.getCurrentWebId());
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
             final PropertyMap propMap = new PropertyMap();
             propMap.set("dc:title", procedureModel.getName());
-            propMap.set("ttc:webid", procedureModel.getWebId());
+            propMap.set("ttc:webid", IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId());
             propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
             propMap.set("pcd:globalVariablesDefinitions", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getVariables().values()));
             propMap.set("pcd:startingStep", procedureModel.getStartingStep());
@@ -109,7 +111,7 @@ public class ProcedureServiceImpl implements IProcedureService {
 
         INuxeoCommand command;
         try {
-            command = new RetrieveDocumentByWebIdCommand(procedureModel.getWebId());
+            command = new RetrieveDocumentByWebIdCommand(procedureModel.getCurrentWebId());
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
             command = new DeleteDocumentCommand(currentDocument);
             nuxeoController.executeNuxeoCommand(command);
@@ -175,7 +177,7 @@ public class ProcedureServiceImpl implements IProcedureService {
     private String getEditUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, ProcedureModel procedureModel, String Procedurepath)
             throws PortalException {
         final Map<String, String> windowProperties = getWindowProperties(Procedurepath);
-        windowProperties.put("osivia.services.procedure.webid", procedureModel.getWebId());
+        windowProperties.put("osivia.services.procedure.webid", procedureModel.getCurrentWebId());
         windowProperties.put("osivia.title", "Éditer une procedure");
         return portalUrlFactory.getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance", windowProperties,
                 PortalUrlType.DEFAULT);

@@ -26,6 +26,28 @@
 <portlet:actionURL name="editStep" var="editStepUrl">
 </portlet:actionURL>
 
+<div class="content-navbar">
+    <!-- Breadcrumb -->
+    <div class="content-navbar-breadcrumb">
+        <div id="breadcrumb">
+        	<div class="">
+				<nav>
+				    <ol class="breadcrumb hidden-xs">
+			            <li>
+				            <portlet:actionURL name="editStep" var="cancelStepUrl">
+				            	<portlet:param name="cancelStep" value="toProc"/>
+							</portlet:actionURL>
+							<a href="${cancelStepUrl}">Édition d'une procédure</a>
+			            </li>
+			            <li><a>Édition d'une étape</a></li>
+				    </ol>
+				</nav>
+			</div>
+		</div>
+    </div>
+</div>
+
+
 <form:form modelAttribute="form" action="${editStepUrl}" method="post" cssClass="form-horizontal" role="form">
     
     <ul class="nav nav-tabs" role="tablist">

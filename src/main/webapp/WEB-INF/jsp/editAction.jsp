@@ -8,6 +8,32 @@
 <portlet:actionURL name="editAction" var="editActionUrl">
 </portlet:actionURL>
 
+<div class="content-navbar">
+    <!-- Breadcrumb -->
+    <div class="content-navbar-breadcrumb">
+        <div id="breadcrumb">
+        	<div class="">
+				<nav>
+				    <ol class="breadcrumb hidden-xs">
+			            <li>
+				            <portlet:actionURL name="editStep" var="cancelActionToProcUrl">
+				            	<portlet:param name="cancelStep" value="toProc"/>
+							</portlet:actionURL>
+							<a href="${cancelActionToProcUrl}">Édition d'une procédure</a>
+			            </li>
+			            <li>
+				            <portlet:actionURL name="editAction" var="cancelActionToStepUrl">
+				            	<portlet:param name="cancelAction" value="toStep"/>
+							</portlet:actionURL>
+							<a href="${cancelActionToStepUrl}">Édition d'une étape</a>
+			            </li>
+			            <li><a>Édition d'une action</a></li>
+				    </ol>
+				</nav>
+			</div>
+		</div>
+    </div>
+</div>
 
 <form:form modelAttribute="form" action="${editActionUrl}" method="post" cssClass="form-horizontal" role="form">
     <div class="form-group">
@@ -82,8 +108,7 @@
 				                        <form:textarea path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" />
 				                    </c:if>
 				                    <c:if test="${argument.type eq 'BOOLEAN'}">
-				                        <c:set var="boolArgumentValue" value="${form.selectedFilter.argumentsList[argStatus.index].argumentValue eq 'true'}"/>
-				                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" value="${boolArgumentValue}"/>
+				                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" value="true"/>
 				                    </c:if>
 				                </div>
 				            </div>
