@@ -132,7 +132,6 @@
 	        <ul class="filter-sortable">
 	            <c:forEach var="filter" items="${form.theSelectedAction.filters}" varStatus="status">
 	                <li>
-	                   <i class="halflings halflings-menu-right"></i>
 	                    <c:set var="nestedFilter" value="${filter}" scope="request"/>
 	                    <jsp:include page="editFilters.jsp"/>
 	                </li>
