@@ -49,9 +49,6 @@ public class ProcedureModel {
     /** originalDocument */
     private Document originalDocument;
 
-
-    
-
     public ProcedureModel() {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();

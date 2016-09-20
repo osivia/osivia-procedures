@@ -386,9 +386,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 // if there is no instance, start the procedure
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
-                nuxeoController.getNuxeoCMSService().getFormsService()
-                .start(portalControllerContext, NuxeoController.webIdToFetchPath(form.getProcedureModel().getCurrentWebId()), actionId,
-                        globalVariablesValues);
+                String currentWebId = form.getProcedureModel().getCurrentWebId();
+                String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
+                nuxeoController.getNuxeoCMSService().getFormsService().start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
                 // redirect to end of step page
                 response.setRenderParameter("action", "endStep");
                 sessionStatus.setComplete();
