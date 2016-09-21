@@ -3,6 +3,7 @@ package org.osivia.services.procedure.formFilters;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormActors;
@@ -21,6 +22,11 @@ public class SetActorFormFilter implements FormFilter {
 
     /** Form filter identifier. */
     public static final String ID = "SET_ACTOR";
+
+    /** Actor parameter. */
+    private static final String ACTOR_PARAMETER = "actor";
+    /** Group indicator parameter. */
+    private static final String GROUP_INDICATOR_PARAMETER = "group";
 
     /** Form filter label internationalization key. */
     private static final String LABEL_INTERNATIONALIZATION_KEY = "SET_ACTOR_LABEL";
@@ -69,7 +75,8 @@ public class SetActorFormFilter implements FormFilter {
     @Override
     public Map<String, FormFilterParameterType> getParameters() {
         Map<String, FormFilterParameterType> parameters = new HashMap<String, FormFilterParameterType>();
-        parameters.put("actor", FormFilterParameterType.TEXT);
+        parameters.put(ACTOR_PARAMETER, FormFilterParameterType.TEXT);
+        parameters.put(GROUP_INDICATOR_PARAMETER, FormFilterParameterType.BOOLEAN);
         return parameters;
     }
 
@@ -92,10 +99,16 @@ public class SetActorFormFilter implements FormFilter {
         FormActors actors = context.getActors();
 
         // Actor
-        String actor = context.getParamValue(executor, "actor");
+        String actor = context.getParamValue(executor, ACTOR_PARAMETER);
+        // Group indicator
+        boolean group = BooleanUtils.toBoolean(context.getParamValue(executor, GROUP_INDICATOR_PARAMETER));
         
         if (StringUtils.isNotBlank(actor)) {
-            actors.getUsers().add(actor);
+            if (group) {
+                actors.getGroups().add(actor);
+            } else {
+                actors.getUsers().add(actor);
+            }
         }
     }
 
