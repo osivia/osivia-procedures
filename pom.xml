@@ -14,7 +14,7 @@
         <toutatice.version>4.0.22-RC7</toutatice.version>
         
         <!-- Directory -->
-        <directory.version>4.4.0-RC7</directory.version>
+        <!-- <directory.version>4.4.0-RC7</directory.version>  -->
 
     </properties>
 
@@ -30,13 +30,14 @@
         </dependency>
         
         <!-- Directory -->
+        <!-- 
         <dependency>
             <groupId>org.osivia.services.directory.socle</groupId>
             <artifactId>osivia-services-directory-compat-socle-interfaces</artifactId>
             <version>${directory.version}</version>
             <scope>provided</scope>        
         </dependency>
-        
+         -->
     </dependencies>
 
 
