@@ -4,6 +4,7 @@ import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
 
@@ -24,11 +25,15 @@ public class CreateDocumentCommand implements INuxeoCommand {
     /** type the type of the document to create */
     private DocumentTypeEnum type;
 
-    public CreateDocumentCommand(Document path, String name, DocumentTypeEnum type) {
+    /** webId */
+    private String webId;
+
+    public CreateDocumentCommand(Document path, String name, String webId, DocumentTypeEnum type) {
         super();
         this.path = path;
         this.name = name;
         this.type = type;
+        this.webId = webId;
     }
 
     @Override
@@ -37,14 +42,17 @@ public class CreateDocumentCommand implements INuxeoCommand {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.CreateDocument.getId());
         request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
         request.setInput(path);
-        request.set("type", type.getName()).set("name", name).set("properties", "dc:title=" + name);
+        PropertyMap properties = new PropertyMap();
+        properties.set("dc:title", name);
+        properties.set("ttc:webid", webId);
+        request.set("type", type.getName()).set("properties", properties);
 
         return request.execute();
     }
 
     @Override
     public String getId() {
-        return "CreateDocumentCommand/" + path + "/" + name + "/" + type;
+        return "CreateDocumentCommand/" + path + "/" + type + "/" + name + "/" + webId;
     };
 
 
