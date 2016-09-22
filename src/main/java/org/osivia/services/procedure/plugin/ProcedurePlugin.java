@@ -23,10 +23,11 @@ import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
-import org.osivia.services.procedure.formFilters.GoToStepFilter;
+import org.osivia.services.procedure.formFilters.DefineVariableFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
-import org.osivia.services.procedure.formFilters.SetActorFormFilter;
+import org.osivia.services.procedure.formFilters.SetVariableAsActorFilter;
+import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
@@ -96,9 +97,10 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
         Map<String, FormFilter> formFilters = getFormFilters(context);
         formFilters.put(IfFilter.ID, new IfFilter());
-        formFilters.put(GoToStepFilter.ID, new GoToStepFilter());
+        formFilters.put(DefineVariableFilter.ID, new DefineVariableFilter());
         formFilters.put(SendMailFilter.ID, new SendMailFilter());
-        formFilters.put(SetActorFormFilter.ID, new SetActorFormFilter());
+        formFilters.put(SetVariableAsActorFilter.ID, new SetVariableAsActorFilter());
+        formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
     }
 
 

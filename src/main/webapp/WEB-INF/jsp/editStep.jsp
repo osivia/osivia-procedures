@@ -2,7 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 
@@ -26,6 +25,28 @@
 
 <portlet:actionURL name="editStep" var="editStepUrl">
 </portlet:actionURL>
+
+<div class="content-navbar">
+    <!-- Breadcrumb -->
+    <div class="content-navbar-breadcrumb">
+        <div id="breadcrumb">
+        	<div class="">
+				<nav>
+				    <ol class="breadcrumb hidden-xs">
+			            <li>
+				            <portlet:actionURL name="editStep" var="cancelStepUrl">
+				            	<portlet:param name="cancelStep" value="toProc"/>
+							</portlet:actionURL>
+							<a href="${cancelStepUrl}">Édition d'une procédure</a>
+			            </li>
+			            <li><a>Édition d'une étape</a></li>
+				    </ol>
+				</nav>
+			</div>
+		</div>
+    </div>
+</div>
+
 
 <form:form modelAttribute="form" action="${editStepUrl}" method="post" cssClass="form-horizontal" role="form">
     
@@ -70,12 +91,14 @@
 	                            <div class="col-sm-9">
 	                                <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
                                     </form:select>
+                                    <span class="help-block">Le nom ne doit pas contenir d'espace.</span>
 	                            </div>
 	                        </div>
 	                        <div class="form-group">
 	                            <form:label path="newField.label" cssClass="col-sm-3 control-label">Label</form:label>
 	                            <div class="col-sm-9">
 	                                <form:input path="newField.label" type="text" cssClass="form-control" placeholder="Label" />
+	                                <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
 	                            </div>
 	                        </div>
 	                        <div class="form-group">

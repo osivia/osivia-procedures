@@ -11,6 +11,10 @@
             <instance-id>osivia-services-procedure-portletInstance</instance-id>
             <portlet-ref>osivia-services-procedure</portlet-ref>
             <security-constraint>
+            	<policy-permission>
+					<action-name>admin</action-name>
+					<role-name>Administrators</role-name>
+				</policy-permission>
                 <policy-permission>
                     <action-name>view</action-name>
                     <unchecked />

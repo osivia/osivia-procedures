@@ -2,7 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <portlet:defineObjects />
@@ -50,7 +49,7 @@
             <div class="form-group">
                 <div class="col-sm-10">
                     <c:forEach var="action" items="${form.theCurrentStep.actions}" varStatus="status">
-                        <button type="submit" name="proceedProcedure" class="btn btn-default" onclick="selector(this,'${action.stepReference}','stepReference')" >${action.label}</button>
+                        <button type="submit" name="proceedProcedure" class="btn btn-default" onclick="selector(this,'${action.actionId}','actionId')" >${action.label}</button>
                     </c:forEach>
                 </div>
             </div>

@@ -2,6 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
+
+
 <portlet:defineObjects />
 
 <portlet:actionURL name="editProcedure" var="editProcedureUrl">
@@ -10,6 +12,21 @@
 <c:if test="${!form.advancedMode}">
 	<portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
 </c:if>
+
+<div class="content-navbar">
+    <!-- Breadcrumb -->
+    <div class="content-navbar-breadcrumb">
+        <div id="breadcrumb">
+        	<div class="">
+				<nav>
+				    <ol class="breadcrumb hidden-xs">
+			            <li><a>Édition d'une procédure</a></li>
+				    </ol>
+				</nav>
+			</div>
+		</div>
+    </div>
+</div>
 
 
 <form:form modelAttribute="form" action="${editProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
@@ -27,9 +44,12 @@
 			</div>
 			<c:if test="${form.advancedMode}">
 				<div class="form-group">
-	                <form:label path="procedureModel.webId" cssClass="col-sm-3 control-label">Identifiant</form:label>
+	                <form:label path="procedureModel.newWebId" cssClass="col-sm-3 control-label">Identifiant</form:label>
 	                <div class="col-sm-9">
-	                    <form:input path="procedureModel.webId" type="text" cssClass="form-control" placeholder="Identifiant" />
+	                	<div class="input-group">
+		                	<span class="input-group-addon">${webIdPrefix}</span>
+		                    <form:input path="procedureModel.newWebId" type="text" cssClass="form-control" placeholder="Identifiant" />
+	                	</div>
 	                </div>
 	            </div>
             </c:if>

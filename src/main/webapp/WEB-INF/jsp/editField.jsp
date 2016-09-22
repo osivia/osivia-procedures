@@ -39,7 +39,7 @@
 														"#selectVariable_${status.index}")
 														.datepicker(
 																{
-																	dateFormat : "DD d MM yy"
+																	dateFormat : "yy-mm-dd"
 																});
 											});
 						</script>
@@ -172,13 +172,13 @@
                     				or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
 						<div class="col-sm-3">
 							${form.procedureModel.variables[field.name].label} :</div>
-						<div class="col-sm-3"></div>
+						<div class="col-sm-3">${form.procedureInstance.globalVariablesValues[field.name]}</div>
 					</c:when>
 					<c:when
 						test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
 						<div class="col-sm-3">
 							${form.procedureModel.variables[field.name].label} :</div>
-						<div class="col-sm-3"></div>
+						<div class="col-sm-3">${form.procedureInstance.globalVariablesValues[field.name]}</div>
 					</c:when>
 					<c:when test="${fieldType eq 'FILE'}">
 						<div class="col-sm-3">

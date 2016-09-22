@@ -11,6 +11,7 @@
 <!-- <div class="panel panel-default"> -->
 <!-- 	<div class="panel-heading"> -->
         <span class="filter-title">
+           <i class="halflings halflings-menu-right"></i>
 		   <c:if test="${empty filterBkp.filterName}">
 				<op:translate key="${filterBkp.labelKey}" classLoader="${filterBkp.classLoader}"/>
 		   </c:if>
@@ -26,7 +27,6 @@
 	        <ul class="filter-sortable">
 	            <c:forEach var="nestedFilter" items="${filterBkp.filters}" varStatus="status">
 		            <li>
-		              <i class="halflings halflings-menu-right"></i>
 	                    <c:set var="nestedFilter" value="${nestedFilter}" scope="request" />
 		                <jsp:include page="editFilters.jsp"/>
 		            </li>

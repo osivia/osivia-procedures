@@ -58,7 +58,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         final Document document = docCtx.getDoc();
 
         final Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
+        windowProperties.put("osivia.services.procedure.webid", document.getProperties().getString("ttc:webid"));
         windowProperties.put("osivia.doctype", document.getType());
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);

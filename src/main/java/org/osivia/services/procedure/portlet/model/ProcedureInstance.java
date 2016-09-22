@@ -2,6 +2,7 @@ package org.osivia.services.procedure.portlet.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
@@ -22,14 +23,17 @@ public class ProcedureInstance {
     /** taskTitle */
     private String taskTitle;
 
-    /** procedureModelPath */
-    private String procedureModelPath;
+    /** procedureModelWebId */
+    private String procedureModelWebId;
 
     /** filesPath */
     private Map<String, FilePath> filesPath;
 
     /** procedureObjectInstances */
     private Map<String, ProcedureObjectInstance> procedureObjectInstances;
+
+    /** le document task */
+    private PropertyMap taskDoc;
 
     public ProcedureInstance() {
         globalVariablesValues = new HashMap<String, String>();
@@ -52,15 +56,15 @@ public class ProcedureInstance {
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
         setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
         PropertyMap properties = document.getProperties();
+        setTaskDoc(properties.getMap("pi:task"));
         currentStep = properties.getString("pi:currentStep");
-        procedureModelPath = properties.getString("pi:procedureModelPath");
+        setProcedureModelWebId(properties.getString("pi:procedureModelWebId"));
 
         // global variables
-        PropertyList gvvList = properties.getList("pi:globalVariablesValues");
+        PropertyMap gvvList = properties.getMap("pi:globalVariablesValues");
         if (gvvList != null) {
-            for (Object gvvO : gvvList.list()) {
-                PropertyMap gvv = (PropertyMap) gvvO;
-                globalVariablesValues.put(gvv.getString("name"), gvv.getString("value"));
+            for (Entry<String, Object> gvvO : gvvList.getMap().entrySet()) {
+                globalVariablesValues.put(gvvO.getKey(), (String) gvvO.getValue());
             }
         }
 
@@ -152,26 +156,6 @@ public class ProcedureInstance {
 
 
     /**
-     * Getter for procedureModelPath.
-     *
-     * @return the procedureModelPath
-     */
-    public String getProcedureModelPath() {
-        return procedureModelPath;
-    }
-
-
-    /**
-     * Setter for procedureModelPath.
-     *
-     * @param procedureModelPath the procedureModelPath to set
-     */
-    public void setProcedureModelPath(String procedureModelPath) {
-        this.procedureModelPath = procedureModelPath;
-    }
-
-
-    /**
      * Getter for filesPath.
      *
      * @return the filesPath
@@ -206,4 +190,57 @@ public class ProcedureInstance {
         procedureObjectInstances = procedureObjectInstancess;
     }
 
+
+    /**
+     * Getter for procedureObjectInstances.
+     *
+     * @return the procedureObjectInstances
+     */
+    public Map<String, ProcedureObjectInstance> getProcedureObjectInstances() {
+        return procedureObjectInstances;
+    }
+
+
+    /**
+     * Setter for procedureObjectInstances.
+     *
+     * @param procedureObjectInstances the procedureObjectInstances to set
+     */
+    public void setProcedureObjectInstances(Map<String, ProcedureObjectInstance> procedureObjectInstances) {
+        this.procedureObjectInstances = procedureObjectInstances;
+    }
+
+    /**
+     * Getter for taskDoc.
+     *
+     * @return the taskDoc
+     */
+    public PropertyMap getTaskDoc() {
+        return taskDoc;
+    }
+
+    /**
+     * Setter for taskDoc.
+     *
+     * @param taskDoc the taskDoc to set
+     */
+    public void setTaskDoc(PropertyMap taskDoc) {
+        this.taskDoc = taskDoc;
+    }
+
+    /**
+     * Getter for procedureModelWebId.
+     * @return the procedureModelWebId
+     */
+    public String getProcedureModelWebId() {
+        return procedureModelWebId;
+    }
+
+    /**
+     * Setter for procedureModelWebId.
+     * @param procedureModelWebId the procedureModelWebId to set
+     */
+    public void setProcedureModelWebId(String procedureModelWebId) {
+        this.procedureModelWebId = procedureModelWebId;
+    }
 }
