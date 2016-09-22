@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarModule;
@@ -26,7 +24,7 @@ import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.services.procedure.formFilters.DefineVariableFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
-import org.osivia.services.procedure.formFilters.SetVariableAsActorFilter;
+import org.osivia.services.procedure.formFilters.SetActorFormFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
@@ -52,9 +50,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     /** SCHEMAS_ADMIN */
     public static final String SCHEMAS_ADMIN = "dublincore, common, toutatice";
 
-    /** Logger. */
-    private static final Log LOGGER = LogFactory.getLog(ProcedurePlugin.class);
-
 
     /**
      * Constructor.
@@ -67,6 +62,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("rawtypes")
     @Override
     protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
 
@@ -99,7 +95,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(IfFilter.ID, new IfFilter());
         formFilters.put(DefineVariableFilter.ID, new DefineVariableFilter());
         formFilters.put(SendMailFilter.ID, new SendMailFilter());
-        formFilters.put(SetVariableAsActorFilter.ID, new SetVariableAsActorFilter());
+        formFilters.put(SetActorFormFilter.ID, new SetActorFormFilter());
         formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
     }
 

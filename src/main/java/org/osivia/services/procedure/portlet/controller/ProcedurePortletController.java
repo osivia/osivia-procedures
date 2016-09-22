@@ -26,8 +26,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import net.sf.json.JSONArray;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -66,13 +64,13 @@ import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.portlet.multipart.MultipartActionRequest;
 
-import fr.toutatice.outils.ldap.entity.Profil;
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import net.sf.json.JSONArray;
 
 @Controller
 @SessionAttributes("form")
@@ -106,8 +104,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @Autowired
     private IProcedureService procedureService;
 
-    @Autowired
-    private Profil profil;
 
     public ProcedurePortletController() {
         super();
