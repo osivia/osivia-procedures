@@ -8,9 +8,7 @@
 <c:forEach var="pathPart" items="${filterBkp.filterPath}" varStatus="status">
 	<c:set var="springPath"	value="${status.first ? 'theSelectedAction' : springPath}.filters[${pathPart}]"	scope="request" />
 </c:forEach>
-<!-- <div class="panel panel-default"> -->
-<!-- 	<div class="panel-heading"> -->
-        <span class="filter-title">
+        <span class="filter-title <c:if test="${filterBkp.selected}">filter-selected</c:if>">
            <i class="halflings halflings-menu-right"></i>
 		   <c:if test="${empty filterBkp.filterName}">
 				<op:translate key="${filterBkp.labelKey}" classLoader="${filterBkp.classLoader}"/>
@@ -19,8 +17,6 @@
 	            ${filterBkp.filterName}
 	       </c:if>
        </span>
-<!-- 	</div> -->
-<!-- 	<div class="panel-body"> -->
 		<form:hidden path="${springPath}.filterId" />
 		<form:hidden path="${springPath}.filterPath" />
 		<c:if test="${filterBkp.hasChildren}">
@@ -33,5 +29,3 @@
 	            </c:forEach>
 			</ul>
 		</c:if>
-<!-- 	</div> -->
-<!-- </div> -->

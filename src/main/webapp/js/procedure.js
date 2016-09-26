@@ -17,6 +17,30 @@ function updatePath(index, currentpath, element) {
 			updatePath(loopIndex, nestedPath, element);
 		});
 	}
+};
+
+function sortableStart(event, ui){
+	// empêche la sélection du champ ou filtre
+	$JQry(event.originalEvent.target).off();
+	$JQry(event.originalEvent.target).on('click',function(e){
+		e.preventDefault(); // cas control-label
+		e.stopImmediatePropagation();
+	});
+	// on sauvegarde la position de départ de l'item
+	ui.item.data("itemStartPosition",ui.item.position());
+};
+
+function sortableStop(filter, event, ui){
+	var itemPosition = ui.item.position();
+	var itemStartPosition = ui.item.data('itemStartPosition');
+	// on ne maj le form que si la position a changée
+	if(itemPosition.top != itemStartPosition.top || itemPosition.left != itemStartPosition.left){
+		$JQry(filter).children("li").each(function(index, element){
+			updatePath(index, [], element);
+		});
+		// soumet la mise à jour du formulaire
+		$JQry(ui.item).closest("form").find("input[name='updateForm']").click();
+	}
 }
 
 $JQry(function() {
@@ -27,20 +51,11 @@ $JQry(function() {
 		axis: "y",
 		forcePlaceholderSize: true,
 		placeholder: "procedure-sortable-placeHolder",
-		start : function(event, ui) {
-			// empêche la sélection du champ
-			$JQry(event.originalEvent.target).off();
-			$JQry(event.originalEvent.target).on('click',function(e){
-				e.preventDefault(); // cas control-label
-				e.stopImmediatePropagation();
-			});
+		start :function(event, ui) {
+			sortableStart(event, ui);
 		},
-		stop: function( event, ui ) {
-				$JQry("#procedure-sortable > ul").children("li").each(function(index, element){
-					updatePath(index, [], element);
-				});
-				// soumet la mise à jour du formulaire
-				$JQry(this).closest("form").find("input[name='updateForm']").click();
+		stop: function(event, ui) {
+			sortableStop("#procedure-sortable > ul", event, ui);
 		}
 	});
 	
@@ -64,18 +79,10 @@ $JQry(function() {
 		forcePlaceholderSize: true,
 		placeholder: "filter-sortable-placeHolder",
 		start : function(event, ui) {
-			// empêche la sélection du filtre
-			$JQry(event.originalEvent.target).off();
-			$JQry(event.originalEvent.target).on('click',function(e){
-				e.stopImmediatePropagation();
-			});
+			sortableStart(event, ui);
 		},
 		stop: function(event, ui) {
-				$JQry("#filter-sortable > ul").children("li").each(function(index, element){
-					updatePath(index, [], element);
-				});
-				// soumet la mise à jour du formulaire
-				$JQry(this).closest("form").find("input[name='updateForm']").click();
+			sortableStop("#filter-sortable > ul", event, ui);
 		}
 	});
 	

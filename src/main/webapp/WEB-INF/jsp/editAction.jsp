@@ -113,15 +113,11 @@
 				                </div>
 				            </div>
 				        </c:forEach>
-				        <div class="row">
-					        <div class="col-sm-1 pull-right">
-			                   <button type="submit" name="deleteFilter" class="btn btn-default pull-right">
-						            <i class="glyphicons glyphicons-bin"></i>
-						        </button>
-					        </div>
-					        <div class="col-sm-1 pull-right">
-		                       <button type="submit" name="editFilter" class="btn btn-default pull-right">Modifier</button>
-		                   </div>
+				        <div class="pull-right">
+	                       <button type="submit" name="editFilter" class="btn btn-default">Modifier</button>
+		                   <button type="submit" name="deleteFilter" class="btn btn-default">
+					            <i class="glyphicons glyphicons-bin"></i>
+					        </button>
 	                   </div>
 	                </div>
                 </c:if>

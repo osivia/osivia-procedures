@@ -26,6 +26,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import net.sf.json.JSONArray;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -70,7 +72,6 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
-import net.sf.json.JSONArray;
 
 @Controller
 @SessionAttributes("form")
@@ -902,24 +903,27 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     value = "selectedFilterPath") String selectedFilterPath) {
 
         Filter filterByFilterPath = getFilterByFilterPath(form.getTheSelectedAction().getFilters(), selectedFilterPath);
+        filterByFilterPath.setSelected(true);
         form.setSelectedFilter(filterByFilterPath);
         response.setRenderParameter("action", "editAction");
         response.setRenderParameter("activeTab", "edit");
     }
 
     private Filter getFilterByFilterPath(List<Filter> filtersList, String selectedFilterPath) {
+        Filter returnFilter = null;
         if (filtersList != null) {
             for (Filter filter : filtersList) {
+                filter.setSelected(false);
                 if (StringUtils.equals(filter.getFilterPath(), selectedFilterPath)) {
-                    return filter;
+                    returnFilter = filter;
                 }
                 Filter filterbyId = getFilterByFilterPath(filter.getFilters(), selectedFilterPath);
                 if (filterbyId != null) {
-                    return filterbyId;
+                    returnFilter = filterbyId;
                 }
             }
         }
-        return null;
+        return returnFilter;
     }
 
     private void updateFilterByFilterPath(List<Filter> filtersList, Filter filterUpdate) {
@@ -970,6 +974,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                         parentFilters = new ArrayList<Filter>();
                     }
                     filter.setFilterInstanceId(filter.getFilterId().concat(filter.getFilterPath()));
+                    filter.setSelected(false);
                     parentFilters.add(filter);
                     Collections.sort(parentFilters);
                     allFiltersMap.put(parentPath, parentFilters);

@@ -131,14 +131,14 @@
 	                            </div>
 	                        </div>
 	                        <div class="form-group">
-	                           <div class="col-sm-offset-3 col-sm-3">
+	                           <div class="col-sm-offset-3 col-sm-9">
 	                               <div class="checkbox">
 	                                    <label>
 	                                       <form:checkbox path="newField.input"/><span>Saisissable</span>
 	                                    </label>
 	                                </div>
 	                            </div>
-	                            <div class="col-sm-3">
+	                            <div class="col-sm-offset-3 col-sm-9">
                                    <div class="checkbox">
                                         <label>
                                             <form:checkbox path="newField.required"/><span>Requis</span>
@@ -211,14 +211,14 @@
 					                      </div>
 					                  </div>
                                       <div class="form-group">
-			                               <div class="col-sm-offset-3 col-sm-3">
+			                               <div class="col-sm-offset-3 col-sm-9">
 			                                   <div class="checkbox">
 			                                        <label>
 			                                             <form:checkbox path="selectedField.input"/><span>Saisissable</span>
 			                                        </label>
 			                                    </div>
 			                                </div>
-			                                <div class="col-sm-3">
+			                                <div class="col-sm-offset-3 col-sm-9">
 			                                   <div class="checkbox">
 			                                        <label>
 			                                             <form:checkbox path="selectedField.required"/><span>Requis</span>

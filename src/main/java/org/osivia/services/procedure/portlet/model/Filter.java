@@ -65,6 +65,9 @@ public class Filter implements Comparable<Filter> {
     @JsonIgnore
     private ClassLoader classLoader;
 
+    /** selected */
+    @JsonIgnore
+    private boolean selected;
 
     public Filter() {
     }
@@ -344,5 +347,25 @@ public class Filter implements Comparable<Filter> {
      */
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
+    }
+
+
+    /**
+     * Getter for selected.
+     * 
+     * @return the selected
+     */
+    public boolean isSelected() {
+        return selected;
+    }
+
+
+    /**
+     * Setter for selected.
+     * 
+     * @param selected the selected to set
+     */
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }
