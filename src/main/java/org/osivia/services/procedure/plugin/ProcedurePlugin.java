@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
-import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.services.procedure.formFilters.DefineVariableFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
@@ -82,14 +81,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         List<IPlayerModule> modules = getPlayers(context);
         // ! insertion au début
         modules.add(0, new ProcedurePlayer(getPortletContext()));
-
-
-        // Menubar modules
-        List<MenubarModule> menubarModules = this.getMenubarModules(context);
-
-        MenubarModule menubarModule = new ProcedureMenubarModule();
-        menubarModules.add(menubarModule);
-
 
         Map<String, FormFilter> formFilters = getFormFilters(context);
         formFilters.put(IfFilter.ID, new IfFilter());

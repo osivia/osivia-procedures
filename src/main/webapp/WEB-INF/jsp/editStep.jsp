@@ -49,6 +49,21 @@
 
 
 <form:form modelAttribute="form" action="${editStepUrl}" method="post" cssClass="form-horizontal" role="form">
+
+    <div class="form-group">
+        <div class="col-sm-12">
+            <div class="btn-group pull-right">
+                <c:if test="${!form.advancedMode}">
+                    <button type="submit" class="btn btn-default" name="changeMode">Mode avançé</button>
+                    <button type="submit" class="btn btn-info active" name="changeMode">Mode simplifié</button>
+                </c:if>
+                <c:if test="${form.advancedMode}">
+                    <button type="submit" class="btn btn-info active" name="changeMode">Mode avançé</button>
+                    <button type="submit" class="btn btn-default" name="changeMode">Mode simplifié</button>
+                </c:if>
+            </div>
+        </div>
+    </div>
     
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="<c:if test="${empty activeTab or ('form' ne activeTab && 'action' ne activeTab)}">active</c:if>"><a href="#Identification" role="tab" data-toggle="tab" class="no-ajax-link">Identification</a></li>
@@ -369,27 +384,9 @@
 	    </c:if>
 	</div>
     <hr>
-    <div class="row">
-        <div class="col-sm-1">
-            <button type="submit" class="btn btn-default" name="cancelStep">Annuler</button>
-        </div>
-        <c:if test="${!form.advancedMode}">
-            <div class="col-sm-1">
-                <button type="submit" class="btn btn-info" name="changeMode">Mode avançé</button>
-            </div>
-        </c:if>
-        <c:if test="${form.advancedMode}">
-            <div class="col-sm-1">
-                <button type="submit" class="btn btn-info" name="changeMode">Mode simplifié</button>
-            </div>
-        </c:if>
-        <div class="col-sm-1 pull-right">
-            <button type="submit" class="btn btn-danger pull-right" name="deleteStep">Supprimer</button>
-        </div>
-        <div class="col-sm-1 pull-right">
-            <button type="submit" class="btn btn-primary pull-right" name="saveStep">Sauvegarder</button>
-        </div>
-        <input type="submit" class="hidden" name="updateForm">
-        <input type="submit" class="hidden" name="selectField">
-    </div>
+    <button type="submit" class="btn btn-default" name="cancelStep">Annuler</button>
+	<button type="submit" class="btn btn-primary" name="saveStep">Sauvegarder</button>
+	<button type="submit" class="btn btn-danger pull-right" name="deleteStep">Supprimer</button>
+	<input type="submit" class="hidden" name="updateForm">
+	<input type="submit" class="hidden" name="selectField">
 </form:form>

@@ -29,6 +29,9 @@ li .filter-title:hover{
 	box-shadow: 10px 0px 5px rgba(217, 237, 247, 0.8) inset;
 }
 
+.tab-content{
+	padding-top: 10px;
+}
 
 .groupSelect-select2{
 	width: 100%;

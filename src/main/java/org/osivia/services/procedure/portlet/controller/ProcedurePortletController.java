@@ -239,10 +239,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         // final List<Profil> listeProfils = profil.findProfilByFiltre("(&(objectClass=groupOfNames)(cn=*" + filter + "*))");
         final List<Map<String, String>> listeProfils = new ArrayList<Map<String, String>>();
-        Map<String, String> demoGroup = new HashMap<String, String>(2);
-        demoGroup.put("cn", "demo-group");
-        demoGroup.put("displayName", "demo-group");
-        listeProfils.add(demoGroup);
+        listeProfils.add(buildProfilEntry("demo-group"));
         response.setContentType("application/json");
         try {
             final ObjectMapper mapper = new ObjectMapper();
@@ -339,15 +336,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (final PortletException e) {
             throw new PortletException(e);
         }
-    }
-
-    @ActionMapping(value = "editProcedure", params = "launchProcedure")
-    public void launchProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
-
-        form.setProcedureInstance(new ProcedureInstance());
-        form.getProcedureInstance().setProcedureModelWebId(form.getProcedureModel().getCurrentWebId());
-
-        response.setRenderParameter("action", "viewProcedure");
     }
 
     @ActionMapping(value = "editProcedure", params = "changeMode")
