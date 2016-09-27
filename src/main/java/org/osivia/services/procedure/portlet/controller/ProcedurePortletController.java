@@ -749,6 +749,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (fields != null) {
             for (final Field field : fields) {
                 if (field.getPath() != null) {
+                    field.setSelected(false);
                     // on ajoute la field dans la map avec le path parent comme clé
                     final String parentPath = field.getPath().length() > 1 ? StringUtils.substringBeforeLast(field.getPath(), ",") : StringUtils.EMPTY;
                     List<Field> parentFields = allFieldsMap.get(parentPath);
@@ -792,6 +793,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             value = "selectedFieldPath") String selectedFieldPath) {
 
         Field fieldByFieldPath = getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
+        fieldByFieldPath.setSelected(true);
         form.setSelectedField(fieldByFieldPath);
         response.setRenderParameter("action", "editStep");
         response.setRenderParameter("activeTab", "form");
@@ -799,18 +801,20 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     private Field getFieldByFieldPath(List<Field> fields, String selectedFieldPath) {
+        Field returnField = null;
         if (fields != null) {
             for (Field field : fields) {
+                field.setSelected(false);
                 if (StringUtils.equals(field.getPath(), selectedFieldPath)) {
-                    return field;
+                    returnField = field;
                 }
                 Field fieldByPath = getFieldByFieldPath(field.getFields(), selectedFieldPath);
                 if (fieldByPath != null) {
-                    return fieldByPath;
+                    returnField = fieldByPath;
                 }
             }
         }
-        return null;
+        return returnField;
     }
 
     @ActionMapping(value = "editAction", params = "addFilter")
