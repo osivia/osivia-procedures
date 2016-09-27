@@ -22,6 +22,10 @@
 	min-height: 30px;
 }
 
+.fieldSelected{
+    background-color: rgba(217, 237, 247, 0.8);
+}
+
 li .filter-title:hover{
 	border-color: rgba(217, 237, 247, 0.8);
 	border-style: solid;

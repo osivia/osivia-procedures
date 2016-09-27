@@ -5,30 +5,35 @@
 
 <c:choose>
 	<c:when test="${field.fieldSet eq true}">
-		<div class="col-sm-12">
-   			<div class="panel panel-default">
-	   			<div class="panel-heading">
-	   				${field.superLabel}
-	   			</div>
-	   			<div class="panel-body">
-	   				<ul class="procedure-sortable list-unstyled">
-						<c:set var="fieldBkp" value="${field}" scope="page"/>
-						<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
-							<li class="form-group">
+        <li class="form-group">
+			<div class="col-sm-12">
+			  <c:choose>
+			      <c:when test="${field.selected}">
+			          <div class="panel panel-info">
+			      </c:when>
+			      <c:otherwise>
+			          <div class="panel panel-default">
+			      </c:otherwise>
+			  </c:choose>
+		   			<div class="panel-heading">
+		   				${field.superLabel}
+		   			</div>
+		   			<div class="panel-body">
+		   				<ul class="procedure-sortable list-unstyled">
+							<c:set var="fieldBkp" value="${field}" scope="page"/>
+							<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
 								<c:set var="field" value="${nestedField}" scope="request"/>
 								<jsp:include page="editFields.jsp" />
-							</li>
-						</c:forEach>
-					</ul>
+							</c:forEach>
+						</ul>
+		   			</div>
 	   			</div>
    			</div>
-   		</div>
-
-		<c:forEach var="pathPart" items="${fieldBkp.path}" varStatus="status">
-			<c:set var="springPathNested" value="${status.first ? 'theSelectedStep' : springPathNested}.fields[${pathPart}]" scope="request"/>
-		</c:forEach>
-		
-		<form:hidden path="${springPathNested}.path"/>
+			<c:forEach var="pathPart" items="${fieldBkp.path}" varStatus="status">
+				<c:set var="springPathNested" value="${status.first ? 'theSelectedStep' : springPathNested}.fields[${pathPart}]" scope="request"/>
+			</c:forEach>
+			<form:hidden path="${springPathNested}.path"/>
+   		</li>
 	</c:when>
 	<c:otherwise>
 		<jsp:include page="editField.jsp" />
