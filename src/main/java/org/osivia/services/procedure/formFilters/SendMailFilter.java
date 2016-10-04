@@ -17,6 +17,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -152,6 +153,15 @@ public class SendMailFilter implements FormFilter {
         String mailBodyVar = context.getParamValue(executor, BODY_PARAMETER);
         boolean continueEvenIfError = BooleanUtils.toBoolean(context.getParamValue(executor, CONTINUE_PARAMETER));
 
+        // Body
+        StringBuilder body = new StringBuilder();
+        for (String line : StringUtils.split(mailBodyVar, System.lineSeparator())) {
+            body.append("<p>");
+            body.append(line);
+            body.append("</p>");
+        }
+
+
         // System properties
         Properties properties = System.getProperties();
 
@@ -185,7 +195,7 @@ public class SendMailFilter implements FormFilter {
             // Multipart
             Multipart multipart = new MimeMultipart();
             MimeBodyPart htmlPart = new MimeBodyPart();
-            htmlPart.setContent(mailBodyVar, "text/html; charset=UTF-8");
+            htmlPart.setContent(body.toString(), "text/html; charset=UTF-8");
             multipart.addBodyPart(htmlPart);
             message.setContent(multipart);
 
