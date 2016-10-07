@@ -26,8 +26,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import net.sf.json.JSONArray;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -35,6 +33,8 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -72,6 +72,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import net.sf.json.JSONArray;
 
 @Controller
 @SessionAttributes("form")
@@ -100,6 +101,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     /** Portlet config. */
     private PortletConfig portletConfig;
 
+    /** Portal URL factory. */
+    private final IPortalUrlFactory portalUrlFactory;
+
 
     /** procedureService */
     @Autowired
@@ -110,6 +114,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     public ProcedurePortletController() {
         super();
+
+        // Portal URL factory
+        this.portalUrlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
     }
 
     /**
@@ -173,6 +180,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @RenderMapping(params = "action=endStep")
     public String endStepView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+
+        // Close current tab URL
+        String closeUrl;
+        try {
+            closeUrl = this.portalUrlFactory.getDestroyCurrentPageUrl(portalControllerContext);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+        request.setAttribute("closeUrl", closeUrl);
+
         return VIEW_ENDSTEP;
     }
 
@@ -1077,6 +1096,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
         }
     }
+
 
     /**
      * {@inheritDoc}

@@ -2,6 +2,7 @@ package org.osivia.services.procedure.formFilters;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -15,10 +16,15 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 
 import com.sun.mail.smtp.SMTPTransport;
 
@@ -28,116 +34,191 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
-
+/**
+ * Send mail filter.
+ *
+ * @see FormFilter
+ */
 public class SendMailFilter implements FormFilter {
 
+    /** Identifier. */
     public static final String ID = "SendMailFilter";
 
-    public static final String LABEL_KEY = "SEND_MAIL_FILTER_LABEL";
+    /** Label internationalization key. */
+    private static final String LABEL_KEY = "SEND_MAIL_FILTER_LABEL";
+    /** Description internationalization key. */
+    private static final String DESCRIPTION_KEY = "SEND_MAIL_FILTER_DESCRIPTION";
 
-    public static final String DESCRIPTION_KEY = "SEND_MAIL_FILTER_DESCRIPTION";
+    /** Body parameter. */
+    private static final String BODY_PARAMETER = "body";
+    /** "Mail to" parameter. */
+    private static final String MAIL_TO_PARAMETER = "mailTo";
+    /** "Mail from" parameter. */
+    private static final String MAIL_FROM_PARAMETER = "mailFrom";
+    /** Mail object parameter. */
+    private static final String MAIL_OBJECT_PARAMETER = "mailObject";
+    /** Continue workflow even if an error is thrown indicator. */
+    private static final String CONTINUE_PARAMETER = "continue";
 
-    public static final String MAILFROM_MISSING_ERROR_KEY = "SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR";
 
-    public static final String MAILTO_MISSING_ERROR_KEY = "SEND_MAIL_FILTER_MAILTO_MISSING_ERROR";
-
-    private static final String body = "body";
-
-    private static final String mailTo = "mailTo";
-
-    private static final String mailFrom = "mailFrom";
-
-    private static final String mailObject = "mailObject";
-
+    /** Internationalization bundle factory. */
     private IBundleFactory bundleFactory;
+    /** Notification service. */
+    private INotificationsService notificationService;
 
 
+    /**
+     * Constructor.
+     */
     public SendMailFilter() {
-        final IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+        super();
+
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
-        bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+
+        // Notification service
+        this.notificationService = Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getId() {
         return ID;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getLabelKey() {
         return LABEL_KEY;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescriptionKey() {
         return DESCRIPTION_KEY;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, FormFilterParameterType> getParameters() {
         Map<String, FormFilterParameterType> parameters = new HashMap<String, FormFilterParameterType>();
-        parameters.put(mailTo, FormFilterParameterType.TEXT);
-        parameters.put(mailObject, FormFilterParameterType.TEXT);
-        parameters.put(mailFrom, FormFilterParameterType.TEXT);
-        parameters.put(body, FormFilterParameterType.TEXTAREA);
+        parameters.put(MAIL_TO_PARAMETER, FormFilterParameterType.TEXT);
+        parameters.put(MAIL_OBJECT_PARAMETER, FormFilterParameterType.TEXT);
+        parameters.put(MAIL_FROM_PARAMETER, FormFilterParameterType.TEXT);
+        parameters.put(BODY_PARAMETER, FormFilterParameterType.TEXTAREA);
+        parameters.put(CONTINUE_PARAMETER, FormFilterParameterType.BOOLEAN);
         return parameters;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean hasChildren() {
         return false;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException {
+        // Portal controller context
         PortalControllerContext portalControllerContext = context.getPortalControllerContext();
+        // Locale
+        Locale locale = portalControllerContext.getRequest().getLocale();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(locale);
 
-        String mailFromVar = context.getParamValue(executor, mailFrom);
-        String mailToVar = context.getParamValue(executor, mailTo);
-        String mailObjectVar = context.getParamValue(executor, mailObject);
-        String mailBodyVar = context.getParamValue(executor, body);
+        // Parameters
+        String mailFromVar = context.getParamValue(executor, MAIL_FROM_PARAMETER);
+        String mailToVar = context.getParamValue(executor, MAIL_TO_PARAMETER);
+        String mailObjectVar = context.getParamValue(executor, MAIL_OBJECT_PARAMETER);
+        String mailBodyVar = context.getParamValue(executor, BODY_PARAMETER);
+        boolean continueEvenIfError = BooleanUtils.toBoolean(context.getParamValue(executor, CONTINUE_PARAMETER));
 
-        // Récupération des propriétés systemes (configurés dans le portal.properties).
-        Properties props = System.getProperties();
+        // Body
+        StringBuilder body = new StringBuilder();
+        for (String line : StringUtils.split(mailBodyVar, System.lineSeparator())) {
+            body.append("<p>");
+            body.append(line);
+            body.append("</p>");
+        }
 
-        Session mailSession = Session.getInstance(props, null);
 
-        // Nouveau message
-        final MimeMessage msg = new MimeMessage(mailSession);
+        // System properties
+        Properties properties = System.getProperties();
 
-        InternetAddress mailFromAddr = null;
+        // Mail session
+        Session mailSession = Session.getInstance(properties, null);
+
+        // Message
+        MimeMessage message = new MimeMessage(mailSession);
+
+        // "Mail from" address
+        InternetAddress mailFromAddr;
         try {
             mailFromAddr = new InternetAddress(mailFromVar);
         } catch (AddressException e1) {
-            throw new FormFilterException(bundleFactory.getBundle(portalControllerContext.getRequest().getLocale()).getString(MAILFROM_MISSING_ERROR_KEY));
+            throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
         }
-        InternetAddress[] mailToAddr = null;
+
+        // "Mail to" address
+        InternetAddress[] mailToAddr;
         try {
             mailToAddr = InternetAddress.parse(mailToVar, false);
         } catch (AddressException e1) {
-            throw new FormFilterException(bundleFactory.getBundle(portalControllerContext.getRequest().getLocale()).getString(MAILTO_MISSING_ERROR_KEY));
+            throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILTO_MISSING_ERROR"));
         }
 
         try {
-            msg.setFrom(mailFromAddr);
-            msg.setRecipients(Message.RecipientType.TO, mailToAddr);
-            msg.setSubject(mailObjectVar, "UTF-8");
-            Multipart mp = new MimeMultipart();
+            message.setFrom(mailFromAddr);
+            message.setRecipients(Message.RecipientType.TO, mailToAddr);
+            message.setSubject(mailObjectVar, "UTF-8");
+
+            // Multipart
+            Multipart multipart = new MimeMultipart();
             MimeBodyPart htmlPart = new MimeBodyPart();
-            htmlPart.setContent(mailBodyVar, "text/html; charset=UTF-8");
-            mp.addBodyPart(htmlPart);
-            msg.setContent(mp);
-            msg.setSentDate(new Date());
+            htmlPart.setContent(body.toString(), "text/html; charset=UTF-8");
+            multipart.addBodyPart(htmlPart);
+            message.setContent(multipart);
+
+            message.setSentDate(new Date());
+
             InternetAddress[] replyToTab = new InternetAddress[1];
             replyToTab[0] = mailFromAddr;
-            msg.setReplyTo(replyToTab);
-            SMTPTransport t = (SMTPTransport) mailSession.getTransport();
-            t.connect();
-            t.sendMessage(msg, msg.getAllRecipients());
-            t.close();
-        } catch (MessagingException e) {
-            throw new FormFilterException(e);
-        }
+            message.setReplyTo(replyToTab);
 
+            // SMTP transport
+            SMTPTransport transport = (SMTPTransport) mailSession.getTransport();
+            transport.connect();
+            transport.sendMessage(message, message.getAllRecipients());
+            transport.close();
+        } catch (MessagingException e) {
+            if (continueEvenIfError) {
+                // Notification
+                this.notificationService.addSimpleNotification(portalControllerContext, bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR"),
+                        NotificationsType.ERROR);
+            } else {
+                // Exception
+                throw new FormFilterException(e);
+            }
+        }
     }
 }

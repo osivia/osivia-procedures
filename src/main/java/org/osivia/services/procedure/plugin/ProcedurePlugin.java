@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.services.procedure.formFilters.DefineVariableFilter;
+import org.osivia.services.procedure.formFilters.DeleteOnEndingFormFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
 import org.osivia.services.procedure.formFilters.SetActorFormFilter;
@@ -91,6 +92,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(SendMailFilter.ID, new SendMailFilter());
         formFilters.put(SetActorFormFilter.ID, new SetActorFormFilter());
         formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
+        formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
     }
 
 

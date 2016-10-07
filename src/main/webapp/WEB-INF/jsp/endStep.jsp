@@ -4,4 +4,13 @@
 
 <portlet:defineObjects />
 
-<h2>L'Étape est terminée</h2>
+<div class="alert alert-success">
+    <i class="glyphicons glyphicons-ok"></i>
+    <span>Votre demande a été soumise.</span>
+</div>
+
+<div>
+    <a href="${closeUrl}" class="btn btn-default">
+        <span>Terminer</span>
+    </a>
+</div>
