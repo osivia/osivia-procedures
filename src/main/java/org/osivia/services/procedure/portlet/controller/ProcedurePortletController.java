@@ -33,8 +33,6 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -101,9 +99,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     /** Portlet config. */
     private PortletConfig portletConfig;
 
-    /** Portal URL factory. */
-    private final IPortalUrlFactory portalUrlFactory;
-
 
     /** procedureService */
     @Autowired
@@ -112,9 +107,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     public ProcedurePortletController() {
         super();
-
-        // Portal URL factory
-        this.portalUrlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
     }
 
     /**
@@ -182,12 +174,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         // Close current tab URL
-        String closeUrl;
-        try {
-            closeUrl = this.portalUrlFactory.getDestroyCurrentPageUrl(portalControllerContext);
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }
+        String closeUrl = this.procedureService.getCloseUrl(portalControllerContext);
         request.setAttribute("closeUrl", closeUrl);
 
         return VIEW_ENDSTEP;

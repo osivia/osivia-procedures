@@ -5,12 +5,12 @@
 <portlet:defineObjects />
 
 <div class="alert alert-success">
-    <i class="glyphicons glyphicons-ok"></i>
+    <i class="glyphicons glyphicons-ok-sign"></i>
     <span>Votre demande a été soumise.</span>
 </div>
 
 <div>
-    <a href="${closeUrl}" class="btn btn-default">
-        <span>Terminer</span>
+    <a href="${closeUrl}" class="btn btn-default no-ajax-link">
+        <span>Fermer</span>
     </a>
 </div>
