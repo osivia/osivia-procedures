@@ -75,8 +75,15 @@ public class ProcedureModel {
             Variable var;
             for (final Object globalVariableO : globalVariablesList.list()) {
                 final PropertyMap globalVariable = (PropertyMap) globalVariableO;
+
+                Object varOptionsO = globalVariable.get("varOptions");
+                String varOptions = null;
+                if ((varOptionsO != null) && (varOptionsO.getClass() == String.class)) {
+                    varOptions = varOptionsO.toString();
+                }
+
                 var = new Variable(globalVariable.getString("name"), globalVariable.getString("label"), VariableTypesEnum.valueOf(StringUtils.defaultIfBlank(
-                        globalVariable.getString("type"), VariableTypesEnum.TEXT.name())), globalVariable.getString("varOptions"));
+                        globalVariable.getString("type"), VariableTypesEnum.TEXT.name())), varOptions);
                 getVariables().put(var.getName(), var);
             }
         }
