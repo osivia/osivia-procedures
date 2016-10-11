@@ -33,6 +33,8 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -99,6 +101,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     /** Portlet config. */
     private PortletConfig portletConfig;
 
+    /** Portal URL factory. */
+    private final IPortalUrlFactory portalUrlFactory;
+
 
     /** procedureService */
     @Autowired
@@ -107,6 +112,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     public ProcedurePortletController() {
         super();
+
+        // Portal URL factory
+        this.portalUrlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
     }
 
     /**
@@ -174,7 +182,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         // Close current tab URL
-        String closeUrl = this.procedureService.getCloseUrl(portalControllerContext);
+        String closeUrl;
+        try {
+            closeUrl = this.portalUrlFactory.getDestroyCurrentPageUrl(portalControllerContext);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
         request.setAttribute("closeUrl", closeUrl);
 
         return VIEW_ENDSTEP;
@@ -213,7 +226,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ModelAttribute(value = "procedureList")
     public List<ProcedureModel> getListProcedureModel(PortletRequest request, PortletResponse response) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        return procedureService.listProcedures(nuxeoController, getPortalUrlFactory(), getProcedurePath(request));
+        String procedurePath = getProcedurePath(request);
+        return procedurePath != null ? procedureService.listProcedures(nuxeoController, getPortalUrlFactory(), procedurePath) : null;
     }
 
     @ModelAttribute(value = "addUrl")
@@ -665,6 +679,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (editedField != null) {
             form.getProcedureModel().getVariables().put(editedField.getName(), new Variable(editedField));
         }
+        form.setProcedureInstance(null);
         response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("activeFormTab", "edit");
         response.setRenderParameter("action", "editStep");
@@ -757,7 +772,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 if (field.getPath() != null) {
                     field.setSelected(false);
                     // on ajoute la field dans la map avec le path parent comme clé
-                    final String parentPath = field.getPath().length() > 1 ? StringUtils.substringBeforeLast(field.getPath(), ",") : StringUtils.EMPTY;
+                    final String parentPath = StringUtils.split(field.getPath(), ',').length > 1 ? StringUtils.substringBeforeLast(field.getPath(), ",")
+                            : StringUtils.EMPTY;
                     List<Field> parentFields = allFieldsMap.get(parentPath);
                     if (parentFields == null) {
                         parentFields = new ArrayList<Field>();
@@ -799,7 +815,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             value = "selectedFieldPath") String selectedFieldPath) {
 
         Field fieldByFieldPath = getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
-        fieldByFieldPath.setSelected(true);
         form.setSelectedField(fieldByFieldPath);
         response.setRenderParameter("action", "editStep");
         response.setRenderParameter("activeTab", "form");
@@ -1019,11 +1034,42 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editStep", params = "deleteField")
     public void deleteField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        final String[] path = form.getSelectedField().getPath().split(",");
-        removeFieldByPath(form.getTheSelectedStep().getFields(), path);
+        if (removeFieldsByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedField().getPath())) {
+            updateFieldsPath(form.getTheSelectedStep().getFields(), StringUtils.EMPTY);
+        }
+
+        form.setSelectedField(null);
+
 
         response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("action", "editStep");
+    }
+
+    private void updateFieldsPath(List<Field> list, String currentPath) {
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                String newPath = currentPath.length() > 0 ? currentPath.concat(",").concat(String.valueOf(i)) : String.valueOf(i);
+                list.get(i).setPath(newPath);
+                updateFieldsPath(list.get(i).getFields(), newPath);
+            }
+        }
+    }
+
+    private boolean removeFieldsByFieldPath(List<Field> list, String fieldPath) {
+        if (list != null) {
+            ListIterator<Field> filtersI = list.listIterator();
+            while (filtersI.hasNext()) {
+                Field field = filtersI.next();
+                if (StringUtils.equals(field.getPath(), fieldPath)) {
+                    filtersI.remove();
+                    return true;
+                }
+                if (removeFieldsByFieldPath(field.getFields(), fieldPath)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void removeFieldByPath(List<Field> fields, String[] path) {
@@ -1074,7 +1120,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
         }
     }
-
 
     /**
      * {@inheritDoc}

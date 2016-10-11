@@ -13,9 +13,7 @@
     <script type="text/javascript" src="/osivia-portal-custom-web-assets/components/jquery-ui/i18n/datepicker-${datepickerLanguage}.js"></script>
 </c:if>
 
-<c:if test="${form.advancedMode}">
-    <portlet:resourceURL id="groupSearch" var="groupSearchUrl" ></portlet:resourceURL>
-</c:if>
+<portlet:resourceURL id="groupSearch" var="groupSearchUrl" ></portlet:resourceURL>
 
 <portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" ></portlet:resourceURL>
 
@@ -69,9 +67,7 @@
         <li role="presentation" class="<c:if test="${empty activeTab or ('form' ne activeTab && 'action' ne activeTab)}">active</c:if>"><a href="#Identification" role="tab" data-toggle="tab" class="no-ajax-link">Identification</a></li>
         <li role="presentation" class="<c:if test="${'form' eq activeTab}">active</c:if>"><a href="#Formulaire" role="tab" data-toggle="tab" class="no-ajax-link">Formulaire</a></li>
         <li role="presentation" class="<c:if test="${'action' eq activeTab}">active</c:if>"><a href="#Actions" role="tab" data-toggle="tab" class="no-ajax-link">Actions</a></li>
-        <c:if test="${form.advancedMode}">
-            <li role="presentation"><a href="#Métadonnées" role="tab" data-toggle="tab" class="no-ajax-link">Métadonnées</a></li>
-        </c:if>
+        <li role="presentation"><a href="#Métadonnées" role="tab" data-toggle="tab" class="no-ajax-link">Métadonnées</a></li>
     </ul>
 
     <div class="tab-content">
@@ -117,6 +113,13 @@
 	                            </div>
 	                        </div>
 	                        <div class="form-group">
+	                            <form:label path="newField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
+	                            <div class="col-sm-9">
+	                                <form:input path="newField.helpText" type="text" cssClass="form-control" placeholder="Label" />
+	                                <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
+	                            </div>
+	                        </div>
+	                        <div class="form-group">
 	                            <form:label path="newField.type" cssClass="col-sm-3 control-label">Type</form:label>
 	                            <div class="col-sm-9">
 	                                <form:select path="newField.type" cssClass="form-control">
@@ -124,11 +127,47 @@
 	                                </form:select>
 	                            </div>
 	                        </div>
-	                        <div class="form-group">
+	                        <div class="form-group hidden">
 	                            <form:label path="newField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
 	                            <div class="col-sm-9">
 	                                <form:input path="newField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
 	                            </div>
+	                        </div>
+	                        <div class="form-group hidden" id="formulaire-newField-list-editor">
+	                        	<label class="col-sm-3 control-label">Édition des options</label>
+		                        <div class="col-sm-9">
+		                        	<div class="form-group">
+	                        			<label for="formulaire-newField-list-editor-newOption-label" class="col-sm-3 control-label">Label</label>
+		                        		<div class="col-sm-9">
+											<input type="text" class="form-control" id="formulaire-newField-list-editor-newOption-label" placeholder="Label">
+		                        		</div>
+		                        	</div>
+		                        	<div class="form-group">
+	                        			<label for="formulaire-newField-list-editor-newOption-value" class="col-sm-3 control-label">Valeur</label>
+		                        		<div class="col-sm-9">
+											<input type="text" class="form-control" id="formulaire-newField-list-editor-newOption-value" placeholder="Valeur">
+		                        		</div>
+		                        	</div>
+		                        	<div class="form-group">
+		                        		<div class="col-sm-12">
+		                        			<button id="formulaire-newField-list-editor-addOption" class="btn btn-default pull-right" type="button">Ajouter une option</button>
+		                        		</div>
+		                        	</div>
+		                        	<div id="formulaire-newField-list-editor-optionList" class="form-group">
+			                        	<table class="table table-condensed">
+			                        		<thead>
+			                        			<tr>
+			                        				<th>Label</th>
+			                        				<th>Valeur</th>
+			                        				<th></th>
+			                        			</tr>
+			                        		</thead>
+			                        		<tbody>
+			                        		
+			                        		</tbody>
+			                        	</table>
+		                        	</div>
+		                        </div>
 	                        </div>
 	                        <div class="form-group">
 	                           <div class="col-sm-offset-3 col-sm-9">
@@ -172,16 +211,23 @@
                                     <div class="form-group">
                                       <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
                                       <div class="col-sm-9">
-                                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" />
+                                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" disabled="true"/>
                                       </div>
                                      </div>
                                     <div class="form-group">
 		                                  <form:label path="selectedField.label" cssClass="col-sm-3 control-label">Label</form:label>
 		                                  <div class="col-sm-9">
-		                                      <form:input path="selectedField.superLabel" type="text" cssClass="form-control" placeholder="Label" />
+		                                      <form:input path="selectedField.label" type="text" cssClass="form-control" placeholder="Label" />
+		                                      <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
 		                                  </div>
 		                             </div>
-		                             
+		                             <div class="form-group">
+			                            <form:label path="selectedField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
+			                            <div class="col-sm-9">
+			                                <form:input path="selectedField.helpText" type="text" cssClass="form-control" placeholder="Label" />
+			                                <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
+			                            </div>
+			                        </div>
                                 </c:if>
                                 <c:if test="${form.selectedField.fieldSet ne true}">
 	                               <div class="form-group">
@@ -194,8 +240,16 @@
 					                      <form:label path="selectedField.label" cssClass="col-sm-3 control-label">Label</form:label>
 					                      <div class="col-sm-9">
 					                          <form:input path="selectedField.label" type="text" cssClass="form-control" placeholder="Label" />
+					                          <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
 					                      </div>
 				                     </div>
+				                     <div class="form-group">
+			                            <form:label path="selectedField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
+			                            <div class="col-sm-9">
+			                                <form:input path="selectedField.helpText" type="text" cssClass="form-control" placeholder="Label" />
+			                                <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
+			                            </div>
+			                        </div>
 				                     <div class="form-group">
 					                      <form:label path="selectedField.type" cssClass="col-sm-3 control-label">Type</form:label>
 					                      <div class="col-sm-9">
@@ -204,12 +258,49 @@
 					                          </form:select>
 					                      </div>
 				                     </div>
-				                     <div class="form-group">
+				                     <div class="form-group hidden">
 					                      <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
 					                      <div class="col-sm-9">
 					                        <form:input path="selectedField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
 					                      </div>
 					                  </div>
+					                  
+					                  <div class="form-group hidden" id="formulaire-selectedField-list-editor">
+			                        	<label class="col-sm-3 control-label">Édition des options</label>
+				                        <div class="col-sm-9">
+				                        	<div class="form-group">
+			                        			<label for="formulaire-selectedField-list-editor-newOption-label" class="col-sm-3 control-label">Label</label>
+				                        		<div class="col-sm-9">
+													<input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-label" placeholder="Label">
+				                        		</div>
+				                        	</div>
+				                        	<div class="form-group">
+			                        			<label for="formulaire-selectedField-list-editor-newOption-value" class="col-sm-3 control-label">Valeur</label>
+				                        		<div class="col-sm-9">
+													<input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-value" placeholder="Valeur">
+				                        		</div>
+				                        	</div>
+				                        	<div class="form-group">
+				                        		<div class="col-sm-12">
+				                        			<button id="formulaire-selectedField-list-editor-addOption" class="btn btn-default pull-right" type="button">Ajouter une option</button>
+				                        		</div>
+				                        	</div>
+				                        	<div id="formulaire-selectedField-list-editor-optionList" class="form-group">
+					                        	<table class="table table-condensed">
+					                        		<thead>
+					                        			<tr>
+					                        				<th>Label</th>
+					                        				<th>Valeur</th>
+					                        				<th></th>
+					                        			</tr>
+					                        		</thead>
+					                        		<tbody>
+					                        		
+					                        		</tbody>
+					                        	</table>
+				                        	</div>
+				                        </div>
+			                        </div>
                                       <div class="form-group">
 			                               <div class="col-sm-offset-3 col-sm-9">
 			                                   <div class="checkbox">
@@ -242,18 +333,16 @@
 		       <div id="procedure-sortable" class="col-sm-8">
 	               <ul class="procedure-sortable list-unstyled">
 	                   <c:forEach var="field" items="${form.theSelectedStep.fields}" varStatus="status">
-	                      <li class="form-group">
-	                          <c:choose>
-	                            <c:when test="${field.fieldSet eq true}">
-	                              <c:set var="field" value="${field}" scope="request"/>
-	                              <jsp:include page="editFields.jsp"/>
-	                            </c:when>
-	                            <c:otherwise>
-	                              <c:set var="field" value="${field}" scope="request"/>
-	                              <jsp:include page="editField.jsp"/>
-	                            </c:otherwise>
-	                          </c:choose>
-	                      </li>
+                          <c:choose>
+                            <c:when test="${field.fieldSet eq true}">
+                              <c:set var="field" value="${field}" scope="request"/>
+                              <jsp:include page="editFields.jsp"/>
+                            </c:when>
+                            <c:otherwise>
+                              <c:set var="field" value="${field}" scope="request"/>
+                              <jsp:include page="editField.jsp"/>
+                            </c:otherwise>
+                          </c:choose>
 	                   </c:forEach>
 	                   <form:input path="selectedStep" type="hidden" name="selectedStep"/>
 	               </ul>
@@ -311,8 +400,8 @@
 	           </div>
            </div>
 	    </div>
-	    <c:if test="${form.advancedMode}">
-		    <div role="tabpanel" class="tab-pane" id="Métadonnées">
+	    <div role="tabpanel" class="tab-pane" id="Métadonnées">
+		    <c:if test="${form.advancedMode}">
 		       <div class="form-group">
 		           <div class="col-sm-offset-2 col-sm-1">
 			           <div class="checkbox">
@@ -366,18 +455,22 @@
 	                   <form:input path="theSelectedStep.actionIdDefault" cssClass="form-control" />
 	               </div>
 	           </div>
-		       <ul class="list-unstyled">
-	               <li class="form-group">
-	                   <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Groupes</form:label>
-	                   <div class="col-sm-10">
-	                       <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
-	                           <form:options items="${form.theSelectedStep.groups}" />
-	                       </form:select>
-	                   </div>
-	               </li>
-	           </ul>
-		    </div>
-	    </c:if>
+		    </c:if>
+            <div class="form-group">
+                <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Groupes</form:label>
+                <div class="col-sm-10">
+                    <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
+                        <form:options items="${form.theSelectedStep.groups}" />
+                    </form:select>
+                </div>
+            </div>
+            <div class="form-group">
+                <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Message de fin d'étape</form:label>
+                <div class="col-sm-10">
+                    <form:input path="theSelectedStep.endStepMsg" cssClass="form-control" />
+                </div>
+            </div>
+	    </div>
 	</div>
     <hr>
     <button type="submit" class="btn btn-default" name="cancelStep">Annuler</button>

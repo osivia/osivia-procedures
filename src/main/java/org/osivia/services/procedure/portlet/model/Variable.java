@@ -1,8 +1,5 @@
 package org.osivia.services.procedure.portlet.model;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -24,7 +21,7 @@ public class Variable {
     private VariableTypesEnum type;
 
     @JsonProperty("varOptions")
-    private List<String> varOptions;
+    private String varOptions;
 
     public Variable() {
     }
@@ -33,20 +30,17 @@ public class Variable {
         this.name = field.getName();
         this.label = field.getLabel();
         this.type = field.getType();
-        String varOptions = field.getVarOptions();
-        if (varOptions != null) {
-            this.varOptions = Arrays.asList(varOptions.split(","));
-        }
+        this.varOptions = field.getVarOptions();
     }
 
     public Variable(AddField field) {
         this.name = field.getVariableName();
         this.label = field.getLabel();
         this.type = field.getType();
-        this.varOptions = Arrays.asList(field.getVarOptions().split(","));
+        this.varOptions = field.getVarOptions();
     }
 
-    public Variable(String name, String label, VariableTypesEnum type, List<String> varOptions) {
+    public Variable(String name, String label, VariableTypesEnum type, String varOptions) {
         this.name = name;
         this.label = label;
         this.type = type;
@@ -115,20 +109,20 @@ public class Variable {
 
     /**
      * Getter for varOptions.
-     *
+     * 
      * @return the varOptions
      */
-    public List<String> getVarOptions() {
+    public String getVarOptions() {
         return varOptions;
     }
 
 
     /**
      * Setter for varOptions.
-     *
+     * 
      * @param varOptions the varOptions to set
      */
-    public void setVarOptions(List<String> varOptions) {
+    public void setVarOptions(String varOptions) {
         this.varOptions = varOptions;
     }
 

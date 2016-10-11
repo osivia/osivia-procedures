@@ -9,6 +9,7 @@
     <portlet>
         <portlet-name>osivia-services-procedure</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <display-name>Osivia services procedure portlet</display-name>
         
         <init-param>
 			<name>contextConfigLocation</name>

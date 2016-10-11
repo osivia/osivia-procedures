@@ -38,10 +38,8 @@
         
             <ul class="procedure-sortable list-unstyled">
                 <c:forEach var="field" items="${form.theCurrentStep.fields}" varStatus="status">
-                    <li class="form-group">
-                        <c:set var="field" value="${field}" scope="request"/>
-                        <jsp:include page="editFields.jsp"/>
-                    </li>
+	                <c:set var="field" value="${field}" scope="request"/>
+	                <jsp:include page="editFields.jsp"/>
                 </c:forEach>
             </ul>
         </div>

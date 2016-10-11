@@ -65,6 +65,10 @@ public class Field implements Comparable<Field> {
     @JsonIgnore
     private boolean selected;
 
+    /** helpText */
+    @JsonProperty("helpText")
+    private String helpText;
+
 
     public Field() {
     }
@@ -75,13 +79,14 @@ public class Field implements Comparable<Field> {
         setSuperLabel(propertyMap.getString("superLabel"));
         setFieldSet(BooleanUtils.isTrue(propertyMap.getBoolean("isFieldSet")));
         setPath(propertyMap.getString("path"));
+        setHelpText(propertyMap.getString("helpText"));
 
         final Variable variable = variables.get(propertyMap.getString("variableName"));
         if (variable != null) {
             setName(variable.getName());
             setLabel(variable.getLabel());
             setType(variable.getType());
-            setVarOptions(StringUtils.join(variable.getVarOptions(), ","));
+            setVarOptions(variable.getVarOptions());
         }
     }
 
@@ -100,6 +105,7 @@ public class Field implements Comparable<Field> {
         setLabel(addField.getLabel());
         setType(addField.getType());
         setVarOptions(addField.getVarOptions());
+        setHelpText(addField.getHelpText());
     }
 
     /**
@@ -120,66 +126,50 @@ public class Field implements Comparable<Field> {
         this.isInput = isInput;
     }
 
-//    @Override
-//    public int compareTo(Field field) {
-//
-//        int returnValue;
-//        final String[] pathArray = StringUtils.split(getPath(), ',');
-//        final String[] comparedPathArray = StringUtils.split(field.getPath(), ',');
-//        if ((pathArray.length > 0) && (comparedPathArray.length > 0)) {
-//            final Integer order = Integer.parseInt(pathArray[pathArray.length - 1]);
-//            final Integer comparedOrder = Integer.parseInt(comparedPathArray[comparedPathArray.length - 1]);
-//            returnValue = order.compareTo(comparedOrder);
-//        } else {
-//            returnValue = 0;
-//        }
-//
-//        return returnValue;
-//    }
-
+    @Override
     public int compareTo(Field field) {
-    	int returnValue;
-    	
-    	int index=0;
-    	final String[] pathArray = StringUtils.split(getPath(), ',');
-    	final String[] comparedPathArray = StringUtils.split(field.getPath(), ',');
-    	Integer pathPart = Integer.parseInt(pathArray[index]);
-    	Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
-    	returnValue = pathPart.compareTo(comparedPathPart);
-    	boolean deeperPath = pathArray.length>index+1;
-		boolean deeperComparedPath = comparedPathArray.length>index+1;
-		if(returnValue==0 && (deeperPath ||deeperComparedPath)){
-    		if(deeperPath && !deeperComparedPath){
-    			returnValue = 1;
-    		}else if(!deeperPath && deeperComparedPath){
-    			returnValue = -1;
-    		}else{
-    			index++;
-    			returnValue =compare(pathArray, comparedPathArray, index);
-    		}
-    	}
-    	return returnValue;
+        int returnValue;
+
+        int index=0;
+        final String[] pathArray = StringUtils.split(getPath(), ',');
+        final String[] comparedPathArray = StringUtils.split(field.getPath(), ',');
+        Integer pathPart = Integer.parseInt(pathArray[index]);
+        Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
+        returnValue = pathPart.compareTo(comparedPathPart);
+        boolean deeperPath = pathArray.length>(index+1);
+        boolean deeperComparedPath = comparedPathArray.length>(index+1);
+        if((returnValue==0) && (deeperPath ||deeperComparedPath)){
+            if(deeperPath && !deeperComparedPath){
+                returnValue = 1;
+            }else if(!deeperPath && deeperComparedPath){
+                returnValue = -1;
+            }else{
+                index++;
+                returnValue =compare(pathArray, comparedPathArray, index);
+            }
+        }
+        return returnValue;
     }
-    
+
     private int compare(String[] pathArray, String[] comparedPathArray, int index){
-    	Integer pathPart = Integer.parseInt(pathArray[index]);
-    	Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
-    	int returnValue = pathPart.compareTo(comparedPathPart);
-    	boolean deeperPath = pathArray.length>index+1;
-		boolean deeperComparedPath = comparedPathArray.length>index+1;
-		if(returnValue==0 && (deeperPath ||deeperComparedPath)){
-    		if(deeperPath && !deeperComparedPath){
-    			returnValue = 1;
-    		}else if(!deeperPath && deeperComparedPath){
-    			returnValue = -1;
-    		}else{
-    			index++;
-    			returnValue =compare(pathArray, comparedPathArray, index);
-    		}
-    	}
-    	return returnValue;
+        Integer pathPart = Integer.parseInt(pathArray[index]);
+        Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
+        int returnValue = pathPart.compareTo(comparedPathPart);
+        boolean deeperPath = pathArray.length>(index+1);
+        boolean deeperComparedPath = comparedPathArray.length>(index+1);
+        if((returnValue==0) && (deeperPath ||deeperComparedPath)){
+            if(deeperPath && !deeperComparedPath){
+                returnValue = 1;
+            }else if(!deeperPath && deeperComparedPath){
+                returnValue = -1;
+            }else{
+                index++;
+                returnValue =compare(pathArray, comparedPathArray, index);
+            }
+        }
+        return returnValue;
     }
-    
+
 
     /**
      * Getter for name.
@@ -359,7 +349,7 @@ public class Field implements Comparable<Field> {
 
     /**
      * Getter for selected.
-     * 
+     *
      * @return the selected
      */
     public boolean isSelected() {
@@ -369,11 +359,31 @@ public class Field implements Comparable<Field> {
 
     /**
      * Setter for selected.
-     * 
+     *
      * @param selected the selected to set
      */
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+
+    /**
+     * Getter for helpText.
+     *
+     * @return the helpText
+     */
+    public String getHelpText() {
+        return helpText;
+    }
+
+
+    /**
+     * Setter for helpText.
+     *
+     * @param helpText the helpText to set
+     */
+    public void setHelpText(String helpText) {
+        this.helpText = helpText;
     }
 
 }

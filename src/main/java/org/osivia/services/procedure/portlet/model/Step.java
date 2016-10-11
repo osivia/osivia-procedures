@@ -84,6 +84,10 @@ public class Step implements Comparable<Step> {
     @JsonProperty("actionIdDefault")
     private String actionIdDefault;
 
+    /** endStepMsg */
+    @JsonProperty("endStepMsg")
+    private String endStepMsg;
+
 
     public Step() {
         fields = new ArrayList<Field>();
@@ -156,6 +160,7 @@ public class Step implements Comparable<Step> {
         setActionIdNo(stepM.getString("actionIdNo"));
         setActionIdDefault(stepM.getString("actionIdDefault"));
         setActionIdClosable(stepM.getString("actionIdClosable"));
+        setEndStepMsg(stepM.getString("endStepMsg"));
     }
 
 
@@ -307,7 +312,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Getter for oldReference.
-     * 
+     *
      * @return the oldReference
      */
     public String getOldReference() {
@@ -317,7 +322,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Setter for oldReference.
-     * 
+     *
      * @param oldReference the oldReference to set
      */
     public void setOldReference(String oldReference) {
@@ -480,7 +485,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Getter for closable.
-     * 
+     *
      * @return the closable
      */
     public Boolean getClosable() {
@@ -490,7 +495,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Setter for closable.
-     * 
+     *
      * @param closable the closable to set
      */
     public void setClosable(Boolean closable) {
@@ -500,7 +505,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Getter for actionIdClosable.
-     * 
+     *
      * @return the actionIdClosable
      */
     public String getActionIdClosable() {
@@ -510,11 +515,31 @@ public class Step implements Comparable<Step> {
 
     /**
      * Setter for actionIdClosable.
-     * 
+     *
      * @param actionIdClosable the actionIdClosable to set
      */
     public void setActionIdClosable(String actionIdClosable) {
         this.actionIdClosable = actionIdClosable;
+    }
+
+
+    /**
+     * Getter for endStepMsg.
+     *
+     * @return the endStepMsg
+     */
+    public String getEndStepMsg() {
+        return endStepMsg;
+    }
+
+
+    /**
+     * Setter for endStepMsg.
+     *
+     * @param endStepMsg the endStepMsg to set
+     */
+    public void setEndStepMsg(String endStepMsg) {
+        this.endStepMsg = endStepMsg;
     }
 
 }

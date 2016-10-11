@@ -8,9 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
+
+import net.sf.json.JSONArray;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -18,12 +21,8 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
-import org.osivia.portal.api.windows.PortalWindow;
-import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.procedure.portlet.adapter.ProcedureJSONAdapter;
 import org.osivia.services.procedure.portlet.command.CreateDocumentCommand;
 import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
@@ -52,25 +51,9 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyEntry;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyHelper;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
-import net.sf.json.JSONArray;
 
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
-
-    /** Portal URL factory. */
-    private final IPortalUrlFactory portalUrlFactory;
-
-
-    /**
-     * Constructor.
-     */
-    public ProcedureServiceImpl() {
-        super();
-
-        // Portal URL factory
-        this.portalUrlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
-    }
-
 
     @Override
     public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String Procedurepath) throws PortletException {
@@ -298,15 +281,27 @@ public class ProcedureServiceImpl implements IProcedureService {
 
         final Map<String, Variable> variables = form.getProcedureModel().getVariables();
 
-        List<String> varOptions;
+        List<Map<String, String>> varOptions;
         for (final Entry<String, Variable> entryV : variables.entrySet()) {
             if (VariableTypesEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
-                varOptions = new ArrayList<String>();
-                final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions().get(0));
+                varOptions = new ArrayList<Map<String, String>>();
+                final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions());
+                Map<String, String> vocabEntry;
                 for (final VocabularyEntry entry : vocabularyEntry.getChildren().values()) {
-                    varOptions.add(entry.getLabel());
+                    vocabEntry =new HashMap<String, String>(2);
+                    vocabEntry.put("label", entry.getLabel());
+                    vocabEntry.put("value", entry.getId());
+                    varOptions.add(vocabEntry);
                 }
-                entryV.getValue().setVarOptions(varOptions);
+                try {
+                    entryV.getValue().setVarOptions(ProcedureJSONAdapter.getInstance().toJSON(varOptions));
+                } catch (JsonGenerationException e) {
+                    throw new PortletException(e);
+                } catch (JsonMappingException e) {
+                    throw new PortletException(e);
+                } catch (IOException e) {
+                    throw new PortletException(e);
+                }
             }
         }
     }
@@ -330,37 +325,6 @@ public class ProcedureServiceImpl implements IProcedureService {
 
 
         return values;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Portal window
-        PortalWindow window = WindowFactory.getWindow(request);
-
-        // Contextualization indicator
-        boolean contextualization = "1".equals(window.getProperty("osivia.cms.contextualization"));
-
-        // Close URL
-        String url;
-        try {
-            if (contextualization) {
-                // Destroy current page URL
-                url = this.portalUrlFactory.getDestroyCurrentPageUrl(portalControllerContext);
-            } else {
-                // Back URL
-                url = this.portalUrlFactory.getBackURL(portalControllerContext, false);
-            }
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }
-
-        return url;
     }
 
 }

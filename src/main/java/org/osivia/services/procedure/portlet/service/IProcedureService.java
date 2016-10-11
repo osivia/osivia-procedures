@@ -4,14 +4,14 @@ import java.util.List;
 
 import javax.portlet.PortletException;
 
-import org.osivia.portal.api.context.PortalControllerContext;
+import net.sf.json.JSONArray;
+
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import net.sf.json.JSONArray;
 
 
 /**
@@ -100,15 +100,4 @@ public interface IProcedureService {
      * @throws PortletException
      */
     public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String procedurePath) throws PortletException;
-
-
-    /**
-     * Get close procedure URL.
-     * 
-     * @param portalControllerContext portal controller context
-     * @return URL
-     * @throws PortletException
-     */
-    String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException;
-
 }
