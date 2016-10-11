@@ -20,8 +20,8 @@
     <portlet>
         <portlet-name>osivia-services-procedurePlugin</portlet-name>
     </portlet>
-
-    <service>
+    
+	<service>
         <service-name>CustomizationModulesRepository</service-name>
         <service-class>org.osivia.portal.api.customization.ICustomizationModulesRepository</service-class>
         <service-ref>osivia:service=CustomizationService</service-ref>

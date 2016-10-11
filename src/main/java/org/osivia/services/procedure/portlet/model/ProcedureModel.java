@@ -75,15 +75,8 @@ public class ProcedureModel {
             Variable var;
             for (final Object globalVariableO : globalVariablesList.list()) {
                 final PropertyMap globalVariable = (PropertyMap) globalVariableO;
-
-                final List<Object> varOptionsPL = globalVariable.getList("varOptions").list();
-                final List<String> varOptionsL = new ArrayList<String>(varOptionsPL.size());
-                for (final Object varOption : varOptionsPL) {
-                    varOptionsL.add((String) varOption);
-                }
-
-                var = new Variable(globalVariable.getString("name"), globalVariable.getString("label"), VariableTypesEnum.valueOf(globalVariable
-                        .getString("type")), varOptionsL);
+                var = new Variable(globalVariable.getString("name"), globalVariable.getString("label"), VariableTypesEnum.valueOf(StringUtils.defaultIfBlank(
+                        globalVariable.getString("type"), VariableTypesEnum.TEXT.name())), globalVariable.getString("varOptions"));
                 getVariables().put(var.getName(), var);
             }
         }
@@ -287,7 +280,7 @@ public class ProcedureModel {
     public void setOriginalDocument(Document originalDocument) {
         this.originalDocument = originalDocument;
     }
-    
+
     /**
      * Getter for currentWebId.
      *

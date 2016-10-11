@@ -15,16 +15,22 @@ public class AddField {
     /** label */
     private String label;
 
+    /** varOptions */
     private String varOptions;
 
+    /** isInput */
     private boolean isInput;
 
+    /** isRequired */
     private boolean isRequired;
+
+    /** helpText */
+    private String helpText;
 
 
     /**
      * Getter for isInput.
-     * 
+     *
      * @return the isInput
      */
     public boolean isInput() {
@@ -34,7 +40,7 @@ public class AddField {
 
     /**
      * Setter for isInput.
-     * 
+     *
      * @param isInput the isInput to set
      */
     public void setInput(boolean isInput) {
@@ -44,7 +50,7 @@ public class AddField {
 
     /**
      * Getter for isRequired.
-     * 
+     *
      * @return the isRequired
      */
     public boolean isRequired() {
@@ -54,7 +60,7 @@ public class AddField {
 
     /**
      * Setter for isRequired.
-     * 
+     *
      * @param isRequired the isRequired to set
      */
     public void setRequired(boolean isRequired) {
@@ -122,5 +128,25 @@ public class AddField {
 
     public void setVarOptions(String varOptions) {
         this.varOptions = varOptions;
+    }
+
+
+    /**
+     * Getter for helpText.
+     *
+     * @return the helpText
+     */
+    public String getHelpText() {
+        return helpText;
+    }
+
+
+    /**
+     * Setter for helpText.
+     *
+     * @param helpText the helpText to set
+     */
+    public void setHelpText(String helpText) {
+        this.helpText = helpText;
     }
 }

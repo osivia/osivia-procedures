@@ -113,15 +113,11 @@
 				                </div>
 				            </div>
 				        </c:forEach>
-				        <div class="row">
-					        <div class="col-sm-1 pull-right">
-			                   <button type="submit" name="deleteFilter" class="btn btn-default pull-right">
-						            <i class="glyphicons glyphicons-bin"></i>
-						        </button>
-					        </div>
-					        <div class="col-sm-1 pull-right">
-		                       <button type="submit" name="editFilter" class="btn btn-default pull-right">Modifier</button>
-		                   </div>
+				        <div class="pull-right">
+	                       <button type="submit" name="editFilter" class="btn btn-default">Modifier</button>
+		                   <button type="submit" name="deleteFilter" class="btn btn-default">
+					            <i class="glyphicons glyphicons-bin"></i>
+					        </button>
 	                   </div>
 	                </div>
                 </c:if>
@@ -140,15 +136,9 @@
 		</div>
 	</div>
     <hr>
-	<div class="row">
-	    <div class="col-sm-1">
-            <button type="submit" class="btn btn-default" name="cancelAction">Annuler</button>
-        </div>
-		<div class="col-sm-1 pull-right">
-			<button type="submit" class="btn btn-primary pull-right" name="saveAction">Sauvegarder</button>
-		</div>
-		<input type="submit" class="hidden" name="updateForm">
-		<input type="submit" class="hidden" name="selectFilter">
-	</div>
+    <button type="submit" class="btn btn-default" name="cancelAction">Annuler</button>
+	<button type="submit" class="btn btn-primary" name="saveAction">Sauvegarder</button>
+	<input type="submit" class="hidden" name="updateForm">
+	<input type="submit" class="hidden" name="selectFilter">
 
 </form:form>

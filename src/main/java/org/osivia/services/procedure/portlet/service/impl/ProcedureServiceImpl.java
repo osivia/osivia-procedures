@@ -12,6 +12,8 @@ import javax.portlet.PortletException;
 import net.sf.json.JSONArray;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -279,15 +281,27 @@ public class ProcedureServiceImpl implements IProcedureService {
 
         final Map<String, Variable> variables = form.getProcedureModel().getVariables();
 
-        List<String> varOptions;
+        List<Map<String, String>> varOptions;
         for (final Entry<String, Variable> entryV : variables.entrySet()) {
             if (VariableTypesEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
-                varOptions = new ArrayList<String>();
-                final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions().get(0));
+                varOptions = new ArrayList<Map<String, String>>();
+                final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions());
+                Map<String, String> vocabEntry;
                 for (final VocabularyEntry entry : vocabularyEntry.getChildren().values()) {
-                    varOptions.add(entry.getLabel());
+                    vocabEntry =new HashMap<String, String>(2);
+                    vocabEntry.put("label", entry.getLabel());
+                    vocabEntry.put("value", entry.getId());
+                    varOptions.add(vocabEntry);
                 }
-                entryV.getValue().setVarOptions(varOptions);
+                try {
+                    entryV.getValue().setVarOptions(ProcedureJSONAdapter.getInstance().toJSON(varOptions));
+                } catch (JsonGenerationException e) {
+                    throw new PortletException(e);
+                } catch (JsonMappingException e) {
+                    throw new PortletException(e);
+                } catch (IOException e) {
+                    throw new PortletException(e);
+                }
             }
         }
     }

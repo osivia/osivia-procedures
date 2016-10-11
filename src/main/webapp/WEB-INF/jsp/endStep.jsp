@@ -4,10 +4,12 @@
 
 <portlet:defineObjects />
 
-<div class="alert alert-success">
-    <i class="glyphicons glyphicons-ok"></i>
-    <span>Votre demande a été soumise.</span>
-</div>
+<c:if test="${not empty form.theSelectedStep.endStepMsg}">
+	<h2>${form.theSelectedStep.endStepMsg}</h2>
+</c:if>
+<c:if test="${empty form.theSelectedStep.endStepMsg}">
+	<h2>L'Étape est terminée</h2>
+</c:if>
 
 <div>
     <a href="${closeUrl}" class="btn btn-default">

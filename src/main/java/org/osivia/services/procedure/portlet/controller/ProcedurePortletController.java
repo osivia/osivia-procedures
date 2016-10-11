@@ -26,6 +26,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import net.sf.json.JSONArray;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -72,7 +74,6 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
-import net.sf.json.JSONArray;
 
 @Controller
 @SessionAttributes("form")
@@ -109,8 +110,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @Autowired
     private IProcedureService procedureService;
 
-    //    @Autowired
-    //    private Profil profil;
 
     public ProcedurePortletController() {
         super();
@@ -228,7 +227,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ModelAttribute(value = "procedureList")
     public List<ProcedureModel> getListProcedureModel(PortletRequest request, PortletResponse response) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        return procedureService.listProcedures(nuxeoController, getPortalUrlFactory(), getProcedurePath(request));
+        String procedurePath = getProcedurePath(request);
+        return procedurePath != null ? procedureService.listProcedures(nuxeoController, getPortalUrlFactory(), procedurePath) : null;
     }
 
     @ModelAttribute(value = "addUrl")
@@ -364,15 +364,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (final PortletException e) {
             throw new PortletException(e);
         }
-    }
-
-    @ActionMapping(value = "editProcedure", params = "launchProcedure")
-    public void launchProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
-
-        form.setProcedureInstance(new ProcedureInstance());
-        form.getProcedureInstance().setProcedureModelWebId(form.getProcedureModel().getCurrentWebId());
-
-        response.setRenderParameter("action", "viewProcedure");
     }
 
     @ActionMapping(value = "editProcedure", params = "changeMode")
@@ -695,6 +686,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (editedField != null) {
             form.getProcedureModel().getVariables().put(editedField.getName(), new Variable(editedField));
         }
+        form.setProcedureInstance(null);
         response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("activeFormTab", "edit");
         response.setRenderParameter("action", "editStep");
@@ -785,8 +777,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (fields != null) {
             for (final Field field : fields) {
                 if (field.getPath() != null) {
+                    field.setSelected(false);
                     // on ajoute la field dans la map avec le path parent comme clé
-                    final String parentPath = field.getPath().length() > 1 ? StringUtils.substringBeforeLast(field.getPath(), ",") : StringUtils.EMPTY;
+                    final String parentPath = StringUtils.split(field.getPath(), ',').length > 1 ? StringUtils.substringBeforeLast(field.getPath(), ",")
+                            : StringUtils.EMPTY;
                     List<Field> parentFields = allFieldsMap.get(parentPath);
                     if (parentFields == null) {
                         parentFields = new ArrayList<Field>();
@@ -835,18 +829,20 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     private Field getFieldByFieldPath(List<Field> fields, String selectedFieldPath) {
+        Field returnField = null;
         if (fields != null) {
             for (Field field : fields) {
+                field.setSelected(false);
                 if (StringUtils.equals(field.getPath(), selectedFieldPath)) {
-                    return field;
+                    returnField = field;
                 }
                 Field fieldByPath = getFieldByFieldPath(field.getFields(), selectedFieldPath);
                 if (fieldByPath != null) {
-                    return fieldByPath;
+                    returnField = fieldByPath;
                 }
             }
         }
-        return null;
+        return returnField;
     }
 
     @ActionMapping(value = "editAction", params = "addFilter")
@@ -939,24 +935,27 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     value = "selectedFilterPath") String selectedFilterPath) {
 
         Filter filterByFilterPath = getFilterByFilterPath(form.getTheSelectedAction().getFilters(), selectedFilterPath);
+        filterByFilterPath.setSelected(true);
         form.setSelectedFilter(filterByFilterPath);
         response.setRenderParameter("action", "editAction");
         response.setRenderParameter("activeTab", "edit");
     }
 
     private Filter getFilterByFilterPath(List<Filter> filtersList, String selectedFilterPath) {
+        Filter returnFilter = null;
         if (filtersList != null) {
             for (Filter filter : filtersList) {
+                filter.setSelected(false);
                 if (StringUtils.equals(filter.getFilterPath(), selectedFilterPath)) {
-                    return filter;
+                    returnFilter = filter;
                 }
                 Filter filterbyId = getFilterByFilterPath(filter.getFilters(), selectedFilterPath);
                 if (filterbyId != null) {
-                    return filterbyId;
+                    returnFilter = filterbyId;
                 }
             }
         }
-        return null;
+        return returnFilter;
     }
 
     private void updateFilterByFilterPath(List<Filter> filtersList, Filter filterUpdate) {
@@ -1007,6 +1006,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                         parentFilters = new ArrayList<Filter>();
                     }
                     filter.setFilterInstanceId(filter.getFilterId().concat(filter.getFilterPath()));
+                    filter.setSelected(false);
                     parentFilters.add(filter);
                     Collections.sort(parentFilters);
                     allFiltersMap.put(parentPath, parentFilters);
@@ -1041,11 +1041,42 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editStep", params = "deleteField")
     public void deleteField(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        final String[] path = form.getSelectedField().getPath().split(",");
-        removeFieldByPath(form.getTheSelectedStep().getFields(), path);
+        if (removeFieldsByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedField().getPath())) {
+            updateFieldsPath(form.getTheSelectedStep().getFields(), StringUtils.EMPTY);
+        }
+
+        form.setSelectedField(null);
+
 
         response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("action", "editStep");
+    }
+
+    private void updateFieldsPath(List<Field> list, String currentPath) {
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                String newPath = currentPath.length() > 0 ? currentPath.concat(",").concat(String.valueOf(i)) : String.valueOf(i);
+                list.get(i).setPath(newPath);
+                updateFieldsPath(list.get(i).getFields(), newPath);
+            }
+        }
+    }
+
+    private boolean removeFieldsByFieldPath(List<Field> list, String fieldPath) {
+        if (list != null) {
+            ListIterator<Field> filtersI = list.listIterator();
+            while (filtersI.hasNext()) {
+                Field field = filtersI.next();
+                if (StringUtils.equals(field.getPath(), fieldPath)) {
+                    filtersI.remove();
+                    return true;
+                }
+                if (removeFieldsByFieldPath(field.getFields(), fieldPath)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void removeFieldByPath(List<Field> fields, String[] path) {
@@ -1096,7 +1127,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
         }
     }
-
 
     /**
      * {@inheritDoc}

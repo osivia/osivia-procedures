@@ -1,4 +1,3 @@
-<%@page import="fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService"%>
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
@@ -31,6 +30,21 @@
 
 
 <form:form modelAttribute="form" action="${editProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
+
+    <div class="form-group">
+        <div class="col-sm-12">
+		    <div class="btn-group pull-right">
+			    <c:if test="${!form.advancedMode}">
+			        <button type="submit" class="btn btn-default" name="changeMode">Mode avançé</button>
+			        <button type="submit" class="btn btn-info active" name="changeMode">Mode simplifié</button>
+			    </c:if>
+			    <c:if test="${form.advancedMode}">
+		            <button type="submit" class="btn btn-info active" name="changeMode">Mode avançé</button>
+		            <button type="submit" class="btn btn-default" name="changeMode">Mode simplifié</button>
+			    </c:if>
+		    </div>
+	    </div>
+    </div>
 
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -162,27 +176,8 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <div class="col-sm-1">
-            <button type="submit" class="btn btn-primary" name="saveProcedure">Sauvegarder</button>
-        </div>
-        <c:if test="${!form.advancedMode}">
-            <div class="col-sm-1">
-	            <button type="submit" class="btn btn-info" name="changeMode">Mode avançé</button>
-	        </div>
-        </c:if>
-        <c:if test="${form.advancedMode}">
-            <div class="col-sm-1">
-                <button type="submit" class="btn btn-info" name="changeMode">Mode simplifié</button>
-            </div>
-        </c:if>
-        <div class="col-sm-1">
-            <button type="submit" class="btn btn-default" name="launchProcedure">Lancer la procédure</button>
-        </div>
-        <div class="col-sm-1 pull-right">
-            <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure">Supprimer</button>
-        </div>
-    </div>
+    <button type="submit" class="btn btn-primary" name="saveProcedure">Sauvegarder</button>
+    <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure">Supprimer</button>
 </form:form>
 
 

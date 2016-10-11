@@ -21,6 +21,7 @@ import org.osivia.services.procedure.formFilters.DeleteOnEndingFormFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
 import org.osivia.services.procedure.formFilters.SetActorFormFilter;
+import org.osivia.services.procedure.formFilters.TestBooleanFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
@@ -61,31 +62,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     @Override
     protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
 
-//        Map<String, DocumentType> docTypes = getDocTypes(context);
-//
-//        ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
-//        docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
-//                "glyphicons glyphicons-flowchart"));
-//
-//
-//        Map<String, ListTemplate> templates = getListTemplates(context);
-//
-//        ListTemplate picturebookTemplate = new ListTemplate(STYLE_ADMIN, "admin téléprocédure", SCHEMAS_ADMIN);
-//        templates.put(STYLE_ADMIN, picturebookTemplate);
-//
-//
-//        List<IPlayerModule> modules = getPlayers(context);
-//        // ! insertion au début
-//        modules.add(0, new ProcedurePlayer(getPortletContext()));
-//
-//
-//        // Menubar modules
-//        List<MenubarModule> menubarModules = this.getMenubarModules(context);
-//
-//        MenubarModule menubarModule = new ProcedureMenubarModule();
-//        menubarModules.add(menubarModule);
-
-
         Map<String, FormFilter> formFilters = getFormFilters(context);
         formFilters.put(IfFilter.ID, new IfFilter());
         formFilters.put(DefineVariableFilter.ID, new DefineVariableFilter());
@@ -93,6 +69,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(SetActorFormFilter.ID, new SetActorFormFilter());
         formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
         formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
+        formFilters.put(TestBooleanFilter.ID, new TestBooleanFilter());
     }
 
 
