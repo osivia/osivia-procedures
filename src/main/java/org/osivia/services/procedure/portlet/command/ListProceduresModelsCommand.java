@@ -33,7 +33,7 @@ public class ListProceduresModelsCommand implements INuxeoCommand {
 
     @Override
     public String getId() {
-        return "ListModelsContainerCommand/" + path;
+        return "ListProceduresModelsCommand/" + path;
     }
 
 }

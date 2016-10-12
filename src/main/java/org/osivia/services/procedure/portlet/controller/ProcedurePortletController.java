@@ -474,7 +474,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             // if the procedure doesn't exist in database, create it
             form.getProcedureModel().getSteps().add(new Step(newIndex));
             final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
-            String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminproc").getUrl();
+            String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminprocstep").getUrl();
             response.sendRedirect(redirectUrl);
         }
         sessionStatus.setComplete();

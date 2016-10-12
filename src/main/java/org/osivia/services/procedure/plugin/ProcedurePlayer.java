@@ -65,7 +65,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         windowProperties.put("osivia.ajaxLink", "1");
 
         final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
-        if (StringUtils.equals(publicationInfos.getDisplayContext(), "adminproc")) {
+        if (StringUtils.equals(publicationInfos.getDisplayContext(), "adminproc") || StringUtils.equals(publicationInfos.getDisplayContext(), "adminprocstep")) {
             windowProperties.put("osivia.procedure.admin", publicationInfos.getDisplayContext());
             windowProperties.put("osivia.title", "Éditer une procédure");
         } else {
