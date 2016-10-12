@@ -26,6 +26,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import net.sf.json.JSONArray;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -72,7 +74,6 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
-import net.sf.json.JSONArray;
 
 @Controller
 @SessionAttributes("form")
@@ -433,7 +434,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
         } else {
             // if the procedure doesn't exist in database, create it
-            final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
+            procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
         }
         String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
         response.sendRedirect(redirectUrl);
@@ -471,11 +472,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editStep");
         } else {
             // if the procedure doesn't exist in database, create it
+            form.getProcedureModel().getSteps().add(new Step(newIndex));
             final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
-            createdProcedure.getSteps().add(new Step(newIndex));
-            procedureService.updateProcedure(nuxeoController, createdProcedure);
-
-            String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminprocstep").getUrl();
+            String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminproc").getUrl();
             response.sendRedirect(redirectUrl);
         }
         sessionStatus.setComplete();
@@ -497,10 +496,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
         } else {
             // if the procedure doesn't exist in database, create it
+            form.getProcedureModel().getProcedureObjects().add(new ProcedureObject());
             final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
-            createdProcedure.getProcedureObjects().add(new ProcedureObject());
-            procedureService.updateProcedure(nuxeoController, createdProcedure);
-
             String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminproc").getUrl();
             response.sendRedirect(redirectUrl);
         }
@@ -1071,29 +1068,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
         return false;
     }
-
-    private void removeFieldByPath(List<Field> fields, String[] path) {
-
-        final Integer index = Integer.parseInt(path[0]);
-        Field nestedField;
-        if ((path.length == 1) && (fields != null)) {
-            // on a fini de parcourir le path
-            final ListIterator<Field> listIterator = fields.listIterator();
-            while (listIterator.hasNext()) {
-                final Field field = listIterator.next();
-                final String[] pathArray = StringUtils.split(field.getPath(), ',');
-                if ((pathArray.length > 0) && (Integer.parseInt(pathArray[pathArray.length - 1]) == index)) {
-                    listIterator.remove();
-                }
-            }
-        } else {
-            // on continue de parcourir le path
-            nestedField = fields.get(index);
-            path = (String[]) ArrayUtils.remove(path, 0);
-            removeFieldByPath(nestedField.getFields(), path);
-        }
-    }
-
 
     /**
      * set the uploaded files in the instance, traversing recursive fields

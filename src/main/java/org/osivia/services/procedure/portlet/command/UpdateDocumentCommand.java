@@ -31,6 +31,7 @@ public class UpdateDocumentCommand implements INuxeoCommand {
     public Object execute(Session nuxeoSession) throws Exception {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.UpdateDocument.getId());
         request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
+        request.setHeader("nx_es_sync", "true");
         request.setInput(document);
         request.set("properties", properties);
         return request.execute();

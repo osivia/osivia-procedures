@@ -25,6 +25,7 @@ public class DeleteDocumentCommand implements INuxeoCommand {
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.DeleteDocument.getId());
+        request.setHeader("nx_es_sync", "true");
         request.setInput(document);
         return request.execute();
     }

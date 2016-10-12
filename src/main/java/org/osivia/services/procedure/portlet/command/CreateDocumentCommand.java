@@ -28,11 +28,15 @@ public class CreateDocumentCommand implements INuxeoCommand {
     /** webId */
     private String webId;
 
-    public CreateDocumentCommand(Document path, String name, String webId, DocumentTypeEnum type) {
+    /** properties of the document */
+    private PropertyMap properties;
+
+    public CreateDocumentCommand(Document path, String name, String webId, PropertyMap properties, DocumentTypeEnum type) {
         super();
         this.path = path;
         this.name = name;
         this.type = type;
+        this.properties = properties;
         this.webId = webId;
     }
 
@@ -41,8 +45,8 @@ public class CreateDocumentCommand implements INuxeoCommand {
 
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.CreateDocument.getId());
         request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
+        request.setHeader("nx_es_sync", "true");
         request.setInput(path);
-        PropertyMap properties = new PropertyMap();
         properties.set("dc:title", name);
         properties.set("ttc:webid", webId);
         request.set("type", type.getName()).set("properties", properties);
@@ -52,7 +56,7 @@ public class CreateDocumentCommand implements INuxeoCommand {
 
     @Override
     public String getId() {
-        return "CreateDocumentCommand/" + path + "/" + type + "/" + name + "/" + webId;
+        return "CreateDocumentCommand/" + path + "/" + type + "/" + name + "/" + webId + "/" + properties;
     };
 
 

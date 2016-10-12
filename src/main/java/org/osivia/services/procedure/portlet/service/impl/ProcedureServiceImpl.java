@@ -63,7 +63,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             command = new ListModelsContainerCommand(Procedurepath);
             final Document container = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
             command = new CreateDocumentCommand(container, procedureModel.getName(), IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId(),
-                    DocumentTypeEnum.PROCEDUREMODEL);
+                    buildProperties(procedureModel), DocumentTypeEnum.PROCEDUREMODEL);
         } catch (final Exception e) {
             throw new PortletException(e);
         }
@@ -93,19 +93,24 @@ public class ProcedureServiceImpl implements IProcedureService {
         try {
             command = new RetrieveDocumentByWebIdCommand(procedureModel.getCurrentWebId());
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            final PropertyMap propMap = new PropertyMap();
-            propMap.set("dc:title", procedureModel.getName());
-            propMap.set("ttc:webid", IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId());
-            propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
-            propMap.set("pcd:globalVariablesDefinitions", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getVariables().values()));
-            propMap.set("pcd:startingStep", procedureModel.getStartingStep());
-            propMap.set("pcd:procedureObjects", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getProcedureObjects()));
-            command = new UpdateDocumentCommand(currentDocument, propMap);
+            command = new UpdateDocumentCommand(currentDocument, buildProperties(procedureModel));
         } catch (final Exception e) {
             throw new PortletException(e);
         }
         final Document procedureModelInstance = (Document) nuxeoController.executeNuxeoCommand(command);
         return new ProcedureModel(procedureModelInstance, nuxeoController);
+    }
+
+    private PropertyMap buildProperties(ProcedureModel procedureModel) throws JsonGenerationException, JsonMappingException, IOException {
+        final PropertyMap propMap = new PropertyMap();
+        propMap.set("dc:title", procedureModel.getName());
+        propMap.set("ttc:webid", IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId());
+        propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
+        propMap.set("pcd:globalVariablesDefinitions", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getVariables().values()));
+        propMap.set("pcd:startingStep", procedureModel.getStartingStep());
+        propMap.set("pcd:procedureObjects", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getProcedureObjects()));
+        propMap.set("pcd:procedureType", procedureModel.getProcedureType());
+        return propMap;
     }
 
     @Override
