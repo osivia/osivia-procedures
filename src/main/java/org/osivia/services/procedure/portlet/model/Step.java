@@ -56,6 +56,10 @@ public class Step implements Comparable<Step> {
     @JsonProperty("notifiable")
     private Boolean notifiable;
 
+    /** notifEmail */
+    @JsonProperty("notifEmail")
+    private Boolean notifEmail;
+
     /** acquitable */
     @JsonProperty("acquitable")
     private Boolean acquitable;
