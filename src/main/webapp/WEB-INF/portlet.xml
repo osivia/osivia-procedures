@@ -8,20 +8,20 @@
     
     <portlet>
         <portlet-name>osivia-services-procedure</portlet-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
         <display-name>Osivia services procedure portlet</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
         
         <init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/osivia-services-procedure-portlet.xml</value>
-		</init-param>
-
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/osivia-services-procedure-portlet.xml</value>
+        </init-param>
+        
         <expiration-cache>180</expiration-cache>
-
+        
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
-            <portlet-mode>Admin</portlet-mode>	
+            <portlet-mode>Admin</portlet-mode>  
         </supports>
 
         <portlet-info>
@@ -30,6 +30,7 @@
             <keywords>portlet,service,procedure,steps</keywords>
         </portlet-info>
     </portlet>    
+    
     
 	<portlet>
 		<portlet-name>osivia-services-procedurePlugin</portlet-name>
