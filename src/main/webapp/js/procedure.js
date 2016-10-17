@@ -260,7 +260,7 @@ $JQry(function() {
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else{
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").removeClass("hidden");
+			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 		}
 	};
 	$JQry("select[name$='newField.type']").change(updateNewFieldType);

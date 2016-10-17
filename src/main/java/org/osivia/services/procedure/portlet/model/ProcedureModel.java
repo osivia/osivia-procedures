@@ -46,6 +46,9 @@ public class ProcedureModel {
     /** newWebId */
     private String newWebId;
 
+    /** procedureType */
+    private String procedureType;
+
     /** originalDocument */
     private Document originalDocument;
 
@@ -68,6 +71,7 @@ public class ProcedureModel {
         newWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
         path = document.getPath();
         startingStep = properties.getString("pcd:startingStep");
+        procedureType = properties.getString("pcd:procedureType");
 
         // global variables
         final PropertyList globalVariablesList = properties.getList("pcd:globalVariablesDefinitions");
@@ -325,6 +329,24 @@ public class ProcedureModel {
      */
     public void setNewWebId(String newWebId) {
         this.newWebId = newWebId;
+    }
+
+    /**
+     * Getter for procedureType.
+     * 
+     * @return the procedureType
+     */
+    public String getProcedureType() {
+        return procedureType;
+    }
+
+    /**
+     * Setter for procedureType.
+     * 
+     * @param procedureType the procedureType to set
+     */
+    public void setProcedureType(String procedureType) {
+        this.procedureType = procedureType;
     }
 
 }

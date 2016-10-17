@@ -157,6 +157,7 @@ public class Step implements Comparable<Step> {
         setReference(stepM.getString("reference"));
         setOldReference(stepM.getString("reference"));
         setNotifiable(BooleanUtils.isTrue(stepM.getBoolean("notifiable")));
+        setNotifEmail(BooleanUtils.isTrue(stepM.getBoolean("notifEmail")));
         setClosable(BooleanUtils.isTrue(stepM.getBoolean("closable")));
         setAcquitable(BooleanUtils.isTrue(stepM.getBoolean("acquitable")));
         setStringMsg(stepM.getString("stringMsg"));
@@ -544,6 +545,26 @@ public class Step implements Comparable<Step> {
      */
     public void setEndStepMsg(String endStepMsg) {
         this.endStepMsg = endStepMsg;
+    }
+
+
+    /**
+     * Getter for notifEmail.
+     * 
+     * @return the notifEmail
+     */
+    public Boolean getNotifEmail() {
+        return notifEmail;
+    }
+
+
+    /**
+     * Setter for notifEmail.
+     * 
+     * @param notifEmail the notifEmail to set
+     */
+    public void setNotifEmail(Boolean notifEmail) {
+        this.notifEmail = notifEmail;
     }
 
 }

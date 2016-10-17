@@ -403,7 +403,7 @@
 	    <div role="tabpanel" class="tab-pane" id="Métadonnées">
 		    <c:if test="${form.advancedMode}">
 		       <div class="form-group">
-		           <div class="col-sm-offset-2 col-sm-1">
+		           <div class="col-sm-offset-2 col-sm-2">
 			           <div class="checkbox">
 		                    <label>
 		                       <form:checkbox path="theSelectedStep.notifiable"/><span>notifiable</span>
@@ -411,7 +411,7 @@
 		                </div>
 	                </div>
 	                
-	                <div class="col-sm-1">
+	                <div class="col-sm-2">
                        <div class="checkbox">
                             <label>
                                <form:checkbox path="theSelectedStep.notifEmail"/><span>notification email</span>
@@ -419,14 +419,14 @@
                         </div>
                     </div>
 	                
-	                <div class="col-sm-1">
+	                <div class="col-sm-2">
 		                <div class="checkbox">
 		                    <label>
 		                       <form:checkbox path="theSelectedStep.acquitable"/><span>acquitable</span>
 		                    </label>
 		                </div>
 	                </div>
-		           <div class="col-sm-1">
+		           <div class="col-sm-2">
 			           <div class="checkbox">
 			                <label>
 			                      <form:checkbox path="theSelectedStep.closable"/><span>closable</span>

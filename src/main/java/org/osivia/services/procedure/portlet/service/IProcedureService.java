@@ -6,6 +6,7 @@ import javax.portlet.PortletException;
 
 import net.sf.json.JSONArray;
 
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
@@ -96,8 +97,28 @@ public interface IProcedureService {
      * @param nuxeoController
      * @param portalUrlFactory
      * @param procedurePath
+     * @param displayContext
+     * @param procedureType
      * @return
      * @throws PortletException
      */
-    public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String procedurePath) throws PortletException;
+    public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String procedurePath, String displayContext,
+            String procedureType) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @param procedureModel
+     * @return
+     */
+    public List<ProcedureInstance> retrieveProceduresInstanceByModel(NuxeoController nuxeoController, ProcedureModel procedureModel);
+
+    /**
+     * Get close procedure URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return URL
+     * @throws PortletException
+     */
+    String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException;
+
 }

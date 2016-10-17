@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 
 import net.sf.json.JSONArray;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
@@ -21,12 +23,16 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.procedure.portlet.adapter.ProcedureJSONAdapter;
 import org.osivia.services.procedure.portlet.command.CreateDocumentCommand;
 import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
-import org.osivia.services.procedure.portlet.command.ListModelsContainerCommand;
+import org.osivia.services.procedure.portlet.command.ListProcedureInstancesByModelListCommand;
 import org.osivia.services.procedure.portlet.command.ListProceduresModelsCommand;
 import org.osivia.services.procedure.portlet.command.LoadVocabularyCommand;
 import org.osivia.services.procedure.portlet.command.RetrieveDocumentByWebIdCommand;
@@ -39,6 +45,7 @@ import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
+import org.osivia.services.procedure.portlet.model.ProcedureTypeEnum;
 import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
@@ -50,19 +57,35 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyEntry;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyHelper;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
 
+    /** Portal URL factory. */
+    private final IPortalUrlFactory portalUrlFactory;
+
+
+    /**
+     * Constructor.
+     */
+    public ProcedureServiceImpl() {
+        super();
+
+        // Portal URL factory
+        this.portalUrlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
+    }
+
     @Override
-    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String Procedurepath) throws PortletException {
+    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurepath) throws PortletException {
 
         INuxeoCommand command;
         try {
-            command = new ListModelsContainerCommand(Procedurepath);
-            final Document container = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            command = new CreateDocumentCommand(container, procedureModel.getName(), IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId(),
+            NuxeoDocumentContext container = nuxeoController.getDocumentContext(procedurepath);
+            String webId = StringUtils.isBlank(procedureModel.getNewWebId()) ? StringUtils.deleteWhitespace(procedureModel.getName()) : procedureModel
+                    .getNewWebId();
+            command = new CreateDocumentCommand(container.getDoc(), procedureModel.getName(), IFormsService.FORMS_WEB_ID_PREFIX + webId,
                     buildProperties(procedureModel), DocumentTypeEnum.PROCEDUREMODEL);
         } catch (final Exception e) {
             throw new PortletException(e);
@@ -85,6 +108,19 @@ public class ProcedureServiceImpl implements IProcedureService {
             throw new PortletException(e);
         }
         return procedureModel;
+    }
+
+    @Override
+    public List<ProcedureInstance> retrieveProceduresInstanceByModel(NuxeoController nuxeoController, ProcedureModel procedureModel) {
+        INuxeoCommand command = new ListProcedureInstancesByModelListCommand(procedureModel.getPath(), procedureModel.getCurrentWebId(), false);
+        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+        List<ProcedureInstance> procedureInstanceList = new ArrayList<ProcedureInstance>(documents.size());
+        for (Document document : documents) {
+            ProcedureInstance procedureInstance = new ProcedureInstance(document);
+            procedureInstance.setUrl(nuxeoController.getLink(document).getUrl());
+            procedureInstanceList.add(procedureInstance);
+        }
+        return procedureInstanceList;
     }
 
     @Override
@@ -137,6 +173,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             command = new RetrieveDocumentByWebIdCommand(path);
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
             procedureInstance = new ProcedureInstance(currentDocument);
+            procedureInstance.setUrl(nuxeoController.getLink(currentDocument).getUrl());
         } catch (final Exception e) {
             throw new PortletException(e);
         }
@@ -146,16 +183,13 @@ public class ProcedureServiceImpl implements IProcedureService {
 
 
     @Override
-    public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String Procedurepath)
+    public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String procedurepath)
             throws PortletException {
         INuxeoCommand command;
         final List<ProcedureModel> procedureModels = new ArrayList<ProcedureModel>();
         Documents documentList;
         try {
-            command = new ListModelsContainerCommand(Procedurepath);
-            documentList = (Documents) nuxeoController.executeNuxeoCommand(command);
-            Document modelsContainer = documentList.get(0);
-            command = new ListProceduresModelsCommand(modelsContainer.getPath());
+            command = new ListProceduresModelsCommand(procedurepath);
             documentList = (Documents) nuxeoController.executeNuxeoCommand(command);
         } catch (final Exception e) {
             throw new PortletException(e);
@@ -165,7 +199,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             procedureModel = new ProcedureModel(document, nuxeoController);
 
             try {
-                procedureModel.setUrl(getEditUrl(nuxeoController, portalUrlFactory, procedureModel, Procedurepath));
+                procedureModel.setUrl(getEditUrl(nuxeoController, portalUrlFactory, procedureModel, procedurepath));
             } catch (final PortalException e) {
                 new PortletException(e);
             }
@@ -183,7 +217,14 @@ public class ProcedureServiceImpl implements IProcedureService {
      */
     private String getEditUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, ProcedureModel procedureModel, String Procedurepath)
             throws PortalException {
-        final Map<String, String> windowProperties = getWindowProperties(Procedurepath);
+
+        Map<String, String> windowProperties;
+        if (StringUtils.equals(procedureModel.getProcedureType(), ProcedureTypeEnum.LIST.name())) {
+            windowProperties = getWindowProperties(Procedurepath, "adminlist", procedureModel.getProcedureType());
+        } else {
+            windowProperties = getWindowProperties(Procedurepath, "adminproc", procedureModel.getProcedureType());
+        }
+
         windowProperties.put("osivia.services.procedure.webid", procedureModel.getCurrentWebId());
         windowProperties.put("osivia.title", "Éditer une procedure");
         return portalUrlFactory.getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance", windowProperties,
@@ -196,21 +237,23 @@ public class ProcedureServiceImpl implements IProcedureService {
      * @param procedureModel
      * @throws PortalException
      */
-    private Map<String, String> getWindowProperties(String procedurePath) throws PortalException {
+    private Map<String, String> getWindowProperties(String procedurePath, String displayContext, String procedureType) throws PortalException {
         final Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
+        windowProperties.put("osivia.services.procedure.procType", procedureType);
         windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, procedurePath);
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
         windowProperties.put("osivia.ajaxLink", "1");
-        windowProperties.put("osivia.procedure.admin", "adminproc");
+        windowProperties.put("osivia.procedure.admin", displayContext);
         return windowProperties;
     }
 
     @Override
-    public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String procedurePath) throws PortletException {
+    public String getAddUrl(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String procedurePath, String displayContext,
+            String procedureType) throws PortletException {
         try {
-            final Map<String, String> windowProperties = getWindowProperties(procedurePath);
+            final Map<String, String> windowProperties = getWindowProperties(procedurePath, displayContext, procedureType);
             windowProperties.put("osivia.title", "Créer une procedure");
             return portalUrlFactory.getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance", windowProperties,
                     PortalUrlType.DEFAULT);
@@ -330,6 +373,37 @@ public class ProcedureServiceImpl implements IProcedureService {
 
 
         return values;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Portal window
+        PortalWindow window = WindowFactory.getWindow(request);
+
+        // Contextualization indicator
+        boolean contextualization = "1".equals(window.getProperty("osivia.cms.contextualization"));
+
+        // Close URL
+        String url;
+        try {
+            if (contextualization) {
+                // Destroy current page URL
+                url = this.portalUrlFactory.getDestroyCurrentPageUrl(portalControllerContext);
+            } else {
+                // Back URL
+                url = this.portalUrlFactory.getBackURL(portalControllerContext, false);
+            }
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+        return url;
     }
 
 }

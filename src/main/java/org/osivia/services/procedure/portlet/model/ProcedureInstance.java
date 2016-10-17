@@ -35,6 +35,9 @@ public class ProcedureInstance {
     /** le document task */
     private PropertyMap taskDoc;
 
+    /** url */
+    private String url;
+
     public ProcedureInstance() {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
@@ -242,5 +245,23 @@ public class ProcedureInstance {
      */
     public void setProcedureModelWebId(String procedureModelWebId) {
         this.procedureModelWebId = procedureModelWebId;
+    }
+
+    /**
+     * Getter for url.
+     * 
+     * @return the url
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * Setter for url.
+     * 
+     * @param url the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

@@ -27,6 +27,7 @@ import org.osivia.services.procedure.formFilters.SendMailFilter;
 import org.osivia.services.procedure.formFilters.SetActorFormFilter;
 import org.osivia.services.procedure.formFilters.TestBooleanFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
+import org.osivia.services.procedure.module.ListProcListModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
@@ -44,10 +45,14 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     /** Customizer name. */
     private static final String CUSTOMIZER_NAME = "procedure.plugin";
 
-    /** Picturebook list template. */
-    public static final String STYLE_ADMIN = "adminproc";
+    /** proclistadminlist list template. */
+    // public static final String STYLE_VIEW_LIST_ADMIN = "proclistadminlist";
+
+    /** viewListProc list template. */
+    public static final String STYLE_VIEW_LISTPROC = "listproc";
+
     /** Picturebook schemas. */
-    public static final String SCHEMAS_PROCEDUREINSTANCE = "dublincore, procedure";
+    public static final String SCHEMAS_PROCEDUREINSTANCE = "dublincore, common, toutatice, procedureInstance";
     /** SCHEMAS_ADMIN */
     public static final String SCHEMAS_ADMIN = "dublincore, common, toutatice";
 
@@ -63,28 +68,65 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("rawtypes")
     @Override
     protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
+        updateDocTypes(context);
+        updateListTemplates(context);
+        updatePlayers(context);
+        updateFormFIlters(context);
+    }
 
+
+    /**
+     * update players
+     * 
+     * @param context
+     */
+    @SuppressWarnings("rawtypes")
+    private void updatePlayers(CustomizationContext context) {
+        List<IPlayerModule> modules = getPlayers(context);
+        // ! insertion au début
+        modules.add(0, new ProcedurePlayer(getPortletContext()));
+    }
+
+
+    /**
+     * update document types
+     * 
+     * @param context
+     */
+    private void updateDocTypes(CustomizationContext context) {
         Map<String, DocumentType> docTypes = getDocTypes(context);
 
         ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
         docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
                 "glyphicons glyphicons-flowchart"));
+    }
 
-
+    /**
+     * Update list templates.
+     *
+     * @param context customization context
+     */
+    private void updateListTemplates(CustomizationContext context) {
         Map<String, ListTemplate> templates = getListTemplates(context);
 
-        ListTemplate picturebookTemplate = new ListTemplate(STYLE_ADMIN, "admin téléprocédure", SCHEMAS_ADMIN);
-        templates.put(STYLE_ADMIN, picturebookTemplate);
+        // ListTemplate proclistadminlist = new ListTemplate(STYLE_VIEW_LIST_ADMIN, "liste de téléprocédure - adminlist", SCHEMAS_ADMIN);
+        // templates.put(STYLE_VIEW_LIST_ADMIN, proclistadminlist);
+        
+        ListTemplate viewListProc = new ListTemplate(STYLE_VIEW_LISTPROC, "procédure LIST", SCHEMAS_PROCEDUREINSTANCE);
+        viewListProc.setModule(new ListProcListModule(getPortletContext()));
+        templates.put(STYLE_VIEW_LISTPROC, viewListProc);
+    }
 
-
-        List<IPlayerModule> modules = getPlayers(context);
-        // ! insertion au début
-        modules.add(0, new ProcedurePlayer(getPortletContext()));
-
+    /**
+     * update form filters
+     * 
+     * @param context
+     */
+    private void updateFormFIlters(CustomizationContext context) {
         Map<String, FormFilter> formFilters = getFormFilters(context);
+
         formFilters.put(IfFilter.ID, new IfFilter());
         formFilters.put(DefineVariableFilter.ID, new DefineVariableFilter());
         formFilters.put(SendMailFilter.ID, new SendMailFilter());
@@ -93,7 +135,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
         formFilters.put(TestBooleanFilter.ID, new TestBooleanFilter());
     }
-
 
     @Override
     protected String getPluginName() {

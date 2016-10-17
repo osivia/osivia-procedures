@@ -1,5 +1,7 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -40,6 +42,9 @@ public class Form {
 
     /** advancedMode */
     private boolean advancedMode;
+
+    /** procedureInstance */
+    private List<ProcedureInstance> procedureInstances;
 
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
@@ -287,6 +292,24 @@ public class Form {
      */
     public void setAdvancedMode(boolean advancedMode) {
         this.advancedMode = advancedMode;
+    }
+
+    /**
+     * Getter for procedureInstances.
+     * 
+     * @return the procedureInstances
+     */
+    public List<ProcedureInstance> getProcedureInstances() {
+        return procedureInstances;
+    }
+
+    /**
+     * Setter for procedureInstances.
+     * 
+     * @param procedureInstances the procedureInstances to set
+     */
+    public void setProcedureInstances(List<ProcedureInstance> procedureInstances) {
+        this.procedureInstances = procedureInstances;
     }
 
 }
