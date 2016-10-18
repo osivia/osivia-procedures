@@ -443,7 +443,7 @@
 	           <div class="form-group">
 	               <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">stringMsg</form:label>
 	               <div class="col-sm-10">
-	                   <form:input path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
+	                   <form:textarea path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
