@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -17,7 +18,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -59,6 +59,8 @@ public class SendMailFilter implements FormFilter {
     private static final String MAIL_OBJECT_PARAMETER = "mailObject";
     /** Continue workflow even if an error is thrown indicator. */
     private static final String CONTINUE_PARAMETER = "continue";
+
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 
     /** Internationalization bundle factory. */
@@ -155,12 +157,12 @@ public class SendMailFilter implements FormFilter {
 
         // Body
         StringBuilder body = new StringBuilder();
-        for (String line : StringUtils.split(mailBodyVar, System.lineSeparator())) {
+        Scanner mailBodyVarScanner = new Scanner(mailBodyVar);
+        while (mailBodyVarScanner.hasNextLine()) {
             body.append("<p>");
-            body.append(line);
+            body.append(mailBodyVarScanner.nextLine());
             body.append("</p>");
         }
-
 
         // System properties
         Properties properties = System.getProperties();
