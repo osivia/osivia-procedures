@@ -11,7 +11,7 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>4.4.0-SNAPSHOT</toutatice.version>
+        <toutatice.version>4.4.0-RC7</toutatice.version>
 
     </properties>
 
