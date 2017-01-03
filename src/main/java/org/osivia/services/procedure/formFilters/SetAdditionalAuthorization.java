@@ -8,33 +8,35 @@ import org.apache.commons.lang.StringUtils;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 /**
- * Set actor form filter.
+ * Set additional authorization.
  * 
  * @author Cédric Krommenhoek
  * @see FormFilter
  */
-public class SetActorFormFilter implements FormFilter {
+public class SetAdditionalAuthorization implements FormFilter {
 
-    /** Form filter identifier. */
-    public static final String ID = "SET_ACTOR";
+    /** Filter identifier. */
+    public static final String ID = "SET_ADDITIONAL_AUTHORIZATION";
 
-    /** Actor parameter. */
-    private static final String ACTOR_PARAMETER = "actor";
+
+    /** Additional authorization identifier parameter. */
+    private static final String ID_PARAMETER = "id";
 
     /** Form filter label internationalization key. */
-    private static final String LABEL_INTERNATIONALIZATION_KEY = "SET_ACTOR_LABEL";
+    private static final String LABEL_INTERNATIONALIZATION_KEY = "SET_ADDITIONAL_AUTHORIZATION_LABEL";
     /** Form filter description internationalization key. */
-    private static final String DESCRIPTION_INTERNATIONALIZATION_KEY = "SET_ACTOR_DESCRIPTION";
+    private static final String DESCRIPTION_INTERNATIONALIZATION_KEY = "SET_ADDITIONAL_AUTHORIZATION_DESCRIPTION";
 
 
     /**
-     * Constructor
+     * Constructor.
      */
-    public SetActorFormFilter() {
+    public SetAdditionalAuthorization() {
         super();
     }
 
@@ -72,7 +74,7 @@ public class SetActorFormFilter implements FormFilter {
     @Override
     public Map<String, FormFilterParameterType> getParameters() {
         Map<String, FormFilterParameterType> parameters = new HashMap<String, FormFilterParameterType>();
-        parameters.put(ACTOR_PARAMETER, FormFilterParameterType.TEXT);
+        parameters.put(ID_PARAMETER, FormFilterParameterType.TEXT);
         return parameters;
     }
 
@@ -90,15 +92,15 @@ public class SetActorFormFilter implements FormFilter {
      * {@inheritDoc}
      */
     @Override
-    public void execute(FormFilterContext context, FormFilterExecutor executor) {
-        // Actors
-        Set<String> actors = context.getActors();
-
-        // Actor
-        String actor = context.getParamValue(executor, ACTOR_PARAMETER);
-
-        if (StringUtils.isNotBlank(actor)) {
-            actors.add(actor);
+    public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException {
+        // Additional authorizations
+        Set<String> additionalAuthorizations = context.getAdditionalAuthorizations();
+        
+        // Additional authorization identifier
+        String id = context.getParamValue(executor, ID_PARAMETER);
+        
+        if (StringUtils.isNotBlank(id)) {
+            additionalAuthorizations.add(id);
         }
     }
 

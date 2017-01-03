@@ -25,6 +25,7 @@ import org.osivia.services.procedure.formFilters.DeleteOnEndingFormFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
 import org.osivia.services.procedure.formFilters.SetActorFormFilter;
+import org.osivia.services.procedure.formFilters.SetAdditionalAuthorization;
 import org.osivia.services.procedure.formFilters.TestBooleanFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 import org.osivia.services.procedure.module.ListProcListModule;
@@ -134,6 +135,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
         formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
         formFilters.put(TestBooleanFilter.ID, new TestBooleanFilter());
+        formFilters.put(SetAdditionalAuthorization.ID, new SetAdditionalAuthorization());
     }
 
     @Override
