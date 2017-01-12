@@ -35,7 +35,7 @@ public class JSONAdapterTest {
         step.setStepName("stepName");
         final List<String> groups = new ArrayList<String>();
         groups.add("equipe-dev");
-        step.setGroups(groups);
+        step.setActors(groups);
         step.setIndex(1);
         final Action action = new Action();
         action.setStepReference("actionPath");

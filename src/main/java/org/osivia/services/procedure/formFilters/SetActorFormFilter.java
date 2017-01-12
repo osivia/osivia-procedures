@@ -1,12 +1,12 @@
 package org.osivia.services.procedure.formFilters;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import fr.toutatice.portail.cms.nuxeo.api.forms.FormActors;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
@@ -14,7 +14,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 /**
  * Set actor form filter.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see FormFilter
  */
@@ -96,7 +96,7 @@ public class SetActorFormFilter implements FormFilter {
     @Override
     public void execute(FormFilterContext context, FormFilterExecutor executor) {
         // Actors
-        FormActors actors = context.getActors();
+        List<String> actors = context.getActors();
 
         // Actor
         String actor = context.getParamValue(executor, ACTOR_PARAMETER);
@@ -105,9 +105,9 @@ public class SetActorFormFilter implements FormFilter {
 
         if (StringUtils.isNotBlank(actor)) {
             if (group) {
-                actors.getGroups().add(actor);
+                actors.add("group:" + actor);
             } else {
-                actors.getUsers().add(actor);
+                actors.add("user:" + actor);
             }
         }
     }

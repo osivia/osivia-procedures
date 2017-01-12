@@ -48,9 +48,9 @@ public class Step implements Comparable<Step> {
     @JsonIgnore
     private String oldReference;
 
-    /** groups */
-    @JsonProperty("authorizedGroups")
-    private List<String> groups;
+    /** actors */
+    @JsonProperty("actors")
+    private List<String> actors;
 
     /** notifiable */
     @JsonProperty("notifiable")
@@ -140,13 +140,13 @@ public class Step implements Comparable<Step> {
                 getActions().add(action);
             }
         }
-        final PropertyList groupsObjectsList = stepM.getList("authorizedGroups");
-        if (groupsObjectsList != null) {
-            final List<String> groups = new ArrayList<String>();
-            for (final Object groupsObject : groupsObjectsList.list()) {
-                groups.add((String) groupsObject);
+        final PropertyList actorsObjectsList = stepM.getList("actors");
+        if (actorsObjectsList != null) {
+            final List<String> actors = new ArrayList<String>();
+            for (final Object actorsObject : actorsObjectsList.list()) {
+                actors.add((String) actorsObject);
             }
-            setGroups(groups);
+            setActors(actors);
         }
         setStepName(stepM.getString("name"));
         setIndex(stepM.getLong("index").intValue());
@@ -327,25 +327,6 @@ public class Step implements Comparable<Step> {
      */
     public void setOldReference(String oldReference) {
         this.oldReference = oldReference;
-    }
-
-    /**
-     * Getter for groups.
-     *
-     * @return the groups
-     */
-    public List<String> getGroups() {
-        return groups;
-    }
-
-
-    /**
-     * Setter for groups.
-     *
-     * @param groups the groups to set
-     */
-    public void setGroups(List<String> groups) {
-        this.groups = groups;
     }
 
     public Set<Field> getFieldsSet() {
@@ -540,6 +521,26 @@ public class Step implements Comparable<Step> {
      */
     public void setEndStepMsg(String endStepMsg) {
         this.endStepMsg = endStepMsg;
+    }
+
+
+    /**
+     * Getter for actors.
+     *
+     * @return the actors
+     */
+    public List<String> getActors() {
+        return actors;
+    }
+
+
+    /**
+     * Setter for actors.
+     *
+     * @param actors the actors to set
+     */
+    public void setActors(List<String> actors) {
+        this.actors = actors;
     }
 
 }

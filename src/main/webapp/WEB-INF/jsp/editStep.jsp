@@ -457,15 +457,15 @@
 	           </div>
 		    </c:if>
             <div class="form-group">
-                <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Groupes</form:label>
+                <form:label path="theSelectedStep.actors" cssClass="col-sm-2 control-label">Acteurs</form:label>
                 <div class="col-sm-10">
-                    <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
-                        <form:options items="${form.theSelectedStep.groups}" />
+                    <form:select path="theSelectedStep.actors" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
+                        <form:options items="${form.theSelectedStep.actors}" />
                     </form:select>
                 </div>
             </div>
             <div class="form-group">
-                <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Message de fin d'étape</form:label>
+                <form:label path="theSelectedStep.endStepMsg" cssClass="col-sm-2 control-label">Message de fin d'étape</form:label>
                 <div class="col-sm-10">
                     <form:input path="theSelectedStep.endStepMsg" cssClass="form-control" />
                 </div>
