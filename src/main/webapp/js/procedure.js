@@ -297,6 +297,10 @@ $JQry(function() {
 			}
 		}
 	});
+	$JQry(".field-radioList-json").each(function(index, element){
+		element.remove();
+	});
+	
 	// construction des champs checkbox à partir des données
 	$JQry(".field-checkboxList-json").each(function(index){
 		var name = $JQry(this).attr("name");
@@ -308,6 +312,10 @@ $JQry(function() {
 			}
 		}
 	});
+	$JQry(".field-checkboxList-json").each(function(index, element){
+		element.remove();
+	});
+	
 	// construction des champs select à partir des données
 	$JQry(".field-selectList-json").each(function(index){
 		var name = $JQry(this).attr("name");
@@ -316,6 +324,9 @@ $JQry(function() {
 			var selectList = JSON.parse(json);
 			makeSelectFromData(this, name, selectList);
 		}
+	});
+	$JQry(".field-selectList-json").each(function(index, element){
+		element.remove();
 	});
 	
 	// gestion du type de champ édité

@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
@@ -30,7 +31,7 @@ public class Argument {
     public Argument(PropertyMap argumentMap) {
         setArgumentName(argumentMap.getString("argumentName"));
         setArgumentValue(argumentMap.getString("argumentValue"));
-        if (argumentMap.getString("argumentType") != null) {
+        if (StringUtils.isNotBlank(argumentMap.getString("argumentType"))) {
             setType(FormFilterParameterType.valueOf(argumentMap.getString("argumentType")));
         }
     }
@@ -76,7 +77,7 @@ public class Argument {
 
     /**
      * Getter for type.
-     * 
+     *
      * @return the type
      */
     public FormFilterParameterType getType() {
@@ -85,7 +86,7 @@ public class Argument {
 
     /**
      * Setter for type.
-     * 
+     *
      * @param type the type to set
      */
     public void setType(FormFilterParameterType type) {
