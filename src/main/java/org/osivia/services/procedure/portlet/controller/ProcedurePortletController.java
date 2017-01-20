@@ -424,7 +424,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
-
     @ActionMapping(value = "editProcedure", params = "saveProcedure")
     public void saveProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
             throws PortletException, IOException {
