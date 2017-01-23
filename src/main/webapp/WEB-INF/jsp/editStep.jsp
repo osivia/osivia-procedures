@@ -420,37 +420,37 @@
 		           <div class="col-sm-1">
 			           <div class="checkbox">
 			                <label>
-			                      <form:checkbox path="theSelectedStep.closable"/><span>closable</span>
+			                      <form:checkbox path="theSelectedStep.closable"/><span>fermable</span>
 			                </label>
 		                </div>
 	                </div>
 		       </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.actionIdClosable" cssClass="col-sm-2 control-label">actionIdClosable</form:label>
+	               <form:label path="theSelectedStep.actionIdClosable" cssClass="col-sm-2 control-label">Identifiant de l'action fermable</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.actionIdClosable" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">stringMsg</form:label>
+	               <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">Message de notification</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.actionIdYes" cssClass="col-sm-2 control-label">actionIdYes</form:label>
+	               <form:label path="theSelectedStep.actionIdYes" cssClass="col-sm-2 control-label">Identifiant de l'action associé au oui</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.actionIdYes" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.actionIdNo" cssClass="col-sm-2 control-label">actionIdNo</form:label>
+	               <form:label path="theSelectedStep.actionIdNo" cssClass="col-sm-2 control-label">Identifiant de l'action associé au non</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.actionIdNo" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.actionIdDefault" cssClass="col-sm-2 control-label">actionIdDefault</form:label>
+	               <form:label path="theSelectedStep.actionIdDefault" cssClass="col-sm-2 control-label">Identifiant de l'action par défaut</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.actionIdDefault" cssClass="form-control" />
 	               </div>
