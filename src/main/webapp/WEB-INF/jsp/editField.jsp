@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 
-<li class="form-group <c:if test="${field.selected}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>">
+<li class="form-group <c:if test="${form.selectedField.path eq field.path}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>">
 	<div class="col-sm-9">
 		<div class="row">
 			<c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
