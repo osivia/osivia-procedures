@@ -45,6 +45,21 @@ function sortableStop(filter, event, ui){
 	e.stopImmediatePropagation();
 }
 
+function updateFilters(input){
+	 var filter = input.value.toUpperCase();
+	 $JQry(".filterSelect-results").children(".panel").each(function(index, element) {
+		 $element = $JQry(element);
+		 var h3 = $element.find("h3")[0];
+		 var body = $element.children(".panel-body")[0];
+		 
+		 if(h3.innerHTML.toUpperCase().indexOf(filter) > -1 || body.innerHTML.toUpperCase().indexOf(filter) > -1){
+			 element.style.display = "";
+		 }else{
+			 element.style.display = "none";
+		 }
+	 });
+}
+
 $JQry(function() {
 	$JQry("#procedure-sortable ul").sortable({
 		connectWith : "#procedure-sortable ul",

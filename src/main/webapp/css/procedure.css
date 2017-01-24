@@ -42,6 +42,11 @@ li .filter-selected{
     padding-bottom: 5px;
 }
 
+.filterSelect-results{
+	overflow: auto;
+	height: 400px;
+}
+
 .tab-content{
 	padding-top: 10px;
 }

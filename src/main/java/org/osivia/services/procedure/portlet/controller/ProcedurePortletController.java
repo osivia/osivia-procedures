@@ -293,7 +293,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         List<Step> steps = form.getProcedureModel().getSteps();
         for (Step step : steps) {
-            if ((filter == null) || (StringUtils.contains(step.getStepName(), filter) && StringUtils.contains(step.getReference(), filter))) {
+            if ((filter == null) || (StringUtils.contains(step.getStepName(), filter) || StringUtils.contains(step.getReference(), filter))) {
                 Map<String, String> demoGroup = new HashMap<String, String>(2);
                 demoGroup.put("id", step.getReference());
                 demoGroup.put("text", step.getStepName());

@@ -66,22 +66,30 @@
             </ul>
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane <c:if test="${empty activeTab or 'edit' ne activeTab}">active</c:if>" id="Create">
-                    <h4>Filtres disponibles : </h4>
-                    <c:forEach var="filtre" items="${listeFiltres}">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><op:translate key="${filtre.labelKey}" classLoader="${filtre.class.classLoader}"/></h3>
-                            </div>
-                            <div class="panel-body">
-                                <c:if test="${not empty filtre.descriptionKey}">
-	                                <op:translate key="${filtre.descriptionKey}" classLoader="${filtre.class.classLoader}"/>
-                                </c:if>
-                                <button type="submit" name="addFilter" class="btn btn-default pull-right" onclick="selector(this,'${filtre.id}','selectedFilterId');" >
-                                    <i class="glyphicons glyphicons-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </c:forEach>
+					
+					<div class="form-group">
+						<div class="col-sm-12">
+		                    <input onkeyup="updateFilters(this)" class="form-control" placeholder="Recherchez un filtre" title="Recherchez un filtre" type="text">
+						</div>
+					</div>
+                    
+                   	<div class="filterSelect-results">
+                    	<c:forEach var="filtre" items="${listeFiltres}">
+	                        <div class="panel panel-default">
+	                            <div class="panel-heading">
+	                                <h3 class="panel-title"><op:translate key="${filtre.labelKey}" classLoader="${filtre.class.classLoader}"/></h3>
+	                            </div>
+	                            <div class="panel-body">
+	                                <c:if test="${not empty filtre.descriptionKey}">
+		                                <op:translate key="${filtre.descriptionKey}" classLoader="${filtre.class.classLoader}"/>
+	                                </c:if>
+	                                <button type="submit" name="addFilter" class="btn btn-default pull-right" onclick="selector(this,'${filtre.id}','selectedFilterId');" >
+	                                    <i class="glyphicons glyphicons-plus"></i>
+	                                </button>
+	                            </div>
+	                        </div>
+	                    </c:forEach>
+                   	</div>
                 </div>
                 <c:if test="${not empty form.selectedFilter}">
                     <div role="tabpanel" class="tab-pane <c:if test="${'edit' eq activeTab}">active</c:if>" id="Edit">
