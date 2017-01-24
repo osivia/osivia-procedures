@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
@@ -25,9 +24,6 @@ public class SetActorFormFilter implements FormFilter {
 
     /** Actor parameter. */
     private static final String ACTOR_PARAMETER = "actor";
-    /** Group indicator parameter. */
-    private static final String GROUP_INDICATOR_PARAMETER = "group";
-
     /** Form filter label internationalization key. */
     private static final String LABEL_INTERNATIONALIZATION_KEY = "SET_ACTOR_LABEL";
     /** Form filter description internationalization key. */
@@ -76,7 +72,6 @@ public class SetActorFormFilter implements FormFilter {
     public Map<String, FormFilterParameterType> getParameters() {
         Map<String, FormFilterParameterType> parameters = new HashMap<String, FormFilterParameterType>();
         parameters.put(ACTOR_PARAMETER, FormFilterParameterType.TEXT);
-        parameters.put(GROUP_INDICATOR_PARAMETER, FormFilterParameterType.BOOLEAN);
         return parameters;
     }
 
@@ -100,15 +95,9 @@ public class SetActorFormFilter implements FormFilter {
 
         // Actor
         String actor = context.getParamValue(executor, ACTOR_PARAMETER);
-        // Group indicator
-        boolean group = BooleanUtils.toBoolean(context.getParamValue(executor, GROUP_INDICATOR_PARAMETER));
 
         if (StringUtils.isNotBlank(actor)) {
-            if (group) {
-                actors.add("group:" + actor);
-            } else {
-                actors.add("user:" + actor);
-            }
+            actors.add(actor);
         }
     }
 
