@@ -123,7 +123,7 @@
 	                            <form:label path="newField.type" cssClass="col-sm-3 control-label">Type</form:label>
 	                            <div class="col-sm-9">
 	                                <form:select path="newField.type" cssClass="form-control">
-	                                    <form:options/>
+	                                    <form:options items="${form.variableTypesEnum}" itemValue="id" itemLabel="label"/>
 	                                </form:select>
 	                            </div>
 	                        </div>
@@ -254,7 +254,7 @@
 					                      <form:label path="selectedField.type" cssClass="col-sm-3 control-label">Type</form:label>
 					                      <div class="col-sm-9">
 					                          <form:select path="selectedField.type" cssClass="form-control">
-					                              <form:options/>
+					                              <form:options items="${form.variableTypesEnum}" itemValue="id" itemLabel="label"/>
 					                          </form:select>
 					                      </div>
 				                     </div>

@@ -30,7 +30,9 @@ import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
@@ -52,7 +54,9 @@ import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.ProcedureObject;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
+import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
+import org.osivia.services.procedure.portlet.util.VariableTypesEnumJsonSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -338,6 +342,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setContentType("application/json");
         try {
             final ObjectMapper mapper = new ObjectMapper();
+            // VariableTypesEnumJsonSerializer pour avoir les bons label
+            SimpleModule simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
+            simpleModule.addSerializer(VariableTypesEnum.class, new VariableTypesEnumJsonSerializer());
+            mapper.registerModule(simpleModule);
+
             mapper.writeValue(response.getPortletOutputStream(), listeVar);
         } catch (final IOException e) {
             throw new PortletException(e);

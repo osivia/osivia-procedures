@@ -41,6 +41,8 @@ public class Form {
     /** advancedMode */
     private boolean advancedMode;
 
+    private VariableTypesEnum[] variableTypesEnum = VariableTypesEnum.values();
+
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
         newField = new AddField();
@@ -287,6 +289,22 @@ public class Form {
      */
     public void setAdvancedMode(boolean advancedMode) {
         this.advancedMode = advancedMode;
+    }
+
+    /**
+     * Getter for variableTypesEnum.
+     * @return the variableTypesEnum
+     */
+    public VariableTypesEnum[] getVariableTypesEnum() {
+        return variableTypesEnum;
+    }
+
+    /**
+     * Setter for variableTypesEnum.
+     * @param variableTypesEnum the variableTypesEnum to set
+     */
+    public void setVariableTypesEnum(VariableTypesEnum[] variableTypesEnum) {
+        this.variableTypesEnum = variableTypesEnum;
     }
 
 }

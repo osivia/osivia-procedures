@@ -511,7 +511,7 @@ function formatField(variable) {
 			$typelabel.text("Type");
 			$typelabel.appendTo($typerow);
 			$typediv = $JQry(document.createElement("div")).addClass("col-sm-9");
-			$typediv.text(variable.type);
+			$typediv.text(variable.type.label);
 			$typediv.appendTo($typerow);
 			$typerow.appendTo($result);
 		}
