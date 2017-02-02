@@ -65,10 +65,6 @@ public class Filter implements Comparable<Filter> {
     @JsonIgnore
     private ClassLoader classLoader;
 
-    /** selected */
-    @JsonIgnore
-    private boolean selected;
-
     public Filter() {
     }
 
@@ -205,9 +201,9 @@ public class Filter implements Comparable<Filter> {
         Integer pathPart = Integer.parseInt(pathArray[index]);
         Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
         returnValue = pathPart.compareTo(comparedPathPart);
-        boolean deeperPath = pathArray.length > index + 1;
-        boolean deeperComparedPath = comparedPathArray.length > index + 1;
-        if (returnValue == 0 && (deeperPath || deeperComparedPath)) {
+        boolean deeperPath = pathArray.length > (index + 1);
+        boolean deeperComparedPath = comparedPathArray.length > (index + 1);
+        if ((returnValue == 0) && (deeperPath || deeperComparedPath)) {
             if (deeperPath && !deeperComparedPath) {
                 returnValue = 1;
             } else if (!deeperPath && deeperComparedPath) {
@@ -224,9 +220,9 @@ public class Filter implements Comparable<Filter> {
         Integer pathPart = Integer.parseInt(pathArray[index]);
         Integer comparedPathPart = Integer.parseInt(comparedPathArray[index]);
         int returnValue = pathPart.compareTo(comparedPathPart);
-        boolean deeperPath = pathArray.length > index + 1;
-        boolean deeperComparedPath = comparedPathArray.length > index + 1;
-        if (returnValue == 0 && (deeperPath || deeperComparedPath)) {
+        boolean deeperPath = pathArray.length > (index + 1);
+        boolean deeperComparedPath = comparedPathArray.length > (index + 1);
+        if ((returnValue == 0) && (deeperPath || deeperComparedPath)) {
             if (deeperPath && !deeperComparedPath) {
                 returnValue = 1;
             } else if (!deeperPath && deeperComparedPath) {
@@ -349,23 +345,4 @@ public class Filter implements Comparable<Filter> {
         this.classLoader = classLoader;
     }
 
-
-    /**
-     * Getter for selected.
-     * 
-     * @return the selected
-     */
-    public boolean isSelected() {
-        return selected;
-    }
-
-
-    /**
-     * Setter for selected.
-     * 
-     * @param selected the selected to set
-     */
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
 }
