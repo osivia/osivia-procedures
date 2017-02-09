@@ -43,7 +43,7 @@ function sortableStop(filter, event, ui){
 	}
 	e.preventDefault(); // cas control-label
 	e.stopImmediatePropagation();
-}
+};
 
 function updateFilters(input){
 	 var filter = input.value.toUpperCase();
@@ -58,7 +58,44 @@ function updateFilters(input){
 			 element.style.display = "none";
 		 }
 	 });
-}
+};
+
+function insertVarValueAtCaret(varElement) {
+	
+	var varValue = $JQry(varElement).children(".col-sm-4").first().text();
+	
+	if($JQry(".insertatcaretactive").length !== 0){
+		$JQry(".insertatcaretactive").each(function(i) {
+			insertValueAtCaret(this, varValue);
+		});
+	}else{
+		var varElement = $JQry(".filter-argument").first();
+		insertValueAtCaret(varElement, varValue);
+	}
+};
+
+function insertValueAtCaret(varElement, varValue){
+	if (document.selection) {
+        //Internet Explorer
+		varElement.focus();
+        sel = document.selection.createRange();
+        sel.text = varValue;
+        varElement.focus();
+    } else if (varElement.selectionStart || varElement.selectionStart == '0') {
+        //Firefox and Webkit based
+        var startPos = varElement.selectionStart;
+        var endPos = varElement.selectionEnd;
+        var scrollTop = varElement.scrollTop;
+        varElement.value = varElement.value.substring(0, startPos) + varValue + varElement.value.substring(endPos, varElement.value.length);
+        varElement.focus();
+        varElement.selectionStart = startPos + varValue.length;
+        varElement.selectionEnd = startPos + varValue.length;
+        varElement.scrollTop = scrollTop;
+    } else {
+        varElement[0].value += varValue;
+        varElement.focus();
+    }
+};
 
 $JQry(function() {
 	$JQry("#procedure-sortable ul").sortable({
@@ -78,12 +115,17 @@ $JQry(function() {
 	
 	// sélection d'un champ
 	$JQry("#procedure-sortable li").click(function(event) {
-		// find hidden input by end name
-		var path = $JQry(this).children("input[name$='path']").val();
-		// add value to form as selected
-		selector(this,path,'selectedFieldPath');
-		// click hidden selectFilter button
-		$JQry(this).closest('form').find("input[name='selectField']").click();
+		
+		var $target = $JQry(event.target);
+		if(!$target.is("span.select2-selection")){
+			// find hidden input by end name
+			var path = $JQry(this).children("input[name$='path']").val();
+			// add value to form as selected
+			selector(this,path,'selectedFieldPath');
+			// click hidden selectFilter button
+			$JQry(this).closest('form').find("input[name='selectField']").click();
+		}
+		
 		// empêche de lancer l'évènement click sur le parent
 		event.stopPropagation();
 		event.preventDefault(); // cas control-label
@@ -121,6 +163,43 @@ $JQry(function() {
 		e.preventDefault();  
 		$JQry(this).tab('show');
 	});
+	
+	// make collpase button active when collapsable is open
+	$JQry(".btn[data-toggle='collapse']").click(function(e){
+		var $btn = $JQry(this);
+		if($btn.hasClass('active')){
+			$btn.removeClass('active');
+		}else{
+			$btn.addClass('active');
+		}
+	});
+	
+	$JQry(".filter-argument").on("focus", function() {
+		$JQry(".insertatcaretactive").removeClass("insertatcaretactive");
+		$JQry(this).addClass("insertatcaretactive");
+	});
+	
+	$JQry(".procedure-variables > .row").draggable({
+		helper: function() {
+			var varValue = $JQry(this).children(".col-sm-4").first().text();
+	        return $JQry("<div></div>").text(varValue).addClass("procedure-variables-placeHolder");
+	    },
+	    scroll : false,
+	    zIndex : 100,
+	    cursorAt: { top: 5, left: 5 },
+		appendTo: "body"
+	});
+	$JQry(".filter-argument").droppable({
+	    accept: ".procedure-variables > .row",
+	    hoverClass: "filter-argument-dropActive",
+	    tolerance : "pointer",
+	    drop: function(ev, ui) {
+	    	var varValue = ui.draggable.children(".col-sm-4").first().text();
+	    	var varElement = $(this);
+	    	insertValueAtCaret(varElement, varValue);
+	    }
+	});
+	
 	
 	$JQry(".vocabularySelect-select2").each(function(index, element) {
 		var $element = $JQry(element);
@@ -518,3 +597,4 @@ function formatField(variable) {
 	}
 	return $result;
 };
+

@@ -93,6 +93,18 @@
                 </div>
                 <c:if test="${not empty form.selectedFilter}">
                     <div role="tabpanel" class="tab-pane <c:if test="${'edit' eq activeTab}">active</c:if>" id="Edit">
+                    
+	                    <div class="col-sm-12">
+	                    	<div class="pull-right">
+		                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseHelp" aria-expanded="false">
+		                    		<span data-toggle="tooltip" title="Aide">?</span>
+								</button>
+		                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseDico" aria-expanded="false">
+		                    		Dictionnaire
+	                    		</button>
+	                    	</div>
+	                    </div>
+                    
                         <div class="col-sm-12">
 	                        <div class="form-group">
 				                <form:label path="selectedFilter.filterName">Nom du filtre</form:label>
@@ -110,10 +122,10 @@
 				                </div>
 				                <div class="col-sm-8">
 				                    <c:if test="${argument.type eq 'TEXT'}">
-				                        <form:input path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" type="text" cssClass="form-control" placeholder="argumentValue" />
+				                        <form:input path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" type="text" cssClass="form-control filter-argument" placeholder="argumentValue" />
 				                    </c:if>
 				                    <c:if test="${argument.type eq 'TEXTAREA'}">
-				                        <form:textarea path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" />
+				                        <form:textarea path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control filter-argument" />
 				                    </c:if>
 				                    <c:if test="${argument.type eq 'BOOLEAN'}">
 				                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" value="true"/>
@@ -132,6 +144,36 @@
             </div>
         </div>
 		<div id="filter-sortable" class="col-sm-8">
+			<div class="panel panel-info collapse" id="collapseHelp">
+				<div class="panel-heading">Aide</div>
+				<div class="panel-body">
+					<p>texte d'aide</p>
+            	</div>
+            </div>
+            
+            <div class="panel panel-info collapse" id="collapseDico">
+            	<div class="panel-heading">Dictionnaire</div>
+            	<div class="panel-body">
+            		Cliquez sur le nom d'une variable pour l'ajouter. Ou glissez et déposez-là dans le champ voulu.
+            		<div class="col-sm-12">
+	            		<div class="row">
+	           				<div class="col-sm-4"><strong>Nom</strong></div>
+	           				<div class="col-sm-4"><strong>Label</strong></div>
+	           				<div class="col-sm-4"><strong>Type</strong></div>
+	           			</div>
+            		</div>
+           			<div class="procedure-variables col-sm-12">
+	          			<c:forEach var="variable" items="${form.procedureModel.variables}" varStatus="varStatus">
+		           			<div class="row" onclick="insertVarValueAtCaret(this);">
+		           				<div class="col-sm-4">${variable.value.name}</div>
+		           				<div class="col-sm-4">${variable.value.label}</div>
+		           				<div class="col-sm-4">${variable.value.type.label}</div>
+		           			</div>
+	          			</c:forEach>
+           			</div>
+               	</div>
+            </div>
+		
 		  <h4>Filtres installés : </h4>
 	        <ul class="filter-sortable">
 	            <c:forEach var="filter" items="${form.theSelectedAction.filters}" varStatus="status">

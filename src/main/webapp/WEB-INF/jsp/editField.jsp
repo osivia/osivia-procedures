@@ -131,7 +131,7 @@
 						</c:when>
 						<c:when test="${fieldType eq 'SELECTVOCAB'}">
 							<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl">
-								<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions[0]}" />
+								<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions}" />
 							</portlet:resourceURL>
 							<form:label
 								path="procedureInstance.globalVariablesValues['${field.name}']"
@@ -145,7 +145,7 @@
 						</c:when>
 						<c:when test="${fieldType eq 'SELECTVOCABMULTI'}">
 							<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl">
-								<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions[0]}" />
+								<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions}" />
 							</portlet:resourceURL>
 							<form:label
 								path="procedureInstance.globalVariablesValues['${field.name}']"

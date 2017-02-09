@@ -66,3 +66,42 @@ li .filter-selected{
 .vocabularySelect-select2{
 	width: 100%;
 }
+
+#collapseHelp {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: 10;
+}
+
+#collapseDico {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: 10;
+}
+
+#collapseDico .row {
+	min-height: 25px;
+}
+
+.procedure-variables .row:hover {
+	background-color: rgba(217, 237, 247, 0.8);
+}
+
+.procedure-variables-placeHolder{
+	border-color: rgba(217, 237, 247, 0.8);
+	border-width: 5px;
+	min-height: 25px;
+}
+
+.filter-argument-dropActive:hover{
+	background-color: rgba(217, 237, 247, 0.8);
+}
+
+.procedure-variables {
+	max-height: 400px;
+	overflow: auto;
+}

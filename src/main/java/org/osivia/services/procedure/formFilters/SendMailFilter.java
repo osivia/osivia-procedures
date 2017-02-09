@@ -60,9 +60,6 @@ public class SendMailFilter implements FormFilter {
     /** Continue workflow even if an error is thrown indicator. */
     private static final String CONTINUE_PARAMETER = "continue";
 
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
-
     /** Internationalization bundle factory. */
     private IBundleFactory bundleFactory;
     /** Notification service. */
@@ -163,6 +160,7 @@ public class SendMailFilter implements FormFilter {
             body.append(mailBodyVarScanner.nextLine());
             body.append("</p>");
         }
+        mailBodyVarScanner.close();
 
         // System properties
         Properties properties = System.getProperties();
