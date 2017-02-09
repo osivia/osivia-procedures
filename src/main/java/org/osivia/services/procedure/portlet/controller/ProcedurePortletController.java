@@ -213,9 +213,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             } else {
                 form.setSelectedStep("0");
             }
-            if (!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")) {
-                procedureService.updateVocabulariesWithValues(nuxeoController, form);
-            }
+            procedureService.updateVocabulariesWithValues(nuxeoController, form);
         } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, getPath(request));
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
