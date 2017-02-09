@@ -221,13 +221,6 @@
 		                                      <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
 		                                  </div>
 		                             </div>
-		                             <div class="form-group">
-			                            <form:label path="selectedField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
-			                            <div class="col-sm-9">
-			                                <form:input path="selectedField.helpText" type="text" cssClass="form-control" placeholder="Label" />
-			                                <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
-			                            </div>
-			                        </div>
                                 </c:if>
                                 <c:if test="${form.selectedField.fieldSet ne true}">
 	                               <div class="form-group">

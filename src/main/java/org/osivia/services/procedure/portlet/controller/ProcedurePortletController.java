@@ -734,7 +734,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editStep", params = "addFieldSet")
     public void addFieldSet(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        final Field field = new Field(form.getTheSelectedStep().getNextPath(), form.getNewFieldSet(), true);
+        AddField newFieldSet = form.getNewFieldSet();
+        final Field field = new Field(form.getTheSelectedStep().getNextPath(), newFieldSet, true);
+        form.getProcedureModel().getVariables().put(newFieldSet.getVariableName(), new Variable(newFieldSet));
         updateProcedureWithForm(request, response, form, field);
     }
 
