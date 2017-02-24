@@ -230,9 +230,9 @@
 				                      </div>
 			                         </div>
 			                        <div class="form-group">
-					                      <form:label path="selectedField.label" cssClass="col-sm-3 control-label">Label</form:label>
+					                      <form:label path="selectedField.superLabel" cssClass="col-sm-3 control-label">Label</form:label>
 					                      <div class="col-sm-9">
-					                          <form:input path="selectedField.label" type="text" cssClass="form-control" placeholder="Label" />
+					                          <form:input path="selectedField.superLabel" type="text" cssClass="form-control" placeholder="Label" />
 					                          <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
 					                      </div>
 				                     </div>
