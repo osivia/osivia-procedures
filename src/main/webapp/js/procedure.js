@@ -265,7 +265,7 @@ $JQry(function() {
 			var data = $JQry(this).select2('data');
 			$form = $JQry(this).closest("form");
 			$form.find("input[name$='newField.label']").val(data[0].label);
-			$form.find("select[name$='newField.type']").val(data[0].type);
+			$form.find("select[name$='newField.type']").val(data[0].type.id);
 			$form.find("input[name$='newField.varOptions']").val(data[0].varOptions);
 			// maj de l'éditeur avec le type
 			$JQry("select[name$='newField.type']").each(updateNewFieldType);
