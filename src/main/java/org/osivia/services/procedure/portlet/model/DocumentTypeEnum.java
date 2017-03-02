@@ -3,7 +3,7 @@ package org.osivia.services.procedure.portlet.model;
 
 public enum DocumentTypeEnum {
 
-    PROCEDUREMODEL("ProcedureModel"), PROCEDUREINSTANCE("ProcedureInstance");
+    PROCEDUREMODEL("ProcedureModel"), PROCEDUREINSTANCE("ProcedureInstance"), TASKDOC("TaskDoc");
 
     String name;
 

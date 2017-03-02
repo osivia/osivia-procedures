@@ -57,7 +57,14 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public ProcedureInstance retrieveProcedureInstanceByPath(NuxeoController nuxeoController, String path) throws PortletException;
+    public ProcedureInstance retrieveProcedureInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @return
+     * @throws PortletException
+     */
+    public ProcedureInstance retrieveProcedureInstanceById(NuxeoController nuxeoController, String uuid) throws PortletException;
 
     /**
      * @param nuxeoController

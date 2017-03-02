@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.services.procedure.portlet.adapter.ProcedureJSONAdapter;
@@ -29,6 +30,7 @@ import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
 import org.osivia.services.procedure.portlet.command.ListModelsContainerCommand;
 import org.osivia.services.procedure.portlet.command.ListProceduresModelsCommand;
 import org.osivia.services.procedure.portlet.command.LoadVocabularyCommand;
+import org.osivia.services.procedure.portlet.command.RetrieveDocumentByIdCommand;
 import org.osivia.services.procedure.portlet.command.RetrieveDocumentByWebIdCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
 import org.osivia.services.procedure.portlet.controller.ProcedurePortletAdminController;
@@ -51,6 +53,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyEntry;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyHelper;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
@@ -124,18 +127,33 @@ public class ProcedureServiceImpl implements IProcedureService {
 
 
     @Override
-    public ProcedureInstance retrieveProcedureInstanceByPath(NuxeoController nuxeoController, String path) throws PortletException {
+    public ProcedureInstance retrieveProcedureInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException {
 
         INuxeoCommand command;
         ProcedureInstance procedureInstance = null;
         try {
-            command = new RetrieveDocumentByWebIdCommand(path);
+            command = new RetrieveDocumentByWebIdCommand(webId);
+
+            nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+            nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            procedureInstance = new ProcedureInstance(currentDocument);
+            procedureInstance = new ProcedureInstance(currentDocument.getProperties());
         } catch (final Exception e) {
             throw new PortletException(e);
         }
         return procedureInstance;
+    }
+
+    @Override
+    public ProcedureInstance retrieveProcedureInstanceById(NuxeoController nuxeoController, String uuid) throws PortletException {
+
+        INuxeoCommand command = new RetrieveDocumentByIdCommand(uuid);
+        final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
+        PropertyMap properties = currentDocument.getProperties();
+        PropertyMap procedureInstanceMap = properties.getMap("nt:pi");
+        String piWebId = procedureInstanceMap.getString("ttc:webid");
+        return retrieveProcedureInstanceByWebId(nuxeoController, piWebId);
     }
 
 

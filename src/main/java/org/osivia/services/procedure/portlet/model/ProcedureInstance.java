@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
@@ -50,18 +49,17 @@ public class ProcedureInstance {
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
     }
 
-    public ProcedureInstance(Document document) {
+    public ProcedureInstance(PropertyMap documentProperties) {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
         setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
-        PropertyMap properties = document.getProperties();
-        setTaskDoc(properties.getMap("pi:task"));
-        currentStep = properties.getString("pi:currentStep");
-        setProcedureModelWebId(properties.getString("pi:procedureModelWebId"));
+        setTaskDoc(documentProperties.getMap("pi:task"));
+        currentStep = documentProperties.getString("pi:currentStep");
+        setProcedureModelWebId(documentProperties.getString("pi:procedureModelWebId"));
 
         // global variables
-        PropertyMap gvvList = properties.getMap("pi:globalVariablesValues");
+        PropertyMap gvvList = documentProperties.getMap("pi:globalVariablesValues");
         if (gvvList != null) {
             for (Entry<String, Object> gvvO : gvvList.getMap().entrySet()) {
                 globalVariablesValues.put(gvvO.getKey(), (String) gvvO.getValue());
@@ -69,7 +67,7 @@ public class ProcedureInstance {
         }
 
         // files
-        PropertyList fileList = properties.getList("pi:attachments");
+        PropertyList fileList = documentProperties.getList("pi:attachments");
         if (fileList != null) {
             FilePath filePath;
             for (Object fileO : fileList.list()) {
@@ -82,7 +80,7 @@ public class ProcedureInstance {
         }
 
         // objects
-        PropertyList objectsList = properties.getList("pi:procedureObjectInstances");
+        PropertyList objectsList = documentProperties.getList("pi:procedureObjectInstances");
         if (objectsList != null) {
             ProcedureObjectInstance procedureObjectInstance;
             for (Object procedureObjectInstanceO : objectsList.list()) {

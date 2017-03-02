@@ -12,7 +12,7 @@
 </c:if>
 
 <div>
-    <a href="${closeUrl}" class="btn btn-default">
+    <a href="${closeUrl}" class="btn btn-default no-ajax-link">
         <span>Terminer</span>
     </a>
 </div>
