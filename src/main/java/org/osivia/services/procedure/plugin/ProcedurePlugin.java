@@ -21,6 +21,8 @@ import org.osivia.services.procedure.formFilters.DeleteOnEndingFormFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
 import org.osivia.services.procedure.formFilters.SetActorFormFilter;
+import org.osivia.services.procedure.formFilters.SetInitiatorVariableFilter;
+import org.osivia.services.procedure.formFilters.SetStructureVariableFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
@@ -68,6 +70,8 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(SetActorFormFilter.ID, new SetActorFormFilter());
         formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
         formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
+        formFilters.put(SetInitiatorVariableFilter.ID, new SetInitiatorVariableFilter());
+        formFilters.put(SetStructureVariableFilter.ID, new SetStructureVariableFilter());
     }
 
 
