@@ -12,14 +12,24 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 
+/**
+ * Conditional form filter
+ *
+ * @author dorian
+ * @see FormFilter
+ */
 public class IfFilter implements FormFilter {
 
+    /** Identifier. */
     public static final String ID = "IfFilter";
 
+    /** Label internationalization key. */
     public static final String LABEL_KEY = "IF_FILTER_LABEL";
 
+    /** Description internationalization key. */
     public static final String DESCRIPTION_KEY = "IF_FILTER_DESCRIPTION";
 
+    /** condition_key parameter */
     private static final String condition_key = "IfCondition";
 
     @Override

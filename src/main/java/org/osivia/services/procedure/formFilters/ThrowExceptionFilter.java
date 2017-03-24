@@ -9,15 +9,24 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
-
+/**
+ * Throw filter execption form filter
+ *
+ * @author dorian
+ * @see FormFilter
+ */
 public class ThrowExceptionFilter implements FormFilter {
 
+    /** Identifier. */
     public static final String ID = "ThrowExceptionFilter";
 
+    /** Label internationalization key. */
     public static final String LABEL_KEY = "THROW_EXCEPTION_FILTER_LABEL";
 
+    /** Description internationalization key. */
     public static final String DESCRIPTION_KEY = "THROW_EXCEPTION_FILTER_DESCRIPTION";
 
+    /** message parameter */
     private static final String message = "message";
 
     @Override
