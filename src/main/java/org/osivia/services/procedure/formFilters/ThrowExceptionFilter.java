@@ -12,7 +12,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 /**
  * Throw filter execption form filter
  *
- * @author dorian
+ * @author Dorian Licois
  * @see FormFilter
  */
 public class ThrowExceptionFilter implements FormFilter {

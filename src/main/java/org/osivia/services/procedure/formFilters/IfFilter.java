@@ -15,7 +15,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 /**
  * Conditional form filter
  *
- * @author dorian
+ * @author Dorian Licois
  * @see FormFilter
  */
 public class IfFilter implements FormFilter {

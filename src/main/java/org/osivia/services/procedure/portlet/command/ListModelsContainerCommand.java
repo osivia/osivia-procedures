@@ -7,6 +7,9 @@ import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class ListModelsContainerCommand implements INuxeoCommand {
 
     private static final String select = "SELECT * FROM ProceduresModelsContainer";

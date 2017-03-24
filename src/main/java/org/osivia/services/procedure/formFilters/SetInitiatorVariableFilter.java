@@ -21,7 +21,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 /**
  * Fill variables with initiator data form filter
  *
- * @author dorian
+ * @author Dorian Licois
  * @see FormFilter
  */
 public class SetInitiatorVariableFilter implements FormFilter {

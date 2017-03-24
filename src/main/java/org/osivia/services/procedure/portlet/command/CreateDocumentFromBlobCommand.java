@@ -9,6 +9,9 @@ import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class CreateDocumentFromBlobCommand implements INuxeoCommand {
 
     /** path */

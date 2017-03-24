@@ -19,7 +19,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 /**
  * Fill variables with structure of initiator data form filter
  *
- * @author dorian
+ * @author Dorian Licois
  * @see FormFilter
  */
 public class SetStructureVariableFilter implements FormFilter {

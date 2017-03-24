@@ -14,7 +14,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 /**
  * Utilitarian class to parse from and serialize to JSON with custom configuration
  *
- * @author dorian
+ * @author Dorian Licois
  */
 public class ProcedureJSONAdapter {
 

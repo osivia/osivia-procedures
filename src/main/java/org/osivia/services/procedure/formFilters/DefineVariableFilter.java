@@ -13,7 +13,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 /**
  * Define a variable form filter
  *
- * @author dorian
+ * @author Dorian Licois
  * @see FormFilter
  */
 public class DefineVariableFilter implements FormFilter {
