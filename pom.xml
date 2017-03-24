@@ -11,7 +11,8 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>4.0.22-SNAPSHOT</toutatice.version>
+        <toutatice.version>4.0.32-SNAPSHOT</toutatice.version>
+        <toutatice.annuaire.v2.version>4.0.0-SNAPSHOT</toutatice.annuaire.v2.version>
 
     </properties>
 
@@ -25,7 +26,21 @@
             <version>${toutatice.version}</version>
             <scope>provided</scope>
         </dependency>
-
+        
+        <dependency>
+            <groupId>outils.ldap</groupId>
+	        <artifactId>toutatice-annuaire-v2-interfaces</artifactId>
+            <version>${toutatice.annuaire.v2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>outils.ldap</groupId>
+	        <artifactId>toutatice-annuaire-v2-implementations</artifactId>
+            <version>${toutatice.annuaire.v2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
     </dependencies>
 
 
