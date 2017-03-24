@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class ProcedureInstance {
 
@@ -34,6 +35,9 @@ public class ProcedureInstance {
     /** le document task */
     private PropertyMap taskDoc;
 
+    /** originalDocument */
+    private Document originalDocument;
+
     public ProcedureInstance() {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
@@ -49,7 +53,7 @@ public class ProcedureInstance {
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
     }
 
-    public ProcedureInstance(PropertyMap documentProperties) {
+    public ProcedureInstance(PropertyMap documentProperties, Document document) {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
@@ -57,6 +61,7 @@ public class ProcedureInstance {
         setTaskDoc(documentProperties.getMap("pi:task"));
         currentStep = documentProperties.getString("pi:currentStep");
         setProcedureModelWebId(documentProperties.getString("pi:procedureModelWebId"));
+        setOriginalDocument(document);
 
         // global variables
         PropertyMap gvvList = documentProperties.getMap("pi:globalVariablesValues");
@@ -92,6 +97,11 @@ public class ProcedureInstance {
             }
         }
 
+    }
+
+
+    public ProcedureInstance(Map<String, String> variables) {
+        globalVariablesValues = variables;
     }
 
     /**
@@ -240,5 +250,23 @@ public class ProcedureInstance {
      */
     public void setProcedureModelWebId(String procedureModelWebId) {
         this.procedureModelWebId = procedureModelWebId;
+    }
+
+    /**
+     * Getter for originalDocument.
+     *
+     * @return the originalDocument
+     */
+    public Document getOriginalDocument() {
+        return originalDocument;
+    }
+
+    /**
+     * Setter for originalDocument.
+     *
+     * @param originalDocument the originalDocument to set
+     */
+    public void setOriginalDocument(Document originalDocument) {
+        this.originalDocument = originalDocument;
     }
 }

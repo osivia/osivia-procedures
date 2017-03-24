@@ -15,7 +15,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public interface IProcedureService {
 

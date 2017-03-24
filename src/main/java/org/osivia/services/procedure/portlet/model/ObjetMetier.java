@@ -5,7 +5,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class ObjetMetier {
 

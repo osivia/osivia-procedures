@@ -8,7 +8,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class Argument {
 

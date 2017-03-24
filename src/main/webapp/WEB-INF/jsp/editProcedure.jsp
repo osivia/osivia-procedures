@@ -2,8 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-
-
 <portlet:defineObjects />
 
 <portlet:actionURL name="editProcedure" var="editProcedureUrl">
@@ -76,29 +74,28 @@
             <h3 class="panel-title">Liste des étapes</h3>
         </div>
         <div class="panel-body">
-            <ul class="list-unstyled">
+            <ul class="list-unstyled steps-sortable">
                 <c:forEach var="step" items="${form.procedureModel.steps}" varStatus="status">
                     <li class="form-group">
-                        <div class="col-sm-9">${step.stepName}</div>
-                        <div class="btn-group col-sm-3">
-                            <button type="submit" name="editStep" onclick="selector(this,'${status.index}','selectedStep')" class="btn btn-default">
+                        <div class="col-sm-10">${step.stepName}</div>
+                        <div class="btn-group col-sm-2">
+                            <button type="submit" name="editStep" onclick="selector(this,'${status.index}','selectedStep')" class="btn btn-default pull-riht">
                                 <i class="glyphicons glyphicons-edit"></i>
                             </button>
-                            <button type="submit" name="duplicateStep" class="btn btn-default" onclick="selector(this,'${status.index}','selectedStep')">
-                                <i class="glyphicons glyphicons-duplicate"></i>
-                            </button>
-                            <button type="submit" name="deleteStep" class="btn btn-default" onclick="selector(this,'${status.index}','selectedStep')">
-                                <i class="glyphicons glyphicons-remove-2"></i>
+                            <button type="submit" name="deleteStep" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedStep')">
+                                <i class="glyphicons glyphicons-bin"></i>
                             </button>
                         </div>
+                        <form:hidden path="procedureModel.steps[${status.index}].index"/>
                     </li>
                 </c:forEach>
             </ul>
         </div>
         <div class="panel-footer">
             <div class="form-group">
-                <div class="col-sm-11">
+                <div class="col-sm-12">
                     <button type="submit" class="btn btn-default" onclick="selector(this,'0','selectedStep')" name="addStep">Ajouter une étape</button>
+                    <button type="submit" class="btn btn-default pull-right" name="manageVariables">Accéder au dictionnaire des variables</button>
                 </div>
             </div>
         </div>
@@ -138,7 +135,7 @@
                             </div>
                             <div class="btn-group col-sm-1">
                                 <button type="submit" name="deleteObject" class="btn btn-default" onclick="selector(this,'${status.index}','selectedObject')">
-                                    <i class="glyphicons glyphicons-remove-2"></i>
+                                    <i class="glyphicons glyphicons-bin"></i>
                                 </button>
                             </div>
                          </li>

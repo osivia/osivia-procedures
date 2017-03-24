@@ -36,6 +36,11 @@ public class Step implements Comparable<Step> {
     @JsonProperty("actions")
     private List<Action> actions;
 
+
+    /** initAction */
+    @JsonProperty("initAction")
+    private Action initAction;
+
     /** index */
     @JsonProperty("index")
     private Integer index;
@@ -89,6 +94,25 @@ public class Step implements Comparable<Step> {
     private String endStepMsg;
 
 
+    /**
+     * Getter for initAction.
+     *
+     * @return the initAction
+     */
+    public Action getInitAction() {
+        return initAction;
+    }
+
+
+    /**
+     * Setter for initAction.
+     *
+     * @param initAction the initAction to set
+     */
+    public void setInitAction(Action initAction) {
+        this.initAction = initAction;
+    }
+
     public Step() {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
@@ -131,15 +155,24 @@ public class Step implements Comparable<Step> {
             }
         }
 
+        final PropertyMap initActionPmap = stepM.getMap("initAction");
+        Action action;
+        if (initActionPmap != null) {
+            action = new Action(initActionPmap, nuxeoController);
+        } else {
+            action = new Action();
+        }
+        setInitAction(action);
+
         final PropertyList actionsList = stepM.getList("actions");
         if (actionsList != null) {
-            Action action;
             for (final Object actionO : actionsList.list()) {
                 final PropertyMap actionN = (PropertyMap) actionO;
                 action = new Action(actionN, nuxeoController);
                 getActions().add(action);
             }
         }
+
         final PropertyList actorsObjectsList = stepM.getList("actors");
         if (actorsObjectsList != null) {
             final List<String> actors = new ArrayList<String>();
@@ -148,6 +181,7 @@ public class Step implements Comparable<Step> {
             }
             setActors(actors);
         }
+
         setStepName(stepM.getString("name"));
         setIndex(stepM.getLong("index").intValue());
         setReference(stepM.getString("reference"));

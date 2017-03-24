@@ -59,6 +59,9 @@ public class JSONAdapterTest {
         field2.setInput(true);
         field2.setName("fieldName2");
         step.getFields().add(field2);
+        Action initAction = new Action();
+        initAction.setFiltersList(filtersList);
+        step.setInitAction(initAction);
         procedure.getSteps().add(step);
         final Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT, null);
         procedure.getVariables().put("fieldName", variable);

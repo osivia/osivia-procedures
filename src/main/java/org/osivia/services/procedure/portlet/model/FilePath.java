@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
         creatorVisibility = Visibility.NONE)

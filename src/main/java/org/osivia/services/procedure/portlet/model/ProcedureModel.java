@@ -112,7 +112,6 @@ public class ProcedureModel {
     }
 
     public void updateStepsIndexes() {
-
         Collections.sort(getSteps());
         for (int i = 0; i < getSteps().size(); i++) {
             getSteps().get(i).setIndex(i);

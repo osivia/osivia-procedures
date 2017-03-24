@@ -138,7 +138,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
 
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            procedureInstance = new ProcedureInstance(currentDocument.getProperties());
+            procedureInstance = new ProcedureInstance(currentDocument.getProperties(), currentDocument);
         } catch (final Exception e) {
             throw new PortletException(e);
         }

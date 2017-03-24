@@ -36,24 +36,29 @@
 </div>
 
 <form:form modelAttribute="form" action="${editActionUrl}" method="post" cssClass="form-horizontal" role="form">
-    <div class="form-group">
-        <div class="col-sm-2">
-            <label class="control-label">Label</label>
-        </div>
-        <div class="col-sm-8">${form.theSelectedAction.label}</div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            <label class="control-label">Identifiant de l'action</label>
-        </div>
-        <div class="col-sm-8">${form.theSelectedAction.actionId}</div>
-    </div>
-    <div class="form-group">
-	    <div class="col-sm-2">
-	        <label class="control-label">Référence de l'étape cible</label>
+	<c:if test="${form.selectedAction < 0}">
+		<h3>Action d'initialisation de l'étape</h3>
+	</c:if>
+	<c:if test="${form.selectedAction >= 0}">
+	    <div class="form-group">
+	        <div class="col-sm-2">
+	            <label class="control-label">Label</label>
+	        </div>
+	        <div class="col-sm-8">${form.theSelectedAction.label}</div>
 	    </div>
-	    <div class="col-sm-8">${form.theSelectedAction.stepReference}</div>
-    </div>
+	    <div class="form-group">
+	        <div class="col-sm-2">
+	            <label class="control-label">Identifiant de l'action</label>
+	        </div>
+	        <div class="col-sm-8">${form.theSelectedAction.actionId}</div>
+	    </div>
+	    <div class="form-group">
+		    <div class="col-sm-2">
+		        <label class="control-label">Référence de l'étape cible</label>
+		    </div>
+		    <div class="col-sm-8">${form.theSelectedAction.stepReference}</div>
+	    </div>
+    </c:if>
     <hr>
 
     <div class="row">

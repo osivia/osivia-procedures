@@ -113,6 +113,18 @@ $JQry(function() {
 		}
 	});
 	
+	$JQry(".steps-sortable").sortable({
+		cursor : "move",
+		tolerance : "pointer",
+		axis: "y",
+		stop: function(event, ui) {
+			$JQry(this).find("li").each(function(index, element) {
+				$JQry(element).find("input[name$='index']").val(index);
+			});
+		}
+	});
+	
+	
 	// sélection d'un champ
 	$JQry("#procedure-sortable li").click(function(event) {
 		

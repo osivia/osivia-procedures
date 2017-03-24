@@ -87,6 +87,15 @@ li .filter-selected{
 	min-height: 25px;
 }
 
+.procedure-variables-dico .row{
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.procedure-variables-dico .row:hover {
+	background-color: rgba(217, 237, 247, 0.8);
+}
+
 .procedure-variables .row:hover {
 	background-color: rgba(217, 237, 247, 0.8);
 }
@@ -104,4 +113,12 @@ li .filter-selected{
 .procedure-variables {
 	max-height: 400px;
 	overflow: auto;
+}
+
+.ui-sortable-handle:hover{
+	cursor: pointer;
+}
+
+.ui-sortable-handle label:hover{
+	cursor: pointer;
 }

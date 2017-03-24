@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class Form {
 
@@ -106,7 +106,11 @@ public class Form {
      * @return the selected Action
      */
     public Action getTheSelectedAction() {
-        return getTheSelectedStep().getActions().get(Integer.valueOf(selectedAction));
+        if (StringUtils.equals(selectedAction, "-1")) {
+            return getTheSelectedStep().getInitAction();
+        } else {
+            return getTheSelectedStep().getActions().get(Integer.valueOf(selectedAction));
+        }
     }
 
 

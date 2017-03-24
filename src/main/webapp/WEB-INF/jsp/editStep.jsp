@@ -211,7 +211,7 @@
                                     <div class="form-group">
                                       <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
                                       <div class="col-sm-9">
-                                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" disabled="true"/>
+                                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" disabled="true" />
                                       </div>
                                      </div>
                                     <div class="form-group">
@@ -226,7 +226,7 @@
 	                               <div class="form-group">
 				                      <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
 				                      <div class="col-sm-9">
-				                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" />
+				                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" disabled="true" />
 				                      </div>
 			                         </div>
 			                        <div class="form-group">
@@ -343,54 +343,62 @@
             </div>
 	    </div>
 	    <div role="tabpanel" class="tab-pane <c:if test="${'action' eq activeTab}">active</c:if>" id="Actions">
-	       <ul class="list-unstyled">
-	              <li class="form-group">
-	                 <div class="col-sm-2">
-	                     <label class="control-label">Label</label>
-	                 </div>
-	                 <div class="col-sm-4">
-	                     <label class="control-label">Identifiant de l'action</label>
-	                 </div>
-	                 <div class="col-sm-4">
-	                     <label class="control-label">Étape cible</label>
-	                 </div>
-	              </li>
-	              <c:forEach var="action" items="${form.theSelectedStep.actions}" varStatus="status">
-	                  <li class="form-group">
-	                      <div class="col-sm-2">
-	                          <form:input path="theSelectedStep.actions[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
-	                      </div>
+	    
+       <ul class="list-unstyled">
+             <li class="form-group">
+                <div class="col-sm-2">
+                    <label class="control-label">Label</label>
+                </div>
+                <div class="col-sm-4">
+                    <label class="control-label">Identifiant de l'action</label>
+                </div>
+                <div class="col-sm-4">
+                    <label class="control-label">Étape cible</label>
+                </div>
+             </li>
+              <c:forEach var="action" items="${form.theSelectedStep.actions}" varStatus="status">
+                  <li class="form-group">
+                      <div class="col-sm-2">
+                          <form:input path="theSelectedStep.actions[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
+                      </div>
+                      <div class="col-sm-4">
+                          <form:input path="theSelectedStep.actions[${status.index}].actionId" type="text" cssClass="form-control" placeholder="actionId" />
+                      </div>
+                      <c:if test="${form.advancedMode}">
 	                      <div class="col-sm-4">
-	                          <form:input path="theSelectedStep.actions[${status.index}].actionId" type="text" cssClass="form-control" placeholder="actionId" />
+	                          <form:input path="theSelectedStep.actions[${status.index}].stepReference" type="text" cssClass="form-control" placeholder="stepReference" />
 	                      </div>
-	                      <c:if test="${form.advancedMode}">
-		                      <div class="col-sm-4">
-		                          <form:input path="theSelectedStep.actions[${status.index}].stepReference" type="text" cssClass="form-control" placeholder="stepReference" />
-		                      </div>
-	                      </c:if>
-	                      <c:if test="${!form.advancedMode}">
-	                           <div class="col-sm-4">
-			                        <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
-			                           <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
-			                        </form:select>
-		                        </div>
-	                       </c:if>
-	                      
-	                      <div class="btn-group col-sm-2">
-	                          <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
-	                              <i class="glyphicons glyphicons-edit"></i>
-	                          </button>
-	                          <button type="submit" name="deleteButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
-	                              <i class="glyphicons glyphicons-remove-2"></i>
-	                          </button>
-	                      </div>
-	                  </li>
-	              </c:forEach>
-	          </ul>
+                      </c:if>
+                      <c:if test="${!form.advancedMode}">
+                           <div class="col-sm-4">
+		                        <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
+		                           <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
+		                        </form:select>
+	                        </div>
+                       </c:if>
+                      
+                      <div class="btn-group col-sm-2">
+                          <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
+                              <i class="glyphicons glyphicons-edit"></i>
+                          </button>
+                          <button type="submit" name="deleteButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
+                              <i class="glyphicons glyphicons-bin"></i>
+                          </button>
+                      </div>
+                  </li>
+              </c:forEach>
+          </ul>
+	          
+	          
            <div class="form-group">
 		       <div class="col-sm-1">
 	               <button type="submit" name="addButton" class="btn btn-default">Ajouter une action</button>
 	           </div>
+	           <div class="col-sm-1">
+		           <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'-1','selectedButton')">
+			        	</i>Éditer l'action d'initialisation de l'étape
+			        </button>
+		        </div>
            </div>
 	    </div>
 	    <div role="tabpanel" class="tab-pane" id="Métadonnées">

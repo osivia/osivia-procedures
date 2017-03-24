@@ -2,7 +2,7 @@ package org.osivia.services.procedure.portlet.model;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class SelectStep {
 

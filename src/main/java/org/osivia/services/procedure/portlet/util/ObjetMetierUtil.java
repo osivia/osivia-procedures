@@ -2,7 +2,6 @@ package org.osivia.services.procedure.portlet.util;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -18,6 +17,9 @@ import org.osivia.services.procedure.portlet.model.ProcedureModel;
 
 public class ObjetMetierUtil {
 
+    private ObjetMetierUtil() {
+    }
+
     // ecm://{object}/{variable}
     public static final Pattern objectPattern = Pattern.compile("^ecm:\\/\\/([\\w.]+)\\/([\\w.:]+)");
 
@@ -26,7 +28,7 @@ public class ObjetMetierUtil {
         Map<String, ObjetMetier> objetMetiers = new HashMap<String, ObjetMetier>();
         Matcher matcher;
         Set<String> fileContentToDelete = new TreeSet<String>();
-        
+
         // for each variable
         Iterator<Entry<String, String>> gvvI = procedureInstance.getGlobalVariablesValues().entrySet().iterator();
         while (gvvI.hasNext()) {
@@ -49,16 +51,16 @@ public class ObjetMetierUtil {
                         objetMetiers.get(objectName).getProperties().set(objectProperty, gvv.getValue());
                         gvvI.remove();
                         fileContentToDelete.add(fileContentName);
-                       
+
                     }
                 }
             }
         }
-        
+
         for (String toDelete: fileContentToDelete)  {
             procedureInstance.getFilesPath().remove(toDelete);
         }
-        
+
         return objetMetiers;
     }
 

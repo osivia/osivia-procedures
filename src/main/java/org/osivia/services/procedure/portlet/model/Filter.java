@@ -19,7 +19,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
         creatorVisibility = Visibility.NONE)
