@@ -87,7 +87,8 @@
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<input type="text" name="procedureInstance.globalVariablesValues['${field.name}']"
-									value='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-radioList-json">
+									data-varOptions='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-radioList-json"
+									value="${form.procedureInstance.globalVariablesValues[field.name]}" >
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -100,7 +101,8 @@
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<input type="text" name="procedureInstance.globalVariablesValues['${field.name}']"
-									value='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-checkboxList-json">
+									data-varOptions='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-checkboxList-json"
+									value="${form.procedureInstance.globalVariablesValues[field.name]}" >
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -123,7 +125,8 @@
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<input type="text" name="procedureInstance.globalVariablesValues['${field.name}']"
-									value='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-selectList-json">
+									data-varOptions='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-selectList-json"
+									value="${form.procedureInstance.globalVariablesValues[field.name]}" >
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>

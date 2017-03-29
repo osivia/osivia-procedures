@@ -397,11 +397,12 @@ $JQry(function() {
 	// construction des champs radio à partir des données
 	$JQry(".field-radioList-json").each(function(index){
 		var name = $JQry(this).attr("name");
-		var json = $JQry(this).val();
-		if (json.trim().length > 0) {
-			var radioList = JSON.parse(json).reverse();
+		var dataValue = $JQry(this).val();
+		var json = $JQry(this).data("varoptions");
+		if (json.length > 0) {
+			var radioList = json.reverse();
 			for (var i = 0; i < radioList.length; i++) {
-				$JQry(this).after(makeRadioFromData(name, radioList[i].label, radioList[i].value));
+				$JQry(this).after(makeRadioFromData(name, radioList[i].label, radioList[i].value, dataValue));
 			}
 		}
 	});
@@ -412,11 +413,12 @@ $JQry(function() {
 	// construction des champs checkbox à partir des données
 	$JQry(".field-checkboxList-json").each(function(index){
 		var name = $JQry(this).attr("name");
-		var json = $JQry(this).val();
-		if (json.trim().length > 0) {
-			var checkboxList = JSON.parse(json).reverse();
+		var dataValue = $JQry(this).val();
+		var json = $JQry(this).data("varoptions");
+		if (json.length > 0) {
+			var checkboxList = json.reverse();
 			for (var i = 0; i < checkboxList.length; i++) {
-				$JQry(this).after(makeCheckboxFromData(name, checkboxList[i].label, checkboxList[i].value));
+				$JQry(this).after(makeCheckboxFromData(name, checkboxList[i].label, checkboxList[i].value, dataValue));
 			}
 		}
 	});
@@ -427,10 +429,11 @@ $JQry(function() {
 	// construction des champs select à partir des données
 	$JQry(".field-selectList-json").each(function(index){
 		var name = $JQry(this).attr("name");
-		var json = $JQry(this).val();
-		if (json.trim().length > 0) {
-			var selectList = JSON.parse(json);
-			makeSelectFromData(this, name, selectList);
+		var dataValue = $JQry(this).val();
+		var json = $JQry(this).data("varoptions");
+		if (json.length > 0) {
+			var selectList = json;
+			makeSelectFromData(this, name, selectList, dataValue);
 		}
 	});
 	$JQry(".field-selectList-json").each(function(index, element){
@@ -484,7 +487,7 @@ $JQry(function() {
 	
 });
 
-function makeRadioFromData(name, label, value){
+function makeRadioFromData(name, label, value, dataValue){
 	var inputTag = document.createElement("input");
 	$JQry(inputTag).attr({
 		type : 'radio',
@@ -492,21 +495,31 @@ function makeRadioFromData(name, label, value){
 		value : value
 	});
 	var labelTag = document.createElement("label");
+	
+	if(value==dataValue){
+		$JQry(inputTag).prop("checked", true);
+	}
+	
 	return $JQry(labelTag).addClass("radio-inline").append(inputTag).append(label);
 }
 
-function makeCheckboxFromData(name, label, value){
+function makeCheckboxFromData(name, label, value, dataValue){
 	var inputTag = document.createElement("input");
 	$JQry(inputTag).attr({
 		type : 'checkbox',
 		name : name,
 		value : value
 	});
+	
+	if(value==dataValue){
+		$JQry(inputTag).prop("checked", true);
+	}
+	
 	var labelTag = document.createElement("label");
 	return $JQry(labelTag).addClass("checkbox-inline").append(inputTag).append(label);
 }
 
-function makeSelectFromData(element, name, selectList){
+function makeSelectFromData(element, name, selectList, dataValue){
 	var selectTag = document.createElement("select");
 	
 	for (var i = 0; i < selectList.length; i++) {
@@ -514,7 +527,7 @@ function makeSelectFromData(element, name, selectList){
 		$JQry(selectTag).append($JQry(optionTag).val(selectList[i].value).text(selectList[i].label));
 	}
 	$JQry(element).after(selectTag);
-	
+	$JQry(selectTag).val(dataValue);
 	$JQry(selectTag).addClass("form-control").attr("name",name).select2({
 		theme : "bootstrap"
 	});

@@ -106,6 +106,11 @@
 								</button>
 		                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseDico" aria-expanded="false">
 		                    		Dictionnaire
+		                    		
+		                    		procedureInitiator
+		                    		taskInitiator
+		                    		procedureStartDate
+		                    		procedureLastModified
 	                    		</button>
 	                    	</div>
 	                    </div>
