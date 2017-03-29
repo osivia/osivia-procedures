@@ -80,9 +80,9 @@ public class SetStructureVariableFilter implements FormFilter {
                     String codeAcademie = structure.getCodeAcademie();
 
                     context.getVariables().put("procedureInitiator_typeStructure", structure.getTypestructure());
-                    context.getVariables().put("procedureInitiator_displayName", structure.getDisplayName());
-                    context.getVariables().put("procedureInitiator_localisation", structure.getLocalisation());
-                    context.getVariables().put("procedureInitiator_codePostal", structure.getCodePostal());
+                    context.getVariables().put("procedureInitiator_structDisplayName", structure.getDisplayName());
+                    context.getVariables().put("procedureInitiator_structLocalisation", structure.getLocalisation());
+                    context.getVariables().put("procedureInitiator_structCodePostal", structure.getCodePostal());
 
                 }
             }
