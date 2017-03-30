@@ -122,3 +122,7 @@ li .filter-selected{
 .ui-sortable-handle label:hover{
 	cursor: pointer;
 }
+
+.pre-wrap {
+	white-space: pre-wrap;
+}

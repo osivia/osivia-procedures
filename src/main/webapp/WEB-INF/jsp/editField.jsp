@@ -1,13 +1,15 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 
-<li class="form-group <c:if test="${form.selectedField.path eq field.path}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>">
+<li
+	class="form-group <c:if test="${form.selectedField.path eq field.path}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>">
 	<div class="col-sm-9">
 		<div class="row">
-			<c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
+			<c:set var="fieldType"
+				value="${form.procedureModel.variables[field.name].type}" />
 			<c:choose>
 				<c:when test="${field.input eq true}">
 					<c:choose>
@@ -81,14 +83,17 @@
 								</c:if>
 							</div>
 						</c:when>
-						<c:when test="${(fieldType eq 'RADIOLIST') or (fieldType eq 'RADIOVOCAB')}">
+						<c:when
+							test="${(fieldType eq 'RADIOLIST') or (fieldType eq 'RADIOVOCAB')}">
 							<form:label
 								path="procedureInstance.globalVariablesValues['${field.name}']"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
-								<input type="text" name="procedureInstance.globalVariablesValues['${field.name}']"
-									data-varOptions='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-radioList-json"
-									value="${form.procedureInstance.globalVariablesValues[field.name]}" >
+								<input type="text"
+									name="procedureInstance.globalVariablesValues['${field.name}']"
+									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
+									class="hidden field-radioList-json"
+									value="${form.procedureInstance.globalVariablesValues[field.name]}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -100,9 +105,11 @@
 								path="procedureInstance.globalVariablesValues['${field.name}']"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
-								<input type="text" name="procedureInstance.globalVariablesValues['${field.name}']"
-									data-varOptions='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-checkboxList-json"
-									value="${form.procedureInstance.globalVariablesValues[field.name]}" >
+								<input type="text"
+									name="procedureInstance.globalVariablesValues['${field.name}']"
+									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
+									class="hidden field-checkboxList-json"
+									value="${form.procedureInstance.globalVariablesValues[field.name]}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -115,46 +122,60 @@
 												function() {
 													$JQry(
 															"#selectVariable_${status.index}")
-															.select2({
-																theme : "bootstrap"
-															});
+															.select2(
+																	{
+																		theme : "bootstrap"
+																	});
 												});
 							</script>
 							<form:label
 								path="procedureInstance.globalVariablesValues['${field.name}']"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
-								<input type="text" name="procedureInstance.globalVariablesValues['${field.name}']"
-									data-varOptions='${form.procedureModel.variables[field.name].varOptions}' class="hidden field-selectList-json"
-									value="${form.procedureInstance.globalVariablesValues[field.name]}" >
+								<input type="text"
+									name="procedureInstance.globalVariablesValues['${field.name}']"
+									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
+									class="hidden field-selectList-json"
+									value="${form.procedureInstance.globalVariablesValues[field.name]}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
 							</div>
 						</c:when>
 						<c:when test="${fieldType eq 'SELECTVOCAB'}">
-							<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl">
-								<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions}" />
+							<portlet:resourceURL id="vocabularySearch"
+								var="vocabularySearchUrl">
+								<portlet:param name="vocabularyName"
+									value="${form.procedureModel.variables[field.name].varOptions}" />
 							</portlet:resourceURL>
 							<form:label
 								path="procedureInstance.globalVariablesValues['${field.name}']"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
-								<form:select path="procedureInstance.globalVariablesValues['${field.name}']" class="form-control select2 vocabularySelect-select2" cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
+								<form:select
+									path="procedureInstance.globalVariablesValues['${field.name}']"
+									class="form-control select2 vocabularySelect-select2"
+									cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
 							</div>
 						</c:when>
 						<c:when test="${fieldType eq 'SELECTVOCABMULTI'}">
-							<portlet:resourceURL id="vocabularySearch" var="vocabularySearchUrl">
-								<portlet:param name="vocabularyName" value="${form.procedureModel.variables[field.name].varOptions}" />
+							<portlet:resourceURL id="vocabularySearch"
+								var="vocabularySearchUrl">
+								<portlet:param name="vocabularyName"
+									value="${form.procedureModel.variables[field.name].varOptions}" />
 							</portlet:resourceURL>
 							<form:label
 								path="procedureInstance.globalVariablesValues['${field.name}']"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
-								<form:select path="procedureInstance.globalVariablesValues['${field.name}']" multiple="true" class="form-control select2 vocabularySelect-select2" cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
+								<form:select
+									path="procedureInstance.globalVariablesValues['${field.name}']"
+									multiple="true"
+									class="form-control select2 vocabularySelect-select2"
+									cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -176,19 +197,28 @@
 							</div>
 						</c:when>
 						<c:otherwise>
-					        <p>error</p>
+							<p>error</p>
 						</c:otherwise>
 					</c:choose>
 				</c:when>
 				<c:otherwise>
 					<c:choose>
 						<c:when
-							test="${(fieldType eq 'TEXT') or (fieldType eq 'TEXTAREA') or (fieldType eq 'DATE') or (fieldType eq 'SELECTLIST') or (fieldType eq 'RADIOLIST')
+							test="${(fieldType eq 'TEXT') or (fieldType eq 'DATE') or (fieldType eq 'SELECTLIST') or (fieldType eq 'RADIOLIST')
 	                    				or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
-							<div class="col-sm-3">
-								${field.superLabel} :</div>
+							<div class="col-sm-3">${field.superLabel}:</div>
 							<div class="col-sm-9">
-								${form.procedureInstance.globalVariablesValues[field.name]}
+								<c:out
+									value="${form.procedureInstance.globalVariablesValues[field.name]}" />
+								<c:if test="${not empty field.helpText}">
+									<span class="help-block">${field.helpText}</span>
+								</c:if>
+							</div>
+						</c:when>
+						<c:when test="${fieldType eq 'TEXTAREA'}">
+							<div class="col-sm-3">${field.superLabel}:</div>
+							<div class="col-sm-9">
+								<span class="pre-wrap"><c:out value="${form.procedureInstance.globalVariablesValues[field.name]}" /></span>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -196,8 +226,7 @@
 						</c:when>
 						<c:when
 							test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
-							<div class="col-sm-3">
-								${field.superLabel} :</div>
+							<div class="col-sm-3">${field.superLabel}:</div>
 							<div class="col-sm-9">${form.procedureInstance.globalVariablesValues[field.name]}
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
@@ -218,9 +247,9 @@
 				</c:otherwise>
 			</c:choose>
 		</div>
-	</div>
-	<c:forEach var="pathPart" items="${field.path}" varStatus="status">
-		<c:set var="springPath" value="${status.first ? 'theSelectedStep' : springPath}.fields[${pathPart}]" scope="request"/>
-	</c:forEach>
-	<form:hidden path="${springPath}.path"/>
+	</div> <c:forEach var="pathPart" items="${field.path}" varStatus="status">
+		<c:set var="springPath"
+			value="${status.first ? 'theSelectedStep' : springPath}.fields[${pathPart}]"
+			scope="request" />
+	</c:forEach> <form:hidden path="${springPath}.path" />
 </li>
