@@ -22,7 +22,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
  * @author Dorian Licois
  */
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
-        creatorVisibility = Visibility.NONE)
+creatorVisibility = Visibility.NONE)
 public class Filter implements Comparable<Filter> {
 
     /** filterName */
@@ -57,9 +57,9 @@ public class Filter implements Comparable<Filter> {
     @JsonIgnore
     private String labelKey;
 
-    /** decriptionKey */
+    /** descriptionKey */
     @JsonIgnore
-    private String decriptionKey;
+    private String descriptionKey;
 
     /** classLoader */
     @JsonIgnore
@@ -74,7 +74,7 @@ public class Filter implements Comparable<Filter> {
         setFilterInstanceId(getFilterId().concat(getFilterPath()));
         setHasChildren(formFilter.hasChildren());
         setLabelKey(formFilter.getLabelKey());
-        setDecriptionKey(formFilter.getDescriptionKey());
+        setDescriptionKey(formFilter.getDescriptionKey());
         setClassLoader(formFilter.getClass().getClassLoader());
         if (formFilter.getParameters() != null) {
             final List<Argument> argumentsList = new ArrayList<Argument>(formFilter.getParameters().entrySet().size());
@@ -98,7 +98,7 @@ public class Filter implements Comparable<Filter> {
         FormFilter formFilter = formsFilters.get(getFilterId());
         if (formFilter != null) {
             setLabelKey(formFilter.getLabelKey());
-            setDecriptionKey(formFilter.getDescriptionKey());
+            setDescriptionKey(formFilter.getDescriptionKey());
             setHasChildren(formFilter.hasChildren());
             setClassLoader(formFilter.getClass().getClassLoader());
         }
@@ -237,7 +237,7 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Getter for filterInstanceId.
-     * 
+     *
      * @return the filterInstanceId
      */
     public String getFilterInstanceId() {
@@ -246,7 +246,7 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Setter for filterInstanceId.
-     * 
+     *
      * @param filterInstanceId the filterInstanceId to set
      */
     public void setFilterInstanceId(String filterInstanceId) {
@@ -256,7 +256,7 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Getter for filters.
-     * 
+     *
      * @return the filters
      */
     public List<Filter> getFilters() {
@@ -266,7 +266,7 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Setter for filters.
-     * 
+     *
      * @param filters the filters to set
      */
     public void setFilters(List<Filter> filters) {
@@ -275,7 +275,7 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Getter for hasChildren.
-     * 
+     *
      * @return the hasChildren
      */
     public boolean isHasChildren() {
@@ -284,7 +284,7 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Setter for hasChildren.
-     * 
+     *
      * @param hasChildren the hasChildren to set
      */
     public void setHasChildren(boolean hasChildren) {
@@ -293,7 +293,7 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Getter for labelKey.
-     * 
+     *
      * @return the labelKey
      */
     public String getLabelKey() {
@@ -302,34 +302,36 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Setter for labelKey.
-     * 
+     *
      * @param labelKey the labelKey to set
      */
     public void setLabelKey(String labelKey) {
         this.labelKey = labelKey;
     }
 
-    /**
-     * Getter for decriptionKey.
-     * 
-     * @return the decriptionKey
-     */
-    public String getDecriptionKey() {
-        return decriptionKey;
-    }
 
     /**
-     * Setter for decriptionKey.
+     * Getter for descriptionKey.
      * 
-     * @param decriptionKey the decriptionKey to set
+     * @return the descriptionKey
      */
-    public void setDecriptionKey(String decriptionKey) {
-        this.decriptionKey = decriptionKey;
+    public String getDescriptionKey() {
+        return descriptionKey;
+    }
+
+
+    /**
+     * Setter for descriptionKey.
+     * 
+     * @param descriptionKey the descriptionKey to set
+     */
+    public void setDescriptionKey(String descriptionKey) {
+        this.descriptionKey = descriptionKey;
     }
 
     /**
      * Getter for classLoader.
-     * 
+     *
      * @return the classLoader
      */
     public ClassLoader getClassLoader() {
@@ -338,7 +340,7 @@ public class Filter implements Comparable<Filter> {
 
     /**
      * Setter for classLoader.
-     * 
+     *
      * @param classLoader the classLoader to set
      */
     public void setClassLoader(ClassLoader classLoader) {

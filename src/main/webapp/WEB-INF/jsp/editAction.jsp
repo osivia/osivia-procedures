@@ -66,7 +66,7 @@
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="<c:if test="${empty activeTab or 'edit' ne activeTab}">active</c:if>"><a href="#Create" role="tab" data-toggle="tab" class="no-ajax-link">Ajouter un filtre</a></li>
                 <c:if test="${not empty form.selectedFilter}">
-	                <li role="presentation" class="<c:if test="${'edit' eq activeTab}">active</c:if>"><a href="#Edit" role="tab" data-toggle="tab" class="no-ajax-link">Actions</a></li>
+	                <li role="presentation" class="<c:if test="${'edit' eq activeTab}">active</c:if>"><a href="#Edit" role="tab" data-toggle="tab" class="no-ajax-link">Éditer un filtre</a></li>
                 </c:if>
             </ul>
             <div class="tab-content">
@@ -99,56 +99,69 @@
                 <c:if test="${not empty form.selectedFilter}">
                     <div role="tabpanel" class="tab-pane <c:if test="${'edit' eq activeTab}">active</c:if>" id="Edit">
                     
-	                    <div class="col-sm-12">
-	                    	<div class="pull-right">
-		                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseHelp" aria-expanded="false">
-		                    		<span data-toggle="tooltip" title="Aide">?</span>
-								</button>
-		                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseDico" aria-expanded="false">
-		                    		Dictionnaire
-		                    		
-		                    		procedureInitiator
-		                    		taskInitiator
-		                    		procedureStartDate
-		                    		procedureLastModified
-	                    		</button>
-	                    	</div>
-	                    </div>
-                    
-                        <div class="col-sm-12">
-	                        <div class="form-group">
-				                <form:label path="selectedFilter.filterName">Nom du filtre</form:label>
-			                    <form:input path="selectedFilter.filterName" type="text" cssClass="form-control" placeholder="Nom du filtre" />
-		                    </div>
-                        </div>
-                        <hr>
-                        <c:if test="${not empty form.selectedFilter.argumentsList}">
-                            <h3>Arguments:</h3>
-                        </c:if>
-                        <c:forEach var="argument" items="${form.selectedFilter.argumentsList}" varStatus="argStatus">
-				            <div class="form-group">
-				                <div class="col-sm-4">
-				                    <label class="control-label">${argument.argumentName}</label>
-				                </div>
-				                <div class="col-sm-8">
-				                    <c:if test="${argument.type eq 'TEXT'}">
-				                        <form:input path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" type="text" cssClass="form-control filter-argument" placeholder="argumentValue" />
-				                    </c:if>
-				                    <c:if test="${argument.type eq 'TEXTAREA'}">
-				                        <form:textarea path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control filter-argument" />
-				                    </c:if>
-				                    <c:if test="${argument.type eq 'BOOLEAN'}">
-				                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" value="true"/>
-				                    </c:if>
-				                </div>
-				            </div>
-				        </c:forEach>
-				        <div class="pull-right">
-	                       <button type="submit" name="editFilter" class="btn btn-default">Modifier</button>
-		                   <button type="submit" name="deleteFilter" class="btn btn-default">
-					            <i class="glyphicons glyphicons-bin"></i>
-					        </button>
-	                   </div>
+	                    <div class="panel panel-default">
+	                         <div class="panel-heading">
+	                             <div class="form-group">
+	                             	<div class="col-sm-8">
+	                             		<h3 class="panel-title"><op:translate key="${form.selectedFilter.labelKey}" classLoader="${form.selectedFilter.class.classLoader}"/></h3>
+                    				</div>
+                    				<div class="col-sm-4">
+			                             <div class="pull-right">
+					                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseHelp" aria-expanded="false">
+					                    		<span data-toggle="tooltip" title="Aide">?</span>
+											</button>
+					                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseDico" aria-expanded="false">
+					                    		Dictionnaire
+					                   		</button>
+					                   	</div>
+				                   	</div>
+			                   	</div>
+	                         </div>
+	                         <div class="panel-body">
+		                        <div class="col-sm-12">
+			                        <div class="form-group">
+						                <form:label path="selectedFilter.filterName">Nom du filtre</form:label>
+					                    <form:input path="selectedFilter.filterName" type="text" cssClass="form-control" placeholder="Nom du filtre" />
+				                    </div>
+		                        </div>
+	                             <c:if test="${not empty form.selectedFilter.descriptionKey}">
+	                              <op:translate key="${form.selectedFilter.descriptionKey}" classLoader="${form.selectedFilter.class.classLoader}"/>
+	                             </c:if>
+		                        <c:if test="${not empty form.selectedFilter.argumentsList}">
+		                            <h3>Arguments:</h3>
+		                        </c:if>
+		                        <c:forEach var="argument" items="${form.selectedFilter.argumentsList}" varStatus="argStatus">
+						            <div class="form-group">
+						                <div class="col-sm-4">
+						                    <label class="control-label">${argument.argumentName}</label>
+						                </div>
+						                <div class="col-sm-8">
+						                    <c:if test="${argument.type eq 'TEXT'}">
+						                        <form:input path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" type="text" cssClass="form-control filter-argument" placeholder="argumentValue" />
+						                    </c:if>
+						                    <c:if test="${argument.type eq 'TEXTAREA'}">
+						                        <form:textarea path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control filter-argument" />
+						                    </c:if>
+						                    <c:if test="${argument.type eq 'BOOLEAN'}">
+						                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" value="true"/>
+						                    </c:if>
+						                </div>
+						            </div>
+						        </c:forEach>
+	                         </div>
+			                 <div class="panel-footer">
+						     	<div class="form-group">
+                    				<div class="col-sm-12">
+			                             <div class="pull-right">
+					                        <button type="submit" name="editFilter" class="btn btn-default">Modifier</button>
+						                    <button type="submit" name="deleteFilter" class="btn btn-default">
+									            <i class="glyphicons glyphicons-bin"></i>
+									        </button>
+						            	</div>
+					            	</div>
+			                	</div>
+							</div>
+	                     </div>
 	                </div>
                 </c:if>
             </div>
@@ -158,6 +171,10 @@
 				<div class="panel-heading">Aide</div>
 				<div class="panel-body">
 					<p>texte d'aide</p>
+					procedureInitiator
+               		taskInitiator
+               		procedureStartDate
+               		procedureLastModified
             	</div>
             </div>
             

@@ -46,7 +46,7 @@ public class JSONAdapterTest {
         filter.setFilterInstanceId(filter.getFilterId().concat(filter.getFilterPath()));
         filter.setHasChildren(true);
         filter.setLabelKey("LABEL_KEY");
-        filter.setDecriptionKey("DESC_KEY");
+        filter.setDescriptionKey("DESC_KEY");
         filter.setClassLoader(Thread.class.getClassLoader());
         filtersList.add(filter);
         action.setFiltersList(filtersList);
