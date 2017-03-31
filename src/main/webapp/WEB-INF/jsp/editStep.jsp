@@ -211,7 +211,7 @@
                                     <div class="form-group">
                                       <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
                                       <div class="col-sm-9">
-                                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" disabled="true" />
+                                      		<p class="form-control-static">${form.selectedField.name}</p>
                                       </div>
                                      </div>
                                     <div class="form-group">
@@ -226,7 +226,7 @@
 	                               <div class="form-group">
 				                      <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
 				                      <div class="col-sm-9">
-				                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" disabled="true" />
+				                          <p class="form-control-static">${form.selectedField.name}</p>
 				                      </div>
 			                         </div>
 			                        <div class="form-group">
@@ -246,9 +246,7 @@
 				                     <div class="form-group">
 					                      <form:label path="selectedField.type" cssClass="col-sm-3 control-label">Type</form:label>
 					                      <div class="col-sm-9">
-					                          <form:select path="selectedField.type" cssClass="form-control">
-					                              <form:options items="${form.variableTypesEnum}" itemValue="id" itemLabel="label"/>
-					                          </form:select>
+					                      		<p class="form-control-static">${form.selectedField.type.label}</p>
 					                      </div>
 				                     </div>
 				                     <div class="form-group hidden">
