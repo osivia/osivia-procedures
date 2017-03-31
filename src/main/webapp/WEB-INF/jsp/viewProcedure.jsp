@@ -15,15 +15,7 @@
 <portlet:actionURL name="actionProcedure" var="actionProcedureUrl">
 </portlet:actionURL>
 
-<!-- Message -->
-<c:if test="${not empty form.filterMessage}">
-	<div class="alert alert-danger">
-		<p class="text-danger">
-			<i class="halflings halflings-exclamation-sign"></i>
-			<span>${form.filterMessage}</span>
-		</p>
-	</div>
-</c:if>
+<jsp:include page="includes.jsp" />
 
 <form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
 

@@ -11,6 +11,8 @@
 	<portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
 </c:if>
 
+<jsp:include page="includes.jsp" />
+
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">

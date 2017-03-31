@@ -8,6 +8,8 @@
 <portlet:actionURL name="editAction" var="editActionUrl">
 </portlet:actionURL>
 
+<jsp:include page="includes.jsp" />
+
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">

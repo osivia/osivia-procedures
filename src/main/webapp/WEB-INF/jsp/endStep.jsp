@@ -4,6 +4,8 @@
 
 <portlet:defineObjects />
 
+<jsp:include page="includes.jsp" />
+
 <c:if test="${not empty form.theSelectedStep.endStepMsg}">
 	<h2>${form.theSelectedStep.endStepMsg}</h2>
 </c:if>
