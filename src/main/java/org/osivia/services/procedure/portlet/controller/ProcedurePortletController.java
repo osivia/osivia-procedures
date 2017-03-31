@@ -235,9 +235,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
 
             form = new Form(procedureModel);
-            if(!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")){
+            if (!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")) {
                 try {
-                    Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService().init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), null);
+                    Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
+                            .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), null);
                     form.setProcedureInstance(new ProcedureInstance(initVariables));
                 } catch (PortalException e) {
                     throw new PortletException(e);
@@ -969,6 +970,24 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void deleteVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
             @RequestParam(value = "selectedVar") String selectedVar) throws PortletException {
         form.getProcedureModel().getVariables().remove(selectedVar);
+        response.setRenderParameter("action", "manageVariables");
+    }
+
+    @ActionMapping(value = "manageVariables", params = "selectVariable")
+    public void selectVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedVar",
+    required = false) String selectedVar, SessionStatus sessionStatus) throws PortletException {
+        Variable selectedVariable = form.getProcedureModel().getVariables().get(selectedVar);
+        form.setSelectedVariable(selectedVariable);
+        response.setRenderParameter("action", "manageVariables");
+    }
+
+    @ActionMapping(value = "manageVariables", params = "saveVariable")
+    public void saveVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+        Variable selectedVariable = form.getSelectedVariable();
+        if (StringUtils.isNotBlank(selectedVariable.getName())) {
+            form.getProcedureModel().getVariables().put(selectedVariable.getName(), selectedVariable);
+            form.setSelectedVariable(null);
+        }
         response.setRenderParameter("action", "manageVariables");
     }
 

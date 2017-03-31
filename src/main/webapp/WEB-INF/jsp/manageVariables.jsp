@@ -28,7 +28,7 @@
     </div>
 </div>
 
-<form:form modelAttribute="form" action="${manageVariablesUrl}" method="post" cssClass="form-horizontal" role="form">
+<form:form modelAttribute="form" action="${manageVariablesUrl}" method="post" cssClass="form-inline" role="form">
 	<div class="panel panel-info">
 		<div class="panel-heading">Dictionnaire</div>
 		<div class="panel-body">
@@ -51,21 +51,44 @@
 			<div class="procedure-variables-dico col-sm-12">
 				<c:forEach var="variable" items="${form.procedureModel.variables}"> 
 					<div class="row">
-	 					<div class="col-sm-3">${variable.value.name}</div>
-	 					<div class="col-sm-3">${variable.value.label}</div>
+	 					<div class="col-sm-3">
+ 							${variable.value.name}
+	 					</div>
+	 					<div class="col-sm-3">
+	 						<c:if test="${not empty form.selectedVariable}">
+		 						<c:if test="${variable.value.label eq form.selectedVariable.label}">
+		 							<div class="form-group">
+				 						<form:input path="selectedVariable.label" type="text" cssClass="form-control"/>
+				 						<button type="submit" class="btn btn-default" name="saveVariable">
+				 							<i class="glyphicons glyphicons-ok-2"></i>
+				 						</button>
+		 							</div>
+		 						</c:if>
+		 						<c:if test="${variable.value.label ne form.selectedVariable.label}">
+				 					${variable.value.label}
+		 						</c:if>
+	 						</c:if>
+	 						<c:if test="${empty form.selectedVariable}">
+	 							${variable.value.label}
+	 						</c:if>
+	 					</div>
 	 					<div class="col-sm-3">${variable.value.type.label}</div>
+	 					<div class="pull-right">
+	 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.value.name}','selectedVar')" name="selectVariable">
+	 							<i class="glyphicons glyphicons-edit"></i>
+	 						</button>
+	 						<c:if test="${empty variable.value.usedInFields}">
+		 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.value.name}','selectedVar')" name="deleteVariable">
+		 							<i class="glyphicons glyphicons-bin"></i>
+		 						</button>
+	 						</c:if>
+ 						</div>
 	 					<c:forEach var="usedInField" items="${variable.value.usedInFields}">
 	 						<c:forEach var="fieldStep" items="${usedInField.value}">
 		 						<div class="col-sm-offset-3 col-sm-3">${fieldStep.superLabel}</div>
 			 					<div class="col-sm-offset-3 col-sm-3">${usedInField.key}</div>
 	 						</c:forEach>
-	 						
 	 					</c:forEach>
- 						<c:if test="${empty variable.value.usedInFields}">
-	 						<button type="submit" class="btn btn-default pull-right" onclick="selector(this,'${variable.value.name}','selectedVar')" name="deleteVariable">
-	 							<i class="glyphicons glyphicons-bin"></i>
-	 						</button>
- 						</c:if>
 					</div>
 				</c:forEach>
 			</div>

@@ -38,6 +38,9 @@ public class Form {
     /** selectedField */
     private Field selectedField;
 
+    /** selectedVariable */
+    private Variable selectedVariable;
+
     /** advancedMode */
     private boolean advancedMode;
 
@@ -309,6 +312,22 @@ public class Form {
      */
     public void setVariableTypesEnum(VariableTypesEnum[] variableTypesEnum) {
         this.variableTypesEnum = variableTypesEnum;
+    }
+
+    /**
+     * Getter for selectedVariable.
+     * @return the selectedVariable
+     */
+    public Variable getSelectedVariable() {
+        return selectedVariable;
+    }
+
+    /**
+     * Setter for selectedVariable.
+     * @param selectedVariable the selectedVariable to set
+     */
+    public void setSelectedVariable(Variable selectedVariable) {
+        this.selectedVariable = selectedVariable;
     }
 
 }
