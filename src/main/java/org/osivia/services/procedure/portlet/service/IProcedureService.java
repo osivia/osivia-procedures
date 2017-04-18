@@ -30,11 +30,11 @@ public interface IProcedureService {
     /**
      * @param nuxeoController
      * @param procedureModel
-     * @param Procedurepath
+     * @param procedurepath
      * @return
      * @throws PortletException
      */
-    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String Procedurepath) throws PortletException;
+    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurepath) throws PortletException;
 
     /**
      * @param nuxeoController
