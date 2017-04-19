@@ -70,7 +70,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
      * {@inheritDoc}
      */
     @Override
-    protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
+    protected void customizeCMSProperties(CustomizationContext context) {
         updateDocTypes(context);
         updateListTemplates(context);
         updatePlayers(context);
