@@ -11,8 +11,8 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>4.0.32-SNAPSHOT</toutatice.version>
-        <toutatice.annuaire.v2.version>4.0.0-SNAPSHOT</toutatice.annuaire.v2.version>
+        <toutatice.version>4.0.33-RC1</toutatice.version>
+        <toutatice.annuaire.v2.version>4.0.0-RC1</toutatice.annuaire.v2.version>
 
     </properties>
 
