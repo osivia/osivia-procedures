@@ -1,0 +1,141 @@
+.procedure-sortable{
+	min-height: 30px;
+	padding-bottom: 50px;
+}
+
+.procedure-sortable-placeHolder{
+    background-color: rgba(217, 237, 247, 0.8);
+    min-height: 30px;
+}
+
+.filter-sortable{
+	list-style: outside none none;
+	min-height: 30px;
+}
+
+.filter-sortable li{
+    padding-top: 10px;
+}
+
+.filter-sortable-placeHolder{
+	background-color: rgba(217, 237, 247, 0.8);
+	min-height: 30px;
+}
+
+li.fieldSelected{
+    background-color: rgba(217, 237, 247, 0.8);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+li .filter-title{
+    display: block;
+}
+
+li .filter-title:hover{
+	box-shadow: 15px 0px 0px rgba(217, 237, 247, 0.8) inset;
+}
+
+li .filter-selected{
+	background-color: rgba(217, 237, 247, 0.8);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.filterSelect-results{
+	overflow: auto;
+	height: 400px;
+}
+
+.tab-content{
+	padding-top: 10px;
+}
+
+.groupSelect-select2{
+	width: 100%;
+}
+
+.stepSelect-select2{
+	width: 100%;
+}
+
+.fieldSelect-select2{
+	width: 100%;
+}
+
+.vocabularySelect-select2{
+	width: 100%;
+}
+
+#collapseHelp {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: 10;
+}
+
+#collapseDico {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: 10;
+}
+
+#collapseDico .row {
+	min-height: 25px;
+}
+
+.procedure-variables-dico .row{
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.procedure-variables-dico .row:hover {
+	background-color: rgba(217, 237, 247, 0.8);
+}
+
+.procedure-variables .row:hover {
+	background-color: rgba(217, 237, 247, 0.8);
+}
+
+.procedure-variables-placeHolder{
+	border-color: rgba(217, 237, 247, 0.8);
+	border-width: 5px;
+	min-height: 25px;
+}
+
+.filter-argument-dropActive:hover{
+	background-color: rgba(217, 237, 247, 0.8);
+}
+
+.procedure-variables {
+	max-height: 400px;
+	overflow: auto;
+}
+
+.ui-sortable-handle:hover{
+	cursor: pointer;
+}
+
+.ui-sortable-handle label:hover{
+	cursor: pointer;
+}
+
+.pre-wrap {
+	white-space: pre-wrap;
+}
+
+.procedure-notifications{
+	position: fixed;
+	top: 15px;
+	right: 15px;
+	z-index: 2000;
+}
+
+.procedure-notifications .alert{
+	min-width: 500px;
+}
+
+
