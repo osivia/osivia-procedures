@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.services</groupId>
     <artifactId>osivia-services-procedure</artifactId>
-    <version>4.0.0-RC8</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Services OSIVIA - procedure</name>
 
@@ -122,7 +122,7 @@
 
 
     <scm>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/procedure/tags/4.0.0-RC8</developerConnection>
+        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/procedure/branches/4.0-backport-workspaces</developerConnection>
     </scm>
 
 
