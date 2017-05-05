@@ -94,8 +94,9 @@ public class ProcedureModel {
             for (final Object stepO : stepsList.list()) {
                 final PropertyMap stepM = (PropertyMap) stepO;
                 step = new Step(stepM, getVariables(), nuxeoController);
-                getSteps().add(step.getIndex(), step);
+                getSteps().add(step);
             }
+            Collections.sort(getSteps());
         }
         final PropertyList procedureObjectsList = properties.getList("pcd:procedureObjects");
         if (procedureObjectsList != null) {
