@@ -13,6 +13,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.services.procedure.portlet.util.FiltersUtil;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
@@ -72,7 +73,7 @@ public class Action {
                 final Filter mapFilter = filterMap.get(fieldIndex);
                 if (mapFilter != null) {
                     // nested filter
-                    fillFilter(filterMap, mapFilter);
+                    FiltersUtil.fillFilter(filterMap, mapFilter);
 
                     // add to parent
                     getFilters().add(mapFilter);
@@ -80,28 +81,6 @@ public class Action {
                 } else {
                     completed = true;
                 }
-            }
-        }
-    }
-
-    private void fillFilter(Map<String, Filter> fieldMap, Filter filter) {
-        boolean completed = false;
-        int i = 0;
-        while (!completed) {
-            final String fieldIndex = String.valueOf(i);
-            final Filter mapFilter = fieldMap.get(filter.getFilterPath() + "," + fieldIndex);
-            if (mapFilter != null) {
-                // nested fields
-                fillFilter(fieldMap, mapFilter);
-
-                if (filter.getFilters() == null) {
-                    filter.setFilters(new ArrayList<Filter>());
-                }
-                // add to parent
-                filter.getFilters().add(mapFilter);
-                i++;
-            } else {
-                completed = true;
             }
         }
     }

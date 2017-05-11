@@ -12,7 +12,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class CreateDocumentCommand implements INuxeoCommand {
 

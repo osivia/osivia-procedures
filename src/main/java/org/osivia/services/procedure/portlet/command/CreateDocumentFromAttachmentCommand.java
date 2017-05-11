@@ -8,6 +8,9 @@ import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class CreateDocumentFromAttachmentCommand implements INuxeoCommand {
 
     /** document the document to update */

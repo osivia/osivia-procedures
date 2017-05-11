@@ -2,8 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-
-
 <portlet:defineObjects />
 
 <portlet:actionURL name="editProcedure" var="editProcedureUrl">
@@ -12,6 +10,8 @@
 <c:if test="${!form.advancedMode}">
 	<portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
 </c:if>
+
+<jsp:include page="includes.jsp" />
 
 <div class="content-navbar">
     <!-- Breadcrumb -->
@@ -76,29 +76,28 @@
             <h3 class="panel-title">Liste des étapes</h3>
         </div>
         <div class="panel-body">
-            <ul class="list-unstyled">
+            <ul class="list-unstyled steps-sortable">
                 <c:forEach var="step" items="${form.procedureModel.steps}" varStatus="status">
                     <li class="form-group">
-                        <div class="col-sm-9">${step.stepName}</div>
-                        <div class="btn-group col-sm-3">
-                            <button type="submit" name="editStep" onclick="selector(this,'${status.index}','selectedStep')" class="btn btn-default">
+                        <div class="col-sm-10">${step.stepName}</div>
+                        <div class="btn-group col-sm-2">
+                            <button type="submit" name="editStep" onclick="selector(this,'${status.index}','selectedStep')" class="btn btn-default pull-riht">
                                 <i class="glyphicons glyphicons-edit"></i>
                             </button>
-                            <button type="submit" name="duplicateStep" class="btn btn-default" onclick="selector(this,'${status.index}','selectedStep')">
-                                <i class="glyphicons glyphicons-duplicate"></i>
-                            </button>
-                            <button type="submit" name="deleteStep" class="btn btn-default" onclick="selector(this,'${status.index}','selectedStep')">
-                                <i class="glyphicons glyphicons-remove"></i>
+                            <button type="submit" name="deleteStep" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedStep')">
+                                <i class="glyphicons glyphicons-bin"></i>
                             </button>
                         </div>
+                        <form:hidden path="procedureModel.steps[${status.index}].index"/>
                     </li>
                 </c:forEach>
             </ul>
         </div>
         <div class="panel-footer">
             <div class="form-group">
-                <div class="col-sm-11">
+                <div class="col-sm-12">
                     <button type="submit" class="btn btn-default" onclick="selector(this,'0','selectedStep')" name="addStep">Ajouter une étape</button>
+                    <button type="submit" class="btn btn-default pull-right" name="manageVariables">Accéder au dictionnaire des variables</button>
                 </div>
             </div>
         </div>
@@ -138,7 +137,7 @@
                             </div>
                             <div class="btn-group col-sm-1">
                                 <button type="submit" name="deleteObject" class="btn btn-default" onclick="selector(this,'${status.index}','selectedObject')">
-                                    <i class="glyphicons glyphicons-remove"></i>
+                                    <i class="glyphicons glyphicons-bin"></i>
                                 </button>
                             </div>
                          </li>
@@ -175,6 +174,53 @@
             </div>
         </div>
     </div>
+    
+    <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Tableaux de bord</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-unstyled">
+                    <li class="form-group">
+                        <div class="col-sm-5">
+                            <label class="control-label">Nom</label>
+                        </div>
+                        <div class="col-sm-5">
+                            <label class="control-label">Groupes</label>
+                        </div>
+                    </li>
+                    <c:forEach var="procedureObject" items="${form.procedureModel.procedureObjects}" varStatus="status">
+                         <li class="form-group">
+                            <div class="col-sm-4">
+                                <form:input path="procedureModel.procedureObjects[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
+                            </div>
+                            <div class="col-sm-4">
+                                <form:input path="procedureModel.procedureObjects[${status.index}].path" type="text" cssClass="form-control" placeholder="Path" />
+                            </div>
+                            <div class="col-sm-3">
+                                <form:select path="procedureModel.procedureObjects[${status.index}].type" cssClass="form-control">
+                                    <form:option value="FILE">File</form:option>
+                                </form:select>
+                            </div>
+                            <div class="btn-group col-sm-1">
+                                <button type="submit" name="deleteObject" class="btn btn-default" onclick="selector(this,'${status.index}','selectedObject')">
+                                    <i class="glyphicons glyphicons-bin"></i>
+                                </button>
+                            </div>
+                         </li>
+                    </c:forEach>
+                </ul>
+            </div>
+            <div class="panel-footer">
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <button type="submit" name="addObject" class="btn btn-default">Ajouter un object Métier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    
 
     <button type="submit" class="btn btn-primary" name="saveProcedure">Sauvegarder</button>
     <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure">Supprimer</button>

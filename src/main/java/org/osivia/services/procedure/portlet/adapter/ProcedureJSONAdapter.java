@@ -10,7 +10,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-
+/**
+ * Utilitarian class to parse from and serialize to JSON with custom configuration
+ *
+ * @author Dorian Licois
+ */
 public class ProcedureJSONAdapter {
 
     private static class ProcedureJSONAdaptereHolder {

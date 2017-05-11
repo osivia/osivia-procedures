@@ -30,11 +30,16 @@ import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.directory.v2.model.Group;
+import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -54,6 +59,7 @@ import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
+import org.osivia.services.procedure.portlet.util.VariableTypesEnumJsonSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -81,14 +87,24 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 @RequestMapping(value = "VIEW")
 public class ProcedurePortletController extends CMSPortlet implements PortletContextAware, PortletConfigAware {
 
+    /** create view. */
     private static final String CREATE_VIEW = "editProcedure";
+    /** edit view. */
     private static final String EDIT_VIEW = "editStep";
     private static final String EDIT_LIST_VIEW = "editList";
+    /** procedure view. */
     private static final String VIEW_PROCEDURE = "viewProcedure";
+    /** VIEW_ENDSTEP */
     private static final String VIEW_ENDSTEP = "endStep";
+    /** VIEW_ACTION */
     private static final String VIEW_ACTION = "editAction";
     private static final String LIST_PROC_VIEW = "list";
     private static final String DETAIL_PROC = "detailProc";
+
+    /** LIST_VIEW */
+    private static final String LIST_VIEW = "list";
+
+    private static final String MANAGE_VIEW = "manageVariables";
 
 
     /** Portlet context. */
@@ -99,10 +115,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     /** procedureService */
     @Autowired
     private IProcedureService procedureService;
+    
+    /** entProfilService */
+    private GroupService groupService;
 
 
     public ProcedurePortletController() {
         super();
+        
+        this.groupService = DirServiceFactory.getService(GroupService.class);
     }
 
     /**
@@ -130,7 +151,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             if (StringUtils.equals(getAction(request), "adminlist")) {
                 // édition procédure type LIST
                 return EDIT_LIST_VIEW;
-            } else if (getPath(request) != null) {
+            } else if (getWebId(request) != null) {
                 // lancement d'une procédure type LIST
                 return VIEW_PROCEDURE;
             } else {
@@ -147,7 +168,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             } else if (StringUtils.equals(getAction(request), "detailproc")) {
                 // affichage du detail d'un élément de LIST
                 return DETAIL_PROC;
-            } else if (getPath(request) != null) {
+            } else if (getWebId(request) != null || (getId(request) != null)) {
                 // lancement d'une procédure
                 return VIEW_PROCEDURE;
             }else{
@@ -188,6 +209,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             CMSException {
         return VIEW_PROCEDURE;
     }
+    
+    @RenderMapping(params = "action=manageVariables")
+    public String viewManageVariables(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+        return MANAGE_VIEW;
+    }
 
     @RenderMapping(params = "action=endStep")
     public String endStepView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
@@ -208,28 +234,71 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         Form form;
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
+        if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
             if (StringUtils.equals(getProcedureType(request), ProcedureTypeEnum.LIST.name())) {
                 // affichage d'une procédure de type LIST
                 form = getForm(request, selectedStep, nuxeoController);
                 form.setProcedureInstances(procedureService.retrieveProceduresInstanceByModel(nuxeoController, form.getProcedureModel()));
             } else {
-                if (StringUtils.equals(getAction(request), "adminproc") || StringUtils.equals(getAction(request), "adminprocstep")) {
-                    // Édition d'une procédure
-                    form = getForm(request, selectedStep, nuxeoController);
+                final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
+
+                form = new Form(procedureModel);
+
+                if (!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")) {
+                    try {
+                        Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
+                                .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), null);
+                        form.setProcedureInstance(new ProcedureInstance(initVariables));
+                    } catch (PortalException e) {
+                        throw new PortletException(e);
+                    } catch (FormFilterException e) {
+                        form.setFilterMessage(e.getMessage());
+                        request.setAttribute("filterMessage", e.getMessage());
+                    }
+                }
+
+                if (StringUtils.isNotEmpty(selectedStep)) {
+                    form.setSelectedStep(selectedStep);
                 } else {
-                    // lancement d'une procédure
-                    form = getForm(request, selectedStep, nuxeoController);
+                    form.setSelectedStep("0");
+                }
+                if (!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")) {
                     procedureService.updateVocabulariesWithValues(nuxeoController, form);
                 }
+
+                if (response instanceof RenderResponse) {
+                    ((RenderResponse) response).setTitle(form.getProcedureModel().getName());
+                }
+
             }
-        } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
+        } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
             // déroulement d'une procédure
-            final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByPath(nuxeoController, getPath(request));
+            final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByWebId(nuxeoController, getWebId(request));
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
             form = new Form(procedureModel, procedureInstance);
             procedureService.updateFormWithObjectsValues(nuxeoController, form);
             procedureService.updateVocabulariesWithValues(nuxeoController, form);
+        } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getName())) {
+            final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceById(nuxeoController, getId(request));
+            final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
+            form = new Form(procedureModel, procedureInstance);
+
+            try {
+                Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
+                        .init(nuxeoController.getPortalCtx(), procedureInstance.getOriginalDocument(), null);
+                procedureInstance.getGlobalVariablesValues().putAll(initVariables);
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            } catch (FormFilterException e) {
+                form.setFilterMessage(e.getMessage());
+                request.setAttribute("filterMessage", e.getMessage());
+            }
+
+            procedureService.updateFormWithObjectsValues(nuxeoController, form);
+            procedureService.updateVocabulariesWithValues(nuxeoController, form);
+            if (response instanceof RenderResponse) {
+                ((RenderResponse) response).setTitle(form.getProcedureModel().getName());
+            }
         } else {
             if (StringUtils.equals(getAction(request), "adminlist")) {
                 // édition d'une procédure de type LIST
@@ -249,7 +318,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     private Form getForm(PortletRequest request, String selectedStep, final NuxeoController nuxeoController) throws PortletException {
         Form form;
-        final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getPath(request));
+        final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
         form = new Form(procedureModel);
         if (StringUtils.isNotEmpty(selectedStep)) {
             form.setSelectedStep(selectedStep);
@@ -301,9 +370,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void getProfils(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
             throws PortletException {
 
-        // final List<Profil> listeProfils = profil.findProfilByFiltre("(&(objectClass=groupOfNames)(cn=*" + filter + "*))");
-        final List<Map<String, String>> listeProfils = new ArrayList<Map<String, String>>();
-        listeProfils.add(buildProfilEntry("demo-group"));
+        Group searchGroup = groupService.getEmptyGroup();
+        searchGroup.setCn(filter + "*");
+        List<Group> groups = groupService.search(searchGroup);
+
+        final List<Map<String, String>> listeProfils = new ArrayList<Map<String, String>>(groups.size());
+        for (Group group : groups) {
+            listeProfils.add(buildProfilEntry(group));
+        }
         response.setContentType("application/json");
         try {
             final ObjectMapper mapper = new ObjectMapper();
@@ -313,10 +387,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
-    private Map<String, String> buildProfilEntry(String entryName) {
+    private Map<String, String> buildProfilEntry(Group group) {
         Map<String, String> superAdministrators = new HashMap<String, String>(2);
-        superAdministrators.put("cn", entryName);
-        superAdministrators.put("displayName", entryName);
+        superAdministrators.put("cn", group.getCn());
+        superAdministrators.put("displayName", group.getCn());
         return superAdministrators;
     }
 
@@ -329,7 +403,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         List<Step> steps = form.getProcedureModel().getSteps();
         for (Step step : steps) {
-            if ((filter == null) || (StringUtils.contains(step.getStepName(), filter) && StringUtils.contains(step.getReference(), filter))) {
+            if ((filter == null) || (StringUtils.contains(step.getStepName(), filter) || StringUtils.contains(step.getReference(), filter))) {
                 Map<String, String> demoGroup = new HashMap<String, String>(2);
                 demoGroup.put("id", step.getReference());
                 demoGroup.put("text", step.getStepName());
@@ -374,11 +448,43 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setContentType("application/json");
         try {
             final ObjectMapper mapper = new ObjectMapper();
+            // VariableTypesEnumJsonSerializer pour avoir les bons label
+            SimpleModule simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
+            simpleModule.addSerializer(VariableTypesEnum.class, new VariableTypesEnumJsonSerializer());
+            mapper.registerModule(simpleModule);
+            
             mapper.writeValue(response.getPortletOutputStream(), listeVar);
         } catch (final IOException e) {
             throw new PortletException(e);
         }
     }
+
+    @ResourceMapping(value = "modelSearch")
+    public void getModels(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
+            required = false) String filter) throws PortletException {
+
+        final NuxeoController nuxeoController = new NuxeoController(request, response, getPortletContext());
+
+        final List<Map<String, String>> listeProcedures = new ArrayList<Map<String, String>>();
+        List<ProcedureModel> procedureModels = procedureService.retrieveProcedureModels(nuxeoController, getProcedurePath(request), filter);
+
+        for (ProcedureModel procedureModel : procedureModels) {
+            Map<String, String> procedure = new HashMap<String, String>(2);
+            procedure.put("id", procedureModel.getCurrentWebId());
+            procedure.put("text", procedureModel.getName());
+            listeProcedures.add(procedure);
+        }
+
+        response.setContentType("application/json");
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getPortletOutputStream(), listeProcedures);
+        } catch (final IOException e) {
+            throw new PortletException(e);
+        }
+
+    }
+
 
     @ResourceMapping(value = "vocabularySearch")
     public void getVocabulary(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter,
@@ -398,6 +504,23 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (final IOException e) {
             throw new PortletException(e);
         } catch (final PortletException e) {
+            throw new PortletException(e);
+        }
+    }
+    
+    @ResourceMapping(value = "formulaireSearch")
+    public void getFormulaire(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
+            throws PortletException {
+        
+        final NuxeoController nuxeoController = new NuxeoController(request, response, getPortletContext());
+
+        List<Map<String, String>> results = procedureService.retrieveStepsByName(nuxeoController, filter);
+        
+        response.setContentType("application/json");
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getPortletOutputStream(), results);
+        } catch (final IOException e) {
             throw new PortletException(e);
         }
     }
@@ -428,7 +551,7 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
 
         try {
             Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
-            if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
+            if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getName())) {
                 // if there is no instance, start the procedure
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
@@ -438,7 +561,16 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
                 // redirect to end of step page
                 response.setRenderParameter("action", "endStep");
                 sessionStatus.setComplete();
-            } else if (StringUtils.isNotEmpty(getPath(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
+            } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
+                // instance already exist
+                final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+                PropertyMap taskProperties = form.getProcedureInstance().getTaskDoc();
+                PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
+                nuxeoController.getNuxeoCMSService().getFormsService().proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
+                // redirect to end of step page
+                response.setRenderParameter("action", "endStep");
+                sessionStatus.setComplete();
+            } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getName())) {
                 // instance already exist
                 final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
                 PropertyMap taskProperties = form.getProcedureInstance().getTaskDoc();
@@ -465,11 +597,11 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
     public void saveProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
             throws PortletException {
 
-        final String path = getPath(request);
+        final String webId = getWebId(request);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
-        if (StringUtils.isNotEmpty(path)) {
+        if (StringUtils.isNotEmpty(webId)) {
             // if the procedure exist in database, update it
             addAllFieldsToSet(form);
             addAllFiltersToSet(form);
@@ -508,7 +640,7 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
             throws PortletException {
 
         final Integer newIndex = Integer.valueOf(form.getProcedureModel().getSteps().size());
-        final String path = getPath(request);
+        final String path = getWebId(request);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
@@ -533,12 +665,76 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
         }
         sessionStatus.setComplete();
     }
+    
+    @ActionMapping(value = "editProcedure", params = "manageVariables")
+    public void manageVariables(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+            throws PortletException {
+
+        for (Step step : form.getProcedureModel().getSteps()) {
+            for (Field field : step.getFields()) {
+                Variable variable = form.getProcedureModel().getVariables().get(field.getName());
+                if (variable != null) {
+                    List<Field> usedInFields = variable.getUsedInFields().get(step.getStepName());
+                    if (usedInFields == null) {
+                        usedInFields = new ArrayList<Field>();
+                    }
+                    usedInFields.add(field);
+                    variable.getUsedInFields().put(step.getStepName(), usedInFields);
+                }
+            }
+        }
+
+        response.setRenderParameter("action", "manageVariables");
+    }
+    
+    @ActionMapping(value = "manageVariables", params = "cancel")
+    public void cancel(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+        response.setRenderParameter("action", "editProcedure");
+        sessionStatus.setComplete();
+    }
+
+    @ActionMapping(value = "manageVariables", params = "save")
+    public void save(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+            throws PortletException {
+        addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
+        updateStartingStep(form);
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+        response.setRenderParameter("action", "editProcedure");
+        sessionStatus.setComplete();
+    }
+
+    @ActionMapping(value = "manageVariables", params = "deleteVariable")
+    public void deleteVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
+            @RequestParam(value = "selectedVar") String selectedVar) throws PortletException {
+        form.getProcedureModel().getVariables().remove(selectedVar);
+        response.setRenderParameter("action", "manageVariables");
+    }
+
+    @ActionMapping(value = "manageVariables", params = "selectVariable")
+    public void selectVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedVar",
+            required = false) String selectedVar, SessionStatus sessionStatus) throws PortletException {
+        Variable selectedVariable = form.getProcedureModel().getVariables().get(selectedVar);
+        form.setSelectedVariable(selectedVariable);
+        response.setRenderParameter("action", "manageVariables");
+    }
+
+    @ActionMapping(value = "manageVariables", params = "saveVariable")
+    public void saveVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+        Variable selectedVariable = form.getSelectedVariable();
+        if (StringUtils.isNotBlank(selectedVariable.getName())) {
+            form.getProcedureModel().getVariables().put(selectedVariable.getName(), selectedVariable);
+            form.setSelectedVariable(null);
+        }
+        response.setRenderParameter("action", "manageVariables");
+    }
 
     @ActionMapping(value = "editProcedure", params = "addObject")
     public void addObject(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
             throws PortletException {
 
-        final String path = getPath(request);
+        final String path = getWebId(request);
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         addAllFieldsToSet(form);
@@ -579,10 +775,20 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
      * @param request
      * @return
      */
-    private String getPath(PortletRequest request) {
+    private String getWebId(PortletRequest request) {
         final PortalWindow window = WindowFactory.getWindow(request);
-        final String path = window.getProperty("osivia.services.procedure.webid");
-        return path;
+        final String webId = window.getProperty("osivia.services.procedure.webid");
+        return webId;
+    }
+
+    /**
+     * @param request
+     * @return
+     */
+    private String getId(PortletRequest request) {
+        final PortalWindow window = WindowFactory.getWindow(request);
+        final String uuid = window.getProperty("osivia.services.procedure.uuid");
+        return uuid;
     }
 
     /**
@@ -647,12 +853,12 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
     public void saveList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
             throws PortletException {
         form.getProcedureModel().getSteps().get(1).setFields(form.getTheSelectedStep().getFields());
-        form.getProcedureModel().getSteps().get(1).setGroups(form.getTheSelectedStep().getGroups());
+        form.getProcedureModel().getSteps().get(1).setActors(form.getTheSelectedStep().getActors());
         addAllFieldsToSet(form);
 
-        final String path = getPath(request);
+        final String webId = getWebId(request);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        if (StringUtils.isNotEmpty(path)) {
+        if (StringUtils.isNotEmpty(webId)) {
             // if the procedure exist in database, update it
             procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
         } else {
@@ -675,6 +881,9 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
                 addAllFiltersToSet(filtersList, action.getFilters());
                 action.setFiltersList(filtersList);
             }
+            Set<Filter> filtersList = new HashSet<Filter>();
+            addAllFiltersToSet(filtersList, step.getInitAction().getFilters());
+            step.getInitAction().setFiltersList(filtersList);
         }
     }
 
@@ -739,24 +948,6 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
         sessionStatus.setComplete();
     }
 
-    @ActionMapping(value = "editProcedure", params = "duplicateStep")
-    public void duplicateStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedStep",
-    required = false) String selectedStep, SessionStatus sessionStatus) throws PortletException {
-
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        final Integer newIndex = Integer.valueOf(form.getProcedureModel().getSteps().size());
-
-        final Step copiedStep = form.getProcedureModel().getSteps().get(Integer.valueOf(selectedStep).intValue());
-        addAllFieldsToSet(form);
-        addAllFiltersToSet(form);
-        form.getProcedureModel().getSteps().add(new Step(newIndex, copiedStep));
-        form.setSelectedStep(String.valueOf(newIndex));
-        procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-        response.setRenderParameter("action", "editStep");
-        sessionStatus.setComplete();
-    }
-
-
     private void editField(ActionResponse response, Form form, String action) {
         final String[] path = form.getSelectedField().getPath().split(",");
         final Field editedField = getFieldByPath(form.getTheSelectedStep().getFields(), path);
@@ -801,7 +992,7 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
         return null;
     }
 
-    private void addField(ActionRequest request, ActionResponse response, Form form, String action, boolean forceInput) throws PortletException {
+    private void addField(ActionRequest request, ActionResponse response, Form form, String action, Boolean forceInput) throws PortletException {
         final AddField addField = form.getNewField();
         final Field field = new Field(form.getTheSelectedStep().getNextPath(), addField, false);
         form.getProcedureModel().getVariables().put(addField.getVariableName(), new Variable(addField));
@@ -810,26 +1001,30 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
 
     @ActionMapping(value = "editStep", params = "addField")
     public void addFieldInStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
-        addField(request, response, form, "editStep", false);
+        addField(request, response, form, "editStep", null);
     }
 
     @ActionMapping(value = "editList", params = "addField")
-    public void addFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
-        addField(request, response, form, "editList", true);
+    public void addFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
+            @RequestParam(value = "formulaire") boolean formulaire) throws PortletException {
+        addField(request, response, form, "editList", formulaire);
     }
 
     @ActionMapping(value = "editStep", params = "addFieldSet")
     public void addFieldSet(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+        AddField newFieldSet = form.getNewFieldSet();
         final Field field = new Field(form.getTheSelectedStep().getNextPath(), form.getNewFieldSet(), true);
-        updateProcedureWithForm(request, response, form, field, "editStep", false);
+        form.getProcedureModel().getVariables().put(newFieldSet.getVariableName(), new Variable(newFieldSet));
+        updateProcedureWithForm(request, response, form, field, "editStep");
     }
 
-    private void updateProcedureWithForm(ActionRequest request, ActionResponse response, Form form, final Field field, String action, boolean forceInput)
+    private void updateProcedureWithForm(ActionRequest request, ActionResponse response, Form form, final Field field, String action) throws PortletException {
+        updateProcedureWithForm(request, response, form, field, action, null);
+    }
+
+    private void updateProcedureWithForm(ActionRequest request, ActionResponse response, Form form, final Field field, String action, Boolean input)
             throws PortletException {
         field.setPath(String.valueOf(form.getTheSelectedStep().getFields().size()));
-        if (forceInput) {
-            field.setInput(forceInput);
-        }
         form.getTheSelectedStep().getFields().add(field);
         form.setNewField(new AddField());
         form.setNewFieldSet(new AddField());
@@ -883,7 +1078,6 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
         if (fields != null) {
             for (final Field field : fields) {
                 if (field.getPath() != null) {
-                    field.setSelected(false);
                     // on ajoute la field dans la map avec le path parent comme clé
                     final String parentPath = StringUtils.split(field.getPath(), ',').length > 1 ? StringUtils.substringBeforeLast(field.getPath(), ",")
                             : StringUtils.EMPTY;
@@ -947,7 +1141,6 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
         Field returnField = null;
         if (fields != null) {
             for (Field field : fields) {
-                field.setSelected(false);
                 if (StringUtils.equals(field.getPath(), selectedFieldPath)) {
                     returnField = field;
                 }
@@ -989,6 +1182,7 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
         }
         form.setSelectedFilter(null);
         response.setRenderParameter("action", "editAction");
+        response.setRenderParameter("activeTab", "");
     }
 
     @ActionMapping(value = "editAction", params = "cancelAction")
@@ -1049,18 +1243,22 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
             @RequestParam(
                     value = "selectedFilterPath") String selectedFilterPath) {
 
+		if ((form.getSelectedFilter() != null) && StringUtils.equals(form.getSelectedFilter().getFilterPath(), selectedFilterPath)) {
+            form.setSelectedFilter(null);
+            response.setRenderParameter("activeTab", "");
+        } else {
         Filter filterByFilterPath = getFilterByFilterPath(form.getTheSelectedAction().getFilters(), selectedFilterPath);
-        filterByFilterPath.setSelected(true);
         form.setSelectedFilter(filterByFilterPath);
-        response.setRenderParameter("action", "editAction");
         response.setRenderParameter("activeTab", "edit");
+        }
+        response.setRenderParameter("action", "editAction");
+        
     }
 
     private Filter getFilterByFilterPath(List<Filter> filtersList, String selectedFilterPath) {
         Filter returnFilter = null;
         if (filtersList != null) {
             for (Filter filter : filtersList) {
-                filter.setSelected(false);
                 if (StringUtils.equals(filter.getFilterPath(), selectedFilterPath)) {
                     returnFilter = filter;
                 }
@@ -1121,7 +1319,6 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
                         parentFilters = new ArrayList<Filter>();
                     }
                     filter.setFilterInstanceId(filter.getFilterId().concat(filter.getFilterPath()));
-                    filter.setSelected(false);
                     parentFilters.add(filter);
                     Collections.sort(parentFilters);
                     allFiltersMap.put(parentPath, parentFilters);
@@ -1161,6 +1358,7 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
         form.setSelectedField(null);
 
         response.setRenderParameter("activeTab", "form");
+        response.setRenderParameter("activeFormTab", "");
         response.setRenderParameter("action", action);
     }
 
@@ -1213,6 +1411,28 @@ value = "actionId") String actionId, SessionStatus sessionStatus) throws Portlet
             }
         }
         return false;
+    }
+    
+    private void removeFieldByPath(List<Field> fields, String[] path) {
+
+        final Integer index = Integer.parseInt(path[0]);
+        Field nestedField;
+        if ((path.length == 1) && (fields != null)) {
+            // on a fini de parcourir le path
+            final ListIterator<Field> listIterator = fields.listIterator();
+            while (listIterator.hasNext()) {
+                final Field field = listIterator.next();
+                final String[] pathArray = StringUtils.split(field.getPath(), ',');
+                if ((pathArray.length > 0) && (Integer.parseInt(pathArray[pathArray.length - 1]) == index)) {
+                    listIterator.remove();
+                }
+            }
+        } else {
+            // on continue de parcourir le path
+            nestedField = fields.get(index);
+            path = (String[]) ArrayUtils.remove(path, 0);
+            removeFieldByPath(nestedField.getFields(), path);
+        }
     }
 
     /**

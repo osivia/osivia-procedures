@@ -26,7 +26,7 @@ import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
 import org.osivia.services.procedure.formFilters.SetActorFormFilter;
 import org.osivia.services.procedure.formFilters.SetAdditionalAuthorization;
-import org.osivia.services.procedure.formFilters.TestBooleanFilter;
+import org.osivia.services.procedure.formFilters.SetInitiatorVariableFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 import org.osivia.services.procedure.module.ListProcListModule;
 
@@ -51,9 +51,11 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
     /** viewListProc list template. */
     public static final String STYLE_VIEW_LISTPROC = "listproc";
+    
+    public static final String STYLE_ADMIN = "adminproc";
 
     /** Picturebook schemas. */
-    public static final String SCHEMAS_PROCEDUREINSTANCE = "dublincore, common, toutatice, procedureInstance";
+    public static final String SCHEMAS_PROCEDUREINSTANCE = "dublincore, common, toutatice, procedure, procedureInstance";
     /** SCHEMAS_ADMIN */
     public static final String SCHEMAS_ADMIN = "dublincore, common, toutatice";
 
@@ -134,8 +136,8 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(SetActorFormFilter.ID, new SetActorFormFilter());
         formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
         formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
-        formFilters.put(TestBooleanFilter.ID, new TestBooleanFilter());
         formFilters.put(SetAdditionalAuthorization.ID, new SetAdditionalAuthorization());
+    	formFilters.put(SetInitiatorVariableFilter.ID, new SetInitiatorVariableFilter());
     }
 
     @Override

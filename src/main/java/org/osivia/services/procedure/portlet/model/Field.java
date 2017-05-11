@@ -61,10 +61,6 @@ public class Field implements Comparable<Field> {
     @JsonProperty("path")
     private String path;
 
-    /** selected */
-    @JsonIgnore
-    private boolean selected;
-
     /** helpText */
     @JsonProperty("helpText")
     private String helpText;
@@ -344,26 +340,6 @@ public class Field implements Comparable<Field> {
      */
     public void setFields(List<Field> fields) {
         this.fields = fields;
-    }
-
-
-    /**
-     * Getter for selected.
-     *
-     * @return the selected
-     */
-    public boolean isSelected() {
-        return selected;
-    }
-
-
-    /**
-     * Setter for selected.
-     *
-     * @param selected the selected to set
-     */
-    public void setSelected(boolean selected) {
-        this.selected = selected;
     }
 
 

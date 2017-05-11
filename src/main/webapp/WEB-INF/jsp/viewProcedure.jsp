@@ -15,17 +15,9 @@
 <portlet:actionURL name="actionProcedure" var="actionProcedureUrl">
 </portlet:actionURL>
 
-<!-- Message -->
-<c:if test="${not empty form.filterMessage}">
-	<div class="alert alert-danger">
-		<p class="text-danger">
-			<i class="halflings halflings-exclamation-sign"></i>
-			<span>${form.filterMessage}</span>
-		</p>
-	</div>
-</c:if>
+<jsp:include page="includes.jsp" />
 
-<form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" cssClass="form-horizontal" role="form" enctype="multipart/form-data">
+<form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
 
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -47,7 +39,7 @@
             <div class="form-group">
                 <div class="col-sm-10">
                     <c:forEach var="action" items="${form.theCurrentStep.actions}" varStatus="status">
-                        <button type="submit" name="proceedProcedure" class="btn btn-default" onclick="selector(this,'${action.actionId}','actionId')" >${action.label}</button>
+                        <button type="submit" name="proceedProcedure" class="btn btn-default" onclick="selector(this,'${action.actionId}','actionId');" >${action.label}</button>
                     </c:forEach>
                 </div>
             </div>

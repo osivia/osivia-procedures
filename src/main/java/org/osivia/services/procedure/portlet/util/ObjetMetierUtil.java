@@ -18,6 +18,9 @@ import org.osivia.services.procedure.portlet.model.ProcedureModel;
 
 public class ObjetMetierUtil {
 
+    private ObjetMetierUtil() {
+    }
+
     // ecm://{object}/{variable}
     public static final Pattern objectPattern = Pattern.compile("^ecm:\\/\\/([\\w.]+)\\/([\\w.:]+)");
 

@@ -66,9 +66,25 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         
     }
 
+    private Player getTaskPlayer(DocumentContext<Document> docCtx) {
+        final Document document = docCtx.getDoc();
+
+        final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
+        String displayContext = publicationInfos.getDisplayContext();
+        final Map<String, String> windowProperties = getProcedureWindowProperties(document);
+
+        windowProperties.put("osivia.title", document.getProperties().getString("nt:name"));
+        windowProperties.put("osivia.procedure.admin", displayContext);
+
+        final Player linkProps = getProcedurePlayer(windowProperties);
+
+        return linkProps;
+    }
+
     private Map<String, String> getProcedureWindowProperties(final Document document) {
         final Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.services.procedure.webid", document.getProperties().getString("ttc:webid"));
+        windowProperties.put("osivia.services.procedure.uuid", document.getId());
         windowProperties.put("osivia.doctype", document.getType());
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
@@ -150,6 +166,14 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getName())) {
             return getProcedureModelPlayer(docCt);
         }
+
+        if (StringUtils.equals(docType, DocumentTypeEnum.TASKDOC.getName())) {
+            return getTaskPlayer(docCt);
+        }
+
+
         return null;
     }
+
+
 }

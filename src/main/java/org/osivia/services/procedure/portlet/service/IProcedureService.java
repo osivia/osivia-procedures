@@ -1,6 +1,7 @@
 package org.osivia.services.procedure.portlet.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -16,7 +17,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public interface IProcedureService {
 
@@ -27,6 +28,16 @@ public interface IProcedureService {
      * @throws PortletException
      */
     public ProcedureModel retrieveProcedureByWebId(NuxeoController nuxeoController, String path) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @param procedurepath
+     * @param filter
+     * @return
+     * @throws PortletException
+     */
+    public List<ProcedureModel> retrieveProcedureModels(NuxeoController nuxeoController, String procedurepath, String filter) throws PortletException;
+
 
     /**
      * @param nuxeoController
@@ -58,7 +69,14 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public ProcedureInstance retrieveProcedureInstanceByPath(NuxeoController nuxeoController, String path) throws PortletException;
+    public ProcedureInstance retrieveProcedureInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @return
+     * @throws PortletException
+     */
+    public ProcedureInstance retrieveProcedureInstanceById(NuxeoController nuxeoController, String uuid) throws PortletException;
 
     /**
      * @param nuxeoController
@@ -86,11 +104,11 @@ public interface IProcedureService {
     /**
      * @param nuxeoController
      * @param portalUrlFactory
-     * @param Procedurepath
+     * @param procedurepath
      * @return
      * @throws PortletException
      */
-    public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String Procedurepath)
+    public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, IPortalUrlFactory portalUrlFactory, String procedurepath)
             throws PortletException;
 
     /**
@@ -119,6 +137,15 @@ public interface IProcedureService {
      * @return URL
      * @throws PortletException
      */
-    String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException;
+    public String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException;
+
+    /**
+     * search database for steps like given name
+     * 
+     * @param nuxeoController
+     * @param filter
+     * @return
+     */
+    public List<Map<String, String>> retrieveStepsByName(NuxeoController nuxeoController, String filter);
 
 }

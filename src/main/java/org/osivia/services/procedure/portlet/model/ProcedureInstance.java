@@ -10,7 +10,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class ProcedureInstance {
 
@@ -34,6 +34,9 @@ public class ProcedureInstance {
 
     /** le document task */
     private PropertyMap taskDoc;
+    
+    /** originalDocument */
+    private Document originalDocument;
 
     /** url */
     private String url;
@@ -53,18 +56,18 @@ public class ProcedureInstance {
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
     }
 
-    public ProcedureInstance(Document document) {
+    public ProcedureInstance(PropertyMap documentProperties, Document document) {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
         setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
-        PropertyMap properties = document.getProperties();
-        setTaskDoc(properties.getMap("pi:task"));
-        currentStep = properties.getString("pi:currentStep");
-        setProcedureModelWebId(properties.getString("pi:procedureModelWebId"));
+        setTaskDoc(documentProperties.getMap("pi:task"));
+        currentStep = documentProperties.getString("pi:currentStep");
+        setProcedureModelWebId(documentProperties.getString("pi:procedureModelWebId"));
+        setOriginalDocument(document);
 
         // global variables
-        PropertyMap gvvList = properties.getMap("pi:globalVariablesValues");
+        PropertyMap gvvList = documentProperties.getMap("pi:globalVariablesValues");
         if (gvvList != null) {
             for (Entry<String, Object> gvvO : gvvList.getMap().entrySet()) {
                 globalVariablesValues.put(gvvO.getKey(), (String) gvvO.getValue());
@@ -72,7 +75,7 @@ public class ProcedureInstance {
         }
 
         // files
-        PropertyList fileList = properties.getList("pi:attachments");
+        PropertyList fileList = documentProperties.getList("pi:attachments");
         if (fileList != null) {
             FilePath filePath;
             for (Object fileO : fileList.list()) {
@@ -85,7 +88,7 @@ public class ProcedureInstance {
         }
 
         // objects
-        PropertyList objectsList = properties.getList("pi:procedureObjectInstances");
+        PropertyList objectsList = documentProperties.getList("pi:procedureObjectInstances");
         if (objectsList != null) {
             ProcedureObjectInstance procedureObjectInstance;
             for (Object procedureObjectInstanceO : objectsList.list()) {
@@ -97,6 +100,10 @@ public class ProcedureInstance {
             }
         }
 
+    }
+    
+    public ProcedureInstance(Map<String, String> variables) {
+        globalVariablesValues = variables;
     }
 
     /**
@@ -245,6 +252,24 @@ public class ProcedureInstance {
      */
     public void setProcedureModelWebId(String procedureModelWebId) {
         this.procedureModelWebId = procedureModelWebId;
+    }
+    
+    /**
+     * Getter for originalDocument.
+     *
+     * @return the originalDocument
+     */
+    public Document getOriginalDocument() {
+        return originalDocument;
+    }
+
+    /**
+     * Setter for originalDocument.
+     *
+     * @param originalDocument the originalDocument to set
+     */
+    public void setOriginalDocument(Document originalDocument) {
+        this.originalDocument = originalDocument;
     }
 
     /**

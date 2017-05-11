@@ -12,6 +12,7 @@
 
 <form:form modelAttribute="form" action="${editProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
 
+
     <ul class="list-unstyled">
         <c:forEach var="procedure" items="${procedureList}">
             <li>
@@ -19,5 +20,6 @@
             </li>
         </c:forEach>
     </ul>
+
 
 </form:form>

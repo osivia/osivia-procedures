@@ -8,7 +8,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class Argument {
 
@@ -77,7 +77,7 @@ public class Argument {
 
     /**
      * Getter for type.
-     * 
+     *
      * @return the type
      */
     public FormFilterParameterType getType() {
@@ -86,7 +86,7 @@ public class Argument {
 
     /**
      * Setter for type.
-     * 
+     *
      * @param type the type to set
      */
     public void setType(FormFilterParameterType type) {

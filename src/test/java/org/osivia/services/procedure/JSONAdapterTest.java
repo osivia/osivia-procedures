@@ -35,7 +35,7 @@ public class JSONAdapterTest {
         step.setStepName("stepName");
         final List<String> groups = new ArrayList<String>();
         groups.add("equipe-dev");
-        step.setGroups(groups);
+        step.setActors(groups);
         step.setIndex(1);
         final Action action = new Action();
         action.setStepReference("actionPath");
@@ -46,7 +46,7 @@ public class JSONAdapterTest {
         filter.setFilterInstanceId(filter.getFilterId().concat(filter.getFilterPath()));
         filter.setHasChildren(true);
         filter.setLabelKey("LABEL_KEY");
-        filter.setDecriptionKey("DESC_KEY");
+        filter.setDescriptionKey("DESC_KEY");
         filter.setClassLoader(Thread.class.getClassLoader());
         filtersList.add(filter);
         action.setFiltersList(filtersList);
@@ -59,6 +59,9 @@ public class JSONAdapterTest {
         field2.setInput(true);
         field2.setName("fieldName2");
         step.getFields().add(field2);
+        Action initAction = new Action();
+        initAction.setFiltersList(filtersList);
+        step.setInitAction(initAction);
         procedure.getSteps().add(step);
         final Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT, null);
         procedure.getVariables().put("fieldName", variable);

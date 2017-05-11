@@ -24,6 +24,8 @@
 <portlet:actionURL name="editStep" var="editStepUrl">
 </portlet:actionURL>
 
+<jsp:include page="includes.jsp" />
+
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">
@@ -115,7 +117,7 @@
 	                        <div class="form-group">
 	                            <form:label path="newField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
 	                            <div class="col-sm-9">
-	                                <form:input path="newField.helpText" type="text" cssClass="form-control" placeholder="Label" />
+	                                <form:input path="newField.helpText" type="text" cssClass="form-control" placeholder="Message" />
 	                                <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
 	                            </div>
 	                        </div>
@@ -123,7 +125,7 @@
 	                            <form:label path="newField.type" cssClass="col-sm-3 control-label">Type</form:label>
 	                            <div class="col-sm-9">
 	                                <form:select path="newField.type" cssClass="form-control">
-	                                    <form:options/>
+	                                    <form:options items="${form.variableTypesEnum}" itemValue="id" itemLabel="label"/>
 	                                </form:select>
 	                            </div>
 	                        </div>
@@ -211,7 +213,7 @@
                                     <div class="form-group">
                                       <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
                                       <div class="col-sm-9">
-                                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" disabled="true"/>
+                                      		<p class="form-control-static">${form.selectedField.name}</p>
                                       </div>
                                      </div>
                                     <div class="form-group">
@@ -221,41 +223,32 @@
 		                                      <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
 		                                  </div>
 		                             </div>
-		                             <div class="form-group">
-			                            <form:label path="selectedField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
-			                            <div class="col-sm-9">
-			                                <form:input path="selectedField.helpText" type="text" cssClass="form-control" placeholder="Label" />
-			                                <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
-			                            </div>
-			                        </div>
                                 </c:if>
                                 <c:if test="${form.selectedField.fieldSet ne true}">
 	                               <div class="form-group">
 				                      <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
 				                      <div class="col-sm-9">
-				                          <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" />
+				                          <p class="form-control-static">${form.selectedField.name}</p>
 				                      </div>
 			                         </div>
 			                        <div class="form-group">
-					                      <form:label path="selectedField.label" cssClass="col-sm-3 control-label">Label</form:label>
+					                      <form:label path="selectedField.superLabel" cssClass="col-sm-3 control-label">Label</form:label>
 					                      <div class="col-sm-9">
-					                          <form:input path="selectedField.label" type="text" cssClass="form-control" placeholder="Label" />
+					                          <form:input path="selectedField.superLabel" type="text" cssClass="form-control" placeholder="Label" />
 					                          <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
 					                      </div>
 				                     </div>
 				                     <div class="form-group">
 			                            <form:label path="selectedField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
 			                            <div class="col-sm-9">
-			                                <form:input path="selectedField.helpText" type="text" cssClass="form-control" placeholder="Label" />
+			                                <form:input path="selectedField.helpText" type="text" cssClass="form-control" placeholder="Message" />
 			                                <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
 			                            </div>
 			                        </div>
 				                     <div class="form-group">
 					                      <form:label path="selectedField.type" cssClass="col-sm-3 control-label">Type</form:label>
 					                      <div class="col-sm-9">
-					                          <form:select path="selectedField.type" cssClass="form-control">
-					                              <form:options/>
-					                          </form:select>
+					                      		<p class="form-control-static">${form.selectedField.type.label}</p>
 					                      </div>
 				                     </div>
 				                     <div class="form-group hidden">
@@ -350,131 +343,123 @@
             </div>
 	    </div>
 	    <div role="tabpanel" class="tab-pane <c:if test="${'action' eq activeTab}">active</c:if>" id="Actions">
-	       <ul class="list-unstyled">
-	              <li class="form-group">
-	                 <div class="col-sm-2">
-	                     <label class="control-label">Label</label>
-	                 </div>
-	                 <div class="col-sm-4">
-	                     <label class="control-label">Identifiant de l'action</label>
-	                 </div>
-	                 <div class="col-sm-4">
-	                     <label class="control-label">Étape cible</label>
-	                 </div>
-	              </li>
-	              <c:forEach var="action" items="${form.theSelectedStep.actions}" varStatus="status">
-	                  <li class="form-group">
-	                      <div class="col-sm-2">
-	                          <form:input path="theSelectedStep.actions[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
-	                      </div>
+	    
+       <ul class="list-unstyled">
+             <li class="form-group">
+                <div class="col-sm-2">
+                    <label class="control-label">Label</label>
+                </div>
+                <div class="col-sm-4">
+                    <label class="control-label">Identifiant de l'action</label>
+                </div>
+                <div class="col-sm-4">
+                    <label class="control-label">Étape cible</label>
+                </div>
+             </li>
+              <c:forEach var="action" items="${form.theSelectedStep.actions}" varStatus="status">
+                  <li class="form-group">
+                      <div class="col-sm-2">
+                          <form:input path="theSelectedStep.actions[${status.index}].label" type="text" cssClass="form-control" placeholder="Label" />
+                      </div>
+                      <div class="col-sm-4">
+                          <form:input path="theSelectedStep.actions[${status.index}].actionId" type="text" cssClass="form-control" placeholder="actionId" />
+                      </div>
+                      <c:if test="${form.advancedMode}">
 	                      <div class="col-sm-4">
-	                          <form:input path="theSelectedStep.actions[${status.index}].actionId" type="text" cssClass="form-control" placeholder="actionId" />
+	                          <form:input path="theSelectedStep.actions[${status.index}].stepReference" type="text" cssClass="form-control" placeholder="stepReference" />
 	                      </div>
-	                      <c:if test="${form.advancedMode}">
-		                      <div class="col-sm-4">
-		                          <form:input path="theSelectedStep.actions[${status.index}].stepReference" type="text" cssClass="form-control" placeholder="stepReference" />
-		                      </div>
-	                      </c:if>
-	                      <c:if test="${!form.advancedMode}">
-	                           <div class="col-sm-4">
-			                        <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
-			                           <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
-			                        </form:select>
-		                        </div>
-	                       </c:if>
-	                      
-	                      <div class="btn-group col-sm-2">
-	                          <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
-	                              <i class="glyphicons glyphicons-edit"></i>
-	                          </button>
-	                          <button type="submit" name="deleteButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
-	                              <i class="glyphicons glyphicons-remove"></i>
-	                          </button>
-	                      </div>
-	                  </li>
-	              </c:forEach>
-	          </ul>
-           <div class="form-group">
-		       <div class="col-sm-1">
-	               <button type="submit" name="addButton" class="btn btn-default">Ajouter une action</button>
-	           </div>
-           </div>
+                      </c:if>
+                      <c:if test="${!form.advancedMode}">
+                           <div class="col-sm-4">
+		                        <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
+		                           <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
+		                        </form:select>
+	                        </div>
+                       </c:if>
+                      
+                      <div class="btn-group col-sm-2">
+                          <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
+                              <i class="glyphicons glyphicons-edit"></i>
+                          </button>
+                          <button type="submit" name="deleteButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
+                              <i class="glyphicons glyphicons-bin"></i>
+                          </button>
+                      </div>
+                  </li>
+              </c:forEach>
+          </ul>
+	          
+          <button type="submit" name="addButton" class="btn btn-default">Ajouter une action</button>
+          <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'-1','selectedButton')">
+        	</i>Éditer l'action d'initialisation de l'étape
+          </button>
 	    </div>
 	    <div role="tabpanel" class="tab-pane" id="Métadonnées">
 		    <c:if test="${form.advancedMode}">
 		       <div class="form-group">
-		           <div class="col-sm-offset-2 col-sm-2">
+		           <div class="col-sm-offset-2 col-sm-1">
 			           <div class="checkbox">
 		                    <label>
 		                       <form:checkbox path="theSelectedStep.notifiable"/><span>notifiable</span>
 		                    </label>
 		                </div>
 	                </div>
-	                
-	                <div class="col-sm-2">
-                       <div class="checkbox">
-                            <label>
-                               <form:checkbox path="theSelectedStep.notifEmail"/><span>notification email</span>
-                            </label>
-                        </div>
-                    </div>
-	                
-	                <div class="col-sm-2">
+	                <div class="col-sm-1">
 		                <div class="checkbox">
 		                    <label>
 		                       <form:checkbox path="theSelectedStep.acquitable"/><span>acquitable</span>
 		                    </label>
 		                </div>
 	                </div>
-		           <div class="col-sm-2">
+		           <div class="col-sm-1">
 			           <div class="checkbox">
 			                <label>
-			                      <form:checkbox path="theSelectedStep.closable"/><span>closable</span>
+			                      <form:checkbox path="theSelectedStep.closable"/><span>fermable</span>
 			                </label>
 		                </div>
 	                </div>
 		       </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.actionIdClosable" cssClass="col-sm-2 control-label">actionIdClosable</form:label>
+	               <form:label path="theSelectedStep.actionIdClosable" cssClass="col-sm-2 control-label">Identifiant de l'action fermable</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.actionIdClosable" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">stringMsg</form:label>
+	               <form:label path="theSelectedStep.stringMsg" cssClass="col-sm-2 control-label">Message de notification</form:label>
 	               <div class="col-sm-10">
-	                   <form:textarea path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
+	                   <form:input path="theSelectedStep.stringMsg" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.actionIdYes" cssClass="col-sm-2 control-label">actionIdYes</form:label>
+	               <form:label path="theSelectedStep.actionIdYes" cssClass="col-sm-2 control-label">Identifiant de l'action associé au oui</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.actionIdYes" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.actionIdNo" cssClass="col-sm-2 control-label">actionIdNo</form:label>
+	               <form:label path="theSelectedStep.actionIdNo" cssClass="col-sm-2 control-label">Identifiant de l'action associé au non</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.actionIdNo" type="text" cssClass="form-control" />
 	               </div>
 	           </div>
 	           <div class="form-group">
-	               <form:label path="theSelectedStep.actionIdDefault" cssClass="col-sm-2 control-label">actionIdDefault</form:label>
+	               <form:label path="theSelectedStep.actionIdDefault" cssClass="col-sm-2 control-label">Identifiant de l'action par défaut</form:label>
 	               <div class="col-sm-10">
 	                   <form:input path="theSelectedStep.actionIdDefault" cssClass="form-control" />
 	               </div>
 	           </div>
 		    </c:if>
             <div class="form-group">
-                <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Groupes</form:label>
+                <form:label path="theSelectedStep.actors" cssClass="col-sm-2 control-label">Acteurs</form:label>
                 <div class="col-sm-10">
-                    <form:select path="theSelectedStep.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
-                        <form:options items="${form.theSelectedStep.groups}" />
+                    <form:select path="theSelectedStep.actors" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
+                        <form:options items="${form.theSelectedStep.actors}" />
                     </form:select>
                 </div>
             </div>
             <div class="form-group">
-                <form:label path="theSelectedStep.groups" cssClass="col-sm-2 control-label">Message de fin d'étape</form:label>
+                <form:label path="theSelectedStep.endStepMsg" cssClass="col-sm-2 control-label">Message de fin d'étape</form:label>
                 <div class="col-sm-10">
                     <form:input path="theSelectedStep.endStepMsg" cssClass="form-control" />
                 </div>

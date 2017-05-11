@@ -8,7 +8,7 @@
         <li class="form-group">
 			<div class="col-sm-12">
 			  <c:choose>
-			      <c:when test="${field.selected}">
+			      <c:when test="${form.selectedField.path eq field.path}">
 			          <div class="panel panel-info">
 			      </c:when>
 			      <c:otherwise>

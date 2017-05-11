@@ -1,7 +1,12 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
@@ -20,8 +25,13 @@ public class Variable {
     @JsonProperty("type")
     private VariableTypesEnum type;
 
+    /** varOptions */
     @JsonProperty("varOptions")
     private String varOptions;
+
+    /** fields in which variable is used */
+    @JsonIgnore
+    private Map<String, List<Field>> usedInFields;
 
     public Variable() {
     }
@@ -125,5 +135,29 @@ public class Variable {
     public void setVarOptions(String varOptions) {
         this.varOptions = varOptions;
     }
+
+
+    /**
+     * Getter for usedInFields.
+     *
+     * @return the usedInFields
+     */
+    public Map<String, List<Field>> getUsedInFields() {
+        if (usedInFields == null) {
+            usedInFields = new HashMap<String, List<Field>>();
+        }
+        return usedInFields;
+    }
+
+
+    /**
+     * Setter for usedInFields.
+     *
+     * @param usedInFields the usedInFields to set
+     */
+    public void setUsedInFields(Map<String, List<Field>> usedInFields) {
+        this.usedInFields = usedInFields;
+    }
+
 
 }

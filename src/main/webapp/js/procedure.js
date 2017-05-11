@@ -43,7 +43,59 @@ function sortableStop(filter, event, ui){
 	}
 	e.preventDefault(); // cas control-label
 	e.stopImmediatePropagation();
-}
+};
+
+function updateFilters(input){
+	 var filter = input.value.toUpperCase();
+	 $JQry(".filterSelect-results").children(".panel").each(function(index, element) {
+		 $element = $JQry(element);
+		 var h3 = $element.find("h3")[0];
+		 var body = $element.children(".panel-body")[0];
+		 
+		 if(h3.innerHTML.toUpperCase().indexOf(filter) > -1 || body.innerHTML.toUpperCase().indexOf(filter) > -1){
+			 element.style.display = "";
+		 }else{
+			 element.style.display = "none";
+		 }
+	 });
+};
+
+function insertVarValueAtCaret(varElement) {
+	
+	var varValue = $JQry(varElement).children(".col-sm-4").first().text();
+	
+	if($JQry(".insertatcaretactive").length !== 0){
+		$JQry(".insertatcaretactive").each(function(i) {
+			insertValueAtCaret(this, varValue);
+		});
+	}else{
+		var varElement = $JQry(".filter-argument").first();
+		insertValueAtCaret(varElement, varValue);
+	}
+};
+
+function insertValueAtCaret(varElement, varValue){
+	if (document.selection) {
+        //Internet Explorer
+		varElement.focus();
+        sel = document.selection.createRange();
+        sel.text = varValue;
+        varElement.focus();
+    } else if (varElement.selectionStart || varElement.selectionStart == '0') {
+        //Firefox and Webkit based
+        var startPos = varElement.selectionStart;
+        var endPos = varElement.selectionEnd;
+        var scrollTop = varElement.scrollTop;
+        varElement.value = varElement.value.substring(0, startPos) + varValue + varElement.value.substring(endPos, varElement.value.length);
+        varElement.focus();
+        varElement.selectionStart = startPos + varValue.length;
+        varElement.selectionEnd = startPos + varValue.length;
+        varElement.scrollTop = scrollTop;
+    } else {
+        varElement[0].value += varValue;
+        varElement.focus();
+    }
+};
 
 $JQry(function() {
 	$JQry("#procedure-sortable ul").sortable({
@@ -61,14 +113,31 @@ $JQry(function() {
 		}
 	});
 	
+	$JQry(".steps-sortable").sortable({
+		cursor : "move",
+		tolerance : "pointer",
+		axis: "y",
+		stop: function(event, ui) {
+			$JQry(this).find("li").each(function(index, element) {
+				$JQry(element).find("input[name$='index']").val(index);
+			});
+		}
+	});
+	
+	
 	// sélection d'un champ
 	$JQry("#procedure-sortable li").click(function(event) {
-		// find hidden input by end name
-		var path = $JQry(this).children("input[name$='path']").val();
-		// add value to form as selected
-		selector(this,path,'selectedFieldPath');
-		// click hidden selectFilter button
-		$JQry(this).closest('form').find("input[name='selectField']").click();
+		
+		var $target = $JQry(event.target);
+		if(!$target.is("span.select2-selection")){
+			// find hidden input by end name
+			var path = $JQry(this).children("input[name$='path']").val();
+			// add value to form as selected
+			selector(this,path,'selectedFieldPath');
+			// click hidden selectFilter button
+			$JQry(this).closest('form').find("input[name='selectField']").click();
+		}
+		
 		// empêche de lancer l'évènement click sur le parent
 		event.stopPropagation();
 		event.preventDefault(); // cas control-label
@@ -106,6 +175,43 @@ $JQry(function() {
 		e.preventDefault();  
 		$JQry(this).tab('show');
 	});
+	
+	// make collpase button active when collapsable is open
+	$JQry(".btn[data-toggle='collapse']").click(function(e){
+		var $btn = $JQry(this);
+		if($btn.hasClass('active')){
+			$btn.removeClass('active');
+		}else{
+			$btn.addClass('active');
+		}
+	});
+	
+	$JQry(".filter-argument").on("focus", function() {
+		$JQry(".insertatcaretactive").removeClass("insertatcaretactive");
+		$JQry(this).addClass("insertatcaretactive");
+	});
+	
+	$JQry(".procedure-variables > .row").draggable({
+		helper: function() {
+			var varValue = $JQry(this).children(".col-sm-4").first().text();
+	        return $JQry("<div></div>").text(varValue).addClass("procedure-variables-placeHolder");
+	    },
+	    scroll : false,
+	    zIndex : 100,
+	    cursorAt: { top: 5, left: 5 },
+		appendTo: "body"
+	});
+	$JQry(".filter-argument").droppable({
+	    accept: ".procedure-variables > .row",
+	    hoverClass: "filter-argument-dropActive",
+	    tolerance : "pointer",
+	    drop: function(ev, ui) {
+	    	var varValue = ui.draggable.children(".col-sm-4").first().text();
+	    	var varElement = $(this);
+	    	insertValueAtCaret(varElement, varValue);
+	    }
+	});
+	
 	
 	$JQry(".vocabularySelect-select2").each(function(index, element) {
 		var $element = $JQry(element);
@@ -171,7 +277,9 @@ $JQry(function() {
 			var data = $JQry(this).select2('data');
 			$form = $JQry(this).closest("form");
 			$form.find("input[name$='newField.label']").val(data[0].label);
-			$form.find("select[name$='newField.type']").val(data[0].type);
+			if(data[0].type != null){
+				$form.find("select[name$='newField.type']").val(data[0].type.id);
+			}
 			$form.find("input[name$='newField.varOptions']").val(data[0].varOptions);
 			// maj de l'éditeur avec le type
 			$JQry("select[name$='newField.type']").each(updateNewFieldType);
@@ -260,7 +368,7 @@ $JQry(function() {
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else{
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
+			$JQry("input[name$='newField.varOptions']").closest("div.form-group").removeClass("hidden");
 		}
 	};
 	$JQry("select[name$='newField.type']").change(updateNewFieldType);
@@ -289,33 +397,47 @@ $JQry(function() {
 	// construction des champs radio à partir des données
 	$JQry(".field-radioList-json").each(function(index){
 		var name = $JQry(this).attr("name");
-		var json = $JQry(this).val();
-		if (json.trim().length > 0) {
-			var radioList = JSON.parse(json).reverse();
+		var dataValue = $JQry(this).val();
+		var json = $JQry(this).data("varoptions");
+		if (json.length > 0) {
+			var radioList = json.reverse();
 			for (var i = 0; i < radioList.length; i++) {
-				$JQry(this).after(makeRadioFromData(name, radioList[i].label, radioList[i].value));
+				$JQry(this).after(makeRadioFromData(name, radioList[i].label, radioList[i].value, dataValue));
 			}
 		}
 	});
+	$JQry(".field-radioList-json").each(function(index, element){
+		element.remove();
+	});
+	
 	// construction des champs checkbox à partir des données
 	$JQry(".field-checkboxList-json").each(function(index){
 		var name = $JQry(this).attr("name");
-		var json = $JQry(this).val();
-		if (json.trim().length > 0) {
-			var checkboxList = JSON.parse(json).reverse();
+		var dataValue = $JQry(this).val();
+		var json = $JQry(this).data("varoptions");
+		if (json.length > 0) {
+			var checkboxList = json.reverse();
 			for (var i = 0; i < checkboxList.length; i++) {
-				$JQry(this).after(makeCheckboxFromData(name, checkboxList[i].label, checkboxList[i].value));
+				$JQry(this).after(makeCheckboxFromData(name, checkboxList[i].label, checkboxList[i].value, dataValue));
 			}
 		}
 	});
+	$JQry(".field-checkboxList-json").each(function(index, element){
+		element.remove();
+	});
+	
 	// construction des champs select à partir des données
 	$JQry(".field-selectList-json").each(function(index){
 		var name = $JQry(this).attr("name");
-		var json = $JQry(this).val();
-		if (json.trim().length > 0) {
-			var selectList = JSON.parse(json);
-			makeSelectFromData(this, name, selectList);
+		var dataValue = $JQry(this).val();
+		var json = $JQry(this).data("varoptions");
+		if (json.length > 0) {
+			var selectList = json;
+			makeSelectFromData(this, name, selectList, dataValue);
 		}
+	});
+	$JQry(".field-selectList-json").each(function(index, element){
+		element.remove();
 	});
 	
 	// gestion du type de champ édité
@@ -365,7 +487,7 @@ $JQry(function() {
 	
 });
 
-function makeRadioFromData(name, label, value){
+function makeRadioFromData(name, label, value, dataValue){
 	var inputTag = document.createElement("input");
 	$JQry(inputTag).attr({
 		type : 'radio',
@@ -373,21 +495,31 @@ function makeRadioFromData(name, label, value){
 		value : value
 	});
 	var labelTag = document.createElement("label");
+	
+	if(value==dataValue){
+		$JQry(inputTag).prop("checked", true);
+	}
+	
 	return $JQry(labelTag).addClass("radio-inline").append(inputTag).append(label);
 }
 
-function makeCheckboxFromData(name, label, value){
+function makeCheckboxFromData(name, label, value, dataValue){
 	var inputTag = document.createElement("input");
 	$JQry(inputTag).attr({
 		type : 'checkbox',
 		name : name,
 		value : value
 	});
+	
+	if(value==dataValue){
+		$JQry(inputTag).prop("checked", true);
+	}
+	
 	var labelTag = document.createElement("label");
 	return $JQry(labelTag).addClass("checkbox-inline").append(inputTag).append(label);
 }
 
-function makeSelectFromData(element, name, selectList){
+function makeSelectFromData(element, name, selectList, dataValue){
 	var selectTag = document.createElement("select");
 	
 	for (var i = 0; i < selectList.length; i++) {
@@ -395,7 +527,7 @@ function makeSelectFromData(element, name, selectList){
 		$JQry(selectTag).append($JQry(optionTag).val(selectList[i].value).text(selectList[i].label));
 	}
 	$JQry(element).after(selectTag);
-	
+	$JQry(selectTag).val(dataValue);
 	$JQry(selectTag).addClass("form-control").attr("name",name).select2({
 		theme : "bootstrap"
 	});
@@ -485,10 +617,11 @@ function formatField(variable) {
 			$typelabel.text("Type");
 			$typelabel.appendTo($typerow);
 			$typediv = $JQry(document.createElement("div")).addClass("col-sm-9");
-			$typediv.text(variable.type);
+			$typediv.text(variable.type.label);
 			$typediv.appendTo($typerow);
 			$typerow.appendTo($result);
 		}
 	}
 	return $result;
 };
+

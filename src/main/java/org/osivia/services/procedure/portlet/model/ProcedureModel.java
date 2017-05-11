@@ -31,6 +31,9 @@ public class ProcedureModel {
     /** procedureObjects */
     private List<ProcedureObject> procedureObjects;
 
+    /** tableauDeBords */
+    private List<TableauDeBord> tableauDeBords;
+
     /** startingStep */
     private String startingStep;
 
@@ -45,6 +48,9 @@ public class ProcedureModel {
 
     /** newWebId */
     private String newWebId;
+
+    /** webIdParent */
+    private String webIdParent;
 
     /** procedureType */
     private String procedureType;
@@ -72,6 +78,7 @@ public class ProcedureModel {
         path = document.getPath();
         startingStep = properties.getString("pcd:startingStep");
         procedureType = properties.getString("pcd:procedureType");
+        webIdParent = properties.getString("pcd:webIdParent");
 
         // global variables
         final PropertyList globalVariablesList = properties.getList("pcd:globalVariablesDefinitions");
@@ -82,7 +89,7 @@ public class ProcedureModel {
 
                 Object varOptionsO = globalVariable.get("varOptions");
                 String varOptions = null;
-                if (varOptionsO != null && varOptionsO.getClass() == String.class) {
+                if ((varOptionsO != null) && (varOptionsO.getClass() == String.class)) {
                     varOptions = varOptionsO.toString();
                 }
 
@@ -98,8 +105,9 @@ public class ProcedureModel {
             for (final Object stepO : stepsList.list()) {
                 final PropertyMap stepM = (PropertyMap) stepO;
                 step = new Step(stepM, getVariables(), nuxeoController);
-                getSteps().add(step.getIndex(), step);
+                getSteps().add(step);
             }
+            Collections.sort(getSteps());
         }
         final PropertyList procedureObjectsList = properties.getList("pcd:procedureObjects");
         if (procedureObjectsList != null) {
@@ -116,7 +124,6 @@ public class ProcedureModel {
     }
 
     public void updateStepsIndexes() {
-
         Collections.sort(getSteps());
         for (int i = 0; i < getSteps().size(); i++) {
             getSteps().get(i).setIndex(i);
@@ -347,6 +354,44 @@ public class ProcedureModel {
      */
     public void setProcedureType(String procedureType) {
         this.procedureType = procedureType;
+    }
+
+    /**
+     * Getter for webIdParent.
+     * 
+     * @return the webIdParent
+     */
+    public String getWebIdParent() {
+        return webIdParent;
+    }
+
+    /**
+     * Setter for webIdParent.
+     * 
+     * @param webIdParent the webIdParent to set
+     */
+    public void setWebIdParent(String webIdParent) {
+        this.webIdParent = webIdParent;
+    }
+
+
+    /**
+     * Getter for tableauDeBords.
+     * 
+     * @return the tableauDeBords
+     */
+    public List<TableauDeBord> getTableauDeBords() {
+        return tableauDeBords;
+    }
+
+
+    /**
+     * Setter for tableauDeBords.
+     * 
+     * @param tableauDeBords the tableauDeBords to set
+     */
+    public void setTableauDeBords(List<TableauDeBord> tableauDeBords) {
+        this.tableauDeBords = tableauDeBords;
     }
 
 }

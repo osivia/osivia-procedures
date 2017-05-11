@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
- * @author dorian
+ * @author Dorian Licois
  */
 public class Form {
 
@@ -40,8 +40,13 @@ public class Form {
     /** selectedField */
     private Field selectedField;
 
+    /** selectedVariable */
+    private Variable selectedVariable;
+
     /** advancedMode */
     private boolean advancedMode;
+    
+    private VariableTypesEnum[] variableTypesEnum = VariableTypesEnum.values();
 
     /** procedureInstance */
     private List<ProcedureInstance> procedureInstances;
@@ -109,7 +114,11 @@ public class Form {
      * @return the selected Action
      */
     public Action getTheSelectedAction() {
-        return getTheSelectedStep().getActions().get(Integer.valueOf(selectedAction));
+        if (StringUtils.equals(selectedAction, "-1")) {
+            return getTheSelectedStep().getInitAction();
+        } else {
+            return getTheSelectedStep().getActions().get(Integer.valueOf(selectedAction));
+        }
     }
 
 
@@ -294,6 +303,22 @@ public class Form {
         this.advancedMode = advancedMode;
     }
 
+	/**
+     * Getter for variableTypesEnum.
+     * @return the variableTypesEnum
+     */
+    public VariableTypesEnum[] getVariableTypesEnum() {
+        return variableTypesEnum;
+    }
+
+    /**
+     * Setter for variableTypesEnum.
+     * @param variableTypesEnum the variableTypesEnum to set
+     */
+    public void setVariableTypesEnum(VariableTypesEnum[] variableTypesEnum) {
+        this.variableTypesEnum = variableTypesEnum;
+    }
+
     /**
      * Getter for procedureInstances.
      * 
@@ -310,6 +335,22 @@ public class Form {
      */
     public void setProcedureInstances(List<ProcedureInstance> procedureInstances) {
         this.procedureInstances = procedureInstances;
+    }
+    
+    /**
+     * Getter for selectedVariable.
+     * @return the selectedVariable
+     */
+    public Variable getSelectedVariable() {
+        return selectedVariable;
+    }
+
+    /**
+     * Setter for selectedVariable.
+     * @param selectedVariable the selectedVariable to set
+     */
+    public void setSelectedVariable(Variable selectedVariable) {
+        this.selectedVariable = selectedVariable;
     }
 
 }

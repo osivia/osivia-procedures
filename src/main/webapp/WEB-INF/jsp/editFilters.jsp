@@ -8,7 +8,7 @@
 <c:forEach var="pathPart" items="${filterBkp.filterPath}" varStatus="status">
 	<c:set var="springPath"	value="${status.first ? 'theSelectedAction' : springPath}.filters[${pathPart}]"	scope="request" />
 </c:forEach>
-        <span class="filter-title <c:if test="${filterBkp.selected}">filter-selected</c:if>">
+        <span class="filter-title <c:if test="${form.selectedFilter.filterPath eq filterBkp.filterPath}">filter-selected</c:if>">
            <i class="halflings halflings-menu-right"></i>
 		   <c:if test="${empty filterBkp.filterName}">
 				<op:translate key="${filterBkp.labelKey}" classLoader="${filterBkp.classLoader}"/>
