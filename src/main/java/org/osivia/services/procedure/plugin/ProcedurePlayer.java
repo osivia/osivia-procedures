@@ -22,13 +22,12 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.player.Player;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.ProcedureTypeEnum;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.ViewList;
@@ -51,64 +50,59 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         super(portletContext);
     }
 
-    private Player getProcedureInstancePlayer(DocumentContext<Document> docCtx) {
-        final Document document = docCtx.getDoc();
 
-        final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
-        String displayContext = publicationInfos.getDisplayContext();
-        final Map<String, String> windowProperties = getProcedureWindowProperties(document);
+    private Player getProcedureInstancePlayer(NuxeoDocumentContext documentContext) {
+        Document document = documentContext.getDocument();
+        String displayContext = documentContext.getDisplayContext();
+
+        Map<String, String> windowProperties = getProcedureWindowProperties(document);
         windowProperties.put("osivia.title", document.getTitle());
         windowProperties.put("osivia.procedure.admin", displayContext);
 
-        final Player linkProps = getProcedurePlayer(windowProperties);
-
-        return linkProps;
-        
+        return getProcedurePlayer(windowProperties);
     }
 
-    private Player getTaskPlayer(DocumentContext<Document> docCtx) {
-        final Document document = docCtx.getDoc();
 
-        final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
-        String displayContext = publicationInfos.getDisplayContext();
-        final Map<String, String> windowProperties = getProcedureWindowProperties(document);
+    private Player getTaskPlayer(NuxeoDocumentContext documentContext) {
+        Document document = documentContext.getDocument();
+        String displayContext = documentContext.getDisplayContext();
+        Map<String, String> windowProperties = getProcedureWindowProperties(document);
 
         windowProperties.put("osivia.title", document.getProperties().getString("nt:name"));
         windowProperties.put("osivia.procedure.admin", displayContext);
 
-        final Player linkProps = getProcedurePlayer(windowProperties);
-
-        return linkProps;
+        return getProcedurePlayer(windowProperties);
     }
 
-    private Map<String, String> getProcedureWindowProperties(final Document document) {
-        final Map<String, String> windowProperties = new HashMap<String, String>();
+
+    private Map<String, String> getProcedureWindowProperties(Document document) {
+        Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.services.procedure.webid", document.getProperties().getString("ttc:webid"));
         windowProperties.put("osivia.services.procedure.uuid", document.getId());
         windowProperties.put("osivia.doctype", document.getType());
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
         windowProperties.put("osivia.ajaxLink", "1");
+
         return windowProperties;
     }
     
-    private Player getProcedureModelPlayer(DocumentContext<Document> docCtx) {
-        final Document document = docCtx.getDoc();
 
-        final BasicPublicationInfos publicationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
-        String displayContext = publicationInfos.getDisplayContext();
+    private Player getProcedureModelPlayer(NuxeoDocumentContext documentContext) {
+        Document document = documentContext.getDocument();
+        String displayContext = documentContext.getDisplayContext();
         String procedureType = document.getProperties().getString("pcd:procedureType");
         if (StringUtils.equals(ProcedureTypeEnum.LIST.name(), procedureType)) {
             if (StringUtils.equals(displayContext, "adminlist") || StringUtils.equals(displayContext, "listadditem")) {
                 // édition d'une procédure de type LIST
-                final Map<String, String> windowProperties = getProcedureWindowProperties(document);
+                Map<String, String> windowProperties = getProcedureWindowProperties(document);
                 windowProperties.put("osivia.procedure.admin", displayContext);
                 windowProperties.put("osivia.title", "Éditer une liste");
                 windowProperties.put("osivia.services.procedure.procType", procedureType);
                 return getProcedurePlayer(windowProperties);
             } else {
                 // affichage du contenu dans une portletList
-                Map<String, String> windowProperties = viewListWindowProperties(docCtx, document, publicationInfos);
+                Map<String, String> windowProperties = viewListWindowProperties(documentContext);
 
                 Player player = new Player();
                 player.setWindowProperties(windowProperties);
@@ -116,7 +110,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
                 return player;
             }
         } else {
-            final Map<String, String> windowProperties = getProcedureWindowProperties(document);
+            Map<String, String> windowProperties = getProcedureWindowProperties(document);
             if (StringUtils.equals(displayContext, "adminproc") || StringUtils.equals(displayContext, "adminprocstep")) {
                 // édition d'une procédure
                 windowProperties.put("osivia.procedure.admin", displayContext);
@@ -130,45 +124,53 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         }
     }
 
-    private Player getProcedurePlayer(final Map<String, String> windowProperties) {
-        final Player player = new Player();
+
+    private Player getProcedurePlayer(Map<String, String> windowProperties) {
+        Player player = new Player();
         player.setWindowProperties(windowProperties);
         player.setPortletInstance("osivia-services-procedure-portletInstance");
+
         return player;
     }
 
-    private Map<String, String> viewListWindowProperties(DocumentContext<Document> docCtx, final Document document, final BasicPublicationInfos publicationInfos) {
+
+    private Map<String, String> viewListWindowProperties(NuxeoDocumentContext documentContext) {
+        Document document = documentContext.getDocument();
+
         Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put("osivia.nuxeoRequest", NuxeoController.createFolderRequest(docCtx, false));
+        windowProperties.put("osivia.nuxeoRequest", NuxeoController.createFolderRequest(documentContext, false));
         windowProperties.put("osivia.cms.style", ProcedurePlugin.STYLE_VIEW_LISTPROC);
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
-        windowProperties.put(Constants.WINDOW_PROP_SCOPE, publicationInfos.getScope());
+        windowProperties.put(Constants.WINDOW_PROP_SCOPE, documentContext.getScope());
         windowProperties.put(Constants.WINDOW_PROP_VERSION, "1");
         windowProperties.put("osivia.document.metadata", String.valueOf(false));
         windowProperties.put("osivia.title", document.getTitle());
         windowProperties.put(ViewList.USE_ES_WINDOW_PROPERTY, "true");
-        if (docCtx.getDoc() != null) {
-            windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, docCtx.getDoc().getPath());
-        }
+        windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, document.getPath());
+
         return windowProperties;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Player getCMSPlayer(DocumentContext<Document> docCt) {
-        final Document doc = docCt.getDoc();
-        final String docType = doc.getType();
+    public Player getCMSPlayer(NuxeoDocumentContext documentContext) {
+        Document doc = documentContext.getDocument();
+        String docType = doc.getType();
 
         if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREINSTANCE.getName())) {
-            return getProcedureInstancePlayer(docCt);
+            return getProcedureInstancePlayer(documentContext);
         }
 
         if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getName())) {
-            return getProcedureModelPlayer(docCt);
+            return getProcedureModelPlayer(documentContext);
         }
 
         if (StringUtils.equals(docType, DocumentTypeEnum.TASKDOC.getName())) {
-            return getTaskPlayer(docCt);
+            return getTaskPlayer(documentContext);
         }
 
 

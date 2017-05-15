@@ -35,8 +35,8 @@ public class ListProcListModule extends PortletModule {
         // Document currentDoc = nuxeoController.getCurrentDoc();
 
         String path = NuxeoController.getLivePath(nuxeoController.getComputedPath(nuxeoController.getParentPathToCreate()));
-        NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(request, response, this.getPortletContext(), path);
-        Document folder = documentContext.getDoc();
+        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+        Document folder = documentContext.getDocument();
 
 
         // on retrouve la liste des champs
