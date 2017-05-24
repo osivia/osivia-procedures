@@ -24,8 +24,6 @@
 <portlet:actionURL name="editStep" var="editStepUrl">
 </portlet:actionURL>
 
-<jsp:include page="includes.jsp" />
-
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">

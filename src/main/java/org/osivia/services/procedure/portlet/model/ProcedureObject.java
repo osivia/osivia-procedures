@@ -3,6 +3,7 @@ package org.osivia.services.procedure.portlet.model;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 
 /**
@@ -23,6 +24,19 @@ public class ProcedureObject {
     /** type */
     @JsonProperty("type")
     private String type;
+
+
+    public ProcedureObject(PropertyMap procedureObjectMap) {
+        if (procedureObjectMap != null) {
+            setName(procedureObjectMap.getString("name"));
+            setPath(procedureObjectMap.getString("path"));
+            setType(procedureObjectMap.getString("type"));
+        }
+    }
+
+
+    public ProcedureObject() {
+    }
 
 
     /**

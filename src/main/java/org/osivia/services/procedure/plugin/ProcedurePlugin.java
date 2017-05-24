@@ -19,7 +19,9 @@ import java.util.Map;
 
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.services.procedure.formFilters.CreateRecordFilter;
 import org.osivia.services.procedure.formFilters.DefineVariableFilter;
 import org.osivia.services.procedure.formFilters.DeleteOnEndingFormFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
@@ -36,18 +38,15 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 
 
 /**
- * Technical portlet for attributes bundles customization.
+ * customization module for procedures
  *
- * @author Jean-Sébastien steux
+ * @author Dorian Licois
  * @see AbstractPluginPortlet
  */
 public class ProcedurePlugin extends AbstractPluginPortlet {
 
     /** Customizer name. */
     private static final String CUSTOMIZER_NAME = "procedure.plugin";
-
-    /** proclistadminlist list template. */
-    // public static final String STYLE_VIEW_LIST_ADMIN = "proclistadminlist";
 
     /** viewListProc list template. */
     public static final String STYLE_VIEW_LISTPROC = "listproc";
@@ -58,7 +57,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     public static final String SCHEMAS_PROCEDUREINSTANCE = "dublincore, common, toutatice, procedure, procedureInstance";
     /** SCHEMAS_ADMIN */
     public static final String SCHEMAS_ADMIN = "dublincore, common, toutatice";
-
 
     /**
      * Constructor.
@@ -77,8 +75,8 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         updateListTemplates(context);
         updatePlayers(context);
         updateFormFIlters(context);
+        customizeMenubarModules(context);
     }
-
 
     /**
      * update players
@@ -92,7 +90,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         modules.add(0, new ProcedurePlayer(getPortletContext()));
     }
 
-
     /**
      * update document types
      * 
@@ -101,9 +98,21 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     private void updateDocTypes(CustomizationContext context) {
         Map<String, DocumentType> docTypes = getDocTypes(context);
 
-        ArrayList<String> portalFormSubTypes = new ArrayList<String>(0);
-        docTypes.put("ProcedureModel", new DocumentType("ProcedureModel", false, false, false, false, false, false, portalFormSubTypes, null,
+        ArrayList<String> recordContainerSubTypes = new ArrayList<String>(1);
+        recordContainerSubTypes.add("RecordFolder");
+
+        docTypes.put("RecordContainer", new DocumentType("RecordContainer", false, true, true, true, false, false, recordContainerSubTypes, null,
                 "glyphicons glyphicons-flowchart"));
+        
+        ArrayList<String> recordFolderSubTypes = new ArrayList<String>(1);
+        recordFolderSubTypes.add("Record");
+
+        docTypes.put("RecordFolder", new DocumentType("RecordFolder", false, true, true, true, false, false, recordFolderSubTypes, null,
+                "glyphicons glyphicons-list-alt"));
+
+        docTypes.put("Record", new DocumentType("Record", false, false, false, false, false, false, new ArrayList<String>(0), null,
+                "glyphicons glyphicons-list"));
+
     }
 
     /**
@@ -138,10 +147,19 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
         formFilters.put(SetAdditionalAuthorization.ID, new SetAdditionalAuthorization());
     	formFilters.put(SetInitiatorVariableFilter.ID, new SetInitiatorVariableFilter());
+        formFilters.put(CreateRecordFilter.ID, new CreateRecordFilter());
     }
 
     @Override
     protected String getPluginName() {
         return CUSTOMIZER_NAME;
+    }
+
+    private void customizeMenubarModules(CustomizationContext context) {
+        // Menubar modules
+        List<MenubarModule> modules = this.getMenubarModules(context);
+
+        MenubarModule mbModule = new ProcedureMenubarModule();
+        modules.add(mbModule);
     }
 }

@@ -15,8 +15,6 @@
 <portlet:actionURL name="actionProcedure" var="actionProcedureUrl">
 </portlet:actionURL>
 
-<jsp:include page="includes.jsp" />
-
 <form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
 
     <div class="panel panel-default">

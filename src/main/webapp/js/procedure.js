@@ -124,12 +124,29 @@ $JQry(function() {
 		}
 	});
 	
+	$JQry(".column-sortable").sortable({
+		cursor : "move",
+		tolerance : "pointer",
+		axis: "y",
+		items: "> .procedure-column",
+		stop: function(event, ui) {
+			$JQry(this).find("tr").each(function(index, element) {
+				$JQry(element).find("input[name$='index']").val(index);
+			});
+			// soumet la mise à jour du formulaire
+			$JQry(ui.item).closest("form").find("input[name='updateDashboard']").click();
+		}
+	});
 	
 	// sélection d'un champ
 	$JQry("#procedure-sortable li").click(function(event) {
 		
 		var $target = $JQry(event.target);
 		if(!$target.is("span.select2-selection")){
+			// make selected
+			$JQry(".fieldSelected").removeClass("fieldSelected");
+			$JQry("#Edit").find("input").attr("disabled", "true");
+			$target.closest("li").addClass("fieldSelected");
 			// find hidden input by end name
 			var path = $JQry(this).children("input[name$='path']").val();
 			// add value to form as selected
@@ -245,6 +262,7 @@ $JQry(function() {
 	$JQry(".fieldSelect-select2").each(function(index, element) {
 		var $element = $JQry(element);
 		var vocabularySearchUrl = $element.data("url");
+		var defaultVars = $element.data("defaultvars");
 		
 		$element.select2({
 			ajax: {
@@ -253,7 +271,8 @@ $JQry(function() {
 				delay: 300,
 				data: function (params) {
 					return {
-						filter: params.term
+						filter: params.term,
+						defaultVars: defaultVars
 					};
 				},
 				processResults: function (data, params) {

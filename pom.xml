@@ -25,6 +25,21 @@
             <version>${toutatice.version}</version>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- Toutatice CMS Nuxeo web -->
+        <dependency>
+            <groupId>toutatice-portail.cms</groupId>
+            <artifactId>toutatice-portail-cms-nuxeo-web</artifactId>
+            <type>war</type>
+            <version>${toutatice.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>toutatice-portail.cms</groupId>
+            <artifactId>toutatice-portail-cms-nuxeo-web</artifactId>
+            <classifier>classes</classifier>
+            <version>${toutatice.version}</version>
+        </dependency>
+        
        
     </dependencies>
 

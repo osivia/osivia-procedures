@@ -49,7 +49,6 @@ import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
-import org.osivia.services.procedure.portlet.model.ProcedureTypeEnum;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
@@ -90,11 +89,14 @@ public class ProcedureServiceImpl implements IProcedureService {
             command = new ListModelsContainerCommand(procedurepath);
             final Document container = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
 
-
             String webId = StringUtils.isBlank(procedureModel.getNewWebId()) ? StringUtils.deleteWhitespace(procedureModel.getName()) : procedureModel
                     .getNewWebId();
+
+            DocumentTypeEnum type = StringUtils.isNotBlank(procedureModel.getProcedureType()) ? DocumentTypeEnum.valueOf(procedureModel.getProcedureType())
+                    : DocumentTypeEnum.PROCEDUREMODEL;
+
             command = new CreateDocumentCommand(container, procedureModel.getName(), IFormsService.FORMS_WEB_ID_PREFIX + webId,
-                    buildProperties(procedureModel), DocumentTypeEnum.PROCEDUREMODEL);
+                    buildProperties(procedureModel), type);
         } catch (final Exception e) {
             throw new PortletException(e);
         }
@@ -154,7 +156,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         propMap.set("pcd:globalVariablesDefinitions", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getVariables().values()));
         propMap.set("pcd:startingStep", procedureModel.getStartingStep());
         propMap.set("pcd:procedureObjects", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getProcedureObjects()));
-        propMap.set("pcd:procedureType", procedureModel.getProcedureType());
+        propMap.set("pcd:dashboards", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getDashboards()));
         return propMap;
     }
 
@@ -245,8 +247,8 @@ public class ProcedureServiceImpl implements IProcedureService {
             throws PortalException {
 
         Map<String, String> windowProperties;
-        if (StringUtils.equals(procedureModel.getProcedureType(), ProcedureTypeEnum.LIST.name())) {
-            windowProperties = getWindowProperties(procedurepath, "adminlist", procedureModel.getProcedureType());
+        if (StringUtils.equals(procedureModel.getProcedureType(), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
+            windowProperties = getWindowProperties(procedurepath, "adminrecord", procedureModel.getProcedureType());
         } else {
             windowProperties = getWindowProperties(procedurepath, "adminproc", procedureModel.getProcedureType());
         }
@@ -265,8 +267,7 @@ public class ProcedureServiceImpl implements IProcedureService {
      */
     private Map<String, String> getWindowProperties(String procedurePath, String displayContext, String procedureType) throws PortalException {
         final Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put("osivia.doctype", DocumentTypeEnum.PROCEDUREMODEL.getName());
-        windowProperties.put("osivia.services.procedure.procType", procedureType);
+        windowProperties.put("osivia.doctype", procedureType);
         windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, procedurePath);
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);

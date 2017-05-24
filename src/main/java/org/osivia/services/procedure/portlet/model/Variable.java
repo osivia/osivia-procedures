@@ -13,6 +13,11 @@ import org.codehaus.jackson.annotate.JsonProperty;
 creatorVisibility = Visibility.NONE)
 public class Variable {
 
+    public static final Variable DC_CREATOR = new Variable("dc:creator", "Créé par", VariableTypesEnum.TEXT, null);
+    public static final Variable DC_CREATED = new Variable("dc:created", "Créé le", VariableTypesEnum.TEXT, null);
+    public static final Variable DC_LAST_CONTRIBUTOR = new Variable("dc:lastContributor", "Modifié par", VariableTypesEnum.TEXT, null);
+    public static final Variable DC_MODIFIED = new Variable("dc:modified", "Modifié le", VariableTypesEnum.TEXT, null);
+
     /** name */
     @JsonProperty("name")
     private String name;

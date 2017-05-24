@@ -206,7 +206,7 @@
 						<c:when
 							test="${(fieldType eq 'TEXT') or (fieldType eq 'DATE') or (fieldType eq 'SELECTLIST') or (fieldType eq 'RADIOLIST')
 	                    				or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
-							<div class="col-sm-3">${field.superLabel}:</div>
+		                    <label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
 								<c:out
 									value="${form.procedureInstance.globalVariablesValues[field.name]}" />
@@ -216,7 +216,7 @@
 							</div>
 						</c:when>
 						<c:when test="${fieldType eq 'TEXTAREA'}">
-							<div class="col-sm-3">${field.superLabel}:</div>
+							<label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
 								<span class="pre-wrap"><c:out value="${form.procedureInstance.globalVariablesValues[field.name]}" /></span>
 								<c:if test="${not empty field.helpText}">
@@ -226,7 +226,7 @@
 						</c:when>
 						<c:when
 							test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
-							<div class="col-sm-3">${field.superLabel}:</div>
+							<label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">${form.procedureInstance.globalVariablesValues[field.name]}
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>

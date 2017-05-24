@@ -19,6 +19,9 @@ public class Form {
     /** selectedAction */
     private String selectedAction;
 
+    /** selectedTdb */
+    private String selectedTdb;
+
     /** procedureInstance */
     private ProcedureInstance procedureInstance;
 
@@ -31,8 +34,8 @@ public class Form {
     /** newFieldSet */
     private AddField newFieldSet;
 
-    /** filterMessage */
-    private String filterMessage;
+    /** newColumn */
+    private Column newColumn;
 
     /** selectedFilter */
     private Filter selectedFilter;
@@ -55,6 +58,7 @@ public class Form {
         this.procedureModel = procedureModel;
         newField = new AddField();
         newFieldSet = new AddField();
+        newColumn = new Column();
     }
 
     public Form(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
@@ -70,12 +74,14 @@ public class Form {
         }
         newField = new AddField();
         newFieldSet = new AddField();
+        newColumn = new Column();
     }
 
 
     public Form() {
         newField = new AddField();
         newFieldSet = new AddField();
+        newColumn = new Column();
     }
 
     /**
@@ -119,6 +125,10 @@ public class Form {
         } else {
             return getTheSelectedStep().getActions().get(Integer.valueOf(selectedAction));
         }
+    }
+
+    public Dashboard getTheSelectedTdb() {
+        return getProcedureModel().getDashboards().get(Integer.valueOf(getSelectedTdb()));
     }
 
 
@@ -215,14 +225,6 @@ public class Form {
      */
     public void setNewField(AddField newField) {
         this.newField = newField;
-    }
-
-    public String getFilterMessage() {
-        return filterMessage;
-    }
-
-    public void setFilterMessage(String filterMessage) {
-        this.filterMessage = filterMessage;
     }
 
     public String getSelectedAction() {
@@ -351,6 +353,49 @@ public class Form {
      */
     public void setSelectedVariable(Variable selectedVariable) {
         this.selectedVariable = selectedVariable;
+    }
+
+
+    /**
+     * Getter for selectedTdb.
+     * 
+     * @return the selectedTdb
+     */
+    public String getSelectedTdb() {
+        return selectedTdb;
+    }
+
+
+    /**
+     * Setter for selectedTdb.
+     * 
+     * @param selectedTdb the selectedTdb to set
+     */
+    public void setSelectedTdb(String selectedTdb) {
+        this.selectedTdb = selectedTdb;
+    }
+
+
+    /**
+     * Getter for newColumn.
+     * 
+     * @return the newColumn
+     */
+    public Column getNewColumn() {
+        if (newColumn == null) {
+            newColumn = new Column();
+        }
+        return newColumn;
+    }
+
+
+    /**
+     * Setter for newColumn.
+     * 
+     * @param newColumn the newColumn to set
+     */
+    public void setNewColumn(Column newColumn) {
+        this.newColumn = newColumn;
     }
 
 }

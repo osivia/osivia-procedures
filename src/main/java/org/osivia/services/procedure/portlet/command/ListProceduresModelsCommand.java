@@ -6,11 +6,13 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 
 public class ListProceduresModelsCommand implements INuxeoCommand {
 
-    private static final String select = "SELECT * FROM ProcedureModel";
+    private static final String select = "SELECT * FROM ProcedureModel, RecordFolder";
     private static final String where = " WHERE ecm:path startswith '";
     private static final String end = "' ";
 
@@ -37,7 +39,10 @@ public class ListProceduresModelsCommand implements INuxeoCommand {
                 sbQuery.append(filter);
             }
         }
-        request.set("query", sbQuery.toString());
+
+        String query = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, sbQuery.toString());
+
+        request.set("query", query);
         return request.execute();
     }
 

@@ -3,16 +3,16 @@ package org.osivia.services.procedure.portlet.model;
 
 public enum DocumentTypeEnum {
 
-    PROCEDUREMODEL("ProcedureModel"), PROCEDUREINSTANCE("ProcedureInstance"), TASKDOC("TaskDoc");
+    PROCEDUREMODEL("ProcedureModel"), PROCEDUREINSTANCE("ProcedureInstance"), TASKDOC("TaskDoc"), RECORDFOLDER("RecordFolder");
 
-    String name;
+    String docType;
 
-    private DocumentTypeEnum(String name) {
-        this.name = name;
+    private DocumentTypeEnum(String docType) {
+        this.docType = docType;
     }
 
 
-    public String getName() {
-        return name;
+    public String getDocType() {
+        return docType;
     }
 }

@@ -3,7 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 
-<a class="btn btn-default btn-sm" href="${addItemUrl}" role="button" title="Ajouter un élément"><i class="glyphicons glyphicons-plus-sign"></i> Ajouter un élément</a>
+<a class="btn btn-default btn-sm" href="${addRecordUrl}" role="button" title="Ajouter un élément"><i class="glyphicons glyphicons-plus-sign"></i> Ajouter un élément</a>
 
 <div class="table-responsive">
     <table class="table table-hover">

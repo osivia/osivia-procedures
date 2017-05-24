@@ -54,8 +54,8 @@ public class ListProcListModule extends PortletModule {
         request.setAttribute("fields", fields);
 
         // lien vers procedureModel pour ajouter un nouvel item
-        Link addItemLink = nuxeoController.getLink(folder, "listadditem");
-        request.setAttribute("addItemUrl", addItemLink.getUrl());
+        Link addRecordLink = nuxeoController.getLink(folder, "addRecord");
+        request.setAttribute("addRecordUrl", addRecordLink.getUrl());
 
 
         // composition des éléments du tableau, avec URL

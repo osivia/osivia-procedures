@@ -49,7 +49,7 @@ public class CreateDocumentCommand implements INuxeoCommand {
         request.setInput(path);
         properties.set("dc:title", name);
         properties.set("ttc:webid", webId);
-        request.set("type", type.getName()).set("properties", properties);
+        request.set("type", type.getDocType()).set("properties", properties);
 
         return request.execute();
     }

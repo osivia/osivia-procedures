@@ -8,9 +8,12 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.services.procedure.portlet.command.RetrieveDocumentByWebIdCommand;
 
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
@@ -31,8 +34,8 @@ public class ProcedureModel {
     /** procedureObjects */
     private List<ProcedureObject> procedureObjects;
 
-    /** tableauDeBords */
-    private List<TableauDeBord> tableauDeBords;
+    /** dashboards */
+    private List<Dashboard> dashboards;
 
     /** startingStep */
     private String startingStep;
@@ -77,7 +80,7 @@ public class ProcedureModel {
         newWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
         path = document.getPath();
         startingStep = properties.getString("pcd:startingStep");
-        procedureType = properties.getString("pcd:procedureType");
+        procedureType = document.getType();
         webIdParent = properties.getString("pcd:webIdParent");
 
         // global variables
@@ -100,10 +103,14 @@ public class ProcedureModel {
         }
         // steps
         final PropertyList stepsList = properties.getList("pcd:steps");
+        PropertyList savedForm=null;
         if (stepsList != null) {
             Step step;
             for (final Object stepO : stepsList.list()) {
                 final PropertyMap stepM = (PropertyMap) stepO;
+                
+                savedForm = stepM.getList("globalVariablesReferences");
+                
                 step = new Step(stepM, getVariables(), nuxeoController);
                 getSteps().add(step);
             }
@@ -114,11 +121,38 @@ public class ProcedureModel {
             ProcedureObject newProcedureObject;
             for (final Object procedureObject : procedureObjectsList.list()) {
                 final PropertyMap procedureObjectMap = (PropertyMap) procedureObject;
-                newProcedureObject = new ProcedureObject();
-                newProcedureObject.setName(procedureObjectMap.getString("name"));
-                newProcedureObject.setPath(procedureObjectMap.getString("path"));
-                newProcedureObject.setType(procedureObjectMap.getString("type"));
+                newProcedureObject = new ProcedureObject(procedureObjectMap);
                 procedureObjects.add(newProcedureObject);
+            }
+        }
+
+        final PropertyList procedureDashboardsList = properties.getList("pcd:dashboards");
+        if (procedureDashboardsList != null) {
+            Dashboard dashboard;
+            for (final Object dashboardObject : procedureDashboardsList.list()) {
+                final PropertyMap dashboardObjectMap = (PropertyMap) dashboardObject;
+                dashboard = new Dashboard(dashboardObjectMap);
+                getDashboards().add(dashboard);
+            }
+        }
+
+        if (StringUtils.isNotBlank(getWebIdParent())) {
+            INuxeoCommand command = new RetrieveDocumentByWebIdCommand(getWebIdParent());
+            Document documentParent = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
+            final PropertyMap propertiesParent = documentParent.getProperties();
+            final PropertyList stepsListParent = propertiesParent.getList("pcd:steps");
+            if (stepsListParent != null) {
+                List<Step> stepsParent = new ArrayList<Step>(stepsListParent.list().size());
+                Step step;
+                for (final Object stepO : stepsListParent.list()) {
+                    final PropertyMap stepM = (PropertyMap) stepO;
+                    
+                    stepM.map().put("globalVariablesReferences", savedForm);
+                    
+                    step = new Step(stepM, getVariables(), nuxeoController);
+                    stepsParent.add(step);
+                }
+                setSteps(stepsParent);
             }
         }
     }
@@ -374,24 +408,26 @@ public class ProcedureModel {
         this.webIdParent = webIdParent;
     }
 
-
     /**
-     * Getter for tableauDeBords.
+     * Getter for dashboards.
      * 
-     * @return the tableauDeBords
+     * @return the dashboards
      */
-    public List<TableauDeBord> getTableauDeBords() {
-        return tableauDeBords;
+    public List<Dashboard> getDashboards() {
+        if (dashboards == null) {
+            dashboards = new ArrayList<Dashboard>();
+        }
+        return dashboards;
     }
 
 
     /**
-     * Setter for tableauDeBords.
+     * Setter for dashboards.
      * 
-     * @param tableauDeBords the tableauDeBords to set
+     * @param dashboards the dashboards to set
      */
-    public void setTableauDeBords(List<TableauDeBord> tableauDeBords) {
-        this.tableauDeBords = tableauDeBords;
+    public void setDashboards(List<Dashboard> dashboards) {
+        this.dashboards = dashboards;
     }
 
 }

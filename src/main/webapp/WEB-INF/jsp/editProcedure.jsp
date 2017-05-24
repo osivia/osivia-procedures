@@ -11,8 +11,6 @@
 	<portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
 </c:if>
 
-<jsp:include page="includes.jsp" />
-
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">
@@ -96,7 +94,7 @@
         <div class="panel-footer">
             <div class="form-group">
                 <div class="col-sm-12">
-                    <button type="submit" class="btn btn-default" onclick="selector(this,'0','selectedStep')" name="addStep">Ajouter une étape</button>
+                    <button type="submit" class="btn btn-default" name="addStep">Ajouter une étape</button>
                     <button type="submit" class="btn btn-default pull-right" name="manageVariables">Accéder au dictionnaire des variables</button>
                 </div>
             </div>
@@ -176,50 +174,43 @@
     </div>
     
     <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Tableaux de bord</h3>
-            </div>
-            <div class="panel-body">
-                <ul class="list-unstyled">
-                    <li class="form-group">
-                        <div class="col-sm-5">
-                            <label class="control-label">Nom</label>
-                        </div>
-                        <div class="col-sm-5">
-                            <label class="control-label">Groupes</label>
-                        </div>
-                    </li>
-                    <c:forEach var="procedureObject" items="${form.procedureModel.procedureObjects}" varStatus="status">
-                         <li class="form-group">
-                            <div class="col-sm-4">
-                                <form:input path="procedureModel.procedureObjects[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
-                            </div>
-                            <div class="col-sm-4">
-                                <form:input path="procedureModel.procedureObjects[${status.index}].path" type="text" cssClass="form-control" placeholder="Path" />
-                            </div>
-                            <div class="col-sm-3">
-                                <form:select path="procedureModel.procedureObjects[${status.index}].type" cssClass="form-control">
-                                    <form:option value="FILE">File</form:option>
-                                </form:select>
-                            </div>
-                            <div class="btn-group col-sm-1">
-                                <button type="submit" name="deleteObject" class="btn btn-default" onclick="selector(this,'${status.index}','selectedObject')">
-                                    <i class="glyphicons glyphicons-bin"></i>
-                                </button>
-                            </div>
-                         </li>
-                    </c:forEach>
-                </ul>
-            </div>
-            <div class="panel-footer">
-                <div class="form-group">
-                    <div class="col-sm-11">
-                        <button type="submit" name="addObject" class="btn btn-default">Ajouter un object Métier</button>
+        <div class="panel-heading">
+            <h3 class="panel-title">Tableaux de bord</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-unstyled">
+                <li class="form-group">
+                    <div class="col-sm-5">
+                        <label class="control-label">Nom</label>
                     </div>
+                    <div class="col-sm-5">
+                        <label class="control-label">Groupes</label>
+                    </div>
+                </li>
+                <c:forEach var="dashboard" items="${form.procedureModel.dashboards}" varStatus="status">
+                     <li class="form-group">
+	                     <div class="col-sm-5">${dashboard.name}</div>
+	                     <div class="col-sm-5">${dashboard.groupsString}</div>
+	                     <div class="btn-group col-sm-2">
+	                         <button type="submit" name="editTdb" onclick="selector(this,'${status.index}','selectedTdb')" class="btn btn-default pull-riht">
+	                             <i class="glyphicons glyphicons-edit"></i>
+	                         </button>
+	                         <button type="submit" name="deleteTdb" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedTdb')">
+	                             <i class="glyphicons glyphicons-bin"></i>
+	                         </button>
+	                     </div>
+	                 </li>
+                </c:forEach>
+            </ul>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <button type="submit" class="btn btn-default" name="addTdb">Ajouter un tableau de bord</button>
                 </div>
             </div>
         </div>
-    
+    </div>
     
 
     <button type="submit" class="btn btn-primary" name="saveProcedure">Sauvegarder</button>
