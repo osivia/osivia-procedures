@@ -3,6 +3,7 @@ package org.osivia.services.procedure.portlet.model;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 
 /**
@@ -90,7 +91,7 @@ public class Form {
      * @return the selected step
      */
     public Step getTheSelectedStep() {
-        return getProcedureModel().getSteps().get(Integer.valueOf(getSelectedStep()));
+        return getProcedureModel().getSteps().get(NumberUtils.toInt(getSelectedTdb()));
     }
 
 
@@ -106,9 +107,19 @@ public class Form {
         } else {
             returnStep = getProcedureModel().getStartingStep();
         }
-        for (final Step step : getProcedureModel().getSteps()) {
-            if (StringUtils.equals(returnStep, step.getReference())) {
-                return step;
+        if (StringUtils.isNotBlank(getProcedureModel().getWebIdParent())) {
+            for (Step parentStep : getProcedureModel().getProcedureParent().getSteps()) {
+                if (StringUtils.equals(returnStep, parentStep.getReference())) {
+                    Step step = getProcedureModel().getSteps().get(0);
+                    parentStep.setFields(step.getFields());
+                    return parentStep;
+                }
+            }
+        } else {
+            for (final Step step : getProcedureModel().getSteps()) {
+                if (StringUtils.equals(returnStep, step.getReference())) {
+                    return step;
+                }
             }
         }
         return null;
@@ -123,12 +134,12 @@ public class Form {
         if (StringUtils.equals(selectedAction, "-1")) {
             return getTheSelectedStep().getInitAction();
         } else {
-            return getTheSelectedStep().getActions().get(Integer.valueOf(selectedAction));
+            return getTheSelectedStep().getActions().get(NumberUtils.toInt(selectedAction));
         }
     }
 
     public Dashboard getTheSelectedTdb() {
-        return getProcedureModel().getDashboards().get(Integer.valueOf(getSelectedTdb()));
+        return getProcedureModel().getDashboards().get(NumberUtils.toInt(getSelectedTdb()));
     }
 
 

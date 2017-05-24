@@ -61,6 +61,9 @@ public class ProcedureModel {
     /** originalDocument */
     private Document originalDocument;
 
+    /** ProcedureParent */
+    private ProcedureModel ProcedureParent;
+
     public ProcedureModel() {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();
@@ -103,14 +106,10 @@ public class ProcedureModel {
         }
         // steps
         final PropertyList stepsList = properties.getList("pcd:steps");
-        PropertyList savedForm=null;
         if (stepsList != null) {
             Step step;
             for (final Object stepO : stepsList.list()) {
                 final PropertyMap stepM = (PropertyMap) stepO;
-                
-                savedForm = stepM.getList("globalVariablesReferences");
-                
                 step = new Step(stepM, getVariables(), nuxeoController);
                 getSteps().add(step);
             }
@@ -139,21 +138,8 @@ public class ProcedureModel {
         if (StringUtils.isNotBlank(getWebIdParent())) {
             INuxeoCommand command = new RetrieveDocumentByWebIdCommand(getWebIdParent());
             Document documentParent = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            final PropertyMap propertiesParent = documentParent.getProperties();
-            final PropertyList stepsListParent = propertiesParent.getList("pcd:steps");
-            if (stepsListParent != null) {
-                List<Step> stepsParent = new ArrayList<Step>(stepsListParent.list().size());
-                Step step;
-                for (final Object stepO : stepsListParent.list()) {
-                    final PropertyMap stepM = (PropertyMap) stepO;
-                    
-                    stepM.map().put("globalVariablesReferences", savedForm);
-                    
-                    step = new Step(stepM, getVariables(), nuxeoController);
-                    stepsParent.add(step);
-                }
-                setSteps(stepsParent);
-            }
+            ProcedureModel procedureParent = new ProcedureModel(documentParent, nuxeoController);
+            setProcedureParent(procedureParent);
         }
     }
 
@@ -428,6 +414,22 @@ public class ProcedureModel {
      */
     public void setDashboards(List<Dashboard> dashboards) {
         this.dashboards = dashboards;
+    }
+
+    /**
+     * Getter for ProcedureParent.
+     * @return the procedureParent
+     */
+    public ProcedureModel getProcedureParent() {
+        return ProcedureParent;
+    }
+
+    /**
+     * Setter for ProcedureParent.
+     * @param procedureParent the procedureParent to set
+     */
+    public void setProcedureParent(ProcedureModel procedureParent) {
+        ProcedureParent = procedureParent;
     }
 
 }

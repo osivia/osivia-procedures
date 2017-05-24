@@ -58,7 +58,7 @@
 							<div class="col-sm-9">
 								<div class="input-group">
 									<span class="input-group-addon"> <i
-										class="halflings halflings-glyph-calendar"></i>
+										class="halflings halflings-calendar"></i>
 									</span>
 									<form:input
 										path="procedureInstance.globalVariablesValues['${field.name}']"

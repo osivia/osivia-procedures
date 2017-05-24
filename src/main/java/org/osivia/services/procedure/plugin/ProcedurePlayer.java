@@ -92,36 +92,17 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
 
         final NuxeoPublicationInfos publicationInfos = docCtx.getPublicationInfos();
         String displayContext = docCtx.getDisplayContext();
-        // String procedureType = document.getType();
-        // if (StringUtils.equals(DocumentTypeEnum.RECORDFOLDER.getDocType(), procedureType)) {
-        // if (StringUtils.equals(displayContext, "adminrecord") || StringUtils.equals(displayContext, "addRecord")) {
-        // // édition d'une procédure de type LIST
-        // final Map<String, String> windowProperties = getProcedureWindowProperties(document);
-        // windowProperties.put("osivia.procedure.admin", displayContext);
-        // windowProperties.put("osivia.title", "Éditer un record folder");
-        // return getProcedurePlayer(windowProperties);
-        // } else {
-        // // affichage du contenu dans une portletList
-        // Map<String, String> windowProperties = viewListWindowProperties(docCtx, document, publicationInfos);
-        //
-        // Player player = new Player();
-        // player.setWindowProperties(windowProperties);
-        // player.setPortletInstance("toutatice-portail-cms-nuxeo-viewListPortletInstance");
-        // return player;
-        // }
-        // } else {
-            final Map<String, String> windowProperties = getProcedureWindowProperties(document);
-            if (StringUtils.equals(displayContext, "adminproc") || StringUtils.equals(displayContext, "adminprocstep")) {
-                // édition d'une procédure
-                windowProperties.put("osivia.procedure.admin", displayContext);
-                windowProperties.put("osivia.title", "Éditer une procédure");
-                return getProcedurePlayer(windowProperties);
-            } else {
-                // lancement d'une procédure type LIST
-                windowProperties.put("osivia.title", document.getTitle());
-                return getProcedurePlayer(windowProperties);
-            }
-        // }
+        final Map<String, String> windowProperties = getProcedureWindowProperties(document);
+        if (StringUtils.equals(displayContext, "adminproc") || StringUtils.equals(displayContext, "adminprocstep")) {
+            // édition d'une procédure
+            windowProperties.put("osivia.procedure.admin", displayContext);
+            windowProperties.put("osivia.title", "Éditer une procédure");
+            return getProcedurePlayer(windowProperties);
+        } else {
+            // lancement d'une procédure type LIST
+            windowProperties.put("osivia.title", document.getTitle());
+            return getProcedurePlayer(windowProperties);
+        }
     }
 
     private Player getProcedurePlayer(final Map<String, String> windowProperties) {
@@ -154,23 +135,6 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         }
         return player;
     }
-
-    // private Map<String, String> viewListWindowProperties(NuxeoDocumentContext docCtx, final Document document, final PublicationInfos publicationInfos) {
-    // Map<String, String> windowProperties = new HashMap<String, String>();
-    // windowProperties.put("osivia.nuxeoRequest", NuxeoController.createFolderRequest(docCtx, false));
-    // windowProperties.put("osivia.cms.style", ProcedurePlugin.STYLE_VIEW_LISTPROC);
-    // windowProperties.put("osivia.hideDecorators", "1");
-    // windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
-    // // windowProperties.put(Constants.WINDOW_PROP_SCOPE, publicationInfos.getScope());
-    // // windowProperties.put(Constants.WINDOW_PROP_VERSION, "1");
-    // windowProperties.put("osivia.document.metadata", String.valueOf(false));
-    // windowProperties.put("osivia.title", document.getTitle());
-    // windowProperties.put(ViewList.USE_ES_WINDOW_PROPERTY, "true");
-    // if (docCtx.getDocument() != null) {
-    // windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, docCtx.getDocument().getPath());
-    // }
-    // return windowProperties;
-    // }
 
     @Override
     public Player getCMSPlayer(NuxeoDocumentContext docCtx) {

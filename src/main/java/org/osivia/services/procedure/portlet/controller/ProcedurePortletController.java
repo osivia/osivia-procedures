@@ -288,13 +288,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 // édition d'une procédure de type RecordFolder
                 final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
                 form = new Form(procedureModel);
-                form.setSelectedStep("0");
-                form.setSelectedTdb("0");
             } else {
                 // affichage d'une procédure de type RECORD
                 final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
                 form = new Form(procedureModel);
-                form.setSelectedStep("0");
                 try {
                     Map<String, String> variables = new HashMap<String, String>();
                     variables.put("pcd:startingStep", getAction(request));
@@ -331,21 +328,21 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public List<ProcedureModel> getListProcedureModel(PortletRequest request, PortletResponse response) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         String procedurePath = getProcedurePath(request);
-        return procedurePath != null ? procedureService.listProcedures(nuxeoController, getPortalUrlFactory(), procedurePath) : null;
+        return procedurePath != null ? procedureService.listProcedures(nuxeoController, procedurePath) : null;
     }
 
     @ModelAttribute(value = "addProcedureUrl")
     public String getAddProcedureUrl(PortletRequest request, PortletResponse response) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         String procedurePath = getProcedurePath(request);
-        return procedureService.getAddUrl(nuxeoController, getPortalUrlFactory(), procedurePath, "adminproc", DocumentTypeEnum.PROCEDUREMODEL.getDocType());
+        return procedureService.getAddUrl(nuxeoController, procedurePath, "adminproc", DocumentTypeEnum.PROCEDUREMODEL.getDocType());
     }
 
     @ModelAttribute(value = "addRecordFolderUrl")
     public String getAddRecordFolderUrl(PortletRequest request, PortletResponse response) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         String procedurePath = getProcedurePath(request);
-        return procedureService.getAddUrl(nuxeoController, getPortalUrlFactory(), procedurePath, "adminrecord", DocumentTypeEnum.RECORDFOLDER.getDocType());
+        return procedureService.getAddUrl(nuxeoController, procedurePath, "adminrecord", DocumentTypeEnum.RECORDFOLDER.getDocType());
     }
 
     @ModelAttribute(value = "listeFiltres")
