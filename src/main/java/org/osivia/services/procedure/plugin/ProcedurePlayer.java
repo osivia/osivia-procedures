@@ -26,7 +26,6 @@ import org.osivia.portal.api.player.Player;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 import fr.toutatice.portail.cms.nuxeo.portlets.forms.ViewProcedurePortlet;
@@ -90,7 +89,6 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
     private Player getProcedureModelPlayer(NuxeoDocumentContext docCtx) {
         final Document document = docCtx.getDocument();
 
-        final NuxeoPublicationInfos publicationInfos = docCtx.getPublicationInfos();
         String displayContext = docCtx.getDisplayContext();
         final Map<String, String> windowProperties = getProcedureWindowProperties(document);
         if (StringUtils.equals(displayContext, "adminproc") || StringUtils.equals(displayContext, "adminprocstep")) {
