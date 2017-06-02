@@ -110,27 +110,41 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         return player;
     }
 
-    private Player getRecordPlayer(NuxeoDocumentContext docCtx) {
-        final Player player = new Player();
+    private Player getRecordFolderPlayer(NuxeoDocumentContext docCtx) {
+        Player player = null;
         if (docCtx.getDocument() != null) {
+            player = new Player();
             Map<String, String> windowProperties = new HashMap<String, String>();
-            windowProperties.put("osivia.hideDecorators", "1");
             windowProperties.put("osivia.title", docCtx.getDocument().getTitle());
 
             String displayContext = docCtx.getDisplayContext();
-            if (StringUtils.equals(displayContext, "create")) {
+            if (!StringUtils.equals(displayContext, "menu") && !StringUtils.equals(displayContext, "breadcrumb")) {
                 windowProperties.putAll(getProcedureWindowProperties(docCtx.getDocument()));
                 windowProperties.put("osivia.procedure.admin", displayContext);
                 player.setWindowProperties(windowProperties);
                 player.setPortletInstance("osivia-services-procedure-portletInstance");
             } else {
-                // windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, docCtx.getDocument().getPath());
+                // displayContext = "menu"
                 windowProperties.put(Constants.WINDOW_PROP_VERSION, "1");
                 windowProperties.put(ViewProcedurePortlet.PROCEDURE_MODEL_ID_WINDOW_PROPERTY, docCtx.getDocument().getProperties().getString("ttc:webid"));
                 player.setWindowProperties(windowProperties);
                 player.setPortletInstance("toutatice-portail-cms-nuxeo-viewProcedurePortletInstance");
             }
         }
+        return player;
+    }
+
+    private Player getRecordPlayer(NuxeoDocumentContext docCtx) {
+        Player player = null;
+        if (docCtx.getDocument() != null) {
+            player = new Player();
+            Map<String, String> windowProperties = new HashMap<String, String>();
+            windowProperties.put("osivia.title", docCtx.getDocument().getTitle());
+            windowProperties.putAll(getProcedureWindowProperties(docCtx.getDocument()));
+            player.setWindowProperties(windowProperties);
+            player.setPortletInstance("osivia-services-procedure-portletInstance");
+        }
+
         return player;
     }
 
@@ -152,6 +166,10 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         }
 
         if (StringUtils.equals(docType, DocumentTypeEnum.RECORDFOLDER.getDocType())) {
+            return getRecordFolderPlayer(docCtx);
+        }
+
+        if (StringUtils.equals(docType, DocumentTypeEnum.RECORD.getDocType())) {
             return getRecordPlayer(docCtx);
         }
 

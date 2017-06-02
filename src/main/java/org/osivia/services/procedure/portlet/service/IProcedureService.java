@@ -11,6 +11,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
+import org.osivia.services.procedure.portlet.model.Record;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
@@ -69,6 +70,14 @@ public interface IProcedureService {
      * @throws PortletException
      */
     public ProcedureInstance retrieveProcedureInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException;
+
+    /**
+     * @param nuxeoController
+     * @param webId
+     * @return
+     * @throws PortletException
+     */
+    public Record retrieveRecordInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException;
 
     /**
      * @param nuxeoController

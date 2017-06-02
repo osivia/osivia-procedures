@@ -30,7 +30,6 @@ import org.osivia.services.procedure.formFilters.SetActorFormFilter;
 import org.osivia.services.procedure.formFilters.SetAdditionalAuthorization;
 import org.osivia.services.procedure.formFilters.SetInitiatorVariableFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
-import org.osivia.services.procedure.module.ListProcListModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
@@ -126,9 +125,9 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         // ListTemplate proclistadminlist = new ListTemplate(STYLE_VIEW_LIST_ADMIN, "liste de téléprocédure - adminlist", SCHEMAS_ADMIN);
         // templates.put(STYLE_VIEW_LIST_ADMIN, proclistadminlist);
         
-        ListTemplate viewListProc = new ListTemplate(STYLE_VIEW_LISTPROC, "procédure LIST", SCHEMAS_PROCEDUREINSTANCE);
-        viewListProc.setModule(new ListProcListModule(getPortletContext()));
-        templates.put(STYLE_VIEW_LISTPROC, viewListProc);
+        // ListTemplate viewListProc = new ListTemplate(STYLE_VIEW_LISTPROC, "procédure LIST", SCHEMAS_PROCEDUREINSTANCE);
+        // viewListProc.setModule(new ListProcListModule(getPortletContext()));
+        // templates.put(STYLE_VIEW_LISTPROC, viewListProc);
     }
 
     /**

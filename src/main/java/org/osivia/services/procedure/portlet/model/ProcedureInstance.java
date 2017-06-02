@@ -56,11 +56,12 @@ public class ProcedureInstance {
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
     }
 
-    public ProcedureInstance(PropertyMap documentProperties, Document document) {
+    public ProcedureInstance(Document document) {
         globalVariablesValues = new HashMap<String, String>();
         filesPath = new HashMap<String, FilePath>();
         procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
         setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
+        PropertyMap documentProperties = document.getProperties();
         setTaskDoc(documentProperties.getMap("pi:task"));
         currentStep = documentProperties.getString("pi:currentStep");
         setProcedureModelWebId(documentProperties.getString("pi:procedureModelWebId"));

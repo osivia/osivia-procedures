@@ -58,6 +58,7 @@ import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.ProcedureObject;
 import org.osivia.services.procedure.portlet.model.ProcedureRepository;
+import org.osivia.services.procedure.portlet.model.Record;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
@@ -95,6 +96,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     /** edit view. */
     private static final String EDIT_VIEW = "editStep";
     private static final String EDIT_RECORD_VIEW = "editRecord";
+
+    private static final String DISPLAY_RECORD_VIEW = "displayRecord";
+
     private static final String EDIT_TDB = "editTdb";
     /** procedure view. */
     private static final String VIEW_PROCEDURE = "viewProcedure";
@@ -159,6 +163,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 // liste des procédures du path
                 return LIST_PROC_VIEW;
             }
+        } else if (StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
+            // visualisation d'un record
+            return DISPLAY_RECORD_VIEW;
         } else {
             if (StringUtils.equals(getAction(request), "adminproc")) {
                 // édition procédure
@@ -307,11 +314,17 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
                 procedureService.updateVocabulariesWithValues(nuxeoController, form);
             }
+        } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
+
+            Record record = procedureService.retrieveRecordInstanceByWebId(nuxeoController, getWebId(request));
+            ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, record.getProcedureModelWebId());
+            form = new Form(procedureModel, record);
         } else {
             if (StringUtils.equals(getAction(request), "adminproc")) {
                 // création d'une procédure
                 form = new Form();
             } else if (StringUtils.equals(getAction(request), "adminrecord")) {
+                // création record folder
                 form = new Form(ProcedureRepository.recordFolder());
             } else {
                 // liste des procédures du path

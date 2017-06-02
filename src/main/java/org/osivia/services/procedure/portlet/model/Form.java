@@ -26,6 +26,8 @@ public class Form {
     /** procedureInstance */
     private ProcedureInstance procedureInstance;
 
+    private Record record;
+
     /** alertSuccess */
     private String alertSuccess;
 
@@ -78,6 +80,10 @@ public class Form {
         newColumn = new Column();
     }
 
+    public Form(ProcedureModel procedureModel, Record record) {
+        this.procedureModel = procedureModel;
+        this.record = record;
+    }
 
     public Form() {
         newField = new AddField();
@@ -91,7 +97,7 @@ public class Form {
      * @return the selected step
      */
     public Step getTheSelectedStep() {
-        return getProcedureModel().getSteps().get(NumberUtils.toInt(getSelectedTdb()));
+        return getProcedureModel().getSteps().get(NumberUtils.toInt(getSelectedStep()));
     }
 
 
@@ -104,6 +110,8 @@ public class Form {
         String returnStep;
         if ((getProcedureInstance() != null) && StringUtils.isNotEmpty(getProcedureInstance().getCurrentStep())) {
             returnStep = getProcedureInstance().getCurrentStep();
+        } else if (getRecord() != null) {
+            return getProcedureModel().getSteps().get(0);
         } else {
             returnStep = getProcedureModel().getStartingStep();
         }
@@ -407,6 +415,22 @@ public class Form {
      */
     public void setNewColumn(Column newColumn) {
         this.newColumn = newColumn;
+    }
+
+    /**
+     * Getter for record.
+     * @return the record
+     */
+    public Record getRecord() {
+        return record;
+    }
+
+    /**
+     * Setter for record.
+     * @param record the record to set
+     */
+    public void setRecord(Record record) {
+        this.record = record;
     }
 
 }

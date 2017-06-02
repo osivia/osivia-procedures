@@ -47,6 +47,7 @@ import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
+import org.osivia.services.procedure.portlet.model.Record;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
@@ -76,7 +77,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             String webId = StringUtils.isBlank(procedureModel.getNewWebId()) ? StringUtils.deleteWhitespace(procedureModel.getName()) : procedureModel
                     .getNewWebId();
 
-            DocumentTypeEnum type = StringUtils.isNotBlank(procedureModel.getProcedureType()) ? DocumentTypeEnum.valueOf(procedureModel.getProcedureType())
+            DocumentTypeEnum type = StringUtils.isNotBlank(procedureModel.getProcedureType()) ? DocumentTypeEnum.get(procedureModel.getProcedureType())
                     : DocumentTypeEnum.PROCEDUREMODEL;
 
             command = new CreateDocumentCommand(container, procedureModel.getName(), IFormsService.FORMS_WEB_ID_PREFIX + webId,
@@ -90,12 +91,12 @@ public class ProcedureServiceImpl implements IProcedureService {
     }
 
     @Override
-    public ProcedureModel retrieveProcedureByWebId(NuxeoController nuxeoController, String path) throws PortletException {
+    public ProcedureModel retrieveProcedureByWebId(NuxeoController nuxeoController, String webId) throws PortletException {
         INuxeoCommand command;
         Document document = null;
         ProcedureModel procedureModel = null;
         try {
-            command = new RetrieveDocumentByWebIdCommand(path);
+            command = new RetrieveDocumentByWebIdCommand(webId);
             document = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
             procedureModel = new ProcedureModel(document, nuxeoController);
         } catch (final Exception e) {
@@ -110,7 +111,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
         List<ProcedureInstance> procedureInstanceList = new ArrayList<ProcedureInstance>(documents.size());
         for (Document document : documents) {
-            ProcedureInstance procedureInstance = new ProcedureInstance(document.getProperties(), document);
+            ProcedureInstance procedureInstance = new ProcedureInstance(document);
             procedureInstance.setUrl(nuxeoController.getLink(document).getUrl());
             procedureInstanceList.add(procedureInstance);
         }
@@ -171,13 +172,27 @@ public class ProcedureServiceImpl implements IProcedureService {
             nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
 
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            procedureInstance = new ProcedureInstance(currentDocument.getProperties(), currentDocument);
+            procedureInstance = new ProcedureInstance(currentDocument);
         } catch (final Exception e) {
             throw new PortletException(e);
         }
         return procedureInstance;
     }
     
+    @Override
+    public Record retrieveRecordInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException {
+        INuxeoCommand command;
+        Record record = null;
+        try {
+            command = new RetrieveDocumentByWebIdCommand(webId);
+            final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
+            record = new Record(currentDocument);
+        } catch (final Exception e) {
+            throw new PortletException(e);
+        }
+        return record;
+    }
+
     @Override
     public ProcedureInstance retrieveProcedureInstanceById(NuxeoController nuxeoController, String uuid) throws PortletException {
 
