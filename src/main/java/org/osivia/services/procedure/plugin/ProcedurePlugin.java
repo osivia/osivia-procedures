@@ -13,7 +13,6 @@
  */
 package org.osivia.services.procedure.plugin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -97,21 +96,23 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     private void updateDocTypes(CustomizationContext context) {
         Map<String, DocumentType> docTypes = getDocTypes(context);
 
-        ArrayList<String> recordContainerSubTypes = new ArrayList<String>(1);
-        recordContainerSubTypes.add("RecordFolder");
+        DocumentType recordContainer = DocumentType.createNode("RecordContainer");
+        recordContainer.addSubtypes("RecordFolder");
+        recordContainer.setIcon("glyphicons glyphicons-flowchart");
+        recordContainer.setNavigable(true);
+        recordContainer.setPreventedCreation(true);
+        docTypes.put(recordContainer.getName(), recordContainer);
 
-        docTypes.put("RecordContainer", new DocumentType("RecordContainer", false, true, true, true, false, false, recordContainerSubTypes, null,
-                "glyphicons glyphicons-flowchart"));
-        
-        ArrayList<String> recordFolderSubTypes = new ArrayList<String>(1);
-        recordFolderSubTypes.add("Record");
+        DocumentType recordFolder = DocumentType.createNode("RecordFolder");
+        recordFolder.addSubtypes("Record");
+        recordFolder.setIcon("glyphicons glyphicons-list-alt");
+        recordFolder.setNavigable(true);
+        recordFolder.setPreventedCreation(true);
+        docTypes.put(recordFolder.getName(), recordFolder);
 
-        docTypes.put("RecordFolder", new DocumentType("RecordFolder", false, true, true, true, false, false, recordFolderSubTypes, null,
-                "glyphicons glyphicons-list-alt"));
-
-        docTypes.put("Record", new DocumentType("Record", false, false, false, false, false, false, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-list"));
-
+        DocumentType record = DocumentType.createLeaf("Record");
+        record.setIcon("glyphicons glyphicons-list");
+        docTypes.put(record.getName(), record);
     }
 
     /**
