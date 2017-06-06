@@ -128,9 +128,9 @@ $JQry(function() {
 		cursor : "move",
 		tolerance : "pointer",
 		axis: "y",
-		items: "> .procedure-column",
+		items: " .procedure-column",
 		stop: function(event, ui) {
-			$JQry(this).find("tr").each(function(index, element) {
+			$JQry(this).find(".procedure-column").each(function(index, element) {
 				$JQry(element).find("input[name$='index']").val(index);
 			});
 			// soumet la mise à jour du formulaire

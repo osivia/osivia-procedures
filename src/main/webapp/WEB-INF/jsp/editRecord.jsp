@@ -241,45 +241,79 @@
         </div>
         
         <div role="tabpanel" class="tab-pane <c:if test="${'dashboard' eq activeTab}">active</c:if>" id="Dashboard">
-            <table class="table">
-		        <thead>
-		            <tr>
-		                <th>Label</th>
-		                <th>Variable</th>
-		                <th>Triable</th>
-		                <th></th>
-		            </tr>
-		        </thead>
-		        <tbody class="column-sortable">
-		            <c:forEach var="column" items="${form.theSelectedTdb.columns}" varStatus="status">
-		                <tr class="procedure-column">
-		                   <td>${column.label}</td>
-		                   <td>${column.variableName}</td>
-		                   <td>
-		                       <c:if test="${column.sortable}"><i class="halflings halflings-ok"></i></c:if>
-		                       <c:if test="${not column.sortable}"><i class="halflings halflings-remove"></i></c:if>
-		                   </td>
-		                   <td>   
-		                      <button type="submit" name="deleteCol" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedCol')">
-		                          <i class="glyphicons glyphicons-bin"></i>
-		                      </button>
-		                      <input type="hidden" name="theSelectedTdb.columns[${status.index}].index" value="${status.index}">
-		                   </td>
-		                </tr>
-		            </c:forEach>
-		            <tr>
-		               <td><form:input path="newColumn.label" type="text" cssClass="form-control" /></td>
-		               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true">
-		                </form:select></td>
-		               <td><form:checkbox path="newColumn.sortable" cssClass="form-control" /></td>
-		               <td><button type="submit" class="btn btn-default" name="addColumn">Ajouter</button></td>
-		            </tr>
-		        </tbody>
-		    </table>
-        </div>
+	        <div class="table">
+	            <div class="table-header table-row">
+	                <div class="row">
+	                    <div class="col-sm-4 col-md-5 col-lg-6">
+	                        <div class="text-overflow">
+	                            <span>Label</span>
+	                        </div>
+	                    </div>
+	                    <div class="col-sm-5 col-md-5 col-lg-4">
+	                        <div class="text-overflow">
+	                            <span>Variable</span>
+	                        </div>
+	                    </div>
+	                    <div class="col-sm-2 col-md-1 col-lg-1">
+	                        <div class="text-overflow">
+	                            <span>Triable</span>
+	                        </div>
+	                    </div>
+	                    <div class="col-sm-1 col-md-1 col-lg-1">
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="table-body column-sortable">
+	                <c:forEach var="column" items="${form.theSelectedTdb.columns}" varStatus="status">
+	                    <div class="table-row procedure-column">
+	                        <div class="row">
+	                            <div class="col-sm-4 col-md-5 col-lg-6">
+	                                <div class="text-overflow">
+		                                <span>${column.label}</span>
+	                                </div>
+	                            </div>
+	                            <div class="col-sm-5 col-md-5 col-lg-4">
+	                                <div class="text-overflow">
+	                                    <span>${column.variableName}</span>
+	                                </div>
+	                            </div>
+	                            <div class="col-sm-2 col-md-1 col-lg-1 text-center">
+	                                <c:if test="${column.sortable}"><i class="halflings halflings-ok"></i></c:if>
+	                                <c:if test="${not column.sortable}"><i class="halflings halflings-remove"></i></c:if>
+	                            </div>
+	                            <div class="col-sm-1 col-md-1 col-lg-1">
+	                                <button type="submit" name="deleteCol" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedCol')">
+	                                  <i class="glyphicons glyphicons-bin"></i>
+	                                </button>
+	                                <input type="hidden" name="theSelectedTdb.columns[${status.index}].index" value="${status.index}">
+	                            </div>
+	                        </div>
+	                    </div>
+	                </c:forEach>
+	            </div>
+	            <div class="table-footer">
+	                <div class="table-row">
+	                    <div class="row">
+	                        <div class="col-sm-4 col-md-5 col-lg-6">
+	                            <form:input path="newColumn.label" type="text" cssClass="form-control" />
+	                        </div>
+	                        <div class="col-sm-5 col-md-5 col-lg-4">
+	                            <form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true">
+	                            </form:select>
+	                        </div>
+	                        <div class="col-sm-2 col-md-1 col-lg-1">
+	                            <form:checkbox path="newColumn.sortable" cssClass="form-control" />
+	                        </div>
+	                        <div class="col-sm-1 col-md-1 col-lg-1">
+	                            <button type="submit" class="btn btn-default" name="addColumn">Ajouter</button>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
     </div>
 
-    <hr>
     <button type="submit" class="btn btn-primary" name="saveRecord">Sauvegarder</button>
     <button type="submit" class="btn btn-danger pull-right" name="deleteRecord">Supprimer</button>
     <input type="submit" class="hidden" name="updateForm">

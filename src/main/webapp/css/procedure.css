@@ -138,4 +138,10 @@ li .filter-selected{
 	min-width: 500px;
 }
 
+.procedure-column:hover {
+	cursor: pointer;
+	background-color: #f8f8f8;
+}
+
+
 
