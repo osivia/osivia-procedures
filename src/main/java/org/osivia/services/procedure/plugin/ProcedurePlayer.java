@@ -124,7 +124,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
                 player.setWindowProperties(windowProperties);
                 player.setPortletInstance("osivia-services-procedure-portletInstance");
             } else {
-                // displayContext = "menu"
+                // displayContext = "menu" or "breadcrumb"
                 windowProperties.put(Constants.WINDOW_PROP_VERSION, "1");
                 windowProperties.put(ViewProcedurePortlet.PROCEDURE_MODEL_ID_WINDOW_PROPERTY, docCtx.getDocument().getProperties().getString("ttc:webid"));
                 player.setWindowProperties(windowProperties);
@@ -141,6 +141,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put("osivia.title", docCtx.getDocument().getTitle());
             windowProperties.putAll(getProcedureWindowProperties(docCtx.getDocument()));
+            windowProperties.put("osivia.procedure.admin", docCtx.getDisplayContext());
             player.setWindowProperties(windowProperties);
             player.setPortletInstance("osivia-services-procedure-portletInstance");
         }

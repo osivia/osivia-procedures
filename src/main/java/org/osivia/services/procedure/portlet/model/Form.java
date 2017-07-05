@@ -111,10 +111,15 @@ public class Form {
         if ((getProcedureInstance() != null) && StringUtils.isNotEmpty(getProcedureInstance().getCurrentStep())) {
             returnStep = getProcedureInstance().getCurrentStep();
         } else if (getRecord() != null) {
-            return getProcedureModel().getSteps().get(0);
+            if (StringUtils.equals(getProcedureModel().getStartingStep(), ProcedureRepository.FORM_STEP_REFERENCE)) {
+                return getProcedureModel().getSteps().get(0);
+            } else {
+                returnStep = getProcedureModel().getStartingStep();
+            }
         } else {
             returnStep = getProcedureModel().getStartingStep();
         }
+
         if (StringUtils.isNotBlank(getProcedureModel().getWebIdParent())) {
             for (Step parentStep : getProcedureModel().getProcedureParent().getSteps()) {
                 if (StringUtils.equals(returnStep, parentStep.getReference())) {

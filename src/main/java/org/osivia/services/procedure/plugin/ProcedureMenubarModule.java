@@ -98,9 +98,28 @@ public class ProcedureMenubarModule implements MenubarModule {
                 String addRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
                         "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
 
-                MenubarItem item = new MenubarItem("ADD", "Ajouter un élément", "halflings halflings-plus", MenubarGroup.ADD, 0, addRecUrl, null, null, null);
+                MenubarItem item = new MenubarItem("ADD", "Ajouter un enregistrement", "halflings halflings-plus", MenubarGroup.ADD, 0, addRecUrl, null, null,
+                        null);
                 item.setAjaxDisabled(true);
 
+                menubar.add(item);
+            } else if (document != null && StringUtils.equals(document.getType(), DocumentTypeEnum.RECORD.getDocType())) {
+                String documentPath = document.getPath();
+
+                // EDIT RECORD
+                final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
+                String cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "edit", null, null,
+                        null, null);
+                MenubarItem item = new MenubarItem("EDIT", "Modifier", "halflings halflings-pencil", parent, 0, cmsUrl, null, null, null);
+                item.setAjaxDisabled(true);
+                menubar.add(item);
+
+                // DELETE RECORD
+                cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "delete", null, null,
+                        null, null);
+                item = new MenubarItem("EDIT", "Supprimer", "halflings halflings-trash", parent, 20, cmsUrl, null, null, null);
+                item.setAjaxDisabled(true);
+                item.setDivider(true);
                 menubar.add(item);
             }
         }

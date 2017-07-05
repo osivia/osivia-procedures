@@ -8,19 +8,20 @@
 	class="form-group <c:if test="${form.selectedField.path eq field.path}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>">
 	<div class="col-sm-9">
 		<div class="row">
-			<c:set var="fieldType"
-				value="${form.procedureModel.variables[field.name].type}" />
+		
+			<c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
+			<c:set var="fieldNamePath" value="procedureInstance.globalVariablesValues['${field.name}']" />
+			<c:set var="fieldName" value="${form.procedureInstance.globalVariablesValues[field.name]}" />
+			<c:set var="downloadLink" value="${form.procedureInstance.filesPath[field.name].downloadLink}" />
+			<c:set var="fileName" value="${form.procedureInstance.filesPath[field.name].fileName}" />
+			
 			<c:choose>
 				<c:when test="${field.input eq true}">
 					<c:choose>
 						<c:when test="${fieldType eq 'TEXT'}">
-							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
-								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
+							<form:label path="${fieldNamePath}" cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
-								<form:input
-									path="procedureInstance.globalVariablesValues['${field.name}']"
-									type="text" cssClass="form-control" />
+								<form:input path="${fieldNamePath}" type="text" cssClass="form-control" />
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -28,11 +29,11 @@
 						</c:when>
 						<c:when test="${fieldType eq 'TEXTAREA'}">
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<form:textarea
-									path="procedureInstance.globalVariablesValues['${field.name}']"
+									path="${fieldNamePath}"
 									cssClass="form-control" />
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
@@ -53,7 +54,7 @@
 												});
 							</script>
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<div class="input-group">
@@ -61,7 +62,7 @@
 										class="halflings halflings-calendar"></i>
 									</span>
 									<form:input
-										path="procedureInstance.globalVariablesValues['${field.name}']"
+										path="${fieldNamePath}"
 										type="text" cssClass="form-control"
 										id="selectVariable_${field.name}" />
 									<c:if test="${not empty field.helpText}">
@@ -72,11 +73,11 @@
 						</c:when>
 						<c:when test="${fieldType eq 'NUMBER'}">
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<form:input
-									path="procedureInstance.globalVariablesValues['${field.name}']"
+									path="${fieldNamePath}"
 									type="number" cssClass="form-control" />
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
@@ -86,14 +87,14 @@
 						<c:when
 							test="${(fieldType eq 'RADIOLIST') or (fieldType eq 'RADIOVOCAB')}">
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<input type="text"
-									name="procedureInstance.globalVariablesValues['${field.name}']"
+									name="${fieldNamePath}"
 									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
 									class="hidden field-radioList-json"
-									value="${form.procedureInstance.globalVariablesValues[field.name]}">
+									value="${fieldName}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -102,14 +103,14 @@
 						<c:when
 							test="${(fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB')}">
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<input type="text"
-									name="procedureInstance.globalVariablesValues['${field.name}']"
+									name="${fieldNamePath}"
 									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
 									class="hidden field-checkboxList-json"
-									value="${form.procedureInstance.globalVariablesValues[field.name]}">
+									value="${fieldName}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -129,14 +130,14 @@
 												});
 							</script>
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<input type="text"
-									name="procedureInstance.globalVariablesValues['${field.name}']"
+									name="${fieldNamePath}"
 									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
 									class="hidden field-selectList-json"
-									value="${form.procedureInstance.globalVariablesValues[field.name]}">
+									value="${fieldName}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -149,11 +150,11 @@
 									value="${form.procedureModel.variables[field.name].varOptions}" />
 							</portlet:resourceURL>
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<form:select
-									path="procedureInstance.globalVariablesValues['${field.name}']"
+									path="${fieldNamePath}"
 									class="form-control select2 vocabularySelect-select2"
 									cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
 								<c:if test="${not empty field.helpText}">
@@ -168,11 +169,11 @@
 									value="${form.procedureModel.variables[field.name].varOptions}" />
 							</portlet:resourceURL>
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
 								<form:select
-									path="procedureInstance.globalVariablesValues['${field.name}']"
+									path="${fieldNamePath}"
 									multiple="true"
 									class="form-control select2 vocabularySelect-select2"
 									cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
@@ -183,14 +184,14 @@
 						</c:when>
 						<c:when test="${fieldType eq 'FILE'}">
 							<form:label
-								path="procedureInstance.globalVariablesValues['${field.name}']"
+								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-3">
 								<input type="file" name="file:${field.name}" />
 							</div>
 							<div class="col-sm-6">
 								<a
-									href="${form.procedureInstance.filesPath[field.name].downloadLink}">${form.procedureInstance.filesPath[field.name].fileName}</a>
+									href="${downloadLink}">${fileName}</a>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -209,7 +210,7 @@
 		                    <label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
 								<c:out
-									value="${form.procedureInstance.globalVariablesValues[field.name]}" />
+									value="${fieldName}" />
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -218,7 +219,7 @@
 						<c:when test="${fieldType eq 'TEXTAREA'}">
 							<label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
-								<span class="pre-wrap"><c:out value="${form.procedureInstance.globalVariablesValues[field.name]}" /></span>
+								<span class="pre-wrap"><c:out value="${fieldName}" /></span>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -227,7 +228,7 @@
 						<c:when
 							test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
 							<label class="col-sm-3 control-label">${field.superLabel}</label>
-							<div class="col-sm-9">${form.procedureInstance.globalVariablesValues[field.name]}
+							<div class="col-sm-9">${fieldName}
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -236,7 +237,7 @@
 						<c:when test="${fieldType eq 'FILE'}">
 							<div class="col-sm-3">
 								<label
-									for="${form.procedureInstance.globalVariablesValues[field.name]}">${field.superLabel}</label>
+									for="${fieldName}">${field.superLabel}</label>
 							</div>
 							<div class="col-sm-3"></div>
 						</c:when>

@@ -13,6 +13,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.services.procedure.portlet.model.ProcedureRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -23,13 +24,18 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 
-public class CreateRecordFilter  implements FormFilter  {
+/**
+ * filter to edit a record
+ * 
+ * @author Dorian Licois
+ */
+public class EditRecordFilter implements FormFilter {
 
-    public static final String ID = "CreateRecordFilter";
+    public static final String ID = "EditRecordFilter";
 
-    public static final String LABEL_KEY = "CREATE_RECORD_FILTER_LABEL";
+    public static final String LABEL_KEY = "EDIT_RECORD_FILTER_LABEL";
 
-    public static final String DESCRIPTION_KEY = "CREATE_RECORD_FILTER_DESCRIPTION";
+    public static final String DESCRIPTION_KEY = "EDIT_RECORD_FILTER_DESCRIPTION";
 
     @Override
     public String getId() {
@@ -58,35 +64,33 @@ public class CreateRecordFilter  implements FormFilter  {
 
     @Override
     public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException {
-
         NuxeoController nuxeoController = new NuxeoController(context.getPortalControllerContext());
         
-        // fetch model
+     // fetch model
         String fetchPath = NuxeoController.webIdToFetchPath(context.getModelWebId());
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(fetchPath);
         
-        // fetch variable refs in the currentStep
+     // fetch variable refs in the currentStep
         Document recordFolder = documentContext.getDocument();
         PropertyMap properties = recordFolder.getProperties();
         String startingStep = context.getVariables().get("pcd:startingStep");
         PropertyList globalVariablesReferences = getGlobalVariablesReferences(startingStep, properties);
         
-        // get values of referenced variables
-        PropertyMap createProperties = new PropertyMap();
+        
+     // get values of referenced variables
+        PropertyMap updateProperties = new PropertyMap();
         Map<String, String> variables = new HashMap<String, String>();
         for (Object variableREfO : globalVariablesReferences.list()) {
             PropertyMap variableREfM = (PropertyMap) variableREfO;
             String variableName = variableREfM.getString("variableName");
             variables.put(variableName, context.getVariables().get(variableName));
         }
-        createProperties.set("rcd:globalVariablesValues", this.generateVariablesJSON(variables));
-        createProperties.set("rcd:procedureModelWebId", context.getModelWebId());
-        createProperties.set("dc:title", recordFolder.getTitle());
-        
-        // create record with values
-        nuxeoController.executeNuxeoCommand(new CreateRecordCommand(new DocRef(recordFolder.getPath()), createProperties, recordFolder.getTitle()));
+        updateProperties.set("rcd:globalVariablesValues", this.generateVariablesJSON(variables));
+        updateProperties.set("rcd:procedureModelWebId", context.getModelWebId());
 
         
+        // update record with values
+        nuxeoController.executeNuxeoCommand(new UpdateRecordCommand(new DocRef(context.getVariables().get("rcdPath")), updateProperties));
     }
 
     private PropertyList getGlobalVariablesReferences(String startingStep, PropertyMap properties) {
@@ -94,7 +98,7 @@ public class CreateRecordFilter  implements FormFilter  {
         if (stepsList != null && CollectionUtils.isNotEmpty(stepsList.list())) {
             for (Object stepO : stepsList.list()) {
                 PropertyMap stepM = (PropertyMap) stepO;
-                if (StringUtils.equals(stepM.getString("reference"), startingStep)) {
+                if (StringUtils.equals(stepM.getString("reference"), startingStep) || StringUtils.equals(startingStep, ProcedureRepository.FORM_STEP_REFERENCE)) {
                     return stepM.getList("globalVariablesReferences");
                 }
             }
@@ -114,4 +118,3 @@ public class CreateRecordFilter  implements FormFilter  {
     }
 
 }
-

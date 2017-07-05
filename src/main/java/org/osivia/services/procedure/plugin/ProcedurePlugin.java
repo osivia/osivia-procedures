@@ -23,6 +23,8 @@ import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.services.procedure.formFilters.CreateRecordFilter;
 import org.osivia.services.procedure.formFilters.DefineVariableFilter;
 import org.osivia.services.procedure.formFilters.DeleteOnEndingFormFilter;
+import org.osivia.services.procedure.formFilters.DeleteRecordFilter;
+import org.osivia.services.procedure.formFilters.EditRecordFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
 import org.osivia.services.procedure.formFilters.SetActorFormFilter;
@@ -31,7 +33,6 @@ import org.osivia.services.procedure.formFilters.SetInitiatorVariableFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
-import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 
 
@@ -70,7 +71,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     @Override
     protected void customizeCMSProperties(CustomizationContext context) {
         updateDocTypes(context);
-        updateListTemplates(context);
         updatePlayers(context);
         updateFormFIlters(context);
         customizeMenubarModules(context);
@@ -116,22 +116,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     }
 
     /**
-     * Update list templates.
-     *
-     * @param context customization context
-     */
-    private void updateListTemplates(CustomizationContext context) {
-        Map<String, ListTemplate> templates = getListTemplates(context);
-
-        // ListTemplate proclistadminlist = new ListTemplate(STYLE_VIEW_LIST_ADMIN, "liste de téléprocédure - adminlist", SCHEMAS_ADMIN);
-        // templates.put(STYLE_VIEW_LIST_ADMIN, proclistadminlist);
-        
-        // ListTemplate viewListProc = new ListTemplate(STYLE_VIEW_LISTPROC, "procédure LIST", SCHEMAS_PROCEDUREINSTANCE);
-        // viewListProc.setModule(new ListProcListModule(getPortletContext()));
-        // templates.put(STYLE_VIEW_LISTPROC, viewListProc);
-    }
-
-    /**
      * update form filters
      * 
      * @param context
@@ -148,6 +132,8 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(SetAdditionalAuthorization.ID, new SetAdditionalAuthorization());
     	formFilters.put(SetInitiatorVariableFilter.ID, new SetInitiatorVariableFilter());
         formFilters.put(CreateRecordFilter.ID, new CreateRecordFilter());
+        formFilters.put(EditRecordFilter.ID, new EditRecordFilter());
+        formFilters.put(DeleteRecordFilter.ID, new DeleteRecordFilter());
     }
 
     @Override

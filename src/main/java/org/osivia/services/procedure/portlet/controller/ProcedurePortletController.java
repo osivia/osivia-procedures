@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
@@ -81,10 +82,12 @@ import org.springframework.web.portlet.multipart.MultipartActionRequest;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import fr.toutatice.portail.cms.nuxeo.portlets.fragment.PropertyFragmentModule;
 
 @Controller
 @SessionAttributes("form")
@@ -152,6 +155,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      */
     @RenderMapping
     public String defaultView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+        defaultRenderAction(request, response);
         if (StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
             if (StringUtils.equals(getAction(request), "adminrecord")) {
                 // édition procédure type RECORD
@@ -164,8 +168,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 return LIST_PROC_VIEW;
             }
         } else if (StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
-            // visualisation d'un record
-            return DISPLAY_RECORD_VIEW;
+            if (StringUtils.isNotBlank(getAction(request))) {
+                // launch procedure
+                return VIEW_PROCEDURE;
+            } else {
+                // visualisation d'un record
+                return DISPLAY_RECORD_VIEW;
+            }
         } else {
             if (StringUtils.equals(getAction(request), "adminproc")) {
                 // édition procédure
@@ -239,6 +248,25 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return VIEW_ENDSTEP;
     }
 
+    private void defaultRenderAction(RenderRequest request, RenderResponse response) {
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+
+        // Current window
+        PortalWindow window = WindowFactory.getWindow(request);
+        // Nuxeo path
+        String nuxeoPath = window.getProperty(PropertyFragmentModule.NUXEO_PATH_WINDOW_PROPERTY);
+
+        if (StringUtils.isNotBlank(nuxeoPath)) {
+            // Computed path
+            nuxeoPath = nuxeoController.getComputedPath(nuxeoPath);
+            // Nuxeo document
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(nuxeoPath);
+            Document document = documentContext.getDocument();
+            nuxeoController.setCurrentDoc(document);
+            nuxeoController.insertContentMenuBarItems();
+        }
+    }
+
 
     @ModelAttribute(value = "form")
     public Form getForm(PortletRequest request, PortletResponse response, @RequestParam(value = "selectedStep", required = false) String selectedStep)
@@ -296,7 +324,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
                 form = new Form(procedureModel);
             } else {
-                // affichage d'une procédure de type RECORD
+                // affichage d'une procédure de type RecordFolder
                 final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
                 form = new Form(procedureModel);
                 try {
@@ -319,6 +347,24 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             Record record = procedureService.retrieveRecordInstanceByWebId(nuxeoController, getWebId(request));
             ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, record.getProcedureModelWebId());
             form = new Form(procedureModel, record);
+            
+            if (StringUtils.isNotBlank(getAction(request))) {
+                try {
+                    Map<String, String> variables = new HashMap<String, String>();
+                    variables.put("pcd:startingStep", getAction(request));
+                    variables.put("rcdPath", record.getOriginalDocument().getPath());
+                    variables.putAll(record.getGlobalVariablesValues());
+                    Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
+                            .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), variables);
+                    form.getProcedureModel().setStartingStep(initVariables.get("pcd:startingStep"));
+                    form.setProcedureInstance(new ProcedureInstance(initVariables));
+                } catch (PortalException e) {
+                    throw new PortletException(e);
+                } catch (FormFilterException e) {
+                    getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+                }
+            }
+            procedureService.updateVocabulariesWithValues(nuxeoController, form);
         } else {
             if (StringUtils.equals(getAction(request), "adminproc")) {
                 // création d'une procédure
@@ -596,6 +642,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 response.setRenderParameter("action", "endStep");
                 sessionStatus.setComplete();
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
+                PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
+                String currentWebId = form.getProcedureModel().getCurrentWebId();
+                String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
+                nuxeoController.getNuxeoCMSService().getFormsService().start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
+                // redirect to end of step page
+                response.setRenderParameter("action", "endStep");
+                sessionStatus.setComplete();
+            } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
                 String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);

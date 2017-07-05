@@ -33,8 +33,12 @@ public class Record {
     /** modified */
     private Date modified;
 
+    /** originalDocument */
+    private Document originalDocument;
+
     public Record(Document document) {
         globalVariablesValues = new HashMap<String, String>();
+        setOriginalDocument(document);
         PropertyMap documentProperties = document.getProperties();
 
         // global variables
@@ -170,6 +174,22 @@ public class Record {
      */
     public void setModified(Date modified) {
         this.modified = modified;
+    }
+
+    /**
+     * Getter for originalDocument.
+     * @return the originalDocument
+     */
+    public Document getOriginalDocument() {
+        return originalDocument;
+    }
+
+    /**
+     * Setter for originalDocument.
+     * @param originalDocument the originalDocument to set
+     */
+    public void setOriginalDocument(Document originalDocument) {
+        this.originalDocument = originalDocument;
     }
 
 
