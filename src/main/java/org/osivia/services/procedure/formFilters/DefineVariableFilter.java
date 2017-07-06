@@ -10,16 +10,26 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 
+/**
+ * Define a variable form filter
+ * 
+ * @author Dorian Licois
+ */
 public class DefineVariableFilter implements FormFilter {
 
+    /** Identifier. */
     public static final String ID = "DefineVarFilter";
 
+    /** Label internationalization key. */
     public static final String LABEL_KEY = "DEFINE_VAR_FILTER_LABEL";
 
+    /** Description internationalization key. */
     public static final String DESCRIPTION_KEY = "DEFINE_VAR_FILTER_DESCRIPTION";
 
+    /** variableName */
     private static final String variableName = "variableName";
 
+    /** variableValue */
     private static final String variableValue = "variableValue";
 
     @Override

@@ -8,12 +8,21 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class UpdateRecordCommand implements INuxeoCommand {
 
+    /** properties */
     private PropertyMap properties;
 
+    /** docRef */
     private DocRef docRef;
 
+    /**
+     * @param docRef
+     * @param updateProperties
+     */
     public UpdateRecordCommand(DocRef docRef, PropertyMap updateProperties) {
         this.docRef = docRef;
         this.properties = updateProperties;

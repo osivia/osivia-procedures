@@ -432,4 +432,16 @@ public class ProcedureModel {
         ProcedureParent = procedureParent;
     }
 
+    public void updateVariables() {
+        if (StringUtils.equals(DocumentTypeEnum.RECORDFOLDER.getDocType(), getProcedureType())) {
+            Map<String, Variable> variablesU = new HashMap<String, Variable>();
+            for (Step step : steps) {
+                for (Field field : step.getFieldsSet()) {
+                    variablesU.put(field.getName(), getVariables().get(field.getName()));
+                }
+            }
+            setVariables(variablesU);
+        }
+    }
+
 }

@@ -1,17 +1,14 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
+
 
 <portlet:defineObjects />
 
 
-<ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#Formulaire" role="tab" data-toggle="tab" class="no-ajax-link">Formulaire</a></li>
-    <li role="presentation"><a href="#Metadata" role="tab" data-toggle="tab" class="no-ajax-link">Métadonnées</a></li>
-</ul>
-
-
-<div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="Formulaire">
+<div class="row"> 
+    <div class="col-md-8 col-lg-9">
         <ul class="procedure-sortable list-unstyled">
             <c:forEach var="field" items="${form.theCurrentStep.fields}" varStatus="status">
 	            <li class="form-group">
@@ -66,31 +63,60 @@
             </c:forEach>
         </ul>
     </div>
-    <div role="tabpanel" class="tab-pane" id="Metadata">
-        <div class="row">
-	        <label class="col-sm-3 control-label">Date de création</label>
-	        <div class="col-sm-9">
-	           <span class="pre-wrap"><c:out value="${form.record.created}" /></span>
-	        </div>
-	    </div>
-	    <div class="row">
-            <label class="col-sm-3 control-label">Créé par</label>
-            <div class="col-sm-9">
-               <span class="pre-wrap"><c:out value="${form.record.creator}" /></span>
-            </div>
-        </div>
-        <div class="row">
-            <label class="col-sm-3 control-label">Date de dernière modification</label>
-            <div class="col-sm-9">
-               <span class="pre-wrap"><c:out value="${form.record.modified}" /></span>
-            </div>
-        </div>
-        <div class="row">
-            <label class="col-sm-3 control-label">Modifié par</label>
-            <div class="col-sm-9">
-               <span class="pre-wrap"><c:out value="${form.record.lastContributor}" /></span>
-            </div>
-        </div>
-    </div>
+    
+    <c:set var="author" value="${form.record.creator}" />
+	<c:set var="lastContributor" value="${form.record.lastContributor}" />
+	<c:set var="created" value="${form.record.created}" />
+	<c:set var="modified" value="${form.record.modified}" />
+
+    <div class="col-md-4 col-lg-3">
+	    <div class="metadata">
+		    <div class="panel panel-default">
+		        <div class="panel-heading">
+		            <h3 class="panel-title">
+		                <i class="halflings halflings-tags"></i>
+		                <span><op:translate key="METADATA" /></span>
+		            </h3>
+		        </div>
+		        <div class="panel-body">
+		            <dl>
+		                <!-- Creation -->
+		                <c:if test="${not empty created}">
+		                    <dt><op:translate key="METADATA_CREATION" /></dt>
+		                    <dd>
+		                        <p>
+		                            <span><op:translate key="METADATA_CREATED_ON" /></span>
+		                            <span><op:formatRelativeDate value="${created}" /></span>
+		                            
+		                            <c:if test="${not empty author}">
+		                                <br>
+		                                <span><op:translate key="METADATA_BY" /></span>
+		                                <span><ttc:user name="${author}"/></span>
+		                            </c:if>
+		                        </p>
+		                    </dd>
+		                </c:if>
+		                
+		                <!-- Modification -->
+		                <c:if test="${not empty modified}">
+		                    <dt><op:translate key="METADATA_MODIFICATION" /></dt>
+		                    <dd>
+		                        <p>
+		                            <span><op:translate key="METADATA_MODIFIED_ON" /></span>
+		                            <span><op:formatRelativeDate value="${modified}" /></span>
+		                            
+		                            <c:if test="${not empty lastContributor}">
+		                                <br>
+		                                <span><op:translate key="METADATA_BY" /></span>
+		                                <span><ttc:user name="${lastContributor}"/></span>
+		                            </c:if>
+		                        </p>
+		                    </dd>
+		                </c:if>
+		            </dl>
+		        </div>
+		    </div>
+		</div>
+	</div>
 </div>
 

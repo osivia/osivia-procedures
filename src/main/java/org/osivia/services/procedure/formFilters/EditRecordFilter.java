@@ -2,22 +2,14 @@ package org.osivia.services.procedure.formFilters;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.procedure.portlet.model.ProcedureRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
@@ -29,12 +21,15 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
  * 
  * @author Dorian Licois
  */
-public class EditRecordFilter implements FormFilter {
+public class EditRecordFilter extends RecordFormFilter {
 
+    /** Identifier. */
     public static final String ID = "EditRecordFilter";
 
+    /** LABEL_KEY */
     public static final String LABEL_KEY = "EDIT_RECORD_FILTER_LABEL";
 
+    /** Label internationalization key. */
     public static final String DESCRIPTION_KEY = "EDIT_RECORD_FILTER_DESCRIPTION";
 
     @Override
@@ -91,30 +86,6 @@ public class EditRecordFilter implements FormFilter {
         
         // update record with values
         nuxeoController.executeNuxeoCommand(new UpdateRecordCommand(new DocRef(context.getVariables().get("rcdPath")), updateProperties));
-    }
-
-    private PropertyList getGlobalVariablesReferences(String startingStep, PropertyMap properties) {
-        final PropertyList stepsList = properties.getList("pcd:steps");
-        if (stepsList != null && CollectionUtils.isNotEmpty(stepsList.list())) {
-            for (Object stepO : stepsList.list()) {
-                PropertyMap stepM = (PropertyMap) stepO;
-                if (StringUtils.equals(stepM.getString("reference"), startingStep) || StringUtils.equals(startingStep, ProcedureRepository.FORM_STEP_REFERENCE)) {
-                    return stepM.getList("globalVariablesReferences");
-                }
-            }
-        }
-        return null;
-    }
-
-    private String generateVariablesJSON(Map<String, String> variables) {
-        JSONArray array = new JSONArray();
-        for (Entry<String, String> entry : variables.entrySet()) {
-            JSONObject object = new JSONObject();
-            object.put("name", entry.getKey());
-            object.put("value", entry.getValue());
-            array.add(object);
-        }
-        return array.toString();
     }
 
 }

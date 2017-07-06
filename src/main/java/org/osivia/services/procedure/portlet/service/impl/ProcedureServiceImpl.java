@@ -138,6 +138,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         propMap.set("ttc:webid", IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId());
         propMap.set("pcd:webIdParent", procedureModel.getWebIdParent());
         propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
+        procedureModel.updateVariables();
         propMap.set("pcd:globalVariablesDefinitions", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getVariables().values()));
         propMap.set("pcd:startingStep", procedureModel.getStartingStep());
         propMap.set("pcd:procedureObjects", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getProcedureObjects()));

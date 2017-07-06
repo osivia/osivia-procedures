@@ -7,10 +7,17 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class DeleteRecordCommand implements INuxeoCommand {
 
+    /** docRef */
     private DocRef docRef;
 
+    /**
+     * @param docRef
+     */
     public DeleteRecordCommand(DocRef docRef) {
         this.docRef = docRef;
     }

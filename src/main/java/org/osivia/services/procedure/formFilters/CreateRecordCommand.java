@@ -8,17 +8,29 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class CreateRecordCommand implements INuxeoCommand {
 
+    /** RECORD */
     private static final String RECORD = "Record";
 
+    /** properties */
     private PropertyMap properties;
 
+    /** parentRef */
     private DocRef parentRef;
 
+    /** title */
     private String title;
 
 
+    /**
+     * @param parentRef
+     * @param properties
+     * @param title
+     */
     public CreateRecordCommand(DocRef parentRef, PropertyMap properties, String title) {
         this.parentRef = parentRef;
         this.properties = properties;

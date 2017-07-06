@@ -9,21 +9,6 @@
 
 <portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" ></portlet:resourceURL>
 
-<div class="content-navbar">
-    <!-- Breadcrumb -->
-    <div class="content-navbar-breadcrumb">
-        <div id="breadcrumb">
-            <div class="">
-                <nav>
-                    <ol class="breadcrumb hidden-xs">
-                        <li><a>Édition d'une liste</a></li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</div>
-
 <form:form modelAttribute="form" action="${editRecordUrl}" method="post" cssClass="form-horizontal" role="form">
 
     <ul class="nav nav-tabs" role="tablist">
@@ -85,7 +70,7 @@
 	                             <form:label path="newField.type" cssClass="col-sm-3 control-label">Type</form:label>
 	                             <div class="col-sm-9">
 	                                 <form:select path="newField.type" cssClass="form-control">
-	                                     <form:options/>
+	                                     <form:options items="${form.variableTypesEnum}" itemValue="id" itemLabel="label"/>
 	                                 </form:select>
 	                             </div>
 	                         </div>
@@ -139,7 +124,7 @@
 	                             <div class="form-group">
 	                                <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
 	                                <div class="col-sm-9">
-	                                    <form:input path="selectedField.name" type="text" cssClass="form-control" placeholder="Nom" />
+	                                       <p class="form-control-static">${form.selectedField.name}</p>
 	                                </div>
 	                               </div>
 	                              <div class="form-group">

@@ -19,10 +19,13 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
  */
 public class DeleteRecordFilter implements FormFilter {
 
+    /** Identifier. */
     public static final String ID = "DeleteRecordFilter";
 
+    /** LABEL_KEY */
     public static final String LABEL_KEY = "DELETE_RECORD_FILTER_LABEL";
 
+    /** Label internationalization key. */
     public static final String DESCRIPTION_KEY = "DELETE_RECORD_FILTER_DESCRIPTION";
 
     @Override
