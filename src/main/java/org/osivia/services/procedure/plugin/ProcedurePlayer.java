@@ -25,9 +25,12 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.player.Player;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
+import fr.toutatice.portail.cms.nuxeo.api.portlet.ViewList;
 import fr.toutatice.portail.cms.nuxeo.portlets.forms.ViewProcedurePortlet;
 
 /**
@@ -188,6 +191,49 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         return player;
     }
 
+    /**
+     * get a player for RecordContainer
+     * 
+     * @param docCtx
+     * @return the RecordContainerPlayer
+     */
+    private Player getRecordContainerPlayer(NuxeoDocumentContext docCtx) {
+        Map<String, String> windowProperties = new HashMap<String, String>();
+        windowProperties.put("osivia.nuxeoRequest", createFolderRequest(docCtx));
+        windowProperties.put("osivia.cms.style", ViewList.LIST_TEMPLATE_NORMAL);
+        windowProperties.put("osivia.hideDecorators", "1");
+        windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+        windowProperties.put(Constants.WINDOW_PROP_SCOPE, docCtx.getScope());
+        windowProperties.put(Constants.WINDOW_PROP_VERSION, docCtx.getDocumentState().toString());
+        windowProperties.put("osivia.document.metadata", String.valueOf(false));
+        windowProperties.put("osivia.title", docCtx.getDocument().getTitle());
+        windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, docCtx.getDocument().getPath());
+
+        Player player = new Player();
+        player.setWindowProperties(windowProperties);
+        player.setPortletInstance("toutatice-portail-cms-nuxeo-viewListPortletInstance");
+
+        return player;
+    }
+    
+    private String createFolderRequest(NuxeoDocumentContext docCtx) {
+        StringBuilder nuxeoRequestSb = new StringBuilder();
+
+        Document document = docCtx.getDocument();
+        NuxeoPublicationInfos publicationInfos = docCtx.getPublicationInfos();
+
+        if (docCtx.isContextualized()) {
+            nuxeoRequestSb.append("ecm:parentId = '");
+            nuxeoRequestSb.append(publicationInfos.getLiveId());
+        } else {
+            nuxeoRequestSb.append("ecm:path STARTSWITH '");
+            nuxeoRequestSb.append(NuxeoController.getLivePath(document.getPath()));
+        }
+        nuxeoRequestSb.append("' order by dc:modified desc");
+
+        return nuxeoRequestSb.toString();
+    }
+
     @Override
     public Player getCMSPlayer(NuxeoDocumentContext docCtx) {
         final Document doc = docCtx.getDocument();
@@ -195,22 +241,16 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
 
         if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
             return getProcedureInstancePlayer(docCtx);
-        }
-
-        if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getDocType())) {
+        } else if (StringUtils.equals(docType, DocumentTypeEnum.PROCEDUREMODEL.getDocType())) {
             return getProcedureModelPlayer(docCtx);
-        }
-
-        if (StringUtils.equals(docType, DocumentTypeEnum.TASKDOC.getDocType())) {
+        } else if (StringUtils.equals(docType, DocumentTypeEnum.TASKDOC.getDocType())) {
             return getTaskPlayer(docCtx);
-        }
-
-        if (StringUtils.equals(docType, DocumentTypeEnum.RECORDFOLDER.getDocType())) {
+        } else if (StringUtils.equals(docType, DocumentTypeEnum.RECORDFOLDER.getDocType())) {
             return getRecordFolderPlayer(docCtx);
-        }
-
-        if (StringUtils.equals(docType, DocumentTypeEnum.RECORD.getDocType())) {
+        } else if (StringUtils.equals(docType, DocumentTypeEnum.RECORD.getDocType())) {
             return getRecordPlayer(docCtx);
+        } else if (StringUtils.equals(docType, DocumentTypeEnum.RECORDCONTAINER.getDocType())) {
+            return getRecordContainerPlayer(docCtx);
         }
 
         return null;
