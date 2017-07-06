@@ -6,12 +6,25 @@ import java.util.Map;
 import org.osivia.services.procedure.portlet.model.Filter;
 
 
+/**
+ * 
+ * Util class for Filter
+ * 
+ * @author Dorian Licois
+ * @see Filter
+ */
 public class FiltersUtil {
 
 
     private FiltersUtil() {
     }
 
+    /**
+     * recursive method to build architecture of FIlters according to their paths
+     * 
+     * @param fieldMap
+     * @param filter
+     */
     public static void fillFilter(Map<String, Filter> fieldMap, Filter filter) {
         boolean completed = false;
         int i = 0;

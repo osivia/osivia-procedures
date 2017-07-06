@@ -17,6 +17,11 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 
+/**
+ * Util class for nuxeo Vocabulary used in select2
+ * 
+ * @author Dorian Licois
+ */
 public class VocabularySelect2Util {
 
     /**

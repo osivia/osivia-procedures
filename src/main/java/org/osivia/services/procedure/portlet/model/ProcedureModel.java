@@ -17,6 +17,9 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
+/**
+ * @author Dorian Licois
+ */
 public class ProcedureModel {
 
     /** the name of the procedure */

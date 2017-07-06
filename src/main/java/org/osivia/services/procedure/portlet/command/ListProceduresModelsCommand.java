@@ -10,21 +10,36 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class ListProceduresModelsCommand implements INuxeoCommand {
 
+    /** select */
     private static final String select = "SELECT * FROM ProcedureModel, RecordFolder";
+    /** where */
     private static final String where = " WHERE ecm:path startswith '";
+    /** end */
     private static final String end = "' ";
 
+    /** path */
     private String path;
 
+    /** filter */
     private String filter;
 
+    /**
+     * @param path
+     * @param filter
+     */
     public ListProceduresModelsCommand(String path, String filter) {
         this.path = path;
         this.filter = filter;
     }
 
+    /**
+     * @param path
+     */
     public ListProceduresModelsCommand(String path) {
         this.path = path;
     }

@@ -1,6 +1,9 @@
 package org.osivia.services.procedure.portlet.model;
 
 
+/**
+ * @author Dorian Licois
+ */
 public enum VariableTypesEnum {
     TEXT("TEXT", "Champ texte"), TEXTAREA("TEXTAREA", "Zone de texte"), DATE("DATE", "Champ date"), NUMBER("NUMBER", "Champ nombre entier"), FILE("FILE",
             "Fichier"), RADIOLIST("RADIOLIST", "Boutons radio"), RADIOVOCAB("RADIOVOCAB", "Boutons radio depuis vocabulaire"), CHECKBOXLIST("CHECKBOXLIST",

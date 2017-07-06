@@ -3,6 +3,11 @@ package org.osivia.services.procedure.portlet.model;
 import java.util.ArrayList;
 
 
+/**
+ * Factory of common ProcedureModel
+ * 
+ * @author Dorian Licois
+ */
 public class ProcedureRepository {
 
     private static final String RECORD_PARENT_MODEL_WEBID = "procedure_record_folder";

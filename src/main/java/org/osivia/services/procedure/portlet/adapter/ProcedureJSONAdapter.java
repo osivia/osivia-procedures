@@ -32,6 +32,15 @@ public class ProcedureJSONAdapter {
         mapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_DEFAULT);
     }
 
+    /**
+     * builds a json string from an object
+     * 
+     * @param jsonableObject
+     * @return
+     * @throws JsonGenerationException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public String toJSON(Object jsonableObject) throws JsonGenerationException, JsonMappingException, IOException {
         // pretty output for debugging purpose
         // ObjectWriter writer = mapper.defaultPrettyPrintingWriter();
@@ -40,6 +49,15 @@ public class ProcedureJSONAdapter {
         return writer.writeValueAsString(jsonableObject);
     }
 
+    /**
+     * builds a json string from an array-like object
+     * 
+     * @param jsonableObject
+     * @return
+     * @throws JsonGenerationException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public String toJSONArray(Object jsonableObject) throws JsonGenerationException, JsonMappingException, IOException {
         // pretty output for debugging purpose
         // ObjectWriter writer = mapper.defaultPrettyPrintingWriter();

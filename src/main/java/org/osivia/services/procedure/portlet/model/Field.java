@@ -12,6 +12,9 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+/**
+ * @author Dorian Licois
+ */
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
 public class Field implements Comparable<Field> {
@@ -33,13 +36,16 @@ public class Field implements Comparable<Field> {
     @JsonSerialize(include = JsonSerialize.Inclusion.ALWAYS)
     private String name;
 
+    /** superLabel */
     @JsonProperty("superLabel")
     private String superLabel;
 
+    /** isFieldSet */
     @JsonProperty("isFieldSet")
     @JsonSerialize(include = JsonSerialize.Inclusion.ALWAYS)
     private boolean isFieldSet;
 
+    /** fields */
     @JsonProperty("nestedGlobalVariablesReferences")
     private List<Field> fields;
 
@@ -55,9 +61,11 @@ public class Field implements Comparable<Field> {
     @JsonIgnore
     private String value;
 
+    /** varOptions */
     @JsonIgnore
     private String varOptions;
 
+    /** path */
     @JsonProperty("path")
     private String path;
 
@@ -69,6 +77,10 @@ public class Field implements Comparable<Field> {
     public Field() {
     }
 
+    /**
+     * @param propertyMap
+     * @param variables
+     */
     public Field(PropertyMap propertyMap, Map<String, Variable> variables) {
         setInput(propertyMap.getBoolean("isInput"));
         setRequired(propertyMap.getBoolean("required"));
@@ -264,15 +276,6 @@ public class Field implements Comparable<Field> {
         this.required = required;
     }
 
-    public String getVarOptions() {
-        return varOptions;
-    }
-
-    public void setVarOptions(String varOptions) {
-        this.varOptions = varOptions;
-    }
-
-
     /**
      * Getter for superLabel.
      *
@@ -281,7 +284,6 @@ public class Field implements Comparable<Field> {
     public String getSuperLabel() {
         return superLabel;
     }
-
 
     /**
      * Setter for superLabel.
@@ -292,7 +294,6 @@ public class Field implements Comparable<Field> {
         this.superLabel = superLabel;
     }
 
-
     /**
      * Getter for isFieldSet.
      *
@@ -301,7 +302,6 @@ public class Field implements Comparable<Field> {
     public boolean isFieldSet() {
         return isFieldSet;
     }
-
 
     /**
      * Setter for isFieldSet.
@@ -312,16 +312,6 @@ public class Field implements Comparable<Field> {
         this.isFieldSet = isFieldSet;
     }
 
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-
     /**
      * Getter for fields.
      *
@@ -330,8 +320,6 @@ public class Field implements Comparable<Field> {
     public List<Field> getFields() {
         return fields;
     }
-
-
 
     /**
      * Setter for fields.
@@ -342,7 +330,6 @@ public class Field implements Comparable<Field> {
         this.fields = fields;
     }
 
-
     /**
      * Getter for helpText.
      *
@@ -352,7 +339,6 @@ public class Field implements Comparable<Field> {
         return helpText;
     }
 
-
     /**
      * Setter for helpText.
      *
@@ -360,6 +346,42 @@ public class Field implements Comparable<Field> {
      */
     public void setHelpText(String helpText) {
         this.helpText = helpText;
+    }
+
+    /**
+     * Getter for varOptions.
+     * 
+     * @return the varOptions
+     */
+    public String getVarOptions() {
+        return varOptions;
+    }
+
+    /**
+     * Setter for varOptions.
+     * 
+     * @param varOptions the varOptions to set
+     */
+    public void setVarOptions(String varOptions) {
+        this.varOptions = varOptions;
+    }
+
+    /**
+     * Getter for path.
+     * 
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * Setter for path.
+     * 
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

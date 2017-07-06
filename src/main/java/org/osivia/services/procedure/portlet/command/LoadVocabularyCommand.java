@@ -17,7 +17,6 @@ public class LoadVocabularyCommand implements INuxeoCommand {
     /** Vocabulary name. */
     private final String name;
 
-
     /**
      * Constructor.
      */
@@ -25,7 +24,6 @@ public class LoadVocabularyCommand implements INuxeoCommand {
         super();
         this.name = name;
     }
-
 
     /**
      * {@inheritDoc}

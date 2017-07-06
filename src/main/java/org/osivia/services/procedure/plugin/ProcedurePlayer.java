@@ -30,11 +30,10 @@ import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 import fr.toutatice.portail.cms.nuxeo.portlets.forms.ViewProcedurePortlet;
 
-
 /**
- * The Class PlayerModule.
- *
- * @author Jean-Sébastien Steux
+ * PlayerModule for procedure.
+ * 
+ * @author Dorian Licois
  */
 public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule {
 
@@ -48,6 +47,12 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         super(portletContext);
     }
 
+    /**
+     * get a player for ProcedureInstance
+     * 
+     * @param docCtx
+     * @return the ProcedureInstancePlayer
+     */
     private Player getProcedureInstancePlayer(NuxeoDocumentContext docCtx) {
         final Document document = docCtx.getDocument();
 
@@ -61,6 +66,12 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         return linkProps;
     }
 
+    /**
+     * get a player for Task
+     * 
+     * @param docCtx
+     * @return the TaskPlayer
+     */
     private Player getTaskPlayer(NuxeoDocumentContext docCtx) {
         final Document document = docCtx.getDocument();
 
@@ -75,6 +86,10 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         return linkProps;
     }
 
+    /**
+     * @param document
+     * @return generic procedure Window properties
+     */
     private Map<String, String> getProcedureWindowProperties(final Document document) {
         final Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.services.procedure.webid", document.getProperties().getString("ttc:webid"));
@@ -86,6 +101,12 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         return windowProperties;
     }
     
+    /**
+     * get a player for Procedure
+     * 
+     * @param docCtx
+     * @return the ProcedureModelPlayer
+     */
     private Player getProcedureModelPlayer(NuxeoDocumentContext docCtx) {
         final Document document = docCtx.getDocument();
 
@@ -103,6 +124,12 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         }
     }
 
+    /**
+     * get a player for Procedure
+     * 
+     * @param docCtx
+     * @return the ProcedureModelPlayer
+     */
     private Player getProcedurePlayer(final Map<String, String> windowProperties) {
         final Player player = new Player();
         player.setWindowProperties(windowProperties);
@@ -110,6 +137,12 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         return player;
     }
 
+    /**
+     * get a player for RecordFolder
+     * 
+     * @param docCtx
+     * @return the RecordFolderPlayer
+     */
     private Player getRecordFolderPlayer(NuxeoDocumentContext docCtx) {
         Player player = null;
         if (docCtx.getDocument() != null) {
@@ -134,6 +167,12 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         return player;
     }
 
+    /**
+     * get a player for Record
+     * 
+     * @param docCtx
+     * @return the RecordPlayer
+     */
     private Player getRecordPlayer(NuxeoDocumentContext docCtx) {
         Player player = null;
         if (docCtx.getDocument() != null) {

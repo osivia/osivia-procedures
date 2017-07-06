@@ -113,11 +113,17 @@ public class Filter implements Comparable<Filter> {
         }
     }
 
+    /**
+     * @param filter
+     */
     public void updateFilter(Filter filter) {
         setFilterName(filter.getFilterName());
         setArgumentsList(filter.getArgumentsList());
     }
 
+    /**
+     * @param newPath
+     */
     public void updateFilterPath(String newPath) {
         setFilterPath(newPath);
         setFilterInstanceId(getFilterId().concat(getFilterPath()));

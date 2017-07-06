@@ -141,6 +141,11 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         return CUSTOMIZER_NAME;
     }
 
+    /**
+     * customizeMenubarModules
+     * 
+     * @param context
+     */
     private void customizeMenubarModules(CustomizationContext context) {
         // Menubar modules
         List<MenubarModule> modules = this.getMenubarModules(context);

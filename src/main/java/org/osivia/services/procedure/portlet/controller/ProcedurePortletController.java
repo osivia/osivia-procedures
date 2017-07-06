@@ -98,20 +98,23 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     private static final String CREATE_VIEW = "editProcedure";
     /** edit view. */
     private static final String EDIT_VIEW = "editStep";
+    /** editRecord view */
     private static final String EDIT_RECORD_VIEW = "editRecord";
-
+    /** displayRecord view */
     private static final String DISPLAY_RECORD_VIEW = "displayRecord";
-
+    /** editTdb view */
     private static final String EDIT_TDB = "editTdb";
     /** procedure view. */
     private static final String VIEW_PROCEDURE = "viewProcedure";
-    /** VIEW_ENDSTEP */
+    /** endStep view */
     private static final String VIEW_ENDSTEP = "endStep";
-    /** VIEW_ACTION */
+    /** action view */
     private static final String VIEW_ACTION = "editAction";
+    /** procedure list view */
     private static final String LIST_PROC_VIEW = "list";
+    /** procedure detail view */
     private static final String DETAIL_PROC = "detailProc";
-
+    /** manage variables view */
     private static final String MANAGE_VIEW = "manageVariables";
 
 
@@ -126,7 +129,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     /** entProfilService */
     private GroupService groupService;
-
 
     public ProcedurePortletController() {
         super();

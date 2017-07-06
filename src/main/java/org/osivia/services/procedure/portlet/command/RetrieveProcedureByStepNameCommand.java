@@ -10,10 +10,17 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class RetrieveProcedureByStepNameCommand implements INuxeoCommand {
 
+    /** filterName */
     private String filterName;
 
+    /**
+     * @param filterName
+     */
     public RetrieveProcedureByStepNameCommand(String filterName) {
         this.filterName = filterName;
     }

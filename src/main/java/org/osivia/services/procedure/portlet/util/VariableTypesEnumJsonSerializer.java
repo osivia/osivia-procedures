@@ -11,6 +11,11 @@ import org.codehaus.jackson.map.SerializerProvider;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 
 
+/**
+ * custom serializer for enum used in select2
+ * 
+ * @author Dorian Licois
+ */
 public class VariableTypesEnumJsonSerializer extends JsonSerializer<VariableTypesEnum> {
 
     @Override

@@ -18,7 +18,9 @@ public class RetrieveDocumentByWebIdCommand implements INuxeoCommand {
     /** webId of the document to retrieve */
     private String fetchBY;
 
-
+    /**
+     * @param fetchBY
+     */
     public RetrieveDocumentByWebIdCommand(String fetchBY) {
         super();
         this.fetchBY = fetchBY;

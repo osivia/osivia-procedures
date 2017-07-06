@@ -15,6 +15,11 @@ import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 
 
+/**
+ * Util class for ObjetMetier
+ * 
+ * @author Dorian Licois
+ */
 public class ObjetMetierUtil {
 
     private ObjetMetierUtil() {
@@ -23,6 +28,13 @@ public class ObjetMetierUtil {
     // ecm://{object}/{variable}
     public static final Pattern objectPattern = Pattern.compile("^ecm:\\/\\/([\\w.]+)\\/([\\w.:]+)");
 
+    /**
+     * builds ObjetMetier from procedureInstance data
+     * 
+     * @param procedureModel
+     * @param procedureInstance
+     * @return
+     */
     public static Map<String, ObjetMetier> buildObjetMetiers(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
 
         Map<String, ObjetMetier> objetMetiers = new HashMap<String, ObjetMetier>();

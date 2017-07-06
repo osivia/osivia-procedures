@@ -9,13 +9,20 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * @author Dorian Licois
+ */
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
 public class Variable {
 
+    /** DC_CREATOR */
     public static final Variable DC_CREATOR = new Variable("dc:creator", "Créé par", VariableTypesEnum.TEXT, null);
+    /** DC_CREATED */
     public static final Variable DC_CREATED = new Variable("dc:created", "Créé le", VariableTypesEnum.TEXT, null);
+    /** DC_LAST_CONTRIBUTOR */
     public static final Variable DC_LAST_CONTRIBUTOR = new Variable("dc:lastContributor", "Modifié par", VariableTypesEnum.TEXT, null);
+    /** DC_MODIFIED */
     public static final Variable DC_MODIFIED = new Variable("dc:modified", "Modifié le", VariableTypesEnum.TEXT, null);
 
     /** name */
@@ -41,6 +48,9 @@ public class Variable {
     public Variable() {
     }
 
+    /**
+     * @param field
+     */
     public Variable(Field field) {
         this.name = field.getName();
         this.label = field.getLabel();
@@ -48,6 +58,9 @@ public class Variable {
         this.varOptions = field.getVarOptions();
     }
 
+    /**
+     * @param field
+     */
     public Variable(AddField field) {
         this.name = field.getVariableName();
         this.label = field.getLabel();
@@ -55,6 +68,12 @@ public class Variable {
         this.varOptions = field.getVarOptions();
     }
 
+    /**
+     * @param name
+     * @param label
+     * @param type
+     * @param varOptions
+     */
     public Variable(String name, String label, VariableTypesEnum type, String varOptions) {
         this.name = name;
         this.label = label;

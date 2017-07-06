@@ -17,6 +17,9 @@ import org.osivia.services.procedure.portlet.util.FiltersUtil;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
+/**
+ * @author Dorian Licois
+ */
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
 public class Action {
@@ -46,6 +49,10 @@ public class Action {
         filters = new ArrayList<Filter>();
     }
 
+    /**
+     * @param propertyMap
+     * @param nuxeoController
+     */
     public Action(PropertyMap propertyMap, NuxeoController nuxeoController) {
         setLabel(propertyMap.getString("label"));
         setActionId(propertyMap.getString("actionId"));

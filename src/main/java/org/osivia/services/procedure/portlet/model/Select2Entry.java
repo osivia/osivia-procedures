@@ -3,12 +3,18 @@ package org.osivia.services.procedure.portlet.model;
 import java.util.List;
 
 
+/**
+ * @author Dorian Licois
+ */
 public class Select2Entry {
 
+    /** id */
     private String id;
 
+    /** text */
     private String text;
 
+    /** children */
     private List<Select2Entry> children;
 
 

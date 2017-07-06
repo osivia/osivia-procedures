@@ -17,6 +17,9 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
+/**
+ * @author Dorian Licois
+ */
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
 public class Step implements Comparable<Step> {
@@ -218,6 +221,11 @@ public class Step implements Comparable<Step> {
     }
 
 
+    /**
+     * get the next available index for field
+     * 
+     * @return
+     */
     public String getNextPath() {
         int nextPath;
         if (CollectionUtils.isEmpty(getFields())) {

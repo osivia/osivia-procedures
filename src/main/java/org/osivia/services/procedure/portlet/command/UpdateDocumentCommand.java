@@ -21,6 +21,10 @@ public class UpdateDocumentCommand implements INuxeoCommand {
     /** properties to update */
     private PropertyMap properties;
 
+    /**
+     * @param document
+     * @param properties
+     */
     public UpdateDocumentCommand(Document document, PropertyMap properties) {
         super();
         this.document = document;

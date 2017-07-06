@@ -63,6 +63,11 @@ import fr.toutatice.portail.cms.nuxeo.api.VocabularyHelper;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
+/**
+ * service for use in procedure and records
+ * 
+ * @author Dorian Licois
+ */
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
 
@@ -132,6 +137,15 @@ public class ProcedureServiceImpl implements IProcedureService {
         return new ProcedureModel(procedureModelInstance, nuxeoController);
     }
 
+    /**
+     * build a PropertyMap holding the data of ProcedureModel
+     * 
+     * @param procedureModel
+     * @return
+     * @throws JsonGenerationException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     private PropertyMap buildProperties(ProcedureModel procedureModel) throws JsonGenerationException, JsonMappingException, IOException {
         final PropertyMap propMap = new PropertyMap();
         propMap.set("dc:title", procedureModel.getName());

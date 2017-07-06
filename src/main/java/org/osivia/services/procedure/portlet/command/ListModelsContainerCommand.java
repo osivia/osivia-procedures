@@ -14,13 +14,19 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
  */
 public class ListModelsContainerCommand implements INuxeoCommand {
 
+    /** select */
     private static final String select = "SELECT * FROM ProceduresModelsContainer, RecordContainer";
+    /** where */
     private static final String where = " WHERE ecm:path startswith '";
+    /** end */
     private static final String end = "'";
 
+    /** path */
     private String path;
 
-
+    /**
+     * @param path
+     */
     public ListModelsContainerCommand(String path) {
         this.path = path;
     }

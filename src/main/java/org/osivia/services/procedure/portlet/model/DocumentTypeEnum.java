@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
+/**
+ * @author Dorian Licois
+ */
 public enum DocumentTypeEnum {
 
     PROCEDUREMODEL("ProcedureModel"), PROCEDUREINSTANCE("ProcedureInstance"), TASKDOC("TaskDoc"), RECORDFOLDER("RecordFolder"), RECORDCONTAINER(
@@ -14,11 +17,17 @@ public enum DocumentTypeEnum {
 
     private static final Map<String, DocumentTypeEnum> ENUM_MAP;
 
+    /**
+     * @param docType
+     */
     private DocumentTypeEnum(String docType) {
         this.docType = docType;
     }
 
 
+    /**
+     * @return the docType
+     */
     public String getDocType() {
         return docType;
     }
@@ -31,6 +40,12 @@ public enum DocumentTypeEnum {
         ENUM_MAP = Collections.unmodifiableMap(map);
     }
 
+    /**
+     * get enum from docType string
+     * 
+     * @param docType
+     * @return the DocumentTypeEnum
+     */
     public static DocumentTypeEnum get(String docType) {
         return ENUM_MAP.get(docType);
     }

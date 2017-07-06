@@ -17,6 +17,9 @@ public class DeleteDocumentCommand implements INuxeoCommand {
     private Document document;
 
 
+    /**
+     * @param document
+     */
     public DeleteDocumentCommand(Document document) {
         super();
         this.document = document;

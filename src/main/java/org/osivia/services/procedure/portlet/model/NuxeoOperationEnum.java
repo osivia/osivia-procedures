@@ -1,6 +1,11 @@
 package org.osivia.services.procedure.portlet.model;
 
 
+/**
+ * Enum for operation used in osivia-procedure
+ * 
+ * @author Dorian Licois
+ */
 public enum NuxeoOperationEnum {
 
     CreateDocument("Document.TTCCreate"), RetrieveDocument("Document.Fetch"), UpdateDocument("Document.Update"), DeleteDocument("Document.Delete"), StartProcedure(

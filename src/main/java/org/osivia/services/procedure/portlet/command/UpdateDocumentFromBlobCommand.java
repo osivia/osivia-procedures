@@ -23,6 +23,11 @@ public class UpdateDocumentFromBlobCommand implements INuxeoCommand {
     /** blob */
     private Blob blob;
 
+    /**
+     * @param path
+     * @param properties
+     * @param blob
+     */
     public UpdateDocumentFromBlobCommand(String path, PropertyMap properties, Blob blob) {
         this.path = path;
         this.properties = properties;

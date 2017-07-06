@@ -25,11 +25,15 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 
 
+/**
+ * MenubarModule for procedure
+ * 
+ * @author Dorian Licois
+ */
 public class ProcedureMenubarModule implements MenubarModule {
 
     /** Menubar service. */
     private final IMenubarService menubarService;
-
 
     public ProcedureMenubarModule() {
         super();
@@ -123,7 +127,6 @@ public class ProcedureMenubarModule implements MenubarModule {
                 menubar.add(item);
             }
         }
-
     }
 
 }

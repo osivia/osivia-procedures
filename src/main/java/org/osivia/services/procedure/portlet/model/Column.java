@@ -30,6 +30,9 @@ public class Column implements Comparable<Column> {
     @JsonIgnore
     private Integer index;
 
+    /**
+     * @param columnObjectMap
+     */
     public Column(PropertyMap columnObjectMap) {
         if (columnObjectMap != null) {
             setLabel(columnObjectMap.getString("label"));
@@ -38,10 +41,8 @@ public class Column implements Comparable<Column> {
         }
     }
 
-
     public Column() {
     }
-
 
     /**
      * Getter for Label.

@@ -31,6 +31,9 @@ public class Dashboard {
     private List<Column> columns;
 
 
+    /**
+     * @param dashboardObjectMap
+     */
     public Dashboard(PropertyMap dashboardObjectMap) {
 
         if (dashboardObjectMap != null) {
@@ -58,10 +61,8 @@ public class Dashboard {
         }
     }
 
-
     public Dashboard() {
     }
-
 
     /**
      * Getter for name.
@@ -71,7 +72,6 @@ public class Dashboard {
     public String getName() {
         return name;
     }
-
 
     /**
      * Setter for name.
