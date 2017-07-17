@@ -44,19 +44,19 @@
 	        <div class="col-sm-2">
 	            <label class="control-label"><op:translate key="LABEL" /></label>
 	        </div>
-	        <div class="col-sm-8">${form.theSelectedAction.label}</div>
+	        <div class="col-sm-8"><p class="form-control-static">${form.theSelectedAction.label}</p></div>
 	    </div>
 	    <div class="form-group">
 	        <div class="col-sm-2">
 	            <label class="control-label"><op:translate key="ACTION_ID" /></label>
 	        </div>
-	        <div class="col-sm-8">${form.theSelectedAction.actionId}</div>
+	        <div class="col-sm-8"><p class="form-control-static">${form.theSelectedAction.actionId}</p></div>
 	    </div>
 	    <div class="form-group">
 		    <div class="col-sm-2">
 		        <label class="control-label"><op:translate key="ACTION_TARGET_REF" /></label>
 		    </div>
-		    <div class="col-sm-8">${form.theSelectedAction.stepReference}</div>
+		    <div class="col-sm-8"><p class="form-control-static">${form.theSelectedAction.stepReference}</p></div>
 	    </div>
     </c:if>
     <hr>

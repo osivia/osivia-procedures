@@ -209,8 +209,7 @@
 	                    				or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
 		                    <label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
-								<c:out
-									value="${fieldName}" />
+							    <p class="form-control-static">${fieldName}</p>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -228,7 +227,8 @@
 						<c:when
 							test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
 							<label class="col-sm-3 control-label">${field.superLabel}</label>
-							<div class="col-sm-9">${fieldName}
+							<div class="col-sm-9">
+							    <p class="form-control-static">${fieldName}</p>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>

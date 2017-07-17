@@ -29,7 +29,7 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label"><op:translate key="RECORD_PARENT_MODEL" /></label>
                 <div class="col-sm-10">
-                    ${form.procedureModel.webIdParent}
+                    <p class="form-control-static">${form.procedureModel.webIdParent}</p>
                 </div>
             </div>
         </div>
