@@ -52,9 +52,6 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     /** Customizer name. */
     private static final String CUSTOMIZER_NAME = "procedure.plugin";
 
-    /** viewListProc list template. */
-    public static final String STYLE_VIEW_LISTPROC = "listproc";
-    
     /** STYLE_VIEW_CONTAINER */
     public static final String STYLE_VIEW_CONTAINER = "containerlist";
 
