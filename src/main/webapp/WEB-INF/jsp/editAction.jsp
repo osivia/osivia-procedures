@@ -190,7 +190,7 @@
 		           			<div class="row" onclick="insertVarValueAtCaret(this);">
 		           				<div class="col-sm-4">${variable.value.name}</div>
 		           				<div class="col-sm-4">${variable.value.label}</div>
-		           				<div class="col-sm-4">${variable.value.type.label}</div>
+		           				<div class="col-sm-4">${variable.value.type}</div>
 		           			</div>
 	          			</c:forEach>
            			</div>

@@ -133,7 +133,6 @@
 	                              <div class="form-group">
 	                                    <form:label path="selectedField.superLabel" cssClass="col-sm-3 control-label"><op:translate key="LABEL" /></form:label>
 	                                    <div class="col-sm-9">
-	                                        <c:set value=""/>
 	                                        <input name="selectedField.superLabel" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.selectedField.superLabel}" type="text">
 	                                        <span class="help-block"><op:translate key="LABEL_HELP" /></span>
 	                                    </div>
