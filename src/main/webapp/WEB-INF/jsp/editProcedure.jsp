@@ -131,7 +131,7 @@
                             </div>
                             <div class="col-sm-3">
                                 <form:select path="procedureModel.procedureObjects[${status.index}].type" cssClass="form-control">
-                                    <form:option value="FILE">File</form:option>
+                                    <form:option value="FILE"><op:translate key="FILE" /></form:option>
                                 </form:select>
                             </div>
                             <div class="btn-group col-sm-1">

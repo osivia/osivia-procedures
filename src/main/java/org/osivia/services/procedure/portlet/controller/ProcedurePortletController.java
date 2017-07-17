@@ -524,14 +524,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
         }
 
-
-
         response.setContentType("application/json");
         try {
             final ObjectMapper mapper = new ObjectMapper();
             // VariableTypesEnumJsonSerializer pour avoir les bons label
             SimpleModule simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
-            simpleModule.addSerializer(VariableTypesEnum.class, new VariableTypesEnumJsonSerializer());
+            Bundle bundle = bundleFactory.getBundle(request.getLocale());
+            simpleModule.addSerializer(VariableTypesEnum.class, new VariableTypesEnumJsonSerializer(bundle));
             mapper.registerModule(simpleModule);
 
             mapper.writeValue(response.getPortletOutputStream(), listeVar);

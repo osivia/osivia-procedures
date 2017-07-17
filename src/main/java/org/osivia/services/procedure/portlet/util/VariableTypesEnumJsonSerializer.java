@@ -8,6 +8,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.SerializerProvider;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
 
 
@@ -18,11 +19,17 @@ import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
  */
 public class VariableTypesEnumJsonSerializer extends JsonSerializer<VariableTypesEnum> {
 
+    private Bundle bundle;
+
+    public VariableTypesEnumJsonSerializer(Bundle bundle) {
+        this.bundle = bundle;
+    }
+
     @Override
     public void serialize(VariableTypesEnum value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
         Map<String, String> map = new HashMap<String, String>();
         map.put("id", value.name());
-        map.put("label", value.getLabel());
+        map.put("label", bundle.getString(value.name()));
         jgen.writeObject(map);
     }
 
