@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 <portlet:defineObjects />
 
@@ -18,7 +19,7 @@
         	<div class="">
 				<nav>
 				    <ol class="breadcrumb hidden-xs">
-			            <li><a>Édition d'une procédure</a></li>
+			            <li><a><op:translate key="EDIT_PROCEDURE" /></a></li>
 				    </ol>
 				</nav>
 			</div>
@@ -33,12 +34,12 @@
         <div class="col-sm-12">
 		    <div class="btn-group pull-right">
 			    <c:if test="${!form.advancedMode}">
-			        <button type="submit" class="btn btn-default" name="changeMode">Mode avançé</button>
-			        <button type="submit" class="btn btn-info active" name="changeMode">Mode simplifié</button>
+			        <button type="submit" class="btn btn-default" name="changeMode"><op:translate key="ADVANCED_MODE" /></button>
+			        <button type="submit" class="btn btn-info active" name="changeMode"><op:translate key="SIMPLE_MODE" /></button>
 			    </c:if>
 			    <c:if test="${form.advancedMode}">
-		            <button type="submit" class="btn btn-info active" name="changeMode">Mode avançé</button>
-		            <button type="submit" class="btn btn-default" name="changeMode">Mode simplifié</button>
+		            <button type="submit" class="btn btn-info active" name="changeMode"><op:translate key="ADVANCED_MODE" /></button>
+		            <button type="submit" class="btn btn-default" name="changeMode"><op:translate key="SIMPLE_MODE" /></button>
 			    </c:if>
 		    </div>
 	    </div>
@@ -46,22 +47,22 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Identification de la procédure</h3>
+            <h3 class="panel-title"><op:translate key="PROCEDURE_IDENTIFICATION" /></h3>
         </div>
         <div class="panel-body">
             <div class="form-group">
-				<form:label path="procedureModel.name" cssClass="col-sm-3 control-label">Nom</form:label>
+				<form:label path="procedureModel.name" cssClass="col-sm-3 control-label"><op:translate key="NAME" /></form:label>
 				<div class="col-sm-9">
-                    <form:input path="procedureModel.name" type="text" cssClass="form-control" placeholder="Nom" />
+                    <input name="procedureModel.name" class="form-control" placeholder='<op:translate key="NAME" />' value="${form.procedureModel.name}" type="text">
 			    </div>
 			</div>
 			<c:if test="${form.advancedMode}">
 				<div class="form-group">
-	                <form:label path="procedureModel.newWebId" cssClass="col-sm-3 control-label">Identifiant</form:label>
+	                <form:label path="procedureModel.newWebId" cssClass="col-sm-3 control-label"><op:translate key="IDENTITY" /></form:label>
 	                <div class="col-sm-9">
 	                	<div class="input-group">
 		                	<span class="input-group-addon">${webIdPrefix}</span>
-		                    <form:input path="procedureModel.newWebId" type="text" cssClass="form-control" placeholder="Identifiant" />
+		                    <input name="procedureModel.newWebId" class="form-control" placeholder='<op:translate key="IDENTITY" />' value="${form.procedureModel.newWebId}" type="text">
 	                	</div>
 	                </div>
 	            </div>
@@ -71,7 +72,7 @@
         
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Liste des étapes</h3>
+            <h3 class="panel-title"><op:translate key="PROCEDURE_STEP_LIST" /></h3>
         </div>
         <div class="panel-body">
             <ul class="list-unstyled steps-sortable">
@@ -94,8 +95,8 @@
         <div class="panel-footer">
             <div class="form-group">
                 <div class="col-sm-12">
-                    <button type="submit" class="btn btn-default" name="addStep">Ajouter une étape</button>
-                    <button type="submit" class="btn btn-default pull-right" name="manageVariables">Accéder au dictionnaire des variables</button>
+                    <button type="submit" class="btn btn-default" name="addStep"><op:translate key="PROCEDURE_ADD_STEP" /></button>
+                    <button type="submit" class="btn btn-default pull-right" name="manageVariables"><op:translate key="PROCEDURE_ACCESS_DICTIONARY" /></button>
                 </div>
             </div>
         </div>
@@ -105,28 +106,28 @@
     
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Objets métiers</h3>
+                <h3 class="panel-title"><op:translate key="PROCEDURE_BUSINESS_OBJECTS" /></h3>
             </div>
             <div class="panel-body">
                 <ul class="list-unstyled">
                     <li class="form-group">
                         <div class="col-sm-4">
-                            <label class="control-label">Nom</label>
+                            <label class="control-label"><op:translate key="NAME" /></label>
                         </div>
                         <div class="col-sm-4">
-                            <label class="control-label">Path</label>
+                            <label class="control-label"><op:translate key="PATH" /></label>
                         </div>
                         <div class="col-sm-4">
-                            <label class="control-label">Type</label>
+                            <label class="control-label"><op:translate key="TYPE" /></label>
                         </div>
                     </li>
                     <c:forEach var="procedureObject" items="${form.procedureModel.procedureObjects}" varStatus="status">
                          <li class="form-group">
                             <div class="col-sm-4">
-                                <form:input path="procedureModel.procedureObjects[${status.index}].name" type="text" cssClass="form-control" placeholder="Nom" />
+                                <input name="procedureModel.procedureObjects[${status.index}].name" class="form-control" placeholder='<op:translate key="NAME" />' value="${form.procedureModel.procedureObjects[status.index].name}" type="text">
                             </div>
                             <div class="col-sm-4">
-                                <form:input path="procedureModel.procedureObjects[${status.index}].path" type="text" cssClass="form-control" placeholder="Path" />
+                                <input name="procedureModel.procedureObjects[${status.index}].name" class="form-control" placeholder='<op:translate key="PATH" />' value="${form.procedureModel.procedureObjects[status.index].name}" type="text">
                             </div>
                             <div class="col-sm-3">
                                 <form:select path="procedureModel.procedureObjects[${status.index}].type" cssClass="form-control">
@@ -145,7 +146,7 @@
             <div class="panel-footer">
                 <div class="form-group">
                     <div class="col-sm-11">
-                        <button type="submit" name="addObject" class="btn btn-default">Ajouter un object Métier</button>
+                        <button type="submit" name="addObject" class="btn btn-default"><op:translate key="PROCEDURE_ADD_BO" /></button>
                     </div>
                 </div>
             </div>
@@ -155,7 +156,7 @@
     
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Étape de départ</h3>
+            <h3 class="panel-title"><op:translate key="PROCEDURE_STARTING_STEP" /></h3>
         </div>
         <div class="panel-body">
             <div class="form-group">
@@ -175,16 +176,16 @@
     
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Tableaux de bord</h3>
+            <h3 class="panel-title"><op:translate key="PROCEDURE_DASHBOARD" /></h3>
         </div>
         <div class="panel-body">
             <ul class="list-unstyled">
                 <li class="form-group">
                     <div class="col-sm-5">
-                        <label class="control-label">Nom</label>
+                        <label class="control-label"><op:translate key="NAME" /></label>
                     </div>
                     <div class="col-sm-5">
-                        <label class="control-label">Groupes</label>
+                        <label class="control-label"><op:translate key="GROUPS" /></label>
                     </div>
                 </li>
                 <c:forEach var="dashboard" items="${form.procedureModel.dashboards}" varStatus="status">
@@ -206,15 +207,15 @@
         <div class="panel-footer">
             <div class="form-group">
                 <div class="col-sm-11">
-                    <button type="submit" class="btn btn-default" name="addTdb">Ajouter un tableau de bord</button>
+                    <button type="submit" class="btn btn-default" name="addTdb"><op:translate key="PROCEDURE_ADD_DASHBOARD" /></button>
                 </div>
             </div>
         </div>
     </div>
     
 
-    <button type="submit" class="btn btn-primary" name="saveProcedure">Sauvegarder</button>
-    <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure">Supprimer</button>
+    <button type="submit" class="btn btn-primary" name="saveProcedure"><op:translate key="SAVE" /></button>
+    <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure"><op:translate key="DELETE" /></button>
 </form:form>
 
 

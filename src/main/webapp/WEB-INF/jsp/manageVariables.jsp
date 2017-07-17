@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 <portlet:defineObjects />
 
@@ -18,9 +19,9 @@
 				            <portlet:actionURL name="manageVariables" var="cancelStepUrl">
 				            	<portlet:param name="cancel" value="toProc"/>
 							</portlet:actionURL>
-							<a href="${cancelStepUrl}">Édition d'une procédure</a>
+							<a href="${cancelStepUrl}"><op:translate key="EDIT_PROCEDURE" /></a>
 			            </li>
-			            <li><a>Gestion des variables</a></li>
+			            <li><a><op:translate key="MANAGE_VARIABLES" /></a></li>
 				    </ol>
 				</nav>
 			</div>
@@ -30,21 +31,21 @@
 
 <form:form modelAttribute="form" action="${manageVariablesUrl}" method="post" cssClass="form-inline" role="form">
 	<div class="panel panel-info">
-		<div class="panel-heading">Dictionnaire</div>
+		<div class="panel-heading"><op:translate key="DICTIONARY" /></div>
 		<div class="panel-body">
 			<div class="col-sm-12">
 				<div class="row">
 					<div class="col-sm-3">
-						<strong>Nom</strong>
+						<strong><op:translate key="NAME" /></strong>
 					</div>
 					<div class="col-sm-3">
-						<strong>Label</strong>
+						<strong><op:translate key="LABEL" /></strong>
 					</div>
 					<div class="col-sm-3">
-						<strong>Type</strong>
+						<strong><op:translate key="TYPE" /></strong>
 					</div>
 					<div class="col-sm-3">
-						<strong>Utilisé dans</strong>
+						<strong><op:translate key="USED_IN" /></strong>
 					</div>
 				</div>
 			</div>
@@ -94,6 +95,6 @@
 			</div>
 		</div>
 	</div>
-	<button type="submit" class="btn btn-default" name="cancel">Annuler</button>
-	<button type="submit" class="btn btn-primary" name="save">Sauvegarder</button>
+	<button type="submit" class="btn btn-default" name="cancel"><op:translate key="CANCEL" /></button>
+	<button type="submit" class="btn btn-primary" name="save"><op:translate key="SAVE" /></button>
 </form:form>

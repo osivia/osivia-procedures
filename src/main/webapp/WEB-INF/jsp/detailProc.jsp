@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
 <portlet:renderURL var="viewProcedureUrl">
@@ -10,7 +11,7 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Détail d'un élément de liste</h3>
+        <h3 class="panel-title"><op:translate key="DETAIL_ELEMENT" /></h3>
     </div>
     <div class="panel-body">
         <ul class="list-unstyled">
@@ -61,7 +62,7 @@
     </div>
     <div class="panel-footer">
         <div class="form-group">
-            <a class="btn btn-default" href="${form.procedureInstance.url}" role="button" title="Éditer l'élément"><i class="glyphicons glyphicons-edit"></i> Éditer l'élément</a>
+            <a class="btn btn-default" href="${form.procedureInstance.url}" role="button" title="Éditer l'élément"><i class="glyphicons glyphicons-edit"></i> <op:translate key="EDIT_ELEMENT" /></a>
         </div>
     </div>
 </div>

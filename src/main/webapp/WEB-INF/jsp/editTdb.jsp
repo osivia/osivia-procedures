@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 <portlet:defineObjects />
 
@@ -23,9 +24,9 @@
                             <portlet:actionURL name="editTdb" var="cancelTdbUrl">
                                 <portlet:param name="cancelTdb" value="toProc"/>
                             </portlet:actionURL>
-                            <a href="${cancelTdbUrl}">Édition d'une procédure</a>
+                            <a href="${cancelTdbUrl}"><op:translate key="EDIT_STEP" /></a>
                         </li>
-                        <li><a>Édition d'un tableau de bord</a></li>
+                        <li><a><op:translate key="EDIT_DASHBOARD" /></a></li>
                     </ol>
                 </nav>
             </div>
@@ -37,14 +38,14 @@
 
     <div class="form-horizontal">
 	    <div class="form-group">
-	         <form:label path="theSelectedTdb.name" cssClass="col-sm-2 control-label">Nom du tableau de bord</form:label>
+	         <form:label path="theSelectedTdb.name" cssClass="col-sm-2 control-label"><op:translate key="DASHBOARD_NAME" /></form:label>
 	         <div class="col-sm-10">
 	             <form:input path="theSelectedTdb.name" type="text" cssClass="form-control" />
 	         </div>
 	     </div>
 	     
 	     <div class="form-group">
-	         <form:label path="theSelectedTdb.groups" cssClass="col-sm-2 control-label">Groupes du tableau de bord</form:label>
+	         <form:label path="theSelectedTdb.groups" cssClass="col-sm-2 control-label"><op:translate key="DASHBOARDS_GROUPS" /></form:label>
 	         <div class="col-sm-10">
 	             <form:select path="theSelectedTdb.groups" multiple="multiple" class="groupSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${groupSearchUrl}">
 	                 <form:options items="${form.theSelectedTdb.groups}" />
@@ -53,14 +54,14 @@
 	     </div>
      </div>
      
-     <h3>Colonnes</h3>
+     <h3><op:translate key="DASHBOARDS_COLUMNS" /></h3>
      
     <table class="table">
         <thead>
             <tr>
-                <th>Label</th>
-                <th>Variable</th>
-                <th>Triable</th>
+                <th><op:translate key="LABEL" /></th>
+                <th><op:translate key="VARIABLE" /></th>
+                <th><op:translate key="SORTABLE" /></th>
                 <th></th>
             </tr>
         </thead>
@@ -86,14 +87,14 @@
                <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
                 </form:select></td>
                <td><form:checkbox path="newColumn.sortable" cssClass="form-control" /></td>
-               <td><button type="submit" class="btn btn-default" name="addColumn">Ajouter</button></td>
+               <td><button type="submit" class="btn btn-default" name="addColumn"><op:translate key="ADD" /></button></td>
 		    </tr>
         </tbody>
     </table>
 	    
-    <button type="submit" class="btn btn-default" name="cancelTdb">Annuler</button>
-    <button type="submit" class="btn btn-primary" name="saveTdb">Sauvegarder</button>
-    <button type="submit" class="btn btn-danger pull-right" name="deleteTdb">Supprimer</button>
+    <button type="submit" class="btn btn-default" name="cancelTdb"><op:translate key="CANCEL" /></button>
+    <button type="submit" class="btn btn-primary" name="saveTdb"><op:translate key="SAVE" /></button>
+    <button type="submit" class="btn btn-danger pull-right" name="deleteTdb"><op:translate key="DELETE" /></button>
     <input type="submit" class="hidden" name="updateForm">
 
 </form:form>

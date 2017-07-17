@@ -42,6 +42,10 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.model.Group;
 import org.osivia.portal.api.directory.v2.service.GroupService;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -130,10 +134,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     /** entProfilService */
     private GroupService groupService;
 
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
+
     public ProcedurePortletController() {
         super();
 
         this.groupService = DirServiceFactory.getService(GroupService.class);
+
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
     /**
@@ -458,6 +470,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         final List<Map<String, String>> listeSteps = new ArrayList<Map<String, String>>();
 
+        Bundle bundle = bundleFactory.getBundle(request.getLocale());
+
         List<Step> steps = form.getProcedureModel().getSteps();
         for (Step step : steps) {
             if ((filter == null) || (StringUtils.contains(step.getStepName(), filter) || StringUtils.contains(step.getReference(), filter))) {
@@ -469,7 +483,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
         Map<String, String> demoGroup = new HashMap<String, String>(2);
         demoGroup.put("id", "endStep");
-        demoGroup.put("text", "Terminer la procédure");
+        demoGroup.put("text", bundle.getString("END_STEP"));
+        
         listeSteps.add(demoGroup);
         response.setContentType("application/json");
         try {
@@ -1011,7 +1026,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 }
             }
             sessionStatus.setComplete();
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), "Le modèle a bien été enregistré", NotificationsType.SUCCESS);
+
+            Bundle bundle = bundleFactory.getBundle(request.getLocale());
+            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), bundle.getString("MODEL_SAVED"), NotificationsType.SUCCESS);
         }
     }
 

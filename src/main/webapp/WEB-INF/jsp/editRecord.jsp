@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 <portlet:defineObjects />
 
@@ -12,21 +13,21 @@
 <form:form modelAttribute="form" action="${editRecordUrl}" method="post" cssClass="form-horizontal" role="form">
 
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="<c:if test="${empty activeTab or ('form' ne activeTab && 'dashboard' ne activeTab)}">active</c:if>"><a href="#General" role="tab" data-toggle="tab" data-id="General" class="no-ajax-link">Général</a></li>
-        <li role="presentation" class="<c:if test="${'form' eq activeTab}">active</c:if>"><a href="#Formulaire" role="tab" data-toggle="tab" data-id="Formulaire" class="no-ajax-link">Formulaire</a></li>
-        <li role="presentation" class="<c:if test="${'dashboard' eq activeTab}">active</c:if>"><a href="#Dashboard" role="tab" data-toggle="tab" data-id="Dashboard" class="no-ajax-link">Tableau de bord</a></li>
+        <li role="presentation" class="<c:if test="${empty activeTab or ('form' ne activeTab && 'dashboard' ne activeTab)}">active</c:if>"><a href="#General" role="tab" data-toggle="tab" data-id="General" class="no-ajax-link"><op:translate key="GENERAL" /></a></li>
+        <li role="presentation" class="<c:if test="${'form' eq activeTab}">active</c:if>"><a href="#Formulaire" role="tab" data-toggle="tab" data-id="Formulaire" class="no-ajax-link"><op:translate key="FORM" /></a></li>
+        <li role="presentation" class="<c:if test="${'dashboard' eq activeTab}">active</c:if>"><a href="#Dashboard" role="tab" data-toggle="tab" data-id="Dashboard" class="no-ajax-link"><op:translate key="PROCEDURE_DASHBOARD" /></a></li>
     </ul>
 
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane <c:if test="${empty activeTab or ('form' ne activeTab && 'dashboard' ne activeTab)}">active</c:if>" id="General">
            <div class="form-group">
-                <form:label path="procedureModel.name" cssClass="col-sm-2 control-label">Nom</form:label>
+                <form:label path="procedureModel.name" cssClass="col-sm-2 control-label"><op:translate key="NAME" /></form:label>
                 <div class="col-sm-10">
-                    <form:input path="procedureModel.name" type="text" cssClass="form-control" placeholder="Nom" />
+                    <input name="procedureModel.name" class="form-control" placeholder='<op:translate key="NAME" />' value="${form.procedureModel.name}" type="text">
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">Modèle parent</label>
+                <label class="col-sm-2 control-label"><op:translate key="RECORD_PARENT_MODEL" /></label>
                 <div class="col-sm-10">
                     ${form.procedureModel.webIdParent}
                 </div>
@@ -37,37 +38,37 @@
             <div class="row">
 	            <div class="col-sm-4">
 	                <ul class="nav nav-tabs" role="tablist">
-	                     <li role="presentation" class="<c:if test="${empty activeFormTab or 'edit' ne activeFormTab}">active</c:if>"><a href="#CreateField" role="tab" data-toggle="tab" class="no-ajax-link">Ajouter un champ</a></li>
+	                     <li role="presentation" class="<c:if test="${empty activeFormTab or 'edit' ne activeFormTab}">active</c:if>"><a href="#CreateField" role="tab" data-toggle="tab" class="no-ajax-link"><op:translate key="ADD_FIELD" /></a></li>
 	                     <c:if test="${not empty form.selectedField}">
-	                         <li role="presentation" class="<c:if test="${'edit' eq activeFormTab}">active</c:if>"><a href="#Edit" role="tab" data-toggle="tab" class="no-ajax-link">Édition</a></li>
+	                         <li role="presentation" class="<c:if test="${'edit' eq activeFormTab}">active</c:if>"><a href="#Edit" role="tab" data-toggle="tab" class="no-ajax-link"><op:translate key="EDIT" /></a></li>
 	                     </c:if>
 	                </ul>
 	                <div class="tab-content">
 	                     <div role="tabpanel" class="tab-pane <c:if test="${empty activeFormTab or 'edit' ne activeFormTab}">active</c:if>" id="CreateField">
 	                         <div class="form-group">
-	                             <form:label path="newField.variableName" cssClass="col-sm-3 control-label">Nom</form:label>
+	                             <form:label path="newField.variableName" cssClass="col-sm-3 control-label"><op:translate key="NAME" /></form:label>
 	                             <div class="col-sm-9">
 	                                 <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
 	                                 </form:select>
-	                                 <span class="help-block">Le nom ne doit pas contenir d'espace.</span>
+	                                 <span class="help-block"><op:translate key="NAME_HELP" /></span>
 	                             </div>
 	                         </div>
 	                         <div class="form-group">
-	                             <form:label path="newField.label" cssClass="col-sm-3 control-label">Label</form:label>
+	                             <form:label path="newField.label" cssClass="col-sm-3 control-label"><op:translate key="LABEL" /></form:label>
 	                             <div class="col-sm-9">
-	                                 <form:input path="newField.label" type="text" cssClass="form-control" placeholder="Label" />
-	                                 <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
+	                                 <input name="newField.label" class="form-control" placeholder='<op:translate key="LABEL" />' type="text">
+	                                 <span class="help-block"><op:translate key="LABEL_HELP" /></span>
 	                             </div>
 	                         </div>
 	                         <div class="form-group">
-	                             <form:label path="newField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
+	                             <form:label path="newField.helpText" cssClass="col-sm-3 control-label"><op:translate key="HELP_MSG" /></form:label>
 	                             <div class="col-sm-9">
-	                                 <form:input path="newField.helpText" type="text" cssClass="form-control" placeholder="Label" />
-	                                 <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
+	                                 <input name="newField.helpText" class="form-control" placeholder='<op:translate key="HELP_MSG" />' value="${form.newField.helpText}" type="text">
+	                                 <span class="help-block"><op:translate key="HELP_MSG_HELP" /></span>
 	                             </div>
 	                         </div>
 	                         <div class="form-group">
-	                             <form:label path="newField.type" cssClass="col-sm-3 control-label">Type</form:label>
+	                             <form:label path="newField.type" cssClass="col-sm-3 control-label"><op:translate key="TYPE" /></form:label>
 	                             <div class="col-sm-9">
 	                                 <form:select path="newField.type" cssClass="form-control">
 	                                     <form:options items="${form.variableTypesEnum}" itemValue="id" itemLabel="label"/>
@@ -75,37 +76,37 @@
 	                             </div>
 	                         </div>
 	                         <div class="form-group hidden">
-	                             <form:label path="newField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
+	                             <form:label path="newField.varOptions" cssClass="col-sm-3 control-label"><op:translate key="OPTIONS" /></form:label>
 	                             <div class="col-sm-9">
-	                                 <form:input path="newField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
+	                                 <input name="newField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />' value="${form.newField.varOptions}" type="text">
 	                             </div>
 	                         </div>
 	                         <div class="form-group hidden" id="formulaire-newField-list-editor">
-	                             <label class="col-sm-3 control-label">Édition des options</label>
+	                             <label class="col-sm-3 control-label"><op:translate key="EDIT_OPTIONS" /></label>
 	                             <div class="col-sm-9">
 	                                 <div class="form-group">
-	                                     <label for="formulaire-newField-list-editor-newOption-label" class="col-sm-3 control-label">Label</label>
+	                                     <label for="formulaire-newField-list-editor-newOption-label" class="col-sm-3 control-label"><op:translate key="LABEL" /></label>
 	                                     <div class="col-sm-9">
-	                                         <input type="text" class="form-control" id="formulaire-newField-list-editor-newOption-label" placeholder="Label">
+	                                         <input type="text" class="form-control" id="formulaire-newField-list-editor-newOption-label" placeholder='<op:translate key="LABEL" />'>
 	                                     </div>
 	                                 </div>
 	                                 <div class="form-group">
-	                                     <label for="formulaire-newField-list-editor-newOption-value" class="col-sm-3 control-label">Valeur</label>
+	                                     <label for="formulaire-newField-list-editor-newOption-value" class="col-sm-3 control-label"><op:translate key="VALUE" /></label>
 	                                     <div class="col-sm-9">
-	                                         <input type="text" class="form-control" id="formulaire-newField-list-editor-newOption-value" placeholder="Valeur">
+	                                         <input type="text" class="form-control" id="formulaire-newField-list-editor-newOption-value" placeholder='<op:translate key="VALUE" />'>
 	                                     </div>
 	                                 </div>
 	                                 <div class="form-group">
 	                                     <div class="col-sm-12">
-	                                         <button id="formulaire-newField-list-editor-addOption" class="btn btn-default pull-right" type="button">Ajouter une option</button>
+	                                         <button id="formulaire-newField-list-editor-addOption" class="btn btn-default pull-right" type="button"><op:translate key="ADD_OPTION" /></button>
 	                                     </div>
 	                                 </div>
 	                                 <div id="formulaire-newField-list-editor-optionList" class="form-group">
 	                                     <table class="table table-condensed">
 	                                         <thead>
 	                                             <tr>
-	                                                 <th>Label</th>
-	                                                 <th>Valeur</th>
+	                                                 <th><op:translate key="LABEL" /></th>
+	                                                 <th><op:translate key="VALUE" /></th>
 	                                                 <th></th>
 	                                             </tr>
 	                                         </thead>
@@ -116,33 +117,34 @@
 	                                 </div>
 	                             </div>
 	                         </div>
-	                         <button type="submit" name="addField" class="btn btn-default pull-right">Ajouter</button>
+	                         <button type="submit" name="addField" class="btn btn-default pull-right"><op:translate key="ADD" /></button>
 	                     
 	                     </div>
 	                     <c:if test="${not empty form.selectedField}">
 	                         <div role="tabpanel" class="tab-pane <c:if test="${'edit' eq activeFormTab}">active</c:if>" id="Edit">
 	                             <div class="form-group">
-	                                <form:label path="selectedField.name" cssClass="col-sm-3 control-label">Nom</form:label>
+	                                <form:label path="selectedField.name" cssClass="col-sm-3 control-label"><op:translate key="NAME" /></form:label>
 	                                <div class="col-sm-9">
 	                                       <p class="form-control-static">${form.selectedField.name}</p>
 	                                </div>
 	                               </div>
 	                              <div class="form-group">
-	                                    <form:label path="selectedField.superLabel" cssClass="col-sm-3 control-label">Label</form:label>
+	                                    <form:label path="selectedField.superLabel" cssClass="col-sm-3 control-label"><op:translate key="LABEL" /></form:label>
 	                                    <div class="col-sm-9">
-	                                        <form:input path="selectedField.superLabel" type="text" cssClass="form-control" placeholder="Label" />
-	                                        <span class="help-block">Le label tel qu'il apparaîtra à l'utilisateur.</span>
+	                                        <c:set value=""/>
+	                                        <input name="selectedField.superLabel" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.selectedField.superLabel}" type="text">
+	                                        <span class="help-block"><op:translate key="LABEL_HELP" /></span>
 	                                    </div>
 	                               </div>
 	                               <div class="form-group">
-	                                  <form:label path="selectedField.helpText" cssClass="col-sm-3 control-label">Message d'aide</form:label>
+	                                  <form:label path="selectedField.helpText" cssClass="col-sm-3 control-label"><op:translate key="HELP_MSG" /></form:label>
 	                                  <div class="col-sm-9">
-	                                      <form:input path="selectedField.helpText" type="text" cssClass="form-control" placeholder="Label" />
-	                                      <span class="help-block">Un texte court destiné à aider l'utilisateur.</span>
+	                                      <input name="selectedField.helpText" class="form-control" placeholder='<op:translate key="HELP_MSG" />' value="${form.selectedField.helpText}" type="text">
+	                                      <span class="help-block"><op:translate key="HELP_MSG_HELP" /></span>
 	                                  </div>
 	                              </div>
 	                               <div class="form-group">
-	                                    <form:label path="selectedField.type" cssClass="col-sm-3 control-label">Type</form:label>
+	                                    <form:label path="selectedField.type" cssClass="col-sm-3 control-label"><op:translate key="TYPE" /></form:label>
 	                                    <div class="col-sm-9">
 	                                        <form:select path="selectedField.type" cssClass="form-control">
 	                                            <form:options/>
@@ -150,38 +152,38 @@
 	                                    </div>
 	                               </div>
 	                               <div class="form-group hidden">
-	                                    <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label">Options</form:label>
+	                                    <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label"><op:translate key="OPTIONS" /></form:label>
 	                                    <div class="col-sm-9">
-	                                      <form:input path="selectedField.varOptions" type="text" cssClass="form-control" placeholder="Options" />
+	                                      <input name="selectedField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />' value="${form.selectedField.varOptions}" type="text">
 	                                    </div>
 	                                </div>
 	                                
 	                                <div class="form-group hidden" id="formulaire-selectedField-list-editor">
-	                                  <label class="col-sm-3 control-label">Édition des options</label>
+	                                  <label class="col-sm-3 control-label"><op:translate key="EDIT_OPTIONS" /></label>
 	                                  <div class="col-sm-9">
 	                                      <div class="form-group">
-	                                          <label for="formulaire-selectedField-list-editor-newOption-label" class="col-sm-3 control-label">Label</label>
+	                                          <label for="formulaire-selectedField-list-editor-newOption-label" class="col-sm-3 control-label"><op:translate key="LABEL" /></label>
 	                                          <div class="col-sm-9">
-	                                              <input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-label" placeholder="Label">
+	                                              <input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-label" placeholder='<op:translate key="LABEL" />'>
 	                                          </div>
 	                                      </div>
 	                                      <div class="form-group">
-	                                          <label for="formulaire-selectedField-list-editor-newOption-value" class="col-sm-3 control-label">Valeur</label>
+	                                          <label for="formulaire-selectedField-list-editor-newOption-value" class="col-sm-3 control-label"><op:translate key="VALUE" /></label>
 	                                          <div class="col-sm-9">
-	                                              <input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-value" placeholder="Valeur">
+	                                              <input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-value" placeholder='<op:translate key="VALUE" />'>
 	                                          </div>
 	                                      </div>
 	                                      <div class="form-group">
 	                                          <div class="col-sm-12">
-	                                              <button id="formulaire-selectedField-list-editor-addOption" class="btn btn-default pull-right" type="button">Ajouter une option</button>
+	                                              <button id="formulaire-selectedField-list-editor-addOption" class="btn btn-default pull-right" type="button"><op:translate key="ADD_OPTION" /></button>
 	                                          </div>
 	                                      </div>
 	                                      <div id="formulaire-selectedField-list-editor-optionList" class="form-group">
 	                                          <table class="table table-condensed">
 	                                              <thead>
 	                                                  <tr>
-	                                                      <th>Label</th>
-	                                                      <th>Valeur</th>
+	                                                      <th><op:translate key="LABEL" /></th>
+	                                                      <th><op:translate key="VALUE" /></th>
 	                                                      <th></th>
 	                                                  </tr>
 	                                              </thead>
@@ -193,7 +195,7 @@
 	                                  </div>
 	                              </div>
 	                           <div class="pull-right">
-	                                <button type="submit" name="editField" class="btn btn-default">Modifier</button>
+	                                <button type="submit" name="editField" class="btn btn-default"><op:translate key="MODIFY" /></button>
 	                                <button type="submit" name="deleteField" class="btn btn-default">
 	                                     <i class="glyphicons glyphicons-bin"></i>
 	                                 </button>
@@ -231,17 +233,17 @@
 	                <div class="row">
 	                    <div class="col-sm-4 col-md-5 col-lg-6">
 	                        <div class="text-overflow">
-	                            <span>Label</span>
+	                            <span><op:translate key="LABEL" /></span>
 	                        </div>
 	                    </div>
 	                    <div class="col-sm-5 col-md-5 col-lg-4">
 	                        <div class="text-overflow">
-	                            <span>Variable</span>
+	                            <span><op:translate key="VARIABLE" /></span>
 	                        </div>
 	                    </div>
 	                    <div class="col-sm-2 col-md-1 col-lg-1">
 	                        <div class="text-overflow">
-	                            <span>Triable</span>
+	                            <span><op:translate key="SORTABLE" /></span>
 	                        </div>
 	                    </div>
 	                    <div class="col-sm-1 col-md-1 col-lg-1">
@@ -290,7 +292,7 @@
 	                            <form:checkbox path="newColumn.sortable" cssClass="form-control" />
 	                        </div>
 	                        <div class="col-sm-1 col-md-1 col-lg-1">
-	                            <button type="submit" class="btn btn-default" name="addColumn">Ajouter</button>
+	                            <button type="submit" class="btn btn-default" name="addColumn"><op:translate key="ADD" /></button>
 	                        </div>
 	                    </div>
 	                </div>
@@ -299,8 +301,8 @@
 	    </div>
     </div>
 
-    <button type="submit" class="btn btn-primary" name="saveRecord">Sauvegarder</button>
-    <button type="submit" class="btn btn-danger pull-right" name="deleteRecord">Supprimer</button>
+    <button type="submit" class="btn btn-primary" name="saveRecord"><op:translate key="SAVE" /></button>
+    <button type="submit" class="btn btn-danger pull-right" name="deleteRecord"><op:translate key="DELETE" /></button>
     <input type="submit" class="hidden" name="updateForm">
     <input type="submit" class="hidden" name="updateDashboard">
     <input type="submit" class="hidden" name="selectField">

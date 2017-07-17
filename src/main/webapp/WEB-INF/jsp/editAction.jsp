@@ -19,15 +19,15 @@
 				            <portlet:actionURL name="editStep" var="cancelActionToProcUrl">
 				            	<portlet:param name="cancelStep" value="toProc"/>
 							</portlet:actionURL>
-							<a href="${cancelActionToProcUrl}">Édition d'une procédure</a>
+							<a href="${cancelActionToProcUrl}"><op:translate key="EDIT_PROCEDURE" /></a>
 			            </li>
 			            <li>
 				            <portlet:actionURL name="editAction" var="cancelActionToStepUrl">
 				            	<portlet:param name="cancelAction" value="toStep"/>
 							</portlet:actionURL>
-							<a href="${cancelActionToStepUrl}">Édition d'une étape</a>
+							<a href="${cancelActionToStepUrl}"><op:translate key="EDIT_STEP" /></a>
 			            </li>
-			            <li><a>Édition d'une action</a></li>
+			            <li><a><op:translate key="EDIT_ACTION" /></a></li>
 				    </ol>
 				</nav>
 			</div>
@@ -37,24 +37,24 @@
 
 <form:form modelAttribute="form" action="${editActionUrl}" method="post" cssClass="form-horizontal" role="form">
 	<c:if test="${form.selectedAction < 0}">
-		<h3>Action d'initialisation de l'étape</h3>
+		<h3><op:translate key="ACTION_INIT_STEP" /></h3>
 	</c:if>
 	<c:if test="${form.selectedAction >= 0}">
 	    <div class="form-group">
 	        <div class="col-sm-2">
-	            <label class="control-label">Label</label>
+	            <label class="control-label"><op:translate key="LABEL" /></label>
 	        </div>
 	        <div class="col-sm-8">${form.theSelectedAction.label}</div>
 	    </div>
 	    <div class="form-group">
 	        <div class="col-sm-2">
-	            <label class="control-label">Identifiant de l'action</label>
+	            <label class="control-label"><op:translate key="ACTION_ID" /></label>
 	        </div>
 	        <div class="col-sm-8">${form.theSelectedAction.actionId}</div>
 	    </div>
 	    <div class="form-group">
 		    <div class="col-sm-2">
-		        <label class="control-label">Référence de l'étape cible</label>
+		        <label class="control-label"><op:translate key="ACTION_TARGET_REF" /></label>
 		    </div>
 		    <div class="col-sm-8">${form.theSelectedAction.stepReference}</div>
 	    </div>
@@ -64,9 +64,9 @@
     <div class="row">
         <div class="col-sm-4">
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="<c:if test="${empty activeTab or 'edit' ne activeTab}">active</c:if>"><a href="#Create" role="tab" data-toggle="tab" class="no-ajax-link">Ajouter un filtre</a></li>
+                <li role="presentation" class="<c:if test="${empty activeTab or 'edit' ne activeTab}">active</c:if>"><a href="#Create" role="tab" data-toggle="tab" class="no-ajax-link"><op:translate key="ACTION_ADD_FILTER" /></a></li>
                 <c:if test="${not empty form.selectedFilter}">
-	                <li role="presentation" class="<c:if test="${'edit' eq activeTab}">active</c:if>"><a href="#Edit" role="tab" data-toggle="tab" class="no-ajax-link">Éditer un filtre</a></li>
+	                <li role="presentation" class="<c:if test="${'edit' eq activeTab}">active</c:if>"><a href="#Edit" role="tab" data-toggle="tab" class="no-ajax-link"><op:translate key="ACTION_EDIT_FILTER" /></a></li>
                 </c:if>
             </ul>
             <div class="tab-content">
@@ -74,7 +74,7 @@
 					
 					<div class="form-group">
 						<div class="col-sm-12">
-		                    <input onkeyup="updateFilters(this)" class="form-control" placeholder="Recherchez un filtre" title="Recherchez un filtre" type="text">
+		                    <input onkeyup="updateFilters(this)" class="form-control" placeholder='<op:translate key="ACTION_FILTER_SEARCH" />' title='<op:translate key="ACTION_FILTER_SEARCH" />' type="text">
 						</div>
 					</div>
                     
@@ -108,10 +108,10 @@
                     				<div class="col-sm-4">
 			                             <div class="pull-right">
 					                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseHelp" aria-expanded="false">
-					                    		<span data-toggle="tooltip" title="Aide">?</span>
+					                    		<span data-toggle="tooltip" title="Aide"><op:translate key="ACTION_FILTER_HELP_LABEL" /></span>
 											</button>
 					                    	<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseDico" aria-expanded="false">
-					                    		Dictionnaire
+					                    		<op:translate key="ACTION_FILTER_DICTIONARY_LABEL" />
 					                   		</button>
 					                   	</div>
 				                   	</div>
@@ -120,15 +120,15 @@
 	                         <div class="panel-body">
 		                        <div class="col-sm-12">
 			                        <div class="form-group">
-						                <form:label path="selectedFilter.filterName">Nom du filtre</form:label>
-					                    <form:input path="selectedFilter.filterName" type="text" cssClass="form-control" placeholder="Nom du filtre" />
+						                <form:label path="selectedFilter.filterName"><op:translate key="ACTION_FILTER_NAME" /></form:label>
+					                    <input name="selectedFilter.filterName" class="form-control" placeholder='<op:translate key="ACTION_FILTER_NAME" />' value="${form.selectedFilter.filterName}" type="text">
 				                    </div>
 		                        </div>
 	                             <c:if test="${not empty form.selectedFilter.descriptionKey}">
 	                              <op:translate key="${form.selectedFilter.descriptionKey}" classLoader="${form.selectedFilter.class.classLoader}"/>
 	                             </c:if>
 		                        <c:if test="${not empty form.selectedFilter.argumentsList}">
-		                            <h3>Arguments:</h3>
+		                            <h3><op:translate key="ACTION_FILTER_ARGS" /></h3>
 		                        </c:if>
 		                        <c:forEach var="argument" items="${form.selectedFilter.argumentsList}" varStatus="argStatus">
 						            <div class="form-group">
@@ -153,7 +153,7 @@
 						     	<div class="form-group">
                     				<div class="col-sm-12">
 			                             <div class="pull-right">
-					                        <button type="submit" name="editFilter" class="btn btn-default">Modifier</button>
+					                        <button type="submit" name="editFilter" class="btn btn-default"><op:translate key="MODIFY" /></button>
 						                    <button type="submit" name="deleteFilter" class="btn btn-default">
 									            <i class="glyphicons glyphicons-bin"></i>
 									        </button>
@@ -168,25 +168,21 @@
         </div>
 		<div id="filter-sortable" class="col-sm-8">
 			<div class="panel panel-info collapse" id="collapseHelp">
-				<div class="panel-heading">Aide</div>
+				<div class="panel-heading"><op:translate key="ACTION_FILTER_HELP_HEADING" /></div>
 				<div class="panel-body">
-					<p>texte d'aide</p>
-					procedureInitiator
-               		taskInitiator
-               		procedureStartDate
-               		procedureLastModified
+					<op:translate key="ACTION_FILTER_HELP" />
             	</div>
             </div>
             
             <div class="panel panel-info collapse" id="collapseDico">
-            	<div class="panel-heading">Dictionnaire</div>
+            	<div class="panel-heading"><op:translate key="ACTION_FILTER_DICTIONARY_LABEL" /></div>
             	<div class="panel-body">
-            		Cliquez sur le nom d'une variable pour l'ajouter. Ou glissez et déposez-là dans le champ voulu.
+            		<op:translate key="ACTION_FILTER_DICTIONARY" />
             		<div class="col-sm-12">
 	            		<div class="row">
-	           				<div class="col-sm-4"><strong>Nom</strong></div>
-	           				<div class="col-sm-4"><strong>Label</strong></div>
-	           				<div class="col-sm-4"><strong>Type</strong></div>
+	           				<div class="col-sm-4"><strong><op:translate key="NAME" /></strong></div>
+	           				<div class="col-sm-4"><strong><op:translate key="LABEL" /></strong></div>
+	           				<div class="col-sm-4"><strong><op:translate key="TYPE" /></strong></div>
 	           			</div>
             		</div>
            			<div class="procedure-variables col-sm-12">
@@ -201,7 +197,7 @@
                	</div>
             </div>
 		
-		  <h4>Filtres installés : </h4>
+		  <h4><op:translate key="ACTION_FILTER_INSTALLED" /></h4>
 	        <ul class="filter-sortable">
 	            <c:forEach var="filter" items="${form.theSelectedAction.filters}" varStatus="status">
 	                <li>
@@ -213,8 +209,8 @@
 		</div>
 	</div>
     <hr>
-    <button type="submit" class="btn btn-default" name="cancelAction">Annuler</button>
-	<button type="submit" class="btn btn-primary" name="saveAction">Sauvegarder</button>
+    <button type="submit" class="btn btn-default" name="cancelAction"><op:translate key="CANCEL" /></button>
+	<button type="submit" class="btn btn-primary" name="saveAction"><op:translate key="SAVE" /></button>
 	<input type="submit" class="hidden" name="updateForm">
 	<input type="submit" class="hidden" name="selectFilter">
 
