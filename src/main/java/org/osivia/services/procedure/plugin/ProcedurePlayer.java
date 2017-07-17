@@ -200,7 +200,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
     private Player getRecordContainerPlayer(NuxeoDocumentContext docCtx) {
         Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.nuxeoRequest", createFolderRequest(docCtx));
-        windowProperties.put("osivia.cms.style", ViewList.LIST_TEMPLATE_NORMAL);
+        windowProperties.put("osivia.cms.style", ProcedurePlugin.STYLE_VIEW_CONTAINER);
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
         windowProperties.put(Constants.WINDOW_PROP_SCOPE, docCtx.getScope());

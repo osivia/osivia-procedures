@@ -8,6 +8,6 @@
 
 <ul class="list-unstyled">
     <c:forEach var="document" items="${documents}">
-        <li><ttc:title document="${document}" displayContext="menu"/></li>
+        <li><ttc:title document="${document}" displayContext="viewproclist"/></li>
     </c:forEach>
 </ul>

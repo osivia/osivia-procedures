@@ -11,6 +11,9 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarDropdown;
@@ -35,10 +38,18 @@ public class ProcedureMenubarModule implements MenubarModule {
     /** Menubar service. */
     private final IMenubarService menubarService;
 
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
+
     public ProcedureMenubarModule() {
         super();
 
         this.menubarService = Locator.findMBean(IMenubarService.class, IMenubarService.MBEAN_NAME);
+
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
     @Override
@@ -54,6 +65,9 @@ public class ProcedureMenubarModule implements MenubarModule {
             documentContext = (NuxeoDocumentContext) documentContext;
             Document document = ((NuxeoDocumentContext) documentContext).getDocument();
             NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+            Bundle bundle = bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
             if (document != null && StringUtils.equals(document.getType(), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
                 String documentPath = document.getPath();
 
@@ -61,7 +75,8 @@ public class ProcedureMenubarModule implements MenubarModule {
                 String cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "create", null,
                         null, null, null);
 
-                MenubarItem item = new MenubarItem("ADD", "Ajouter un élément", "halflings halflings-plus", MenubarGroup.ADD, 0, cmsUrl, null, null, null);
+                MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD_ELEMENT"), "halflings halflings-plus", MenubarGroup.ADD, 0, cmsUrl, null, null,
+                        null);
                 item.setAjaxDisabled(true);
 
                 menubar.add(item);
@@ -75,7 +90,7 @@ public class ProcedureMenubarModule implements MenubarModule {
                 windowProperties.put("osivia.ajaxLink", "1");
                 windowProperties.put("osivia.procedure.admin", "adminrecord");
                 windowProperties.put("osivia.services.procedure.webid", webId);
-                windowProperties.put("osivia.title", "Éditer une procedure");
+                windowProperties.put("osivia.title", bundle.getString("EDIT_PROCEDURE"));
 
                 String editRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
                         "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
@@ -83,7 +98,7 @@ public class ProcedureMenubarModule implements MenubarModule {
 
                 final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
 
-                item = new MenubarItem("EDIT", "Éditer le record folder", "halflings halflings-pencil", parent, 0, editRecUrl, null, null, null);
+                item = new MenubarItem("EDIT", bundle.getString("EDIT_RECORD_FOLDER"), "halflings halflings-pencil", parent, 0, editRecUrl, null, null, null);
                 item.setAjaxDisabled(true);
 
                 menubar.add(item);
@@ -98,12 +113,12 @@ public class ProcedureMenubarModule implements MenubarModule {
                 windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
                 windowProperties.put("osivia.ajaxLink", "1");
                 windowProperties.put("osivia.procedure.admin", "adminrecord");
-                windowProperties.put("osivia.title", "Créer un record folder");
+                windowProperties.put("osivia.title", bundle.getString("CREATE_RECORD_FOLDER"));
                 String addRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
                         "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
 
-                MenubarItem item = new MenubarItem("ADD", "Ajouter un enregistrement", "halflings halflings-plus", MenubarGroup.ADD, 0, addRecUrl, null, null,
-                        null);
+                MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD_RECORD_FOLDER"), "halflings halflings-plus", MenubarGroup.ADD, 0, addRecUrl,
+                        null, null, null);
                 item.setAjaxDisabled(true);
 
                 menubar.add(item);
@@ -114,14 +129,14 @@ public class ProcedureMenubarModule implements MenubarModule {
                 final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
                 String cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "edit", null, null,
                         null, null);
-                MenubarItem item = new MenubarItem("EDIT", "Modifier", "halflings halflings-pencil", parent, 0, cmsUrl, null, null, null);
+                MenubarItem item = new MenubarItem("EDIT", bundle.getString("EDIT_RECORD"), "halflings halflings-pencil", parent, 0, cmsUrl, null, null, null);
                 item.setAjaxDisabled(true);
                 menubar.add(item);
 
                 // DELETE RECORD
                 cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "delete", null, null,
                         null, null);
-                item = new MenubarItem("EDIT", "Supprimer", "halflings halflings-trash", parent, 20, cmsUrl, null, null, null);
+                item = new MenubarItem("EDIT", bundle.getString("DELETE_RECORD"), "halflings halflings-trash", parent, 20, cmsUrl, null, null, null);
                 item.setAjaxDisabled(true);
                 item.setDivider(true);
                 menubar.add(item);

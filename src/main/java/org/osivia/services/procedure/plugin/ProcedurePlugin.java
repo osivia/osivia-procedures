@@ -18,6 +18,10 @@ import java.util.Map;
 
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.services.procedure.formFilters.CreateRecordFilter;
@@ -33,6 +37,7 @@ import org.osivia.services.procedure.formFilters.SetInitiatorVariableFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 
 
@@ -50,6 +55,10 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     /** viewListProc list template. */
     public static final String STYLE_VIEW_LISTPROC = "listproc";
     
+    /** STYLE_VIEW_CONTAINER */
+    public static final String STYLE_VIEW_CONTAINER = "containerlist";
+
+    /** STYLE_ADMIN */
     public static final String STYLE_ADMIN = "adminproc";
 
     /** Picturebook schemas. */
@@ -57,11 +66,19 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     /** SCHEMAS_ADMIN */
     public static final String SCHEMAS_ADMIN = "dublincore, common, toutatice";
 
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
+
     /**
      * Constructor.
      */
     public ProcedurePlugin() {
         super();
+
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -73,7 +90,20 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         updateDocTypes(context);
         updatePlayers(context);
         updateFormFIlters(context);
+        updateListTemplates(context);
         customizeMenubarModules(context);
+    }
+
+
+    private void updateListTemplates(CustomizationContext context) {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
+
+        Map<String, ListTemplate> listTemplates = getListTemplates(context);
+
+        // containerList
+        ListTemplate container = new ListTemplate(STYLE_VIEW_CONTAINER, bundle.getString("LIST_TEMPLATE_CONTAINER"), SCHEMAS_ADMIN);
+        listTemplates.put(container.getKey(), container);
     }
 
     /**
