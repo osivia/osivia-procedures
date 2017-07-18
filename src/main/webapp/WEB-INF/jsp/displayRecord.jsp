@@ -30,7 +30,7 @@
 		                        <c:when test="${fieldType eq 'TEXTAREA'}">
 		                            <label class="col-sm-3 control-label">${field.superLabel}</label>
 		                            <div class="col-sm-9">
-		                                <span class="pre-wrap"><c:out value="${form.record.globalVariablesValues[field.name]}" /></span>
+		                                <span class="text-pre-wrap"><c:out value="${form.record.globalVariablesValues[field.name]}" /></span>
 		                                <c:if test="${not empty field.helpText}">
 		                                    <span class="help-block">${field.helpText}</span>
 		                                </c:if>
