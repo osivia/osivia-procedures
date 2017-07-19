@@ -176,7 +176,7 @@
     
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title"><op:translate key="PROCEDURE_DASHBOARD" /></h3>
+            <h3 class="panel-title"><op:translate key="PROCEDURE_DASHBOARDS" /></h3>
         </div>
         <div class="panel-body">
             <ul class="list-unstyled">
@@ -217,5 +217,4 @@
     <button type="submit" class="btn btn-primary" name="saveProcedure"><op:translate key="SAVE" /></button>
     <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure"><op:translate key="DELETE" /></button>
 </form:form>
-
 
