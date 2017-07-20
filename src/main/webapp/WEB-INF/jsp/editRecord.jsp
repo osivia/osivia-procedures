@@ -8,8 +8,6 @@
 <portlet:actionURL name="editRecord" var="editRecordUrl">
 </portlet:actionURL>
 
-<portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" ></portlet:resourceURL>
-
 <form:form modelAttribute="form" action="${editRecordUrl}" method="post" cssClass="form-horizontal" role="form">
 
     <ul class="nav nav-tabs" role="tablist">
@@ -45,14 +43,6 @@
 	                </ul>
 	                <div class="tab-content">
 	                     <div role="tabpanel" class="tab-pane <c:if test="${empty activeFormTab or 'edit' ne activeFormTab}">active</c:if>" id="CreateField">
-	                         <div class="form-group">
-	                             <form:label path="newField.variableName" cssClass="col-sm-3 control-label"><op:translate key="NAME" /></form:label>
-	                             <div class="col-sm-9">
-	                                 <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
-	                                 </form:select>
-	                                 <span class="help-block"><op:translate key="NAME_HELP" /></span>
-	                             </div>
-	                         </div>
 	                         <div class="form-group">
 	                             <form:label path="newField.label" cssClass="col-sm-3 control-label"><op:translate key="LABEL" /></form:label>
 	                             <div class="col-sm-9">
@@ -120,16 +110,9 @@
 	                             </div>
 	                         </div>
 	                         <button type="submit" name="addField" class="btn btn-default pull-right"><op:translate key="ADD" /></button>
-	                     
 	                     </div>
 	                     <c:if test="${not empty form.selectedField}">
 	                         <div role="tabpanel" class="tab-pane <c:if test="${'edit' eq activeFormTab}">active</c:if>" id="Edit">
-	                             <div class="form-group">
-	                                <form:label path="selectedField.name" cssClass="col-sm-3 control-label"><op:translate key="NAME" /></form:label>
-	                                <div class="col-sm-9">
-	                                       <p class="form-control-static">${form.selectedField.name}</p>
-	                                </div>
-	                               </div>
 	                              <div class="form-group">
 	                                    <form:label path="selectedField.superLabel" cssClass="col-sm-3 control-label"><op:translate key="LABEL" /></form:label>
 	                                    <div class="col-sm-9">
@@ -199,9 +182,11 @@
 	                              </div>
 	                           <div class="pull-right">
 	                                <button type="submit" name="editField" class="btn btn-default"><op:translate key="MODIFY" /></button>
-	                                <button type="submit" name="deleteField" class="btn btn-default">
-	                                     <i class="glyphicons glyphicons-bin"></i>
-	                                 </button>
+	                                <c:if test="${field.isDeletable}">
+		                                <button type="submit" name="deleteField" class="btn btn-default">
+		                                     <i class="glyphicons glyphicons-bin"></i>
+		                                 </button>
+	                                </c:if>
 	                            </div>
 	                         </div>
 	                     </c:if>
@@ -241,7 +226,7 @@
 	                    </div>
 	                    <div class="col-sm-5 col-md-5 col-lg-4">
 	                        <div class="text-overflow">
-	                            <span><op:translate key="VARIABLE" /></span>
+	                            <span><op:translate key="NAME" /></span>
 	                        </div>
 	                    </div>
 	                    <div class="col-sm-2 col-md-1 col-lg-1">

@@ -1189,14 +1189,21 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     private void addField(ActionRequest request, ActionResponse response, Form form, String action, Boolean forceInput) throws PortletException {
         final AddField addField = form.getNewField();
-        if (StringUtils.isNotBlank(addField.getVariableName())) {
-            final Field field = new Field(form.getTheSelectedStep().getNextPath(), addField, false);
-            form.getProcedureModel().getVariables().put(addField.getVariableName(), new Variable(addField));
-            updateProcedureWithForm(request, response, form, field, action, forceInput);
-        } else {
-            response.setRenderParameter("activeTab", "form");
-            response.setRenderParameter("action", action);
+        Map<String, Variable> variables = form.getProcedureModel().getVariables();
+        addField.setVariableName(buildUniqueVariableName(variables, addField.getLabel()));
+        final Field field = new Field(form.getTheSelectedStep().getNextPath(), addField, false);
+        variables.put(addField.getVariableName(), new Variable(addField));
+        updateProcedureWithForm(request, response, form, field, action, forceInput);
+    }
+
+    private String buildUniqueVariableName(Map<String, Variable> variables, String label) {
+        String cleanLabel = StringUtils.deleteWhitespace(label);
+        String uniqueVarName = cleanLabel;
+        int i = 0;
+        while (variables.containsKey(uniqueVarName)) {
+            uniqueVarName = cleanLabel + i;
         }
+        return uniqueVarName;
     }
 
     @ActionMapping(value = "editStep", params = "addField")
@@ -1565,12 +1572,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     private void deleteField(ActionResponse response, Form form, String action) {
-        if (removeFieldsByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedField().getPath())) {
-            updateFieldsPath(form.getTheSelectedStep().getFields(), StringUtils.EMPTY);
+        if (form.getSelectedField().isDeletable()) {
+            if (removeFieldsByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedField().getPath())) {
+                updateFieldsPath(form.getTheSelectedStep().getFields(), StringUtils.EMPTY);
+            }
+            form.setSelectedField(null);
         }
-
-        form.setSelectedField(null);
-
         response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("activeFormTab", "");
         response.setRenderParameter("action", action);

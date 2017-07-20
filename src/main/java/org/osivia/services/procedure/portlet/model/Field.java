@@ -178,6 +178,13 @@ public class Field implements Comparable<Field> {
         return returnValue;
     }
 
+    public boolean isDeletable(){
+        // if default field
+        if(StringUtils.equals(ProcedureRepository.DEFAULT_FIELD_TITLE_NAME, this.name)){
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Getter for name.
