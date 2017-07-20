@@ -3,14 +3,19 @@ package org.osivia.services.procedure.plugin;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.html.AccessibilityRoles;
+import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
@@ -26,6 +31,7 @@ import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 
 
 /**
@@ -102,6 +108,42 @@ public class ProcedureMenubarModule implements MenubarModule {
                 item.setAjaxDisabled(true);
 
                 menubar.add(item);
+
+                // DELETE RECORD FOLDER
+
+                String itemLabel = bundle.getString("DELETE");
+                item = new MenubarItem("DELETE", itemLabel, "glyphicons glyphicons-bin", parent, 20, null, null, null, null);
+                item.setAjaxDisabled(true);
+                item.setDivider(true);
+
+                // Fancybox properties
+                final Map<String, String> properties = new HashMap<String, String>();
+                properties.put("docId", document.getId());
+                properties.put("docPath", document.getPath());
+
+                // Fancybox identifier
+                final String fancyboxId = nuxeoController.getCMSCtx().getResponse().getNamespace() + "_PORTAL_DELETE";
+
+                // Fancybox delete action URL
+                NuxeoPublicationInfos pubInfos = ((NuxeoDocumentContext) documentContext).getPublicationInfos();
+
+                String removeURL = nuxeoController.getPortalUrlFactory().getPutDocumentInTrashUrl(portalControllerContext, pubInfos.getLiveId(),
+                        pubInfos.getPath());
+
+                // Fancybox HTML data
+                final String fancybox = this.generateDeleteConfirmationFancybox(properties, bundle, fancyboxId, removeURL);
+                item.setAssociatedHTML(fancybox);
+
+                // URL
+                final String url = "#" + fancyboxId;
+
+                item.setUrl("javascript:;");
+                item.getData().put("fancybox", StringUtils.EMPTY);
+                item.getData().put("src", url);
+
+                menubar.add(item);
+
+
             } else if (document != null && StringUtils.equals(document.getType(), DocumentTypeEnum.RECORDCONTAINER.getDocType())) {
                 String documentPath = document.getPath();
 
@@ -142,6 +184,58 @@ public class ProcedureMenubarModule implements MenubarModule {
                 menubar.add(item);
             }
         }
+    }
+
+    /**
+     * Generate delete confirmation fancybox HTML data.
+     *
+     * @param properties fancybox properties
+     * @param bundle internationalization bundle
+     * @param fancyboxId fancybox identifier
+     * @param actionURL delete action URL
+     * @return fancybox HTML data
+     */
+    private String generateDeleteConfirmationFancybox(Map<String, String> properties, Bundle bundle, String fancyboxId, String actionURL) {
+        // Fancybox container
+        final Element fancyboxContainer = DOM4JUtils.generateDivElement("hidden");
+
+        // Container
+        final Element container = DOM4JUtils.generateDivElement(null);
+        DOM4JUtils.addAttribute(container, HTMLConstants.ID, fancyboxId);
+        fancyboxContainer.add(container);
+
+        // Form
+        final Element form = DOM4JUtils.generateElement(HTMLConstants.FORM, "text-center", null, null, AccessibilityRoles.FORM);
+        DOM4JUtils.addAttribute(form, HTMLConstants.ACTION, actionURL);
+        DOM4JUtils.addAttribute(form, HTMLConstants.METHOD, HTMLConstants.FORM_METHOD_POST);
+        container.add(form);
+
+        // Message
+        final Element message = DOM4JUtils.generateElement(HTMLConstants.P, null, bundle.getString("CMS_DELETE_CONFIRM_MESSAGE"));
+        form.add(message);
+
+        // Hidden fields
+        for (final Entry<String, String> property : properties.entrySet()) {
+            final Element hidden = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+            DOM4JUtils.addAttribute(hidden, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_HIDDEN);
+            DOM4JUtils.addAttribute(hidden, HTMLConstants.NAME, property.getKey());
+            DOM4JUtils.addAttribute(hidden, HTMLConstants.VALUE, property.getValue());
+            form.add(hidden);
+        }
+
+        // OK button
+        final Element okButton = DOM4JUtils
+                .generateElement(HTMLConstants.BUTTON, "btn btn-warning", bundle.getString("YES"), "halflings halflings-alert", null);
+        DOM4JUtils.addAttribute(okButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_SUBMIT);
+        form.add(okButton);
+
+        // Cancel button
+        final Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default", bundle.getString("NO"));
+        DOM4JUtils.addAttribute(cancelButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
+        DOM4JUtils.addAttribute(cancelButton, HTMLConstants.ONCLICK, "closeFancybox()");
+        form.add(cancelButton);
+
+        return DOM4JUtils.write(fancyboxContainer);
     }
 
 }
