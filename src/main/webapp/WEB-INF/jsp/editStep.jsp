@@ -412,6 +412,13 @@
 		                    </label>
 		                </div>
 	                </div>
+	                <div class="col-sm-1">
+                       <div class="checkbox">
+                            <label>
+                                  <form:checkbox path="theSelectedStep.notifEmail"/><span><op:translate key="STEP_NOTIFY_EMAIL" /></span>
+                            </label>
+                        </div>
+                    </div>
 		           <div class="col-sm-1">
 			           <div class="checkbox">
 			                <label>
