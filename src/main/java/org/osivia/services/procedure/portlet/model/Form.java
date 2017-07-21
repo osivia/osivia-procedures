@@ -52,7 +52,11 @@ public class Form {
     /** advancedMode */
     private boolean advancedMode;
     
+    /** variableTypesEnum */
     private VariableTypesEnum[] variableTypesEnum = VariableTypesEnum.values();
+
+    /** variableTypesAltEnum */
+    private VariableTypesAltEnum[] variableTypesAltEnum = VariableTypesAltEnum.values();
 
     /** procedureInstance */
     private List<ProcedureInstance> procedureInstances;
@@ -436,6 +440,22 @@ public class Form {
      */
     public void setRecord(Record record) {
         this.record = record;
+    }
+
+    /**
+     * Getter for variableTypesAltEnum.
+     * @return the variableTypesAltEnum
+     */
+    public VariableTypesAltEnum[] getVariableTypesAltEnum() {
+        return variableTypesAltEnum;
+    }
+
+    /**
+     * Setter for variableTypesAltEnum.
+     * @param variableTypesAltEnum the variableTypesAltEnum to set
+     */
+    public void setVariableTypesAltEnum(VariableTypesAltEnum[] variableTypesAltEnum) {
+        this.variableTypesAltEnum = variableTypesAltEnum;
     }
 
 }

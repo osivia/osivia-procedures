@@ -61,7 +61,7 @@
 	                             <form:label path="newField.type" cssClass="col-sm-3 control-label"><op:translate key="TYPE" /></form:label>
 	                             <div class="col-sm-9">
 	                                 <form:select path="newField.type" cssClass="form-control">
-	                                     <c:forEach items="${form.variableTypesEnum}" var="variableType">
+	                                     <c:forEach items="${form.variableTypesAltEnum}" var="variableType">
 	                                       <form:option value="${variableType}"><op:translate key="${variableType}" /></form:option>
 	                                     </c:forEach>
 	                                 </form:select>
@@ -131,7 +131,7 @@
 	                                    <form:label path="selectedField.type" cssClass="col-sm-3 control-label"><op:translate key="TYPE" /></form:label>
 	                                    <div class="col-sm-9">
 	                                        <form:select path="selectedField.type" cssClass="form-control">
-	                                            <c:forEach items="${form.variableTypesEnum}" var="variableType">
+	                                            <c:forEach items="${form.variableTypesAltEnum}" var="variableType">
 		                                           <form:option value="${variableType}"><op:translate key="${variableType}" /></form:option>
 		                                         </c:forEach>
 	                                        </form:select>
