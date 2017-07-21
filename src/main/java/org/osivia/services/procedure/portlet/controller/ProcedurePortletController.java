@@ -367,6 +367,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     Map<String, String> variables = new HashMap<String, String>();
                     variables.put("pcd:startingStep", getAction(request));
                     variables.put("rcdPath", record.getOriginalDocument().getPath());
+                    variables.put("rcdFolderPath", procedureModel.getOriginalDocument().getPath());
+                    
                     variables.putAll(record.getGlobalVariablesValues());
                     Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
                             .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), variables);
@@ -637,42 +639,37 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
                 String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
-                nuxeoController.getNuxeoCMSService().getFormsService().start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
-                // redirect to end of step page
-                response.setRenderParameter("action", "endStep");
-                sessionStatus.setComplete();
+                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
+                        .start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
+                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
                 // instance already exist
                 PropertyMap taskProperties = form.getProcedureInstance().getTaskDoc();
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
-                nuxeoController.getNuxeoCMSService().getFormsService().proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
-                // redirect to end of step page
-                response.setRenderParameter("action", "endStep");
-                sessionStatus.setComplete();
+                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
+                        .proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
+                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
             } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getDocType())) {
                 // instance already exist
                 PropertyMap taskProperties = form.getProcedureInstance().getTaskDoc();
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
-                nuxeoController.getNuxeoCMSService().getFormsService().proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
-                // redirect to end of step page
-                response.setRenderParameter("action", "endStep");
-                sessionStatus.setComplete();
+                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
+                        .proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
+                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
                 String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
-                nuxeoController.getNuxeoCMSService().getFormsService().start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
-                // redirect to end of step page
-                response.setRenderParameter("action", "endStep");
-                sessionStatus.setComplete();
+                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
+                        .start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
+                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
                 String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
-                nuxeoController.getNuxeoCMSService().getFormsService().start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
-                // redirect to end of step page
-                response.setRenderParameter("action", "endStep");
-                sessionStatus.setComplete();
+                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
+                        .start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
+                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
             } else {
                 // shouldn't happen
                 response.setRenderParameter("action", "viewProcedure");
@@ -683,6 +680,41 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
             request.setAttribute("filterMessage", e.getMessage());
             response.setRenderParameter("action", "viewProcedure");
+        }
+    }
+
+    private void manageEndStep(NuxeoController nuxeoController, Map<String, String> globalVariablesValues, Form form, SessionStatus sessionStatus)
+            throws PortletException {
+        
+        ActionResponse response = (ActionResponse) nuxeoController.getResponse();
+
+        String cmsPath = globalVariablesValues.get(IFormsService.REDIRECT_CMS_PATH_PARAMETER);
+
+        String displayContext = globalVariablesValues.get(IFormsService.REDIRECT_DISPLAYCONTEXT_PARAMETER);
+
+        if (StringUtils.isNotBlank(cmsPath)) {
+            // redirect to provided cms page
+            String redirectUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(nuxeoController.getPortalCtx(), null, cmsPath, new HashMap<String, String>(),
+                    null, displayContext, nuxeoController.getHideMetaDatas(), nuxeoController.getScope(), nuxeoController.getDisplayLiveVersion(), null);
+            
+            try {
+                response.sendRedirect(redirectUrl);
+            } catch (IOException e) {
+                throw new PortletException(e);
+            }
+
+            // notification message set by filter or from model
+            String notificationMessage = StringUtils.isNotBlank(globalVariablesValues.get(IFormsService.REDIRECT_MESSAGE_PARAMETER)) ? globalVariablesValues
+                    .get(IFormsService.REDIRECT_MESSAGE_PARAMETER) : form.getTheCurrentStep().getStringMsg();
+
+            if (StringUtils.isNotBlank(notificationMessage)) {
+                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
+            }
+            sessionStatus.setComplete();
+        }else{
+            // redirect to end of step page
+            response.setRenderParameter("action", "endStep");
+            sessionStatus.setComplete();
         }
     }
 

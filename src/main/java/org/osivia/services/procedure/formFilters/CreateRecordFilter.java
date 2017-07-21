@@ -7,6 +7,9 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -14,6 +17,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 /**
  * Creation of a record form filter
@@ -26,10 +30,24 @@ public class CreateRecordFilter extends RecordFormFilter {
     public static final String ID = "CreateRecordFilter";
 
     /** Label internationalization key. */
-    public static final String LABEL_KEY = "CREATE_RECORD_FILTER_LABEL";
+    private static final String LABEL_KEY = "CREATE_RECORD_FILTER_LABEL";
 
     /** Description internationalization key. */
-    public static final String DESCRIPTION_KEY = "CREATE_RECORD_FILTER_DESCRIPTION";
+    private static final String DESCRIPTION_KEY = "CREATE_RECORD_FILTER_DESCRIPTION";
+
+    /** Notification internationalization key. */
+    private static final String NOTIFICATION_KEY = "RECORD_CREATED_NOTIFICATION";
+
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
+
+
+    public CreateRecordFilter() {
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+    }
 
     @Override
     public String getId() {
@@ -84,7 +102,14 @@ public class CreateRecordFilter extends RecordFormFilter {
         createProperties.set("dc:title", recordFolder.getTitle());
         
         // create record with values
-        nuxeoController.executeNuxeoCommand(new CreateRecordCommand(new DocRef(recordFolder.getPath()), createProperties, recordFolder.getTitle()));
+        Document createdRecord = (Document) nuxeoController.executeNuxeoCommand(new CreateRecordCommand(new DocRef(recordFolder.getPath()), createProperties, recordFolder.getTitle()));
+        
+        context.getVariables().put(IFormsService.REDIRECT_CMS_PATH_PARAMETER, recordFolder.getPath());
+        
+        context.getVariables().put(IFormsService.REDIRECT_DISPLAYCONTEXT_PARAMETER, "menu");
+
+        context.getVariables().put(IFormsService.REDIRECT_MESSAGE_PARAMETER,
+                bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString(NOTIFICATION_KEY));
         
     }
 
