@@ -10,6 +10,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.services.procedure.portlet.model.ProcedureRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -86,9 +87,7 @@ public class EditRecordFilter extends RecordFormFilter {
      // fetch variable refs in the currentStep
         Document recordFolder = documentContext.getDocument();
         PropertyMap properties = recordFolder.getProperties();
-        String startingStep = context.getVariables().get("pcd:startingStep");
-        PropertyList globalVariablesReferences = getGlobalVariablesReferences(startingStep, properties);
-        
+        PropertyList globalVariablesReferences = getGlobalVariablesReferences(ProcedureRepository.FORM_STEP_REFERENCE, properties);
         
      // get values of referenced variables
         PropertyMap updateProperties = new PropertyMap();
