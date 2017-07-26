@@ -163,6 +163,8 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
                 // displayContext = "menu" or "breadcrumb"
                 windowProperties.put(Constants.WINDOW_PROP_VERSION, "1");
                 windowProperties.put(ViewProcedurePortlet.PROCEDURE_MODEL_ID_WINDOW_PROPERTY, docCtx.getDocument().getProperties().getString("ttc:webid"));
+                windowProperties.put("osivia.ajaxLink", "1");
+                windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
                 player.setWindowProperties(windowProperties);
                 player.setPortletInstance("toutatice-portail-cms-nuxeo-viewProcedurePortletInstance");
             }

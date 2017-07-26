@@ -17,7 +17,7 @@ public class ProcedureRepository {
 
     public static final String FORM_STEP_REFERENCE = "formulaire";
 
-    public static final String DEFAULT_FIELD_TITLE_NAME = "#title";
+    public static final String DEFAULT_FIELD_TITLE_NAME = "_title";
 
     private ProcedureRepository() {
     }
@@ -57,7 +57,7 @@ public class ProcedureRepository {
         Column titleColumn = new Column();
         titleColumn.setIndex(0);
         titleColumn.setLabel("Titre");
-        titleColumn.setSortable(false);
+        titleColumn.setSortable(true);
         titleColumn.setVariableName(DEFAULT_FIELD_TITLE_NAME);
         dashboard.getColumns().add(titleColumn);
         procedureModel.getDashboards().add(dashboard);
