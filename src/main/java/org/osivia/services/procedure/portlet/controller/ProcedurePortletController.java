@@ -2,6 +2,8 @@ package org.osivia.services.procedure.portlet.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1159,7 +1161,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void deleteColEditRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "selectedCol", required = false) String selectedCol, SessionStatus sessionStatus) throws PortletException {
 
-        form.getTheSelectedTdb().getColumns().remove(Integer.valueOf(selectedCol).intValue());
+        if (form.getTheSelectedTdb().getColumns().get(Integer.valueOf(selectedCol)).isDeletable()) {
+            form.getTheSelectedTdb().getColumns().remove(Integer.valueOf(selectedCol).intValue());
+        }
         response.setRenderParameter("action", "editRecord");
         response.setRenderParameter("activeTab", "dashboard");
     }
@@ -1228,8 +1232,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         updateProcedureWithForm(request, response, form, field, action, forceInput);
     }
 
-    private String buildUniqueVariableName(Map<String, Variable> variables, String label) {
-        String cleanLabel = StringUtils.deleteWhitespace(label);
+    private String buildUniqueVariableName(Map<String, Variable> variables, String label) throws PortletException {
+        String cleanLabel;
+        try {
+            cleanLabel = URLEncoder.encode(StringUtils.deleteWhitespace(label), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new PortletException(e);
+        }
         String uniqueVarName = cleanLabel;
         int i = 0;
         while (variables.containsKey(uniqueVarName)) {

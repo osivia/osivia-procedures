@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -42,6 +43,14 @@ public class Column implements Comparable<Column> {
     }
 
     public Column() {
+    }
+
+    public boolean isDeletable() {
+        // if default field
+        if (StringUtils.equals(ProcedureRepository.DEFAULT_FIELD_TITLE_NAME, this.variableName)) {
+            return false;
+        }
+        return true;
     }
 
     /**
