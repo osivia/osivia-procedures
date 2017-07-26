@@ -8,6 +8,8 @@
 <portlet:actionURL name="editRecord" var="editRecordUrl">
 </portlet:actionURL>
 
+<portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" ></portlet:resourceURL>
+
 <form:form modelAttribute="form" action="${editRecordUrl}" method="post" cssClass="form-horizontal" role="form">
 
     <ul class="nav nav-tabs" role="tablist">
@@ -182,7 +184,7 @@
 	                              </div>
 	                           <div class="pull-right">
 	                                <button type="submit" name="editField" class="btn btn-default"><op:translate key="MODIFY" /></button>
-	                                <c:if test="${field.isDeletable}">
+	                                <c:if test="${field.deletable}">
 		                                <button type="submit" name="deleteField" class="btn btn-default">
 		                                     <i class="glyphicons glyphicons-bin"></i>
 		                                 </button>
@@ -257,9 +259,11 @@
 	                                <c:if test="${not column.sortable}"><i class="halflings halflings-remove"></i></c:if>
 	                            </div>
 	                            <div class="col-sm-1 col-md-1 col-lg-1">
-	                                <button type="submit" name="deleteCol" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedCol')">
-	                                  <i class="glyphicons glyphicons-bin"></i>
-	                                </button>
+	                                <c:if test="${field.deletable}">
+		                                <button type="submit" name="deleteCol" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedCol')">
+		                                  <i class="glyphicons glyphicons-bin"></i>
+		                                </button>
+	                                </c:if>
 	                                <input type="hidden" name="theSelectedTdb.columns[${status.index}].index" value="${status.index}">
 	                            </div>
 	                        </div>
