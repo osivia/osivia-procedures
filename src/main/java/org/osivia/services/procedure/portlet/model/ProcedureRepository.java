@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
+
 
 /**
  * Factory of common ProcedureModel
@@ -14,8 +16,6 @@ import java.util.Map;
 public class ProcedureRepository {
 
     private static final String RECORD_PARENT_MODEL_WEBID = "procedure_record_folder";
-
-    public static final String FORM_STEP_REFERENCE = "formulaire";
 
     public static final String DEFAULT_FIELD_TITLE_NAME = "_title";
 
@@ -30,7 +30,7 @@ public class ProcedureRepository {
         procedureModel.setSteps(new ArrayList<Step>(1));
 
         Step step1 = new Step(0);
-        step1.setReference(FORM_STEP_REFERENCE);
+        step1.setReference(IFormsService.FORM_STEP_REFERENCE);
         step1.setStepName("Formulaire");
         step1.setActions(new ArrayList<Action>());
         step1.setIndex(0);

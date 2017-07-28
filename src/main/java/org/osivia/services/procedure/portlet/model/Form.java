@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
+
 
 /**
  * @author Dorian Licois
@@ -115,7 +117,7 @@ public class Form {
         if ((getProcedureInstance() != null) && StringUtils.isNotEmpty(getProcedureInstance().getCurrentStep())) {
             returnStep = getProcedureInstance().getCurrentStep();
         } else if (getRecord() != null) {
-            if (StringUtils.equals(getProcedureModel().getStartingStep(), ProcedureRepository.FORM_STEP_REFERENCE)) {
+            if (StringUtils.equals(getProcedureModel().getStartingStep(), IFormsService.FORM_STEP_REFERENCE)) {
                 return getProcedureModel().getSteps().get(0);
             } else {
                 returnStep = getProcedureModel().getStartingStep();
