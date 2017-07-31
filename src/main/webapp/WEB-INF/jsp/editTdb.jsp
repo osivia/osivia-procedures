@@ -52,6 +52,14 @@
 	             </form:select>
 	         </div>
 	     </div>
+	     
+	     <div class="form-group">
+             <form:label path="theSelectedTdb.requestFilter" cssClass="col-sm-2 control-label"><op:translate key="DASHBOARDS_REQUEST" /></form:label>
+             <div class="col-sm-10">
+                <form:textarea path="theSelectedTdb.requestFilter" rows="5" cssStyle="form-control"/>
+             </div>
+         </div>
+	     
      </div>
      
      <h3><op:translate key="DASHBOARDS_COLUMNS" /></h3>

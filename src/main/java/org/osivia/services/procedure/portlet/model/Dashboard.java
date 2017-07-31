@@ -30,6 +30,9 @@ public class Dashboard {
     @JsonProperty("columns")
     private List<Column> columns;
 
+    @JsonProperty("requestFilter")
+    private String requestFilter;
+
 
     /**
      * @param dashboardObjectMap
@@ -38,6 +41,7 @@ public class Dashboard {
 
         if (dashboardObjectMap != null) {
             setName(dashboardObjectMap.getString("name"));
+            setRequestFilter(dashboardObjectMap.getString("requestFilter"));
 
             final PropertyList groupsList = dashboardObjectMap.getList("groups");
             if (groupsList != null) {
@@ -132,6 +136,26 @@ public class Dashboard {
      */
     public void setColumns(List<Column> columns) {
         this.columns = columns;
+    }
+
+
+    /**
+     * Getter for requestFilter.
+     * 
+     * @return the requestFilter
+     */
+    public String getRequestFilter() {
+        return requestFilter;
+    }
+
+
+    /**
+     * Setter for requestFilter.
+     * 
+     * @param requestFilter the requestFilter to set
+     */
+    public void setRequestFilter(String requestFilter) {
+        this.requestFilter = requestFilter;
     }
 
 }
