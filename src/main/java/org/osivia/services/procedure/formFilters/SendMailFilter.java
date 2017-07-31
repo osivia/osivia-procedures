@@ -141,8 +141,14 @@ public class SendMailFilter implements FormFilter {
     public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException {
         // Portal controller context
         PortalControllerContext portalControllerContext = context.getPortalControllerContext();
+        
         // Locale
-        Locale locale = portalControllerContext.getRequest().getLocale();
+        Locale locale = null;
+        if(portalControllerContext.getRequest() != null) {
+        	locale = portalControllerContext.getRequest().getLocale();
+        }
+        
+        
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
