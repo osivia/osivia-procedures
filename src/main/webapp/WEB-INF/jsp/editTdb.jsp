@@ -56,7 +56,7 @@
 	     <div class="form-group">
              <form:label path="theSelectedTdb.requestFilter" cssClass="col-sm-2 control-label"><op:translate key="DASHBOARDS_REQUEST" /></form:label>
              <div class="col-sm-10">
-                <form:textarea path="theSelectedTdb.requestFilter" rows="5" cssStyle="form-control"/>
+                <form:textarea path="theSelectedTdb.requestFilter" rows="5" cssClass="form-control"/>
              </div>
          </div>
 	     
@@ -92,7 +92,7 @@
 		    </c:forEach>
 		    <tr>
 	           <td><form:input path="newColumn.label" type="text" cssClass="form-control" /></td>
-               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
+               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true">>
                 </form:select></td>
                <td><form:checkbox path="newColumn.sortable" cssClass="form-control" /></td>
                <td><button type="submit" class="btn btn-default" name="addColumn"><op:translate key="ADD" /></button></td>

@@ -514,7 +514,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     listeVar.add(entryVar.getValue());
                 }
             }
-            if (!exactMatch) {
+            if (!exactMatch && BooleanUtils.isNotTrue(defaultVars)) {
                 listeVar.add(0, new Variable(StringUtils.deleteWhitespace(filter), null, VariableTypesEnum.TEXT, null));
             }
         } else {
