@@ -38,6 +38,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -93,7 +94,6 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
-import fr.toutatice.portail.cms.nuxeo.portlets.fragment.PropertyFragmentModule;
 
 @Controller
 @SessionAttributes("form")
@@ -270,7 +270,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         // Current window
         PortalWindow window = WindowFactory.getWindow(request);
         // Nuxeo path
-        String nuxeoPath = window.getProperty(PropertyFragmentModule.NUXEO_PATH_WINDOW_PROPERTY);
+        String nuxeoPath = window.getProperty(Constants.WINDOW_PROP_URI);
 
         if (StringUtils.isNotBlank(nuxeoPath)) {
             // Computed path

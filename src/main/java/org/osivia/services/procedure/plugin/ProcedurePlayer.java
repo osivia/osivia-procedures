@@ -31,7 +31,6 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.ViewList;
-import fr.toutatice.portail.cms.nuxeo.portlets.forms.ViewProcedurePortlet;
 
 /**
  * PlayerModule for procedure.
@@ -40,6 +39,7 @@ import fr.toutatice.portail.cms.nuxeo.portlets.forms.ViewProcedurePortlet;
  */
 public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule {
 
+    private static final String PROCEDURE_MODEL_ID_WINDOW_PROPERTY = "osivia.forms.list.model.id";
 
     /**
      * Instantiates a new player module.
@@ -162,7 +162,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
             } else {
                 // displayContext = "menu" or "breadcrumb"
                 windowProperties.put(Constants.WINDOW_PROP_VERSION, "1");
-                windowProperties.put(ViewProcedurePortlet.PROCEDURE_MODEL_ID_WINDOW_PROPERTY, docCtx.getDocument().getProperties().getString("ttc:webid"));
+                windowProperties.put(PROCEDURE_MODEL_ID_WINDOW_PROPERTY, docCtx.getDocument().getProperties().getString("ttc:webid"));
                 windowProperties.put("osivia.ajaxLink", "1");
                 windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
                 player.setWindowProperties(windowProperties);
