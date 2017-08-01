@@ -249,7 +249,7 @@
 				                     <div class="form-group">
 					                      <form:label path="selectedField.type" cssClass="col-sm-3 control-label"><op:translate key="TYPE" /></form:label>
 					                      <div class="col-sm-9">
-					                      		<p class="form-control-static">${form.selectedField.type.label}</p>
+					                      		<p class="form-control-static">${form.selectedField.type}</p>
 					                      </div>
 				                     </div>
 				                     <div class="form-group hidden">

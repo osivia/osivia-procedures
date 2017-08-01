@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -51,6 +52,7 @@ import org.osivia.services.procedure.portlet.model.Record;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
+import org.osivia.services.procedure.portlet.model.WebIdException;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.osivia.services.procedure.portlet.util.ObjetMetierUtil;
 import org.osivia.services.procedure.portlet.util.VocabularySelect2Util;
@@ -58,6 +60,7 @@ import org.springframework.stereotype.Service;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyEntry;
 import fr.toutatice.portail.cms.nuxeo.api.VocabularyHelper;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
@@ -71,28 +74,43 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 @Service
 public class ProcedureServiceImpl implements IProcedureService {
 
+    private static final Pattern WEBID_ERROR = Pattern.compile("WebId: .+ already exists\\.");
+
     @Override
-    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurepath) throws PortletException {
+    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurepath) throws PortletException,
+            WebIdException {
 
         INuxeoCommand command;
         try {
             command = new ListModelsContainerCommand(procedurepath);
             final Document container = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
 
-            String webId = StringUtils.isBlank(procedureModel.getNewWebId()) ? StringUtils.deleteWhitespace(procedureModel.getName()) : procedureModel
-                    .getNewWebId();
+
+            String webId = StringUtils.isBlank(procedureModel.getNewWebId()) ? null : IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId();
 
             DocumentTypeEnum type = StringUtils.isNotBlank(procedureModel.getProcedureType()) ? DocumentTypeEnum.get(procedureModel.getProcedureType())
                     : DocumentTypeEnum.PROCEDUREMODEL;
 
-            command = new CreateDocumentCommand(container, procedureModel.getName(), IFormsService.FORMS_WEB_ID_PREFIX + webId,
-                    buildProperties(procedureModel), type);
+            command = new CreateDocumentCommand(container, buildProperties(procedureModel), type);
+
+            final Document procedureModelInstance = (Document) nuxeoController.executeNuxeoCommand(command);
+
+            return new ProcedureModel(procedureModelInstance, nuxeoController);
+
+        } catch (final NuxeoException e) {
+
+            Throwable rootCause = getRootCause(e);
+            String errorMessage = rootCause.getMessage();
+
+            if (WEBID_ERROR.matcher(errorMessage).matches()) {
+                throw new WebIdException();
+            } else {
+                throw new PortletException(e);
+            }
+
         } catch (final Exception e) {
             throw new PortletException(e);
         }
-        final Document procedureModelInstance = (Document) nuxeoController.executeNuxeoCommand(command);
-
-        return new ProcedureModel(procedureModelInstance, nuxeoController);
     }
 
     @Override
@@ -110,6 +128,19 @@ public class ProcedureServiceImpl implements IProcedureService {
         return procedureModel;
     }
 
+    /**
+     * Finds the root cause in a throwable
+     * 
+     * @param t
+     * @return the root cause
+     */
+    private Throwable getRootCause(Throwable t) {
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        return t;
+    }
+
     @Override
     public List<ProcedureInstance> retrieveProceduresInstanceByModel(NuxeoController nuxeoController, ProcedureModel procedureModel) {
         INuxeoCommand command = new ListProcedureInstancesByModelListCommand(procedureModel.getPath(), procedureModel.getCurrentWebId(), false);
@@ -124,17 +155,31 @@ public class ProcedureServiceImpl implements IProcedureService {
     }
 
     @Override
-    public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
+    public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException, WebIdException {
         INuxeoCommand command;
         try {
             command = new RetrieveDocumentByWebIdCommand(procedureModel.getCurrentWebId());
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
             command = new UpdateDocumentCommand(currentDocument, buildProperties(procedureModel));
+
+            final Document procedureModelInstance = (Document) nuxeoController.executeNuxeoCommand(command);
+
+            return new ProcedureModel(procedureModelInstance, nuxeoController);
+
+        } catch (final NuxeoException e) {
+
+            Throwable rootCause = getRootCause(e);
+            String errorMessage = rootCause.getMessage();
+
+            if (WEBID_ERROR.matcher(errorMessage).matches()) {
+                throw new WebIdException();
+            } else {
+                throw new PortletException(e);
+            }
+
         } catch (final Exception e) {
             throw new PortletException(e);
         }
-        final Document procedureModelInstance = (Document) nuxeoController.executeNuxeoCommand(command);
-        return new ProcedureModel(procedureModelInstance, nuxeoController);
     }
 
     /**
@@ -149,7 +194,8 @@ public class ProcedureServiceImpl implements IProcedureService {
     private PropertyMap buildProperties(ProcedureModel procedureModel) throws JsonGenerationException, JsonMappingException, IOException {
         final PropertyMap propMap = new PropertyMap();
         propMap.set("dc:title", procedureModel.getName());
-        propMap.set("ttc:webid", IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId());
+        String webId = StringUtils.isNotBlank(procedureModel.getNewWebId()) ? IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId() : null;
+        propMap.set("ttc:webid", webId);
         propMap.set("pcd:webIdParent", procedureModel.getWebIdParent());
         propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
         procedureModel.updateVariables();

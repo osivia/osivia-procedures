@@ -73,7 +73,7 @@
 	 							${variable.value.label}
 	 						</c:if>
 	 					</div>
-	 					<div class="col-sm-3">${variable.value.type.label}</div>
+	 					<div class="col-sm-3">${variable.value.type}</div>
 	 					<div class="pull-right">
 	 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.value.name}','selectedVar')" name="selectVariable">
 	 							<i class="glyphicons glyphicons-edit"></i>

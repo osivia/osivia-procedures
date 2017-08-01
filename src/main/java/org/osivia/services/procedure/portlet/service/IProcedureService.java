@@ -12,6 +12,7 @@ import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.Record;
+import org.osivia.services.procedure.portlet.model.WebIdException;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
@@ -46,7 +47,8 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String Procedurepath) throws PortletException;
+    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String Procedurepath) throws PortletException,
+            WebIdException;
 
     /**
      * @param nuxeoController
@@ -54,7 +56,7 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException;
+    public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException, WebIdException;
 
 
     /**
