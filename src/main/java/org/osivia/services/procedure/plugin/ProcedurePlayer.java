@@ -95,7 +95,9 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
      */
     private Map<String, String> getProcedureWindowProperties(final Document document) {
         final Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put("osivia.services.procedure.webid", document.getProperties().getString("ttc:webid"));
+        String webid = document.getProperties().getString("ttc:webid");
+        windowProperties.put("osivia.services.procedure.webid", webid);
+        windowProperties.put(PROCEDURE_MODEL_ID_WINDOW_PROPERTY, webid);
         windowProperties.put("osivia.services.procedure.uuid", document.getId());
         windowProperties.put("osivia.doctype", document.getType());
         windowProperties.put("osivia.hideDecorators", "1");
@@ -154,8 +156,8 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
             windowProperties.put("osivia.title", docCtx.getDocument().getTitle());
 
             String displayContext = docCtx.getDisplayContext();
+            windowProperties.putAll(getProcedureWindowProperties(docCtx.getDocument()));
             if (!StringUtils.equals(displayContext, "menu") && !StringUtils.equals(displayContext, "breadcrumb")) {
-                windowProperties.putAll(getProcedureWindowProperties(docCtx.getDocument()));
                 windowProperties.put("osivia.procedure.admin", displayContext);
                 player.setWindowProperties(windowProperties);
                 player.setPortletInstance("osivia-services-procedure-portletInstance");
@@ -163,8 +165,6 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
                 // displayContext = "menu" or "breadcrumb"
                 windowProperties.put(Constants.WINDOW_PROP_VERSION, "1");
                 windowProperties.put(PROCEDURE_MODEL_ID_WINDOW_PROPERTY, docCtx.getDocument().getProperties().getString("ttc:webid"));
-                windowProperties.put("osivia.ajaxLink", "1");
-                windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
                 player.setWindowProperties(windowProperties);
                 player.setPortletInstance("toutatice-portail-cms-nuxeo-viewProcedurePortletInstance");
             }

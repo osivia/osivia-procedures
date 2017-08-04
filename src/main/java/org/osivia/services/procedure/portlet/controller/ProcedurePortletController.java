@@ -641,9 +641,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 // if there is no instance, start the procedure
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
-                String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
                 globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
-                        .start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
+                        .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
                 manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
                 // instance already exist
@@ -662,16 +661,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
-                String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
                 globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
-                        .start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
+                        .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
                 manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
-                String fetchWebId = StringUtils.removeStart(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX);
                 globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
-                        .start(portalControllerContext, fetchWebId, actionId, globalVariablesValues);
+                        .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
                 manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
             } else {
                 // shouldn't happen

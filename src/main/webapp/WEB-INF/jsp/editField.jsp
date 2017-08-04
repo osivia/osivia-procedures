@@ -41,30 +41,15 @@
 							</div>
 						</c:when>
 						<c:when test="${fieldType eq 'DATE'}">
-							<script type="text/javascript">
-								$JQry(document)
-										.ready(
-												function() {
-													$JQry(
-															"#selectVariable_${field.name}")
-															.datepicker(
-																	{
-																		dateFormat : "yy-mm-dd"
-																	});
-												});
-							</script>
 							<form:label
 								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
-								<div class="input-group">
+								<div class="input-group dates-selector">
 									<span class="input-group-addon"> <i
 										class="halflings halflings-calendar"></i>
 									</span>
-									<form:input
-										path="${fieldNamePath}"
-										type="text" cssClass="form-control"
-										id="selectVariable_${field.name}" />
+									<form:input path="${fieldNamePath}" type="text" cssClass="form-control" />
 									<c:if test="${not empty field.helpText}">
 										<span class="help-block">${field.helpText}</span>
 									</c:if>
