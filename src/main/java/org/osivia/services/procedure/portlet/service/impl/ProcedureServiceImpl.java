@@ -195,7 +195,9 @@ public class ProcedureServiceImpl implements IProcedureService {
         final PropertyMap propMap = new PropertyMap();
         propMap.set("dc:title", procedureModel.getName());
         String webId = StringUtils.isNotBlank(procedureModel.getNewWebId()) ? IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId() : null;
-        propMap.set("ttc:webid", webId);
+        if (webId != null) {
+            propMap.set("ttc:webid", webId);
+        }
         propMap.set("pcd:webIdParent", procedureModel.getWebIdParent());
         propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
         procedureModel.updateVariables();
