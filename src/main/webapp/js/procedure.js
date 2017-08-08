@@ -296,6 +296,13 @@ $JQry(function() {
 			var data = $JQry(this).select2('data');
 			$form = $JQry(this).closest("form");
 			$form.find("input[name$='newField.label']").val(data[0].label);
+			
+			var $newCOlumn = $form.find("input[name$='newColumn.label']");
+			// si le champ n'est pas déjà remplis
+			if($newCOlumn.length && $newCOlumn.val().length == 0){
+				$newCOlumn.val(data[0].label);
+			}
+			
 			if(data[0].type != null){
 				$form.find("select[name$='newField.type']").val(data[0].type.id);
 			}
