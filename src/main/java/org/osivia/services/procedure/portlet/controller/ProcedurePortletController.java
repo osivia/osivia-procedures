@@ -123,6 +123,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     private static final String DETAIL_PROC = "detailProc";
     /** manage variables view */
     private static final String MANAGE_VIEW = "manageVariables";
+    /** dashboard view */
+    private static final String DASHBOARD_VIEW = "procedureDashboard";
 
 
     /** Portlet context. */
@@ -172,7 +174,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      */
     @RenderMapping
     public String defaultView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
-        defaultRenderAction(request, response);
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        defaultRenderAction(nuxeoController);
         if (StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
             if (StringUtils.equals(getAction(request), "adminrecord")) {
                 // édition procédure type RECORD
@@ -193,7 +196,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 return DISPLAY_RECORD_VIEW;
             }
         } else {
-            if (StringUtils.equals(getAction(request), "adminproc")) {
+            if (StringUtils.isBlank(getDocType(request)) && StringUtils.isNotBlank(getDashboardPath(request))) {
+                return DASHBOARD_VIEW;
+            } else if (StringUtils.equals(getAction(request), "adminproc")) {
                 // édition procédure
                 return CREATE_VIEW;
             } else if (StringUtils.equals(getAction(request), "adminprocstep")) {
@@ -265,19 +270,23 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return VIEW_ENDSTEP;
     }
 
-    private void defaultRenderAction(RenderRequest request, RenderResponse response) {
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-
+    private void defaultRenderAction(NuxeoController nuxeoController) {
         // Current window
-        PortalWindow window = WindowFactory.getWindow(request);
+        PortalWindow window = WindowFactory.getWindow(nuxeoController.getRequest());
         // Nuxeo path
         String nuxeoPath = window.getProperty(Constants.WINDOW_PROP_URI);
+        String dashboardPath = getDashboardPath(nuxeoController.getRequest());
 
         if (StringUtils.isNotBlank(nuxeoPath)) {
             // Computed path
             nuxeoPath = nuxeoController.getComputedPath(nuxeoPath);
             // Nuxeo document
             NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(nuxeoPath);
+            Document document = documentContext.getDocument();
+            nuxeoController.setCurrentDoc(document);
+            nuxeoController.insertContentMenuBarItems();
+        } else if (StringUtils.isNotBlank(dashboardPath)) {
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(dashboardPath);
             Document document = documentContext.getDocument();
             nuxeoController.setCurrentDoc(document);
             nuxeoController.insertContentMenuBarItems();
@@ -384,6 +393,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 }
             }
             procedureService.updateVocabulariesWithValues(nuxeoController, form);
+        } else if (StringUtils.isNotBlank(getDashboardPath(request))) {
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(getDashboardPath(request));
+            form = new Form(new ProcedureModel(documentContext.getDocument(), nuxeoController));
         } else {
             if (StringUtils.equals(getAction(request), "adminproc")) {
                 // création d'une procédure
@@ -407,6 +419,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         String procedurePath = getProcedurePath(request);
         return procedurePath != null ? procedureService.listProcedures(nuxeoController, procedurePath) : null;
+    }
+
+    @ModelAttribute(value = "editProcedureUrl")
+    public String getEditProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        return form.getProcedureModel() != null ? nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl() : null;
+    }
+
+    @ModelAttribute(value = "linkProcedureUrl")
+    public String getLinkProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) {
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        return form.getProcedureModel() != null ? nuxeoController.getLink(form.getProcedureModel().getOriginalDocument()).getUrl() : null;
     }
 
     @ModelAttribute(value = "addProcedureUrl")
@@ -1004,6 +1028,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final PortalWindow window = WindowFactory.getWindow(request);
         final String action = window.getProperty("osivia.procedure.admin");
         return action;
+    }
+
+    private String getDashboardPath(PortletRequest request) {
+        final PortalWindow window = WindowFactory.getWindow(request);
+        return window.getPageProperty("osivia.procedure.dashboard.path");
     }
 
     private String getProcedurePath(PortletRequest request) {

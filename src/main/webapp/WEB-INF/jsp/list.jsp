@@ -5,13 +5,13 @@
 
 <portlet:defineObjects />
 
-<portlet:actionURL name="editProcedure" var="editProcedureUrl">
+<portlet:actionURL name="editProcedure" var="editProceduresUrl">
 </portlet:actionURL>
 
 <a class="btn btn-default btn-sm pull-right" href="${addProcedureUrl}" role="button" title="<op:translate key="CREATE_PROCEDURE" />" data-toggle="tooltip" data-placement="auto bottom"><i class="glyphicons glyphicons-plus-sign"></i></a>
 <a class="btn btn-default btn-sm pull-right" href="${addRecordFolderUrl}" role="button" title="<op:translate key="CREATE_RECORDFOLDER" />" data-toggle="tooltip" data-placement="auto bottom"><i class="glyphicons glyphicons-plus-sign"></i></a>
 
-<form:form modelAttribute="form" action="${editProcedureUrl}" method="post" cssClass="form-horizontal" role="form">
+<form:form modelAttribute="form" action="${editProceduresUrl}" method="post" cssClass="form-horizontal" role="form">
 
     <ul class="list-unstyled">
         <c:forEach var="procedure" items="${procedureList}">

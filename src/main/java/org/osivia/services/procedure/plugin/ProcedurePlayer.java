@@ -123,7 +123,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
             windowProperties.put("osivia.title", "Éditer une procédure");
             return getProcedurePlayer(windowProperties);
         } else {
-            // lancement d'une procédure type LIST
+            // vue action des procédures (dashboard)
             windowProperties.put("osivia.title", document.getTitle());
             return getProcedurePlayer(windowProperties);
         }
@@ -164,7 +164,6 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
             } else {
                 // displayContext = "menu" or "breadcrumb"
                 windowProperties.put(Constants.WINDOW_PROP_VERSION, "1");
-                windowProperties.put(PROCEDURE_MODEL_ID_WINDOW_PROPERTY, docCtx.getDocument().getProperties().getString("ttc:webid"));
                 player.setWindowProperties(windowProperties);
                 player.setPortletInstance("toutatice-portail-cms-nuxeo-viewProcedurePortletInstance");
             }
