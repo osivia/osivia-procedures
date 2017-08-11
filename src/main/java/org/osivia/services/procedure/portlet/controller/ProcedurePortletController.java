@@ -1370,11 +1370,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     private void updateForm(ActionResponse response, Form form, String activeTab, String action) {
         final Map<String, List<Field>> allFieldsMap = new HashMap<String, List<Field>>();
-        addAllFields(allFieldsMap, form.getTheSelectedStep().getFields());
 
-        rebuildStep(allFieldsMap, form.getTheSelectedStep());
+        if (form.getTheSelectedStep() != null) {
+            addAllFields(allFieldsMap, form.getTheSelectedStep().getFields());
 
-        Collections.sort(form.getTheSelectedTdb().getColumns());
+            rebuildStep(allFieldsMap, form.getTheSelectedStep());
+        }
+        if (form.getTheSelectedTdb() != null) {
+            Collections.sort(form.getTheSelectedTdb().getColumns());
+        }
 
         response.setRenderParameter("activeTab", activeTab);
         response.setRenderParameter("action", action);

@@ -158,7 +158,7 @@ public class Form {
     }
 
     public Dashboard getTheSelectedTdb() {
-        return getProcedureModel().getDashboards().get(NumberUtils.toInt(getSelectedTdb()));
+        return getSelectedTdb() != null ? getProcedureModel().getDashboards().get(NumberUtils.toInt(getSelectedTdb())) : null;
     }
 
 
