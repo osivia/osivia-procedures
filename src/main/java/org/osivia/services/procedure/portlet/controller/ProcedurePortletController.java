@@ -424,13 +424,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ModelAttribute(value = "editProcedureUrl")
     public String getEditProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        return form.getProcedureModel() != null ? nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl() : null;
+        return form.getProcedureModel() != null && form.getProcedureModel().getOriginalDocument() != null ? nuxeoController.getLink(
+                form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl() : null;
     }
 
     @ModelAttribute(value = "linkProcedureUrl")
     public String getLinkProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        return form.getProcedureModel() != null ? nuxeoController.getLink(form.getProcedureModel().getOriginalDocument()).getUrl() : null;
+        return form.getProcedureModel() != null && form.getProcedureModel().getOriginalDocument() != null ? nuxeoController.getLink(
+                form.getProcedureModel().getOriginalDocument()).getUrl() : null;
     }
 
     @ModelAttribute(value = "addProcedureUrl")
