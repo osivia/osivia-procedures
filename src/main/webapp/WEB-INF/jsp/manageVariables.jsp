@@ -61,7 +61,7 @@
 		 							<div class="form-group">
 				 						<form:input path="selectedVariable.label" type="text" cssClass="form-control"/>
 				 						<button type="submit" class="btn btn-default" name="saveVariable">
-				 							<i class="glyphicons glyphicons-ok-2"></i>
+				 							<i class="glyphicons glyphicons-ok"></i>
 				 						</button>
 		 							</div>
 		 						</c:if>

@@ -6,6 +6,6 @@
 
 <portlet:defineObjects />
 
-<p><a href="${editProcedureUrl}" class="no-ajax-link" ><op:translate key="LAUNCH_THE_PROCEDURE" /> </a></p>
-<p><a href="${linkProcedureUrl}" class="no-ajax-link"><op:translate key="EDIT_THE_PROCEDURE" /></a></p>
+<p><a href="${linkProcedureUrl}" class="no-ajax-link"><op:translate key="LAUNCH_THE_PROCEDURE" /></a></p>
+<p><a href="${editProcedureUrl}" class="no-ajax-link" ><op:translate key="EDIT_THE_PROCEDURE" /> </a></p>
 
