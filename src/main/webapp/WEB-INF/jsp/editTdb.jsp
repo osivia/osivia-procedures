@@ -92,7 +92,7 @@
 		    </c:forEach>
 		    <tr>
 	           <td><form:input path="newColumn.label" type="text" cssClass="form-control" /></td>
-               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true">>
+               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" >
                 </form:select></td>
                <td><form:checkbox path="newColumn.sortable" cssClass="form-control" /></td>
                <td><button type="submit" class="btn btn-default" name="addColumn"><op:translate key="ADD" /></button></td>

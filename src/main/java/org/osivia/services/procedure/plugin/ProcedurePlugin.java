@@ -86,7 +86,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
     protected void customizeCMSProperties(CustomizationContext context) {
         updateDocTypes(context);
         updatePlayers(context);
-        updateFormFIlters(context);
+        updateFormFilters(context);
         updateListTemplates(context);
         customizeMenubarModules(context);
     }
@@ -147,7 +147,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
      * 
      * @param context
      */
-    private void updateFormFIlters(CustomizationContext context) {
+    private void updateFormFilters(CustomizationContext context) {
         Map<String, FormFilter> formFilters = getFormFilters(context);
 
         formFilters.put(IfFilter.ID, new IfFilter());
