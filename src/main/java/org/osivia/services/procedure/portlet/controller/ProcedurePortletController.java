@@ -1310,7 +1310,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     private void addField(ActionRequest request, ActionResponse response, Form form, String action, Boolean forceInput) throws PortletException {
         final AddField addField = form.getNewField();
         Map<String, Variable> variables = form.getProcedureModel().getVariables();
-        addField.setVariableName(buildUniqueVariableName(variables, addField.getLabel()));
+        if (StringUtils.isBlank(addField.getVariableName())) {
+            addField.setVariableName(buildUniqueVariableName(variables, addField.getLabel()));
+        }
         final Field field = new Field(form.getTheSelectedStep().getNextPath(), addField, false);
         variables.put(addField.getVariableName(), new Variable(addField));
         updateProcedureWithForm(request, response, form, field, action, forceInput);
