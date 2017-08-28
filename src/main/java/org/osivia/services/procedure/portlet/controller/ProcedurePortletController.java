@@ -534,10 +534,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (StringUtils.isNotBlank(filter)) {
             boolean exactMatch = false;
             for (Entry<String, Variable> entryVar : form.getProcedureModel().getVariables().entrySet()) {
-                if (StringUtils.equals(entryVar.getValue().getName(), filter)) {
+                if (StringUtils.equalsIgnoreCase(entryVar.getValue().getName(), filter)) {
                     listeVar.add(0, entryVar.getValue());
                     exactMatch = true;
-                } else if (StringUtils.contains(entryVar.getValue().getName(), filter) || StringUtils.contains(entryVar.getValue().getLabel(), filter)) {
+                } else if (StringUtils.containsIgnoreCase(entryVar.getValue().getName(), filter)
+                        || StringUtils.containsIgnoreCase(entryVar.getValue().getLabel(), filter)) {
                     listeVar.add(entryVar.getValue());
                 }
             }
@@ -1090,6 +1091,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         try {
+            addAllFieldsToSet(form);
             procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
