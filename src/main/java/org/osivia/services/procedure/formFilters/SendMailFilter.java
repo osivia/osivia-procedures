@@ -18,6 +18,8 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -40,6 +42,9 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
  * @see FormFilter
  */
 public class SendMailFilter implements FormFilter {
+
+    /** Logger. */
+    private static final Log LOGGER = LogFactory.getLog(SendMailFilter.class);
 
     /** Identifier. */
     public static final String ID = "SendMailFilter";
@@ -219,8 +224,10 @@ public class SendMailFilter implements FormFilter {
         } catch (MessagingException e) {
             if (continueEvenIfError) {
                 // Notification
-                this.notificationService.addSimpleNotification(portalControllerContext, bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR"),
+                String errorMsg = bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR");
+                this.notificationService.addSimpleNotification(portalControllerContext, errorMsg,
                         NotificationsType.ERROR);
+                LOGGER.error(errorMsg, e);
             } else {
                 // Exception
                 throw new FormFilterException(e);
