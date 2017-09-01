@@ -138,6 +138,23 @@ $JQry(function() {
 		}
 	});
 	
+	$JQry(".exportVar-sortable").sortable({
+		cursor : "move",
+		tolerance : "pointer",
+		axis: "y",
+		items: " .procedure-export",
+		stop: function(event, ui) {
+			var exportVarList;
+			$JQry(this).find(".procedure-export").each(function(index, element) {
+				exportVarList = exportVarList + ',' + $JQry(element).find("td").first().text();
+			});
+			
+			selector(this,exportVarList,'exportVarList');
+			// soumet la mise à jour du formulaire
+			$JQry(ui.item).closest("form").find("input[name='updateDashboard']").click();
+		}
+	});
+	
 	// sélection d'un champ
 	$JQry("#procedure-sortable li").click(function(event) {
 		
@@ -263,6 +280,7 @@ $JQry(function() {
 		var $element = $JQry(element);
 		var vocabularySearchUrl = $element.data("url");
 		var defaultVars = $element.data("defaultvars");
+		var autofill = $element.data("autofill");
 		
 		$element.select2({
 			ajax: {
@@ -291,25 +309,33 @@ $JQry(function() {
 			templateResult: formatField
 		});
 		
-		// maj des champs avec la sélection
-		$element.change(function(event) {
-			var data = $JQry(this).select2('data');
-			$form = $JQry(this).closest("form");
-			$form.find("input[name$='newField.label']").val(data[0].label);
-			
-			var $newCOlumn = $form.find("input[name$='newColumn.label']");
-			// si le champ n'est pas déjà remplis
-			if($newCOlumn.length && $newCOlumn.val().length == 0){
-				$newCOlumn.val(data[0].label);
-			}
-			
-			if(data[0].type != null){
-				$form.find("select[name$='newField.type']").val(data[0].type.id);
-			}
-			$form.find("input[name$='newField.varOptions']").val(data[0].varOptions);
-			// maj de l'éditeur avec le type
-			$JQry("select[name$='newField.type']").each(updateNewFieldType);
-		});
+		if (autofill) {
+			// maj des champs avec la sélection
+			$element
+					.change(function(event) {
+						var data = $JQry(this).select2('data');
+						$form = $JQry(this).closest("form");
+						$form.find("input[name$='newField.label']").val(
+								data[0].label);
+
+						var $newCOlumn = $form
+								.find("input[name$='newColumn.label']");
+						// si le champ n'est pas déjà remplis
+						if ($newCOlumn.length && $newCOlumn.val().length == 0) {
+							$newCOlumn.val(data[0].label);
+						}
+
+						if (data[0].type != null) {
+							$form.find("select[name$='newField.type']").val(
+									data[0].type.id);
+						}
+						$form.find("input[name$='newField.varOptions']").val(
+								data[0].varOptions);
+						// maj de l'éditeur avec le type
+						$JQry("select[name$='newField.type']").each(
+								updateNewFieldType);
+					});
+		}
 	});
 	
 	$JQry(".groupSelect-select2").each(function(index, element) {

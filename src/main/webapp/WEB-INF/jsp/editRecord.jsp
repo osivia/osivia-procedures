@@ -277,7 +277,7 @@
 	                            <form:input path="newColumn.label" type="text" cssClass="form-control" />
 	                        </div>
 	                        <div class="col-sm-5 col-md-5 col-lg-4">
-	                            <form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true">
+	                            <form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true" data-autofill="true">
 	                            </form:select>
 	                        </div>
 	                        <div class="col-sm-2 col-md-1 col-lg-1">

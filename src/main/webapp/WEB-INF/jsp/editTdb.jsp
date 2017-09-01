@@ -70,6 +70,7 @@
                 <th><op:translate key="LABEL" /></th>
                 <th><op:translate key="VARIABLE" /></th>
                 <th><op:translate key="SORTABLE" /></th>
+                <th><op:translate key="ENABLE_LINK" /></th>
                 <th></th>
             </tr>
         </thead>
@@ -82,6 +83,10 @@
 		               <c:if test="${column.sortable}"><i class="halflings halflings-ok"></i></c:if>
 		               <c:if test="${not column.sortable}"><i class="halflings halflings-remove"></i></c:if>
 		           </td>
+		           <td>
+                       <c:if test="${column.enableLink}"><i class="halflings halflings-ok"></i></c:if>
+                       <c:if test="${not column.enableLink}"><i class="halflings halflings-remove"></i></c:if>
+                   </td>
 		           <td>   
 		              <button type="submit" name="deleteCol" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedCol')">
                           <i class="glyphicons glyphicons-bin"></i>
@@ -92,17 +97,42 @@
 		    </c:forEach>
 		    <tr>
 	           <td><form:input path="newColumn.label" type="text" cssClass="form-control" /></td>
-               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" >
+               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-autofill="true">
                 </form:select></td>
                <td><form:checkbox path="newColumn.sortable" cssClass="form-control" /></td>
+               <td><form:checkbox path="newColumn.enableLink" cssClass="form-control" /></td>
                <td><button type="submit" class="btn btn-default" name="addColumn"><op:translate key="ADD" /></button></td>
 		    </tr>
+        </tbody>
+    </table>
+    
+    <h3><op:translate key="DASHBOARDS_EXPORT" /></h3>
+    
+    <p><op:translate key="DASHBOARDS_EXPORT_VAR" /></p>
+    
+    <table class="table">
+        <tbody class="exportVar-sortable">
+            <c:forEach var="exportVar" items="${form.theSelectedTdb.exportVarList}" varStatus="status">
+                <tr class="procedure-export">
+	                <td>${exportVar}</td>
+	                <td>   
+	                   <button type="submit" name="deleteExportVar" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedExportVar')">
+	                       <i class="glyphicons glyphicons-bin"></i>
+	                   </button>
+	                </td>
+                </tr>
+            </c:forEach>
+            <tr>
+               <td><form:select path="newExportVar" class="fieldSelect-select2 form-control select2 " cssStyle="width: 100%;" data-url="${fieldSearchUrl}" >
+                </form:select></td>
+               <td><button type="submit" class="btn btn-default" name="addExportVar"><op:translate key="ADD" /></button></td>
+            </tr>
         </tbody>
     </table>
 	    
     <button type="submit" class="btn btn-default" name="cancelTdb"><op:translate key="CANCEL" /></button>
     <button type="submit" class="btn btn-primary" name="saveTdb"><op:translate key="SAVE" /></button>
     <button type="submit" class="btn btn-danger pull-right" name="deleteTdb"><op:translate key="DELETE" /></button>
-    <input type="submit" class="hidden" name="updateForm">
+    <input type="submit" class="hidden" name="updateDashboard">
 
 </form:form>

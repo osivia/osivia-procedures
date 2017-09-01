@@ -101,7 +101,7 @@
                             <div class="form-group">
 	                            <form:label path="newField.variableName" cssClass="col-sm-3 control-label"><op:translate key="NAME" /></form:label>
 	                            <div class="col-sm-9">
-	                                <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}">
+	                                <form:select path="newField.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-autofill="true">
                                     </form:select>
                                     <span class="help-block"><op:translate key="NAME_HELP" /></span>
 	                            </div>
