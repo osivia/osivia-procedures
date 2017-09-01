@@ -59,6 +59,7 @@ public class ProcedureRepository {
         titleColumn.setLabel("Titre");
         titleColumn.setSortable(true);
         titleColumn.setVariableName(DEFAULT_FIELD_TITLE_NAME);
+        titleColumn.setEnableLink(true);
         dashboard.getColumns().add(titleColumn);
         procedureModel.getDashboards().add(dashboard);
         

@@ -30,8 +30,13 @@ public class Dashboard {
     @JsonProperty("columns")
     private List<Column> columns;
 
+    /** requestFilter */
     @JsonProperty("requestFilter")
     private String requestFilter;
+
+    /** exportVarList */
+    @JsonProperty("exportVarList")
+    private List<String> exportVarList;
 
 
     /**
@@ -60,6 +65,15 @@ public class Dashboard {
                     column = new Column(columnObjectMap);
                     getColumns().add(column);
                 }
+            }
+
+            final PropertyList exportVarListP = dashboardObjectMap.getList("exportVarList");
+            if (exportVarListP != null) {
+                final List<String> exportVarList = new ArrayList<String>();
+                for (final Object groupObject : exportVarListP.list()) {
+                    exportVarList.add((String) groupObject);
+                }
+                setExportVarList(exportVarList);
             }
 
         }
@@ -157,5 +171,29 @@ public class Dashboard {
     public void setRequestFilter(String requestFilter) {
         this.requestFilter = requestFilter;
     }
+
+
+    /**
+     * Getter for exportVarList.
+     * 
+     * @return the exportVarList
+     */
+    public List<String> getExportVarList() {
+        if (exportVarList == null) {
+            exportVarList = new ArrayList<String>();
+        }
+        return exportVarList;
+    }
+
+
+    /**
+     * Setter for exportVarList.
+     * 
+     * @param exportVarList the exportVarList to set
+     */
+    public void setExportVarList(List<String> exportVarList) {
+        this.exportVarList = exportVarList;
+    }
+
 
 }

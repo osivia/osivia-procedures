@@ -42,6 +42,9 @@ public class Form {
     /** newColumn */
     private Column newColumn;
 
+    /** newExportVar */
+    private String newExportVar;
+
     /** selectedFilter */
     private Filter selectedFilter;
 
@@ -458,6 +461,24 @@ public class Form {
      */
     public void setVariableTypesAltEnum(VariableTypesAltEnum[] variableTypesAltEnum) {
         this.variableTypesAltEnum = variableTypesAltEnum;
+    }
+
+    /**
+     * Getter for newExportVar.
+     * 
+     * @return the newExportVar
+     */
+    public String getNewExportVar() {
+        return newExportVar;
+    }
+
+    /**
+     * Setter for newExportVar.
+     * 
+     * @param newExportVar the newExportVar to set
+     */
+    public void setNewExportVar(String newExportVar) {
+        this.newExportVar = newExportVar;
     }
 
 }

@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.model;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
@@ -27,6 +28,10 @@ public class Column implements Comparable<Column> {
     @JsonProperty("sortable")
     private boolean sortable;
 
+    /** enableLink */
+    @JsonProperty("enableLink")
+    private boolean enableLink;
+
     /** index */
     @JsonIgnore
     private Integer index;
@@ -38,7 +43,8 @@ public class Column implements Comparable<Column> {
         if (columnObjectMap != null) {
             setLabel(columnObjectMap.getString("label"));
             setVariableName(columnObjectMap.getString("variableName"));
-            setSortable(columnObjectMap.getBoolean("sortable"));
+            setSortable(BooleanUtils.toBoolean(columnObjectMap.getBoolean("sortable")));
+            setEnableLink(BooleanUtils.toBoolean(columnObjectMap.getBoolean("enableLink")));
         }
     }
 
@@ -112,6 +118,24 @@ public class Column implements Comparable<Column> {
         this.sortable = sortable;
     }
 
+    /**
+     * Getter for enableLink.
+     * 
+     * @return the enableLink
+     */
+    public boolean isEnableLink() {
+        return enableLink;
+    }
+
+
+    /**
+     * Setter for enableLink.
+     * 
+     * @param enableLink the enableLink to set
+     */
+    public void setEnableLink(boolean enableLink) {
+        this.enableLink = enableLink;
+    }
 
     /**
      * Getter for index.
