@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +54,7 @@ import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.services.procedure.portlet.model.Action;
 import org.osivia.services.procedure.portlet.model.AddField;
 import org.osivia.services.procedure.portlet.model.Column;
@@ -424,8 +426,22 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ModelAttribute(value = "editProcedureUrl")
     public String getEditProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        return form.getProcedureModel() != null && form.getProcedureModel().getOriginalDocument() != null ? nuxeoController.getLink(
-                form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl() : null;
+
+        
+        String editProcedureUrl = null;
+        if(form.getProcedureModel() != null && form.getProcedureModel().getOriginalDocument() != null){
+            try {
+                CMSPublicationInfos publicationInfos = NuxeoController.getCMSService().getPublicationInfos(nuxeoController.getCMSCtx(),
+                        form.getProcedureModel().getPath());
+                if (publicationInfos.isEditableByUser()) {
+                    editProcedureUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl();
+                }
+            } catch (CMSException e) {
+                throw new PortletException(e);
+            }
+        }
+
+        return editProcedureUrl;
     }
 
     @ModelAttribute(value = "linkProcedureUrl")
@@ -875,6 +891,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "editTdb");
     }
 
+    @ActionMapping(value = "editTdb", params = "addExportVar")
+    public void addExportVar(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+            throws PortletException {
+        form.getTheSelectedTdb().getExportVarList().add(form.getNewExportVar());
+        form.setNewExportVar(null);
+        response.setRenderParameter("action", "editTdb");
+    }
+
+
     @ActionMapping(value = "editProcedure", params = "manageVariables")
     public void manageVariables(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
             throws PortletException {
@@ -1238,6 +1263,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "editTdb");
     }
 
+    @ActionMapping(value = "editTdb", params = "deleteExportVar")
+    public void deleteExportVar(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedCol",
+            required = false) String selectedCol, SessionStatus sessionStatus) throws PortletException {
+
+        form.getTheSelectedTdb().getExportVarList().remove(Integer.valueOf(selectedCol).intValue());
+        response.setRenderParameter("action", "editTdb");
+    }
+
     @ActionMapping(value = "editRecord", params = "deleteCol")
     public void deleteColEditRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "selectedCol", required = false) String selectedCol, SessionStatus sessionStatus) throws PortletException {
@@ -1396,9 +1429,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         updateForm(response, form, "form", "editRecord");
     }
 
-    @ActionMapping(value = "editRecord", params = "updateDashboard")
-    public void updateDashboard(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
-        updateForm(response, form, "dashboard", "editRecord");
+    @ActionMapping(value = "editTdb", params = "updateDashboard")
+    public void updateDashboard(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
+            value = "exportVarList", required = false) String exportVarList) throws PortletException {
+        updateForm(response, form, "dashboard", "editTdb");
+        if (StringUtils.isNotBlank(exportVarList)) {
+            form.getTheSelectedTdb().setExportVarList(Arrays.asList(StringUtils.split(exportVarList, ',')));
+        }
     }
 
     private void rebuildStep(Map<String, List<Field>> allFieldsMap, Step step) {
