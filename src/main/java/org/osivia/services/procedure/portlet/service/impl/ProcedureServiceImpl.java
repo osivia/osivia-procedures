@@ -13,6 +13,7 @@ import javax.portlet.PortletRequest;
 
 import net.sf.json.JSONArray;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
@@ -277,23 +278,27 @@ public class ProcedureServiceImpl implements IProcedureService {
         try {
             command = new ListModelsContainerCommand(procedurepath);
             documentList = (Documents) nuxeoController.executeNuxeoCommand(command);
-            Document modelsContainer = documentList.get(0);
-            command = new ListProceduresModelsCommand(modelsContainer.getPath());
-            documentList = (Documents) nuxeoController.executeNuxeoCommand(command);
+            if (documentList != null && !documentList.isEmpty()) {
+                Document modelsContainer = documentList.get(0);
+                command = new ListProceduresModelsCommand(modelsContainer.getPath());
+                documentList = (Documents) nuxeoController.executeNuxeoCommand(command);
+            }
         } catch (final Exception e) {
             throw new PortletException(e);
         }
-        ProcedureModel procedureModel;
-        for (final Document document : documentList) {
-            procedureModel = new ProcedureModel(document, nuxeoController);
+        if (CollectionUtils.isNotEmpty(procedureModels)) {
+            ProcedureModel procedureModel;
+            for (final Document document : documentList) {
+                procedureModel = new ProcedureModel(document, nuxeoController);
 
-            try {
-                procedureModel.setUrl(getEditUrl(nuxeoController, procedureModel, procedurepath));
-            } catch (final PortalException e) {
-                new PortletException(e);
+                try {
+                    procedureModel.setUrl(getEditUrl(nuxeoController, procedureModel, procedurepath));
+                } catch (final PortalException e) {
+                    new PortletException(e);
+                }
+
+                procedureModels.add(procedureModel);
             }
-
-            procedureModels.add(procedureModel);
         }
         return procedureModels;
     }
