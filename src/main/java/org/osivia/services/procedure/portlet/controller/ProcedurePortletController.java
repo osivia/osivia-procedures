@@ -853,15 +853,17 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
         try {
+            Dashboard newDashboard = new Dashboard();
+            newDashboard.setName(bundleFactory.getBundle(request.getLocale()).getString("PROCEDURE_DASHBOARD"));
             if (StringUtils.isNotEmpty(path)) {
                 // if the procedure exist in database, update it
-                form.getProcedureModel().getDashboards().add(new Dashboard());
+                form.getProcedureModel().getDashboards().add(newDashboard);
                 form.setSelectedTdb(String.valueOf(form.getProcedureModel().getDashboards().size() - 1));
                 procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
                 response.setRenderParameter("action", "editTdb");
             } else {
                 // if the procedure doesn't exist in database, create it
-                form.getProcedureModel().getDashboards().add(new Dashboard());
+                form.getProcedureModel().getDashboards().add(newDashboard);
                 final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
                 String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminprocstep").getUrl();
                 response.sendRedirect(redirectUrl);
