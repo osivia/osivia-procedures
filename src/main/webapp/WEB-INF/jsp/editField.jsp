@@ -45,11 +45,11 @@
 								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
 							<div class="col-sm-9">
-								<div class="input-group dates-selector">
+								<div class="input-group">
 									<span class="input-group-addon"> <i
 										class="halflings halflings-calendar"></i>
 									</span>
-									<form:input path="${fieldNamePath}" type="text" cssClass="form-control" />
+									<form:input path="${fieldNamePath}" type="text" cssClass="form-control dates-selector" />
 									<c:if test="${not empty field.helpText}">
 										<span class="help-block">${field.helpText}</span>
 									</c:if>
