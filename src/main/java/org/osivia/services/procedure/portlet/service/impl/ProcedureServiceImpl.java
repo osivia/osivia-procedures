@@ -15,6 +15,7 @@ import net.sf.json.JSONArray;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -354,9 +355,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         }
     }
 
-    @Override
-    public void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException {
-
+    private void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException {
         final Map<String, ObjetMetier> ojMap = new HashMap<String, ObjetMetier>();
         for (final Field field : form.getTheCurrentStep().getFields()) {
             updateFormWithObjectsValues(field, ojMap, nuxeoController, form);
@@ -416,8 +415,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         }
     }
 
-    @Override
-    public void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException {
+    private void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException {
 
         final Map<String, Variable> variables = form.getProcedureModel().getVariables();
 
@@ -543,6 +541,77 @@ public class ProcedureServiceImpl implements IProcedureService {
             }
         }
         return procedureModels;
+    }
+
+
+    /**
+     * update values of extended variables with options
+     * 
+     * @param form
+     */
+    public void updateVarsWithOptions(Form form) {
+        List<Field> fields = form.getTheCurrentStep().getFields();
+        for (Field field : fields) {
+            updateVarWithOptions(form, field);
+        }
+    }
+
+    /**
+     * update values of an extended variable with options
+     * 
+     * @param form
+     * @param field
+     */
+    private void updateVarWithOptions(Form form, Field field) {
+        String variableValue = form.getProcedureInstance().getGlobalVariablesValues().get(field.getName());
+        if (!field.isInput() && StringUtils.isNotBlank(variableValue)) {
+
+            Map<String, String> varOptionsMap = null;
+            String varOptions = field.getVarOptions();
+            if (StringUtils.isNotBlank(varOptions)) {
+                varOptions = StringUtils.substringBetween(varOptions, "[", "]");
+                String[] varOptionT = StringUtils.splitByWholeSeparator(varOptions, "},{");
+
+                varOptionsMap = new HashMap<String, String>(varOptionT.length);
+
+                for (int j = 0; j < varOptionT.length; j++) {
+                    String varOption = varOptionT[j];
+                    String[] varOptionLV = StringUtils.split(varOption, ',');
+                    if (varOptionLV != null) {
+                        String varOptionValue = null;
+                        String varOptionLabel = null;
+                        for (int k = 0; k < varOptionLV.length; k++) {
+                            String varOptionLVS = varOptionLV[k];
+                            varOptionLVS = StringUtils.replaceChars(varOptionLVS, "\"{}", StringUtils.EMPTY);
+
+                            if (StringUtils.startsWith(varOptionLVS, "label")) {
+                                varOptionLabel = StringUtils.substringAfterLast(varOptionLVS, ":");
+                            } else if (StringUtils.startsWith(varOptionLVS, "value")) {
+                                varOptionValue = StringUtils.substringAfterLast(varOptionLVS, ":");
+                            }
+                        }
+                        if (StringUtils.isNotBlank(varOptionValue) && StringUtils.isNotBlank(varOptionLabel)) {
+                            varOptionsMap.put(varOptionValue, varOptionLabel);
+                        }
+                    }
+                }
+                String[] values = StringUtils.split(variableValue, ',');
+                if (ArrayUtils.isNotEmpty(values)) {
+                    for (int i = 0; i < values.length; i++) {
+                        values[i] = varOptionsMap.get(values[i]) != null ? varOptionsMap.get(values[i]) : values[i];
+                    }
+                }
+                variableValue = StringUtils.join(values, ',');
+                form.getProcedureInstance().getGlobalVariablesValues().put(field.getName(), variableValue);
+            }
+        }
+    }
+
+    @Override
+    public void updateData(NuxeoController nuxeoController, Form form) throws PortletException {
+        updateFormWithObjectsValues(nuxeoController, form);
+        updateVocabulariesWithValues(nuxeoController, form);
+        updateVarsWithOptions(form);
     }
 
 }

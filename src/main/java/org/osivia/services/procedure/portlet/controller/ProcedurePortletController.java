@@ -320,15 +320,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
 
             if (!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")) {
-                procedureService.updateVocabulariesWithValues(nuxeoController, form);
+                procedureService.updateData(nuxeoController, form);
             }
         } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
             // déroulement d'une procédure
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByWebId(nuxeoController, getWebId(request));
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
             form = new Form(procedureModel, procedureInstance);
-            procedureService.updateFormWithObjectsValues(nuxeoController, form);
-            procedureService.updateVocabulariesWithValues(nuxeoController, form);
+            procedureService.updateData(nuxeoController, form);
         } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getDocType())) {
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceById(nuxeoController, getId(request));
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
@@ -344,8 +343,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
             }
 
-            procedureService.updateFormWithObjectsValues(nuxeoController, form);
-            procedureService.updateVocabulariesWithValues(nuxeoController, form);
+            procedureService.updateData(nuxeoController, form);
         } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
             if (StringUtils.equals(getAction(request), "adminrecord")) {
                 // édition d'une procédure de type RecordFolder
@@ -368,7 +366,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
                 }
 
-                procedureService.updateVocabulariesWithValues(nuxeoController, form);
+                procedureService.updateData(nuxeoController, form);
             }
         } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
 
@@ -394,7 +392,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
                 }
             }
-            procedureService.updateVocabulariesWithValues(nuxeoController, form);
+            procedureService.updateData(nuxeoController, form);
         } else if (StringUtils.isNotBlank(getDashboardPath(request))) {
             NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(getDashboardPath(request));
             form = new Form(new ProcedureModel(documentContext.getDocument(), nuxeoController));

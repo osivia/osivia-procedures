@@ -246,7 +246,6 @@ $JQry(function() {
 	    }
 	});
 	
-	
 	$JQry(".vocabularySelect-select2").each(function(index, element) {
 		var $element = $JQry(element);
 		var vocabularySearchUrl = $element.data("url");

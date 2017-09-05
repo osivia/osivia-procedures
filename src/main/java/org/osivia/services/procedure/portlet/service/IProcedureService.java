@@ -90,20 +90,6 @@ public interface IProcedureService {
 
     /**
      * @param nuxeoController
-     * @param form
-     * @throws PortletException
-     */
-    public void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException;
-
-    /**
-     * @param nuxeoController
-     * @param form
-     * @throws PortletException
-     */
-    public void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException;
-
-    /**
-     * @param nuxeoController
      * @param filter
      * @param vocabularyName
      * @return
@@ -154,5 +140,14 @@ public interface IProcedureService {
      * @return
      */
     public List<Map<String, String>> retrieveStepsByName(NuxeoController nuxeoController, String filter);
+
+    /**
+     * perform post retrieve updates
+     * 
+     * @param nuxeoController
+     * @param form
+     * @throws PortletException
+     */
+    public void updateData(NuxeoController nuxeoController, Form form) throws PortletException;
 
 }
