@@ -140,6 +140,9 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         DocumentType record = DocumentType.createLeaf("Record");
         record.setIcon("glyphicons glyphicons-list");
         docTypes.put(record.getName(), record);
+
+        DocumentType tasks = DocumentType.createLeaf("TaskDoc");
+        docTypes.put(tasks.getName(), tasks);
     }
 
     /**

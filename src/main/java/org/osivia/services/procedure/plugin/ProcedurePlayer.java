@@ -21,6 +21,7 @@ import javax.portlet.PortletContext;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.player.Player;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
@@ -78,10 +79,12 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
     private Player getTaskPlayer(NuxeoDocumentContext docCtx) {
         final Document document = docCtx.getDocument();
 
+        PropertyMap docProperties = document.getProperties();
+
         String displayContext = docCtx.getDisplayContext();
         final Map<String, String> windowProperties = getProcedureWindowProperties(document);
 
-        windowProperties.put("osivia.title", document.getProperties().getString("nt:name"));
+        windowProperties.put("osivia.title", docProperties.getString("nt:name"));
         windowProperties.put("osivia.procedure.admin", displayContext);
 
         final Player linkProps = getProcedurePlayer(windowProperties);
