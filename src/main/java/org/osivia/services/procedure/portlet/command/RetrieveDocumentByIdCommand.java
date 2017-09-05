@@ -6,8 +6,6 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 
 /**
@@ -31,7 +29,7 @@ public class RetrieveDocumentByIdCommand implements INuxeoCommand {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.QueryElasticSearch.getId());
         request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
         String query = "SELECT * FROM Document WHERE ecm:uuid = '" + fetchBY + "'";
-        query = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, query);
+        query = query + " AND ecm:currentLifeCycleState <> 'deleted'";
         request.set("query", query);
         return request.execute();
     }
