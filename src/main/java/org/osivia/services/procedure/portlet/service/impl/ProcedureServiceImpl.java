@@ -13,7 +13,6 @@ import javax.portlet.PortletRequest;
 
 import net.sf.json.JSONArray;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -287,7 +286,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         } catch (final Exception e) {
             throw new PortletException(e);
         }
-        if (CollectionUtils.isNotEmpty(procedureModels)) {
+        if (documentList != null && !documentList.isEmpty()) {
             ProcedureModel procedureModel;
             for (final Document document : documentList) {
                 procedureModel = new ProcedureModel(document, nuxeoController);
