@@ -49,6 +49,12 @@ public class Action {
         filters = new ArrayList<Filter>();
     }
 
+    public Action(String actionId) {
+        filtersList = new HashSet<Filter>();
+        filters = new ArrayList<Filter>();
+        setActionId(actionId);
+    }
+
     /**
      * @param propertyMap
      * @param nuxeoController

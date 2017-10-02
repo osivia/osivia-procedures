@@ -456,13 +456,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         return procedureService.getAddUrl(nuxeoController, procedurePath, "adminproc", DocumentTypeEnum.PROCEDUREMODEL.getDocType());
     }
 
-    @ModelAttribute(value = "addRecordFolderUrl")
-    public String getAddRecordFolderUrl(PortletRequest request, PortletResponse response) throws PortletException {
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        String procedurePath = getProcedurePath(request);
-        return procedureService.getAddUrl(nuxeoController, procedurePath, "adminrecord", DocumentTypeEnum.RECORDFOLDER.getDocType());
-    }
-
     @ModelAttribute(value = "listeFiltres")
     public List<FormFilter> getListeFiltres(PortletRequest request, PortletResponse response) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
@@ -768,10 +761,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         try {
             if (StringUtils.isNotBlank(form.getProcedureModel().getName())) {
                 final String webId = getWebId(request);
+                addAllFieldsToSet(form);
+                addAllFiltersToSet(form);
                 if (StringUtils.isNotEmpty(webId)) {
                     // if the procedure exist in database, update it
-                    addAllFieldsToSet(form);
-                    addAllFiltersToSet(form);
                     procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
                 } else {
                     // if the procedure doesn't exist in database, create it
@@ -1117,6 +1110,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         try {
             addAllFieldsToSet(form);
+            addAllFiltersToSet(form);
             procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
@@ -1245,6 +1239,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             throws PortletException {
         form.getProcedureModel().getDashboards().remove(Integer.valueOf(form.getSelectedTdb()).intValue());
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         try {
             procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
             response.setRenderParameter("action", "editProcedure");
@@ -1288,6 +1284,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         form.getProcedureModel().getDashboards().remove(Integer.valueOf(selectedTdb).intValue());
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        addAllFieldsToSet(form);
+        addAllFiltersToSet(form);
         try {
             procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
             response.setRenderParameter("action", "editProcedure");
@@ -1490,7 +1488,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editStep", params = "addButton")
     public void addButton(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
-        form.getTheSelectedStep().getActions().add(new Action());
+        form.getTheSelectedStep().addAction();
         response.setRenderParameter("activeTab", "action");
         response.setRenderParameter("action", "editStep");
     }

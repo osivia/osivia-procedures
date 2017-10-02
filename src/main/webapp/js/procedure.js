@@ -439,10 +439,9 @@ $JQry(function() {
 			if (json.trim().length > 0) {
 				var rowList = JSON.parse(json);
 				for (var i = 0; i < rowList.length; i++) {
-					$JQry("#formulaire-newField-list-editor-optionList").find("tbody").append(buildRow(rowList[i].label, rowList[i].value));
+					$JQry("#formulaire-newField-list-editor-optionList").find("tbody").text(buildRow(rowList[i].label, rowList[i].value));
 				}
 			}
-			
 			$JQry("#formulaire-newField-list-editor").removeClass("hidden");
 		}else if($JQry(this).val() == 'TEXT'){
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
@@ -457,6 +456,34 @@ $JQry(function() {
 	};
 	$JQry("select[name$='newField.type']").change(updateNewFieldType);
 	$JQry("select[name$='newField.type']").each(updateNewFieldType);
+	
+	// gestion du type de champ sélectionné
+	var updateSelectedFieldType = function() {
+		if($JQry(this).val() == 'RADIOLIST' || $JQry(this).val() == 'CHECKBOXLIST' || $JQry(this).val() == 'SELECTLIST'){
+			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
+			
+			// maj du tableau des options
+			$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").empty();
+			var json =  $JQry("input[name$='selectedField.varOptions']").val();
+			if (json.trim().length > 0) {
+				var rowList = JSON.parse(json);
+				for (var i = 0; i < rowList.length; i++) {
+					$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").append(buildRow(rowList[i].label, rowList[i].value));
+				}
+			}
+			$JQry("#formulaire-selectedField-list-editor").removeClass("hidden");
+		}else if($JQry(this).val() == 'TEXT'){
+			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
+			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
+		}else if($JQry(this).val() == 'TEXTAREA'){
+			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
+			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
+		}else{
+			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
+			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").removeClass("hidden");
+		}
+	};
+	
 	
 	var removeRow = function(){
 		$JQry(this).closest("tr").remove();
@@ -474,6 +501,19 @@ $JQry(function() {
 		
 		// on maj le json du champ option
 		$JQry("input[name$='newField.varOptions']").val(jsonifyList($JQry("#formulaire-newField-list-editor-optionList").find("tbody")));
+		
+		$JQry(".formulaire-list-editor-removeOption").click(removeRow);
+	});
+	
+	// éditeur bouton radio - edit
+	$JQry("#formulaire-selectedField-list-editor-addOption").click(function() {
+		//ajout d'une option dans la liste
+		var label = $JQry("#formulaire-selectedField-list-editor-newOption-label").val();
+		var value = $JQry("#formulaire-selectedField-list-editor-newOption-value").val();
+		$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").append(buildRow(label, value));
+		
+		// on maj le json du champ option
+		$JQry("input[name$='selectedField.varOptions']").val(jsonifyList($JQry("#formulaire-selectedField-list-editor-optionList").find("tbody")));
 		
 		$JQry(".formulaire-list-editor-removeOption").click(removeRow);
 	});
@@ -524,33 +564,6 @@ $JQry(function() {
 		element.remove();
 	});
 	
-	// gestion du type de champ édité
-	var updateSelectedFieldType = function() {
-		if($JQry(this).val() == 'RADIOLIST'|| $JQry(this).val() == 'CHECKBOXLIST' || $JQry(this).val() == 'SELECTLIST'){
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
-			
-			// maj du tableau des options
-			$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").empty();
-			var json =  $JQry("input[name$='selectedField.varOptions']").val();
-			if (json.trim().length > 0) {
-				var rowList = JSON.parse(json);
-				for (var i = 0; i < rowList.length; i++) {
-					$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").append(buildRow(rowList[i].label, rowList[i].value));
-				}
-			}
-			
-			$JQry("#formulaire-selectedField-list-editor").removeClass("hidden");
-		}else if($JQry(this).val() == 'TEXT'){
-			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
-		}else if($JQry(this).val() == 'TEXTAREA'){
-			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
-		}else{
-			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").removeClass("hidden");
-		}
-	};
 	$JQry("select[name$='selectedField.type']").change(updateSelectedFieldType);
 	$JQry("select[name$='selectedField.type']").each(updateSelectedFieldType);
 	
@@ -568,7 +581,6 @@ $JQry(function() {
 	});
 	
 	$JQry(".formulaire-list-editor-removeOption").click(removeRow);
-	
 });
 
 function makeRadioFromData(name, label, value, dataValue){

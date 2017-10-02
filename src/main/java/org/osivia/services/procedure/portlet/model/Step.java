@@ -2,12 +2,14 @@ package org.osivia.services.procedure.portlet.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -23,6 +25,8 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
 public class Step implements Comparable<Step> {
+
+    private static final String DEFAULT_NOTIFICATION_MSG = "${document:linkWithText(taskPath,taskName)}";
 
     /** stepName */
     @JsonProperty("name")
@@ -212,14 +216,10 @@ public class Step implements Comparable<Step> {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
         setIndex(index);
+        setReference(String.valueOf(index));
+        setNotifiable(true);
+        setStringMsg(DEFAULT_NOTIFICATION_MSG);
     }
-
-    public Step(Integer index, Step copiedStep) {
-        fields = copiedStep.getFields();
-        actions = copiedStep.getActions();
-        setIndex(index);
-    }
-
 
     /**
      * get the next available index for field
@@ -235,6 +235,35 @@ public class Step implements Comparable<Step> {
             nextPath = lastPath++;
         }
         return String.valueOf(nextPath);
+    }
+
+    public void addAction() {
+
+        String actionId;
+        Set<String> actionIds = new HashSet<String>(actions.size());
+        for (Action action : actions) {
+            actionIds.add(action.getActionId());
+        }
+
+        actionId = reference + actionIds.size();
+        int i = 0;
+        while (!isUnique(actionId, actionIds)) {
+            i++;
+            int idRef = actionIds.size() + i;
+            actionId = reference + String.valueOf(idRef);
+        }
+
+        actions.add(new Action(actionId));
+    }
+
+
+    private boolean isUnique(String stringToTest, Set<String> setToCompare) {
+        for (String stringToCompare : setToCompare) {
+            if (StringUtils.equals(stringToTest, stringToCompare)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

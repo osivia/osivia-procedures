@@ -79,12 +79,14 @@
                    <form:input path="theSelectedStep.stepName" type="text" cssClass="form-control" />
                </div>
            </div>
-           <div class="form-group">
-               <form:label path="theSelectedStep.reference" cssClass="col-sm-2 control-label"><op:translate key="STEP_REFERENCE" /></form:label>
-               <div class="col-sm-10">
-                   <form:input path="theSelectedStep.reference" type="text" cssClass="form-control" />
-               </div>
-           </div>
+           <c:if test="${form.advancedMode}">
+	           <div class="form-group">
+	               <form:label path="theSelectedStep.reference" cssClass="col-sm-2 control-label"><op:translate key="STEP_REFERENCE" /></form:label>
+	               <div class="col-sm-10">
+	                   <form:input path="theSelectedStep.reference" type="text" cssClass="form-control" />
+	               </div>
+	           </div>
+           </c:if>
 	    </div>
 	    <div role="tabpanel" class="tab-pane <c:if test="${'form' eq activeTab}">active</c:if>" id="Formulaire">
 	       <div class="row">
@@ -259,6 +261,44 @@
 					                      </div>
 					                  </div>
 					                  
+			                            <div class="form-group hidden" id="formulaire-selectedField-list-editor">
+			                                <label class="col-sm-3 control-label"><op:translate key="EDIT_OPTIONS" /></label>
+			                                <div class="col-sm-9">
+			                                    <div class="form-group">
+			                                        <label for="formulaire-selectedField-list-editor-newOption-label" class="col-sm-3 control-label"><op:translate key="LABEL" /></label>
+			                                        <div class="col-sm-9">
+			                                            <input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-label" placeholder='<op:translate key="LABEL" />'>
+			                                        </div>
+			                                    </div>
+			                                    <div class="form-group">
+			                                        <label for="formulaire-selectedField-list-editor-newOption-value" class="col-sm-3 control-label"><op:translate key="VALUE" /></label>
+			                                        <div class="col-sm-9">
+			                                            <input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-value" placeholder='<op:translate key="VALUE" />'>
+			                                        </div>
+			                                    </div>
+			                                    <div class="form-group">
+			                                        <div class="col-sm-12">
+			                                            <button id="formulaire-selectedField-list-editor-addOption" class="btn btn-default pull-right" type="button"><op:translate key="ADD_OPTION" /></button>
+			                                        </div>
+			                                    </div>
+			                                    <div id="formulaire-selectedField-list-editor-optionList" class="form-group">
+			                                        <table class="table table-condensed">
+			                                            <thead>
+			                                                <tr>
+			                                                    <th><op:translate key="LABEL" /></th>
+			                                                    <th><op:translate key="VALUE" /></th>
+			                                                    <th></th>
+			                                                </tr>
+			                                            </thead>
+			                                            <tbody>
+			                                            
+			                                            </tbody>
+			                                        </table>
+			                                    </div>
+			                                </div>
+			                            </div>
+					                  
+					                  
 					                  <div class="form-group hidden" id="formulaire-selectedField-list-editor">
 			                        	<label class="col-sm-3 control-label"><op:translate key="EDIT_OPTIONS" /></label>
 				                        <div class="col-sm-9">
@@ -347,36 +387,49 @@
 	    
        <ul class="list-unstyled">
              <li class="form-group">
-                <div class="col-sm-2">
-                    <label class="control-label"><op:translate key="LABEL" /></label>
-                </div>
-                <div class="col-sm-4">
-                    <label class="control-label"><op:translate key="ACTION_ID" /></label>
-                </div>
-                <div class="col-sm-4">
-                    <label class="control-label"><op:translate key="ACTION_TARGET_REF" /></label>
-                </div>
+                <c:if test="${!form.advancedMode}">
+                    <div class="col-sm-6">
+                        <label class="control-label"><op:translate key="LABEL" /></label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="control-label"><op:translate key="ACTION_TARGET_REF" /></label>
+                    </div>
+                </c:if>
+                <c:if test="${form.advancedMode}">
+                    <div class="col-sm-2">
+	                    <label class="control-label"><op:translate key="LABEL" /></label>
+	                </div>
+	                <div class="col-sm-4">
+	                    <label class="control-label"><op:translate key="ACTION_ID" /></label>
+	                </div>
+	                <div class="col-sm-4">
+	                    <label class="control-label"><op:translate key="ACTION_TARGET_REF" /></label>
+	                </div>
+                </c:if>
              </li>
               <c:forEach var="action" items="${form.theSelectedStep.actions}" varStatus="status">
-                  <li class="form-group">
-                      <div class="col-sm-2">
-                          <input name="theSelectedStep.actions[${status.index}].label" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.theSelectedStep.actions[status.index].label}" type="text">
-                      </div>
-                      <div class="col-sm-4">
-                          <input name="theSelectedStep.actions[${status.index}].actionId" class="form-control" placeholder='<op:translate key="ACTION_ID" />' value="${form.theSelectedStep.actions[status.index].actionId}" type="text">
-                      </div>
+                    <li class="form-group">
+                     <c:if test="${!form.advancedMode}">
+                            <div class="col-sm-6">
+                              <input name="theSelectedStep.actions[${status.index}].label" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.theSelectedStep.actions[status.index].label}" type="text">
+                          </div>
+                          <div class="col-sm-4">
+                                <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
+                                   <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
+                                </form:select>
+                            </div>
+                     </c:if>
                       <c:if test="${form.advancedMode}">
+	                      <div class="col-sm-2">
+	                          <input name="theSelectedStep.actions[${status.index}].label" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.theSelectedStep.actions[status.index].label}" type="text">
+	                      </div>
+	                      <div class="col-sm-4">
+	                          <input name="theSelectedStep.actions[${status.index}].actionId" class="form-control" placeholder='<op:translate key="ACTION_ID" />' value="${form.theSelectedStep.actions[status.index].actionId}" type="text">
+	                      </div>
 	                      <div class="col-sm-4">
 	                          <input name="theSelectedStep.actions[${status.index}].stepReference" class="form-control" placeholder='<op:translate key="ACTION_TARGET_REF" />' value="${form.theSelectedStep.actions[status.index].stepReference}" type="text">
 	                      </div>
                       </c:if>
-                      <c:if test="${!form.advancedMode}">
-                           <div class="col-sm-4">
-		                        <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
-		                           <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
-		                        </form:select>
-	                        </div>
-                       </c:if>
                       
                       <div class="btn-group col-sm-2">
                           <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
