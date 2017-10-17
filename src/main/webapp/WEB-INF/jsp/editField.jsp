@@ -183,15 +183,15 @@
 								</c:if>
 							</div>
 						</c:when>
-						<c:when test="${fieldType eq 'DISPLAY'}">
-                            <label class="col-sm-3 control-label">${field.superLabel}</label>
-                            <div class="col-sm-9">
-                                <span class="text-pre-wrap"><c:out value="${fieldVarOptions}" /></span>
-                                <c:if test="${not empty field.helpText}">
-                                    <span class="help-block">${field.helpText}</span>
-                                </c:if>
-                            </div>
-                        </c:when>
+<%-- 						<c:when test="${fieldType eq 'DISPLAY'}"> --%>
+<%--                             <label class="col-sm-3 control-label">${field.superLabel}</label> --%>
+<!--                             <div class="col-sm-9"> -->
+<%--                                 <span class="text-pre-wrap"><c:out value="${fieldVarOptions}" /></span> --%>
+<%--                                 <c:if test="${not empty field.helpText}"> --%>
+<%--                                     <span class="help-block">${field.helpText}</span> --%>
+<%--                                 </c:if> --%>
+<!--                             </div> -->
+<%--                         </c:when> --%>
 						<c:otherwise>
 							<p>error</p>
 						</c:otherwise>
@@ -219,15 +219,15 @@
 								</c:if>
 							</div>
 						</c:when>
-						<c:when test="${fieldType eq 'DISPLAY'}">
-                            <label class="col-sm-3 control-label">${field.superLabel}</label>
-                            <div class="col-sm-9">
-                                <span class="text-pre-wrap"><c:out value="${fieldVarOptions}" /></span>
-                                <c:if test="${not empty field.helpText}">
-                                    <span class="help-block">${field.helpText}</span>
-                                </c:if>
-                            </div>
-                        </c:when>
+<%-- 						<c:when test="${fieldType eq 'DISPLAY'}"> --%>
+<%--                             <label class="col-sm-3 control-label">${field.superLabel}</label> --%>
+<!--                             <div class="col-sm-9"> -->
+<%--                                 <span class="text-pre-wrap"><c:out value="${fieldVarOptions}" /></span> --%>
+<%--                                 <c:if test="${not empty field.helpText}"> --%>
+<%--                                     <span class="help-block">${field.helpText}</span> --%>
+<%--                                 </c:if> --%>
+<!--                             </div> -->
+<%--                         </c:when> --%>
 						<c:when
 							test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
 							<label class="col-sm-3 control-label">${field.superLabel}</label>
