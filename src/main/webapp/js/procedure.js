@@ -23,8 +23,8 @@ function sortableStart(event, ui){
 	// empêche la sélection du champ ou filtre
 	$JQry(event.originalEvent.target).off();
 	$JQry(event.originalEvent.target).on('click',function(e){
-		e.preventDefault(); // cas control-label
-		e.stopImmediatePropagation();
+		event.preventDefault(); // cas control-label
+		event.stopImmediatePropagation();
 	});
 	// on sauvegarde la position de départ de l'item
 	ui.item.data("itemStartPosition",ui.item.position());
@@ -41,8 +41,8 @@ function sortableStop(filter, event, ui){
 		// soumet la mise à jour du formulaire
 		$JQry(ui.item).closest("form").find("input[name='updateForm']").click();
 	}
-	e.preventDefault(); // cas control-label
-	e.stopImmediatePropagation();
+	event.preventDefault(); // cas control-label
+	event.stopImmediatePropagation();
 };
 
 function updateFilters(input){
@@ -432,6 +432,7 @@ $JQry(function() {
 	// gestion du type de nouveau champ
 	var updateNewFieldType = function() {
 		if($JQry(this).val() == 'RADIOLIST' || $JQry(this).val() == 'CHECKBOXLIST' || $JQry(this).val() == 'SELECTLIST'){
+			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 			
 			// maj du tableau des options
@@ -445,21 +446,35 @@ $JQry(function() {
 			$JQry("#formulaire-newField-list-editor").removeClass("hidden");
 		}else if($JQry(this).val() == 'TEXT'){
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
+			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else if($JQry(this).val() == 'TEXTAREA'){
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
+			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
+			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
+		}else if($JQry(this).val() == 'DISPLAY'){
+			$JQry("#formulaire-newField-list-editor").addClass("hidden");
+			$JQry("#formulaire-newField-additional-options").addClass("hidden");
+			$JQry("#formulaire-newField-displayText").removeClass("hidden");
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else{
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
+			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").removeClass("hidden");
 		}
 	};
 	$JQry("select[name$='newField.type']").change(updateNewFieldType);
 	$JQry("select[name$='newField.type']").each(updateNewFieldType);
 	
+	$JQry("textarea[name$='newField.displayText']").change(function() {
+		var texte = $JQry(this).val();
+		$JQry("input[name$='newField.varOptions']").val(texte);
+	});
+	
 	// gestion du type de champ sélectionné
 	var updateSelectedFieldType = function() {
 		if($JQry(this).val() == 'RADIOLIST' || $JQry(this).val() == 'CHECKBOXLIST' || $JQry(this).val() == 'SELECTLIST'){
+			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
 			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
 			
 			// maj du tableau des options
@@ -474,12 +489,20 @@ $JQry(function() {
 			$JQry("#formulaire-selectedField-list-editor").removeClass("hidden");
 		}else if($JQry(this).val() == 'TEXT'){
 			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
+			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
 			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else if($JQry(this).val() == 'TEXTAREA'){
 			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
+			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
+			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
+		}else if($JQry(this).val() == 'DISPLAY'){
+			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
+			$JQry("#formulaire-selectedField-additional-options").addClass("hidden");
+			$JQry("#formulaire-selectedField-displayText").removeClass("hidden");
 			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else{
 			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
+			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
 			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").removeClass("hidden");
 		}
 	};
@@ -501,19 +524,6 @@ $JQry(function() {
 		
 		// on maj le json du champ option
 		$JQry("input[name$='newField.varOptions']").val(jsonifyList($JQry("#formulaire-newField-list-editor-optionList").find("tbody")));
-		
-		$JQry(".formulaire-list-editor-removeOption").click(removeRow);
-	});
-	
-	// éditeur bouton radio - edit
-	$JQry("#formulaire-selectedField-list-editor-addOption").click(function() {
-		//ajout d'une option dans la liste
-		var label = $JQry("#formulaire-selectedField-list-editor-newOption-label").val();
-		var value = $JQry("#formulaire-selectedField-list-editor-newOption-value").val();
-		$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").append(buildRow(label, value));
-		
-		// on maj le json du champ option
-		$JQry("input[name$='selectedField.varOptions']").val(jsonifyList($JQry("#formulaire-selectedField-list-editor-optionList").find("tbody")));
 		
 		$JQry(".formulaire-list-editor-removeOption").click(removeRow);
 	});
@@ -564,8 +574,7 @@ $JQry(function() {
 		element.remove();
 	});
 	
-	$JQry("select[name$='selectedField.type']").change(updateSelectedFieldType);
-	$JQry("select[name$='selectedField.type']").each(updateSelectedFieldType);
+	$JQry("input[name$='selectedField.type']").each(updateSelectedFieldType);
 	
 	// éditeur radio/select - edit
 	$JQry("#formulaire-selectedField-list-editor-addOption").click(function() {

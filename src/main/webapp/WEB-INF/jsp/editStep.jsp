@@ -174,7 +174,15 @@
 		                        	</div>
 		                        </div>
 	                        </div>
-	                        <div class="form-group">
+	                        
+	                        <div class="form-group hidden" id="formulaire-newField-displayText">
+								<label class="col-sm-3 control-label"><op:translate key="DISPLAY_OPTION" /></label>
+								<div class="col-sm-9">
+								        <textarea class="form-control" name="newField.displayText"></textarea>
+								</div>
+	                        </div>
+	                        
+	                        <div class="form-group" id="formulaire-newField-additional-options">
 	                           <div class="col-sm-offset-3 col-sm-9">
 	                               <div class="checkbox">
 	                                    <label>
@@ -251,13 +259,14 @@
 				                     <div class="form-group">
 					                      <form:label path="selectedField.type" cssClass="col-sm-3 control-label"><op:translate key="TYPE" /></form:label>
 					                      <div class="col-sm-9">
-					                      		<p class="form-control-static">${form.selectedField.type}</p>
+					                      		<p class="form-control-static"><op:translate key="${form.selectedField.type}" /></p>
+					                      		<input name="selectedField.type" value="${form.selectedField.type}" hidden="true">
 					                      </div>
 				                     </div>
 				                     <div class="form-group hidden">
 					                      <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label"><op:translate key="OPTIONS" /></form:label>
 					                      <div class="col-sm-9">
-					                        <input name="selectedField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />' value="${form.selectedField.varOptions}" type="text">
+					                        <input name="selectedField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />' value='${form.selectedField.varOptions}' type="text">
 					                      </div>
 					                  </div>
 					                  
@@ -298,43 +307,6 @@
 			                                </div>
 			                            </div>
 					                  
-					                  
-					                  <div class="form-group hidden" id="formulaire-selectedField-list-editor">
-			                        	<label class="col-sm-3 control-label"><op:translate key="EDIT_OPTIONS" /></label>
-				                        <div class="col-sm-9">
-				                        	<div class="form-group">
-			                        			<label for="formulaire-selectedField-list-editor-newOption-label" class="col-sm-3 control-label"><op:translate key="LABEL" /></label>
-				                        		<div class="col-sm-9">
-													<input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-label" placeholder='<op:translate key="LABEL" />'>
-				                        		</div>
-				                        	</div>
-				                        	<div class="form-group">
-			                        			<label for="formulaire-selectedField-list-editor-newOption-value" class="col-sm-3 control-label"><op:translate key="VALUE" /></label>
-				                        		<div class="col-sm-9">
-													<input type="text" class="form-control" id="formulaire-selectedField-list-editor-newOption-value" placeholder='<op:translate key="VALUE" />'>
-				                        		</div>
-				                        	</div>
-				                        	<div class="form-group">
-				                        		<div class="col-sm-12">
-				                        			<button id="formulaire-selectedField-list-editor-addOption" class="btn btn-default pull-right" type="button"><op:translate key="ADD_OPTION" /></button>
-				                        		</div>
-				                        	</div>
-				                        	<div id="formulaire-selectedField-list-editor-optionList" class="form-group">
-					                        	<table class="table table-condensed">
-					                        		<thead>
-					                        			<tr>
-					                        				<th><op:translate key="LABEL" /></th>
-					                        				<th><op:translate key="VALUE" /></th>
-					                        				<th></th>
-					                        			</tr>
-					                        		</thead>
-					                        		<tbody>
-					                        		
-					                        		</tbody>
-					                        	</table>
-				                        	</div>
-				                        </div>
-			                        </div>
                                       <div class="form-group">
 			                               <div class="col-sm-offset-3 col-sm-9">
 			                                   <div class="checkbox">

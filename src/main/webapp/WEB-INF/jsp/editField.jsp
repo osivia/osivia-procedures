@@ -11,7 +11,8 @@
 		
 			<c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
 			<c:set var="fieldNamePath" value="procedureInstance.globalVariablesValues['${field.name}']" />
-			<c:set var="fieldName" value="${form.procedureInstance.globalVariablesValues[field.name]}" />
+			<c:set var="fieldValue" value="${form.procedureInstance.globalVariablesValues[field.name]}" />
+			<c:set var="fieldVarOptions" value="${form.procedureModel.variables[field.name].varOptions}" />
 			<c:set var="downloadLink" value="${form.procedureInstance.filesPath[field.name].downloadLink}" />
 			<c:set var="fileName" value="${form.procedureInstance.filesPath[field.name].fileName}" />
 			
@@ -77,9 +78,9 @@
 							<div class="col-sm-9">
 								<input type="text"
 									name="${fieldNamePath}"
-									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
+									data-varOptions='${fieldVarOptions}'
 									class="hidden field-radioList-json"
-									value="${fieldName}">
+									value="${fieldValue}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -93,9 +94,9 @@
 							<div class="col-sm-9">
 								<input type="text"
 									name="${fieldNamePath}"
-									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
+									data-varOptions='${fieldVarOptions}'
 									class="hidden field-checkboxList-json"
-									value="${fieldName}">
+									value="${fieldValue}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -120,9 +121,9 @@
 							<div class="col-sm-9">
 								<input type="text"
 									name="${fieldNamePath}"
-									data-varOptions='${form.procedureModel.variables[field.name].varOptions}'
+									data-varOptions='${fieldVarOptions}'
 									class="hidden field-selectList-json"
-									value="${fieldName}">
+									value="${fieldValue}">
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -132,7 +133,7 @@
 							<portlet:resourceURL id="vocabularySearch"
 								var="vocabularySearchUrl">
 								<portlet:param name="vocabularyName"
-									value="${form.procedureModel.variables[field.name].varOptions}" />
+									value="${fieldVarOptions}" />
 							</portlet:resourceURL>
 							<form:label
 								path="${fieldNamePath}"
@@ -151,7 +152,7 @@
 							<portlet:resourceURL id="vocabularySearch"
 								var="vocabularySearchUrl">
 								<portlet:param name="vocabularyName"
-									value="${form.procedureModel.variables[field.name].varOptions}" />
+									value="${fieldVarOptions}" />
 							</portlet:resourceURL>
 							<form:label
 								path="${fieldNamePath}"
@@ -182,6 +183,15 @@
 								</c:if>
 							</div>
 						</c:when>
+						<c:when test="${fieldType eq 'DISPLAY'}">
+                            <label class="col-sm-3 control-label">${field.superLabel}</label>
+                            <div class="col-sm-9">
+                                <span class="text-pre-wrap"><c:out value="${fieldVarOptions}" /></span>
+                                <c:if test="${not empty field.helpText}">
+                                    <span class="help-block">${field.helpText}</span>
+                                </c:if>
+                            </div>
+                        </c:when>
 						<c:otherwise>
 							<p>error</p>
 						</c:otherwise>
@@ -194,7 +204,7 @@
 	                    				or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
 		                    <label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
-							    <p class="form-control-static">${fieldName}</p>
+							    <p class="form-control-static">${fieldValue}</p>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -203,17 +213,26 @@
 						<c:when test="${fieldType eq 'TEXTAREA'}">
 							<label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
-								<span class="text-pre-wrap"><c:out value="${fieldName}" /></span>
+								<span class="text-pre-wrap"><c:out value="${fieldValue}" /></span>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
 							</div>
 						</c:when>
+						<c:when test="${fieldType eq 'DISPLAY'}">
+                            <label class="col-sm-3 control-label">${field.superLabel}</label>
+                            <div class="col-sm-9">
+                                <span class="text-pre-wrap"><c:out value="${fieldVarOptions}" /></span>
+                                <c:if test="${not empty field.helpText}">
+                                    <span class="help-block">${field.helpText}</span>
+                                </c:if>
+                            </div>
+                        </c:when>
 						<c:when
 							test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
 							<label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
-							    <p class="form-control-static">${fieldName}</p>
+							    <p class="form-control-static">${fieldValue}</p>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -222,7 +241,7 @@
 						<c:when test="${fieldType eq 'FILE'}">
 							<div class="col-sm-3">
 								<label
-									for="${fieldName}">${field.superLabel}</label>
+									for="${fieldValue}">${field.superLabel}</label>
 							</div>
 							<div class="col-sm-3"></div>
 						</c:when>
