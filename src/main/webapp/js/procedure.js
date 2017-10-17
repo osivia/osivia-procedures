@@ -518,8 +518,8 @@ $JQry(function() {
 	// éditeur bouton radio - ajout
 	$JQry("#formulaire-newField-list-editor-addOption").click(function() {
 		//ajout d'une option dans la liste
-		var label = $JQry("#formulaire-newField-list-editor-newOption-label").val();
-		var value = $JQry("#formulaire-newField-list-editor-newOption-value").val();
+		var label = $JQry("#formulaire-newField-list-editor-newOption-label").val().replace(/'/g, '&apos;');
+		var value = $JQry("#formulaire-newField-list-editor-newOption-value").val().replace(/'/g, '&apos;');
 		$JQry("#formulaire-newField-list-editor-optionList").find("tbody").append(buildRow(label, value));
 		
 		// on maj le json du champ option
@@ -579,8 +579,8 @@ $JQry(function() {
 	// éditeur radio/select - edit
 	$JQry("#formulaire-selectedField-list-editor-addOption").click(function() {
 		//ajout d'une option dans la liste
-		var label = $JQry("#formulaire-selectedField-list-editor-newOption-label").val();
-		var value = $JQry("#formulaire-selectedField-list-editor-newOption-value").val();
+		var label = $JQry("#formulaire-selectedField-list-editor-newOption-label").val().replace(/'/g, '&apos;');
+		var value = $JQry("#formulaire-selectedField-list-editor-newOption-value").val().replace(/'/g, '&apos;');
 		$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").append(buildRow(label, value));
 		
 		// on maj le json du champ option
@@ -642,8 +642,8 @@ function jsonifyList(tbody){
 	var list = [];
 	$JQry(tbody).children("tr").each(function( index ){
 		var td = $JQry(this).children("td");
-		var label = $JQry(td[0]).text();
-		var value = $JQry(td[1]).text();
+		var label = $JQry(td[0]).text().replace(/'/g, '&apos;');
+		var value = $JQry(td[1]).text().replace(/'/g, '&apos;');
 		var radio = {label:label,value:value};
 		list.push(radio);
 	});
