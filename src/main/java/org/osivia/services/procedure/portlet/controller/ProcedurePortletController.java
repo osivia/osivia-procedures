@@ -1358,8 +1358,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (UnsupportedEncodingException e) {
             throw new PortletException(e);
         }
-        String uniqueVarName = cleanLabel;
         int i = 0;
+        String uniqueVarName = StringUtils.isNotBlank(cleanLabel) ? cleanLabel : cleanLabel + i;
         while (variables.containsKey(uniqueVarName)) {
             uniqueVarName = cleanLabel + i;
         }
@@ -1379,8 +1379,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editStep", params = "addFieldSet")
     public void addFieldSet(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         AddField newFieldSet = form.getNewFieldSet();
-        final Field field = new Field(form.getTheSelectedStep().getNextPath(), form.getNewFieldSet(), true);
-        form.getProcedureModel().getVariables().put(newFieldSet.getVariableName(), new Variable(newFieldSet));
+        Map<String, Variable> variables = form.getProcedureModel().getVariables();
+        if (StringUtils.isBlank(newFieldSet.getVariableName())) {
+            newFieldSet.setVariableName(buildUniqueVariableName(variables, newFieldSet.getLabel()));
+        }
+        final Field field = new Field(form.getTheSelectedStep().getNextPath(), newFieldSet, true);
+        variables.put(newFieldSet.getVariableName(), new Variable(newFieldSet));
         updateProcedureWithForm(request, response, form, field, "editStep");
     }
 
@@ -1404,7 +1408,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     private void updateForm(ActionResponse response, Form form, String activeTab, String action) {
         final Map<String, List<Field>> allFieldsMap = new HashMap<String, List<Field>>();
 
+
         if (form.getTheSelectedStep() != null) {
+            form.setSelectedField(null);
             addAllFields(allFieldsMap, form.getTheSelectedStep().getFields());
 
             rebuildStep(allFieldsMap, form.getTheSelectedStep());

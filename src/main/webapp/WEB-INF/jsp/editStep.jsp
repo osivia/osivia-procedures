@@ -46,8 +46,16 @@
     </div>
 </div>
 
+<!-- Ajax shadowbox -->
+<div class="ajax-shadowbox">
+    <div class="progress">
+	    <div class="progress-bar progress-bar-striped active" role="progressbar">
+	        <span><op:translate key="AJAX_REFRESH" /></span>
+        </div>
+    </div>
+</div>
 
-<form:form modelAttribute="form" action="${editStepUrl}" method="post" cssClass="form-horizontal" role="form">
+<form:form modelAttribute="form" action="${editStepUrl}" method="post" cssClass="form-horizontal" role="form" data-ajax-shadowbox=".ajax-shadowbox">
 
     <div class="form-group">
         <div class="col-sm-12">
@@ -198,17 +206,10 @@
                                     </div>
                                 </div>
                             </div>
-                        
                             <button type="submit" name="addField" class="btn btn-default pull-right"><op:translate key="ADD" /></button>
-                        
                         </div>
+                        
                         <div role="tabpanel" class="tab-pane" id="CreateFieldset">
-                            <div class="form-group">
-                                <form:label path="newFieldSet.variableName" cssClass="col-sm-3 control-label"><op:translate key="NAME" /></form:label>
-                                <div class="col-sm-9">
-                                    <input name="newFieldSet.variableName" class="form-control" placeholder='<op:translate key="NAME" />' value="${form.newFieldSet.variableName}" type="text">
-                                </div>
-                            </div>
                             <div class="form-group">
                                 <form:label path="newFieldSet.label" cssClass="col-sm-3 control-label"><op:translate key="LABEL" /></form:label>
                                 <div class="col-sm-9">
@@ -216,8 +217,8 @@
                                 </div>
                             </div>
                             <button type="submit" name="addFieldSet" class="btn btn-default pull-right"><op:translate key="ADD" /></button>
-                        
                         </div>
+                        
                         <c:if test="${not empty form.selectedField}">
                             <div role="tabpanel" class="tab-pane <c:if test="${'edit' eq activeFormTab}">active</c:if>" id="Edit">
                                 <c:if test="${form.selectedField.fieldSet eq true}">
@@ -230,7 +231,7 @@
                                     <div class="form-group">
 		                                  <form:label path="selectedField.label" cssClass="col-sm-3 control-label"><op:translate key="LABEL" /></form:label>
 		                                  <div class="col-sm-9">
-		                                      <input name="selectedField.label" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.selectedField.label}" type="text">
+		                                      <input name="selectedField.superLabel" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.selectedField.superLabel}" type="text">
 		                                      <span class="help-block"><op:translate key="LABEL_HELP" /></span>
 		                                  </div>
 		                             </div>

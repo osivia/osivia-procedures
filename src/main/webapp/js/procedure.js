@@ -23,8 +23,7 @@ function sortableStart(event, ui){
 	// empêche la sélection du champ ou filtre
 	$JQry(event.originalEvent.target).off();
 	$JQry(event.originalEvent.target).on('click',function(e){
-		event.preventDefault(); // cas control-label
-		event.stopImmediatePropagation();
+		e.stopImmediatePropagation();
 	});
 	// on sauvegarde la position de départ de l'item
 	ui.item.data("itemStartPosition",ui.item.position());
@@ -41,8 +40,15 @@ function sortableStop(filter, event, ui){
 		// soumet la mise à jour du formulaire
 		$JQry(ui.item).closest("form").find("input[name='updateForm']").click();
 	}
-	event.preventDefault(); // cas control-label
-	event.stopImmediatePropagation();
+};
+
+function sortableTableHelper (e, tr) {
+	var $originals = tr.children();
+    var $helper = tr.clone();
+    $helper.children().each(function(index) {
+    	$JQry(this).width($originals.eq(index).width());
+    });
+    return $helper;
 };
 
 function updateFilters(input){
@@ -443,6 +449,17 @@ $JQry(function() {
 					$JQry("#formulaire-newField-list-editor-optionList").find("tbody").text(buildRow(rowList[i].label, rowList[i].value));
 				}
 			}
+			$JQry("#formulaire-newField-list-editor-optionList tbody").sortable({
+				helper: sortableTableHelper,
+				forcePlaceholderSize: true,
+				forceHelperSize: true,
+				start :function(event, ui) {
+					ui.helper.display = "table";
+				},
+				stop: function(event, ui) {
+					$JQry("input[name$='newField.varOptions']").val(jsonifyList($JQry("#formulaire-newField-list-editor-optionList").find("tbody")));
+				}
+			});
 			$JQry("#formulaire-newField-list-editor").removeClass("hidden");
 		}else if($JQry(this).val() == 'TEXT'){
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
@@ -486,6 +503,17 @@ $JQry(function() {
 					$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").append(buildRow(rowList[i].label, rowList[i].value));
 				}
 			}
+			$JQry("#formulaire-selectedField-list-editor-optionList tbody").sortable({
+				helper: sortableTableHelper,
+				forcePlaceholderSize: true,
+				forceHelperSize: true,
+				start :function(event, ui) {
+					ui.helper.display = "table";
+				},
+				stop: function(event, ui) {
+					$JQry("input[name$='selectedField.varOptions']").val(jsonifyList($JQry("#formulaire-selectedField-list-editor-optionList").find("tbody")));
+				}
+			});
 			$JQry("#formulaire-selectedField-list-editor").removeClass("hidden");
 		}else if($JQry(this).val() == 'TEXT'){
 			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
@@ -524,6 +552,9 @@ $JQry(function() {
 		
 		// on maj le json du champ option
 		$JQry("input[name$='newField.varOptions']").val(jsonifyList($JQry("#formulaire-newField-list-editor-optionList").find("tbody")));
+		
+		$JQry("#formulaire-newField-list-editor-newOption-label").val("");
+		$JQry("#formulaire-newField-list-editor-newOption-value").val("");
 		
 		$JQry(".formulaire-list-editor-removeOption").click(removeRow);
 	});
@@ -585,6 +616,9 @@ $JQry(function() {
 		
 		// on maj le json du champ option
 		$JQry("input[name$='selectedField.varOptions']").val(jsonifyList($JQry("#formulaire-selectedField-list-editor-optionList").find("tbody")));
+		
+		$JQry("#formulaire-selectedField-list-editor-newOption-label").val("");
+		$JQry("#formulaire-selectedField-list-editor-newOption-value").val("");
 		
 		$JQry(".formulaire-list-editor-removeOption").click(removeRow);
 	});
