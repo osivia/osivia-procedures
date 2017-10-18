@@ -1359,7 +1359,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             throw new PortletException(e);
         }
         int i = 0;
-        String uniqueVarName = StringUtils.isNotBlank(cleanLabel) ? cleanLabel : cleanLabel + i;
+        String uniqueVarName = StringUtils.isNotBlank(cleanLabel) ? cleanLabel : cleanLabel+i;
         while (variables.containsKey(uniqueVarName)) {
             uniqueVarName = cleanLabel + i;
         }

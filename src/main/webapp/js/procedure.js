@@ -27,9 +27,16 @@ function sortableStart(event, ui){
 	});
 	// on sauvegarde la position de départ de l'item
 	ui.item.data("itemStartPosition",ui.item.position());
+	ui.item.data("moving", true);
 };
 
 function sortableStop(filter, event, ui){
+	// empêche la sélection du champ ou filtre
+	$JQry(event.originalEvent.target).off();
+	$JQry(event.originalEvent.target).on('click',function(e){
+		e.stopImmediatePropagation();
+		event.preventDefault(); // cas control-label
+	});
 	var itemPosition = ui.item.position();
 	var itemStartPosition = ui.item.data('itemStartPosition');
 	// on ne maj le form que si la position a changée
@@ -37,8 +44,16 @@ function sortableStop(filter, event, ui){
 		$JQry(filter).children("li").each(function(index, element){
 			updatePath(index, [], element);
 		});
+		// empêche de lancer l'évènement click sur le parent
+		event.stopPropagation();
+		event.preventDefault(); // cas control-label
+		
 		// soumet la mise à jour du formulaire
 		$JQry(ui.item).closest("form").find("input[name='updateForm']").click();
+	}else{
+		setTimeout(function() {
+			ui.item.data("moving", false);
+		},300);
 	}
 };
 
@@ -141,13 +156,13 @@ $JQry(function() {
 		connectWith : "#procedure-sortable ul",
 		cursor : "move",
 		tolerance : "pointer",
-		axis: "y",
+		axis : "y",
 		forcePlaceholderSize: true,
 		placeholder: "procedure-sortable-placeHolder",
 		start :function(event, ui) {
 			sortableStart(event, ui);
 		},
-		stop: function(event, ui) {
+		update: function(event, ui) {
 			sortableStop("#procedure-sortable > ul", event, ui);
 		}
 	});
@@ -197,8 +212,8 @@ $JQry(function() {
 	// sélection d'un champ
 	$JQry("#procedure-sortable li").click(function(event) {
 		
-		var $target = $JQry(event.target);
-		if(!$target.is("span.select2-selection")){
+		var $target = $JQry(this);
+		if(!$target.hasClass("select2-selection") && !$target.hasClass("ui-sortable-helper") &&  !$target.data("moving")){
 			// make selected
 			$JQry(".fieldSelected").removeClass("fieldSelected");
 			$JQry("#Edit").find("input").attr("disabled", "true");
@@ -226,7 +241,7 @@ $JQry(function() {
 		start : function(event, ui) {
 			sortableStart(event, ui);
 		},
-		stop: function(event, ui) {
+		update: function(event, ui) {
 			sortableStop("#filter-sortable > ul", event, ui);
 		}
 	});
@@ -453,6 +468,7 @@ $JQry(function() {
 				helper: sortableTableHelper,
 				forcePlaceholderSize: true,
 				forceHelperSize: true,
+				axis : "y",
 				start :function(event, ui) {
 					ui.helper.display = "table";
 				},
@@ -507,6 +523,7 @@ $JQry(function() {
 				helper: sortableTableHelper,
 				forcePlaceholderSize: true,
 				forceHelperSize: true,
+				axis : "y",
 				start :function(event, ui) {
 					ui.helper.display = "table";
 				},
