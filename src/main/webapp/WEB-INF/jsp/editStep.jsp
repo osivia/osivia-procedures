@@ -267,7 +267,7 @@
 				                     <div class="form-group hidden">
 					                      <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label"><op:translate key="OPTIONS" /></form:label>
 					                      <div class="col-sm-9">
-					                        <input name="selectedField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />' value='${form.selectedField.varOptions}' type="text">
+					                        <input name="selectedField.varOptions" class="form-control" value='${form.selectedField.varOptions}' type="text">
 					                      </div>
 					                  </div>
 					                  

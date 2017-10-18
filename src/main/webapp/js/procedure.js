@@ -446,7 +446,7 @@ $JQry(function() {
 			if (json.trim().length > 0) {
 				var rowList = JSON.parse(json);
 				for (var i = 0; i < rowList.length; i++) {
-					$JQry("#formulaire-newField-list-editor-optionList").find("tbody").text(buildRow(rowList[i].label, rowList[i].value));
+					$JQry("#formulaire-newField-list-editor-optionList").find("tbody").append(buildRow(rowList[i].label, rowList[i].value));
 				}
 			}
 			$JQry("#formulaire-newField-list-editor-optionList tbody").sortable({
