@@ -408,8 +408,10 @@ public class ProcedureServiceImpl implements IProcedureService {
                 }
             }
         } else {
-            for (final Field nestedField : field.getFields()) {
-                updateFormWithObjectsValues(nestedField, ojMap, nuxeoController, form);
+            if (field.getFields() != null) {
+                for (final Field nestedField : field.getFields()) {
+                    updateFormWithObjectsValues(nestedField, ojMap, nuxeoController, form);
+                }
             }
         }
     }
