@@ -24,6 +24,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.services.procedure.formFilters.AddActorFormFilter;
 import org.osivia.services.procedure.formFilters.CreateRecordFilter;
 import org.osivia.services.procedure.formFilters.DefineVariableFilter;
 import org.osivia.services.procedure.formFilters.DeleteOnEndingFormFilter;
@@ -157,6 +158,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(DefineVariableFilter.ID, new DefineVariableFilter());
         formFilters.put(SendMailFilter.ID, new SendMailFilter());
         formFilters.put(SetActorFormFilter.ID, new SetActorFormFilter());
+        formFilters.put(AddActorFormFilter.ID, new AddActorFormFilter());
         formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
         formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
         formFilters.put(SetAdditionalAuthorization.ID, new SetAdditionalAuthorization());

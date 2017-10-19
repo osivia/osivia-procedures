@@ -12,29 +12,29 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 /**
- * Set actor form filter.
+ * Add actor form filter.
  * 
- * @author Cédric Krommenhoek
+ * @author Dorian Licois
  * @see FormFilter
  */
-public class SetActorFormFilter implements FormFilter {
+public class AddActorFormFilter implements FormFilter {
 
     /** Form filter identifier. */
-    public static final String ID = "SET_ACTOR";
+    public static final String ID = "ADD_ACTOR";
 
     /** Actor parameter. */
     private static final String ACTOR_PARAMETER = "actor";
 
     /** Form filter label internationalization key. */
-    private static final String LABEL_INTERNATIONALIZATION_KEY = "SET_ACTOR_LABEL";
+    private static final String LABEL_INTERNATIONALIZATION_KEY = "ADD_ACTOR_LABEL";
     /** Form filter description internationalization key. */
-    private static final String DESCRIPTION_INTERNATIONALIZATION_KEY = "SET_ACTOR_DESCRIPTION";
+    private static final String DESCRIPTION_INTERNATIONALIZATION_KEY = "ADD_ACTOR_DESCRIPTION";
 
 
     /**
      * Constructor
      */
-    public SetActorFormFilter() {
+    public AddActorFormFilter() {
         super();
     }
 
@@ -98,7 +98,6 @@ public class SetActorFormFilter implements FormFilter {
         String actor = context.getParamValue(executor, ACTOR_PARAMETER);
 
         if (StringUtils.isNotBlank(actor)) {
-            actors.clear();
             actors.add(actor);
         }
     }
