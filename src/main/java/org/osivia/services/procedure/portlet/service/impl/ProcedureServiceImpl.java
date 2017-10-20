@@ -172,7 +172,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             Throwable rootCause = getRootCause(e);
             String errorMessage = rootCause.getMessage();
 
-            if (WEBID_ERROR.matcher(errorMessage).matches()) {
+            if (errorMessage != null && WEBID_ERROR.matcher(errorMessage).matches()) {
                 throw new WebIdException();
             } else {
                 throw new PortletException(e);
