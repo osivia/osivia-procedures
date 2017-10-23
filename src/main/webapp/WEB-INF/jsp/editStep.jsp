@@ -183,13 +183,6 @@
 		                        </div>
 	                        </div>
 	                        
-	                        <div class="form-group hidden" id="formulaire-newField-displayText">
-								<label class="col-sm-3 control-label"><op:translate key="DISPLAY_OPTION" /></label>
-								<div class="col-sm-9">
-								        <textarea class="form-control" name="newField.displayText"></textarea>
-								</div>
-	                        </div>
-	                        
 	                        <div class="form-group" id="formulaire-newField-additional-options">
 	                           <div class="col-sm-offset-3 col-sm-9">
 	                               <div class="checkbox">
@@ -216,6 +209,13 @@
                                     <input name="newFieldSet.label" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.newFieldSet.label}" type="text">
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <form:label path="newFieldSet.varOptions" cssClass="col-sm-3 control-label"><op:translate key="DISPLAY_OPTION" /></form:label>
+                                <div class="col-sm-9">
+                                    <form:textarea path="newFieldSet.varOptions" cssClass="form-control"/>
+                                    <span class="help-block"><op:translate key="DISPLAY_HELP" /></span>
+                                </div>
+                            </div>
                             <button type="submit" name="addFieldSet" class="btn btn-default pull-right"><op:translate key="ADD" /></button>
                         </div>
                         
@@ -235,6 +235,13 @@
 		                                      <span class="help-block"><op:translate key="LABEL_HELP" /></span>
 		                                  </div>
 		                             </div>
+		                             <div class="form-group">
+		                                <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label"><op:translate key="DISPLAY_OPTION" /></form:label>
+		                                <div class="col-sm-9">
+		                                    <form:textarea path="selectedField.varOptions" cssClass="form-control"/>
+		                                    <span class="help-block"><op:translate key="DISPLAY_HELP" /></span>
+		                                </div>
+		                            </div>
                                 </c:if>
                                 <c:if test="${form.selectedField.fieldSet ne true}">
 	                               <div class="form-group">
@@ -270,7 +277,6 @@
 					                        <input name="selectedField.varOptions" class="form-control" value='${form.selectedField.varOptions}' type="text">
 					                      </div>
 					                  </div>
-					                  
 			                            <div class="form-group hidden" id="formulaire-selectedField-list-editor">
 			                                <label class="col-sm-3 control-label"><op:translate key="EDIT_OPTIONS" /></label>
 			                                <div class="col-sm-9">
@@ -308,7 +314,7 @@
 			                                </div>
 			                            </div>
 					                  
-                                      <div class="form-group">
+                                      <div class="form-group" id="formulaire-selectedField-additional-options">
 			                               <div class="col-sm-offset-3 col-sm-9">
 			                                   <div class="checkbox">
 			                                        <label>

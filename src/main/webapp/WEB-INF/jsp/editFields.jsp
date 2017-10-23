@@ -15,10 +15,14 @@
 			          <div class="panel panel-default">
 			      </c:otherwise>
 			  </c:choose>
-		   			<div class="panel-heading">
-		   				${field.superLabel}
-		   			</div>
+			  
+			        <c:if test="${not empty field.superLabel}">
+			   			<div class="panel-heading">
+			   				${field.superLabel}
+			   			</div>
+			        </c:if>
 		   			<div class="panel-body">
+		   			    <p class="text-pre-wrap">${form.procedureModel.variables[field.name].varOptions}</p>
 		   				<ul class="procedure-sortable list-unstyled">
 							<c:set var="fieldBkp" value="${field}" scope="page"/>
 							<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">

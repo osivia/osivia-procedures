@@ -15,7 +15,7 @@
 			<c:set var="fieldVarOptions" value="${form.procedureModel.variables[field.name].varOptions}" />
 			<c:set var="downloadLink" value="${form.procedureInstance.filesPath[field.name].downloadLink}" />
 			<c:set var="fileName" value="${form.procedureInstance.filesPath[field.name].fileName}" />
-			
+
 			<c:choose>
 				<c:when test="${field.input eq true}">
 					<c:choose>
@@ -234,7 +234,8 @@
 				</c:otherwise>
 			</c:choose>
 		</div>
-	</div> <c:forEach var="pathPart" items="${field.path}" varStatus="status">
+	</div> 
+	<c:forEach var="pathPart" items="${field.path}" varStatus="status">
 		<c:set var="springPath"
 			value="${status.first ? 'theSelectedStep' : springPath}.fields[${pathPart}]"
 			scope="request" />

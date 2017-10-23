@@ -454,6 +454,7 @@ $JQry(function() {
 	var updateNewFieldType = function() {
 		if($JQry(this).val() == 'RADIOLIST' || $JQry(this).val() == 'CHECKBOXLIST' || $JQry(this).val() == 'SELECTLIST'){
 			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
+			$JQry("input[name$='newField.helpText']").closest("div.form-group").removeClass("hidden");
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 			
 			// maj du tableau des options
@@ -480,34 +481,33 @@ $JQry(function() {
 		}else if($JQry(this).val() == 'TEXT'){
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
 			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
+			$JQry("input[name$='newField.helpText']").closest("div.form-group").removeClass("hidden");
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else if($JQry(this).val() == 'TEXTAREA'){
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
 			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
+			$JQry("input[name$='newField.helpText']").closest("div.form-group").removeClass("hidden");
 			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else if($JQry(this).val() == 'DISPLAY'){
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
 			$JQry("#formulaire-newField-additional-options").addClass("hidden");
-			$JQry("#formulaire-newField-displayText").removeClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
+			$JQry("input[name$='newField.helpText']").closest("div.form-group").addClass("hidden");
+			$JQry("input[name$='newField.varOptions']").closest("div.form-group").removeClass("hidden");
 		}else{
 			$JQry("#formulaire-newField-list-editor").addClass("hidden");
 			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").removeClass("hidden");
+			$JQry("input[name$='newField.helpText']").closest("div.form-group").removeClass("hidden");
+			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
 		}
 	};
 	$JQry("select[name$='newField.type']").change(updateNewFieldType);
 	$JQry("select[name$='newField.type']").each(updateNewFieldType);
 	
-	$JQry("textarea[name$='newField.displayText']").change(function() {
-		var texte = $JQry(this).val();
-		$JQry("input[name$='newField.varOptions']").val(texte);
-	});
-	
 	// gestion du type de champ sélectionné
 	var updateSelectedFieldType = function() {
 		if($JQry(this).val() == 'RADIOLIST' || $JQry(this).val() == 'CHECKBOXLIST' || $JQry(this).val() == 'SELECTLIST'){
 			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
+			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").removeClass("hidden");
 			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
 			
 			// maj du tableau des options
@@ -535,23 +535,25 @@ $JQry(function() {
 		}else if($JQry(this).val() == 'TEXT'){
 			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
 			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
+			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").removeClass("hidden");
 			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else if($JQry(this).val() == 'TEXTAREA'){
 			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
 			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
+			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").removeClass("hidden");
 			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
 		}else if($JQry(this).val() == 'DISPLAY'){
 			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
 			$JQry("#formulaire-selectedField-additional-options").addClass("hidden");
-			$JQry("#formulaire-selectedField-displayText").removeClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
+			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").addClass("hidden");
+			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").removeClass("hidden");
 		}else{
 			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
 			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").removeClass("hidden");
+			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").removeClass("hidden");
+			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
 		}
 	};
-	
 	
 	var removeRow = function(){
 		$JQry(this).closest("tr").remove();
