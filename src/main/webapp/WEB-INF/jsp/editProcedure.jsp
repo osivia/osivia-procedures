@@ -172,7 +172,7 @@
                     </c:if>
                     <c:if test="${!form.advancedMode}">
                         <form:select path="procedureModel.startingStep" class="stepSelect-select2 form-control select2" data-url="${stepSearchUrl}" cssStyle="width: 100%;">
-                           <form:option value="${form.procedureModel.startingStep}" />
+                           <option value="${form.theCurrentStep.reference}" selected="selected">${form.theCurrentStep.stepName}</option>
                         </form:select>
                     </c:if>
                 </div>

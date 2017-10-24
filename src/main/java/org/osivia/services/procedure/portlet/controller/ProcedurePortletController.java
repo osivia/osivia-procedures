@@ -138,7 +138,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @Autowired
     private IProcedureService procedureService;
 
-    /** entProfilService */
+    /** groupService */
     private GroupService groupService;
 
     /** Internationalization bundle factory. */
