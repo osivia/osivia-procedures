@@ -393,7 +393,7 @@
                           </div>
                           <div class="col-sm-4">
                                 <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
-                                   <form:option value="${form.theSelectedStep.actions[status.index].stepReference}" />
+                                   <option value="${form.theCurrentStep.reference}" selected="selected">${form.theCurrentStep.stepName}</option>
                                 </form:select>
                             </div>
                      </c:if>
