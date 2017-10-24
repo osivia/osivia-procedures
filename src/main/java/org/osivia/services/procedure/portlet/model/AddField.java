@@ -10,7 +10,7 @@ public class AddField {
     private String variableName;
 
     /** type */
-    private VariableTypesEnum type;
+    private VariableTypesAllEnum type;
 
     /** label */
     private String label;
@@ -91,7 +91,7 @@ public class AddField {
      *
      * @return the type
      */
-    public VariableTypesEnum getType() {
+    public VariableTypesAllEnum getType() {
         return type;
     }
 
@@ -100,7 +100,7 @@ public class AddField {
      *
      * @param type the type to set
      */
-    public void setType(VariableTypesEnum type) {
+    public void setType(VariableTypesAllEnum type) {
         this.type = type;
     }
 

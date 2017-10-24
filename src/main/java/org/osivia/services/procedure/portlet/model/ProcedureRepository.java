@@ -42,13 +42,13 @@ public class ProcedureRepository {
         fieldTitle.setPath("0");
         fieldTitle.setRequired(true);
         fieldTitle.setSuperLabel("Titre");
-        fieldTitle.setType(VariableTypesEnum.TEXT);
+        fieldTitle.setType(VariableTypesAllEnum.TEXT);
         List<Field> fields = new ArrayList<Field>();
         fields.add(fieldTitle);
         step1.setFields(fields);
 
         Map<String, Variable> variables = new HashMap<String, Variable>();
-        variables.put(DEFAULT_FIELD_TITLE_NAME, new Variable(DEFAULT_FIELD_TITLE_NAME, "Titre", VariableTypesEnum.TEXT, null));
+        variables.put(DEFAULT_FIELD_TITLE_NAME, new Variable(DEFAULT_FIELD_TITLE_NAME, "Titre", VariableTypesAllEnum.TEXT, null));
         procedureModel.setVariables(variables);
 
         procedureModel.getSteps().add(step1);

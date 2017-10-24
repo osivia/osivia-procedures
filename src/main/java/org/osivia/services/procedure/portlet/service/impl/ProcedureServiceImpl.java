@@ -52,7 +52,7 @@ import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.Record;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
-import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
+import org.osivia.services.procedure.portlet.model.VariableTypesAllEnum;
 import org.osivia.services.procedure.portlet.model.WebIdException;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.osivia.services.procedure.portlet.util.ObjetMetierUtil;
@@ -422,7 +422,7 @@ public class ProcedureServiceImpl implements IProcedureService {
 
         List<Map<String, String>> varOptions;
         for (final Entry<String, Variable> entryV : variables.entrySet()) {
-            if (VariableTypesEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
+            if (VariableTypesAllEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesAllEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
                 varOptions = new ArrayList<Map<String, String>>();
                 final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions());
                 Map<String, String> vocabEntry;

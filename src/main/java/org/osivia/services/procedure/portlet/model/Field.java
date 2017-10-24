@@ -51,7 +51,7 @@ public class Field implements Comparable<Field> {
 
     /** type */
     @JsonIgnore
-    private VariableTypesEnum type;
+    private VariableTypesAllEnum type;
 
     /** label */
     @JsonIgnore
@@ -229,7 +229,7 @@ public class Field implements Comparable<Field> {
      *
      * @return the type
      */
-    public VariableTypesEnum getType() {
+    public VariableTypesAllEnum getType() {
         return type;
     }
 
@@ -239,7 +239,7 @@ public class Field implements Comparable<Field> {
      *
      * @param type the type to set
      */
-    public void setType(VariableTypesEnum type) {
+    public void setType(VariableTypesAllEnum type) {
         this.type = type;
     }
 

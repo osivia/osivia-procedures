@@ -71,7 +71,7 @@ import org.osivia.services.procedure.portlet.model.ProcedureRepository;
 import org.osivia.services.procedure.portlet.model.Record;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
-import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
+import org.osivia.services.procedure.portlet.model.VariableTypesAllEnum;
 import org.osivia.services.procedure.portlet.model.WebIdException;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.osivia.services.procedure.portlet.util.VariableTypesEnumJsonSerializer;
@@ -541,16 +541,24 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (StringUtils.isNotBlank(filter)) {
             boolean exactMatch = false;
             for (Entry<String, Variable> entryVar : form.getProcedureModel().getVariables().entrySet()) {
-                if (StringUtils.equalsIgnoreCase(entryVar.getValue().getName(), filter)) {
-                    listeVar.add(0, entryVar.getValue());
-                    exactMatch = true;
-                } else if (StringUtils.containsIgnoreCase(entryVar.getValue().getName(), filter)
-                        || StringUtils.containsIgnoreCase(entryVar.getValue().getLabel(), filter)) {
-                    listeVar.add(entryVar.getValue());
+                if (VariableTypesAllEnum.FIELDSET.equals(entryVar.getValue().getType())) {
+                    if (StringUtils.equalsIgnoreCase(entryVar.getValue().getName(), filter)) {
+                        exactMatch = true;
+                        listeVar.add(0, new Variable(buildUniqueVariableName(form.getProcedureModel().getVariables(), filter), null, VariableTypesAllEnum.TEXT,
+                                null));
+                    }
+                } else {
+                    if (StringUtils.equalsIgnoreCase(entryVar.getValue().getName(), filter)) {
+                        listeVar.add(0, entryVar.getValue());
+                        exactMatch = true;
+                    } else if (StringUtils.containsIgnoreCase(entryVar.getValue().getName(), filter)
+                            || StringUtils.containsIgnoreCase(entryVar.getValue().getLabel(), filter)) {
+                        listeVar.add(0, entryVar.getValue());
+                    }
                 }
             }
             if (!exactMatch && BooleanUtils.isNotTrue(defaultVars)) {
-                listeVar.add(0, new Variable(StringUtils.deleteWhitespace(filter), null, VariableTypesEnum.TEXT, null));
+                listeVar.add(0, new Variable(StringUtils.deleteWhitespace(filter), null, VariableTypesAllEnum.TEXT, null));
             }
         } else {
             listeVar.addAll(form.getProcedureModel().getVariables().values());
@@ -569,7 +577,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             // VariableTypesEnumJsonSerializer pour avoir les bons label
             SimpleModule simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
             Bundle bundle = bundleFactory.getBundle(request.getLocale());
-            simpleModule.addSerializer(VariableTypesEnum.class, new VariableTypesEnumJsonSerializer(bundle));
+            simpleModule.addSerializer(VariableTypesAllEnum.class, new VariableTypesEnumJsonSerializer(bundle));
             mapper.registerModule(simpleModule);
 
             mapper.writeValue(response.getPortletOutputStream(), listeVar);
@@ -1364,6 +1372,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         String uniqueVarName = StringUtils.isNotBlank(cleanLabel) ? cleanLabel : cleanLabel+i;
         while (variables.containsKey(uniqueVarName)) {
             uniqueVarName = cleanLabel + i;
+            i++;
         }
         return uniqueVarName;
     }
@@ -1381,6 +1390,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editStep", params = "addFieldSet")
     public void addFieldSet(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         AddField newFieldSet = form.getNewFieldSet();
+        newFieldSet.setType(VariableTypesAllEnum.FIELDSET);
         Map<String, Variable> variables = form.getProcedureModel().getVariables();
         if (StringUtils.isBlank(newFieldSet.getVariableName())) {
             newFieldSet.setVariableName(buildUniqueVariableName(variables, newFieldSet.getLabel()));

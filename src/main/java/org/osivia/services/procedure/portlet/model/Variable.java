@@ -17,13 +17,13 @@ creatorVisibility = Visibility.NONE)
 public class Variable {
 
     /** DC_CREATOR */
-    public static final Variable DC_CREATOR = new Variable("dc:creator", "Créé par", VariableTypesEnum.TEXT, null);
+    public static final Variable DC_CREATOR = new Variable("dc:creator", "Créé par", VariableTypesAllEnum.TEXT, null);
     /** DC_CREATED */
-    public static final Variable DC_CREATED = new Variable("dc:created", "Créé le", VariableTypesEnum.TEXT, null);
+    public static final Variable DC_CREATED = new Variable("dc:created", "Créé le", VariableTypesAllEnum.TEXT, null);
     /** DC_LAST_CONTRIBUTOR */
-    public static final Variable DC_LAST_CONTRIBUTOR = new Variable("dc:lastContributor", "Modifié par", VariableTypesEnum.TEXT, null);
+    public static final Variable DC_LAST_CONTRIBUTOR = new Variable("dc:lastContributor", "Modifié par", VariableTypesAllEnum.TEXT, null);
     /** DC_MODIFIED */
-    public static final Variable DC_MODIFIED = new Variable("dc:modified", "Modifié le", VariableTypesEnum.TEXT, null);
+    public static final Variable DC_MODIFIED = new Variable("dc:modified", "Modifié le", VariableTypesAllEnum.TEXT, null);
 
     /** name */
     @JsonProperty("name")
@@ -35,7 +35,7 @@ public class Variable {
 
     /** type */
     @JsonProperty("type")
-    private VariableTypesEnum type;
+    private VariableTypesAllEnum type;
 
     /** varOptions */
     @JsonProperty("varOptions")
@@ -74,7 +74,7 @@ public class Variable {
      * @param type
      * @param varOptions
      */
-    public Variable(String name, String label, VariableTypesEnum type, String varOptions) {
+    public Variable(String name, String label, VariableTypesAllEnum type, String varOptions) {
         this.name = name;
         this.label = label;
         this.type = type;
@@ -126,7 +126,7 @@ public class Variable {
      *
      * @return the type
      */
-    public VariableTypesEnum getType() {
+    public VariableTypesAllEnum getType() {
         return type;
     }
 
@@ -136,7 +136,7 @@ public class Variable {
      *
      * @param type the type to set
      */
-    public void setType(VariableTypesEnum type) {
+    public void setType(VariableTypesAllEnum type) {
         this.type = type;
     }
 

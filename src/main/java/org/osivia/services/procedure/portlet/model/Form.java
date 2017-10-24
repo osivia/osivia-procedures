@@ -58,7 +58,7 @@ public class Form {
     private boolean advancedMode;
     
     /** variableTypesEnum */
-    private VariableTypesEnum[] variableTypesEnum = VariableTypesEnum.values();
+    private VariableTypesAllEnum[] variableTypesEnum = VariableTypesAllEnum.filteredValues();
 
     /** variableTypesAltEnum */
     private VariableTypesAltEnum[] variableTypesAltEnum = VariableTypesAltEnum.values();
@@ -342,7 +342,7 @@ public class Form {
      * Getter for variableTypesEnum.
      * @return the variableTypesEnum
      */
-    public VariableTypesEnum[] getVariableTypesEnum() {
+    public VariableTypesAllEnum[] getVariableTypesEnum() {
         return variableTypesEnum;
     }
 
@@ -350,7 +350,7 @@ public class Form {
      * Setter for variableTypesEnum.
      * @param variableTypesEnum the variableTypesEnum to set
      */
-    public void setVariableTypesEnum(VariableTypesEnum[] variableTypesEnum) {
+    public void setVariableTypesEnum(VariableTypesAllEnum[] variableTypesEnum) {
         this.variableTypesEnum = variableTypesEnum;
     }
 

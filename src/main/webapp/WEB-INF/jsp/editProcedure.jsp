@@ -56,12 +56,14 @@
                     <input name="procedureModel.name" class="form-control" placeholder='<op:translate key="NAME" />' value="${form.procedureModel.name}" type="text">
 			    </div>
 			</div>
-			<div class="form-group">
-                <form:label path="procedureModel.currentWebId" cssClass="col-sm-3 control-label"><op:translate key="IDENTITY" /></form:label>
-                <div class="col-sm-9">
-                    <p class="form-control-static">${form.procedureModel.currentWebId}</p>
-                </div>
-            </div>
+			<c:if test="${not empty form.procedureModel.currentWebId}">
+				<div class="form-group">
+	                <form:label path="procedureModel.currentWebId" cssClass="col-sm-3 control-label"><op:translate key="IDENTITY" /></form:label>
+	                <div class="col-sm-9">
+	                    <p class="form-control-static">${form.procedureModel.currentWebId}</p>
+	                </div>
+	            </div>
+            </c:if>
 		    <c:if test="${form.advancedMode}">
                 <div class="form-group">
 		            <form:label path="procedureModel.newWebId" cssClass="col-sm-3 control-label"><op:translate key="IDENTITY_SET" /></form:label>
