@@ -175,7 +175,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      * @throws CMSException
      */
     @RenderMapping
-    public String defaultView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+    public String defaultView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         defaultRenderAction(nuxeoController);
         if (StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
@@ -201,9 +201,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             if (StringUtils.isBlank(getDocType(request)) && StringUtils.isNotBlank(getDashboardPath(request))) {
                 return DASHBOARD_VIEW;
             } else if (StringUtils.equals(getAction(request), "adminproc")) {
+                validateModel(form, nuxeoController);
                 // édition procédure
                 return CREATE_VIEW;
             } else if (StringUtils.equals(getAction(request), "adminprocstep")) {
+                validateModel(form, nuxeoController);
                 // édition procédure, étape
                 return EDIT_VIEW;
             } else if (StringUtils.equals(getAction(request), "detailproc")) {
@@ -220,19 +222,26 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @RenderMapping(params = "action=editProcedure")
-    public String editProcedureView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+    public String editProcedureView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException,
+            CMSException {
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        validateModel(form, nuxeoController);
         return CREATE_VIEW;
     }
 
     @RenderMapping(params = "action=editStep")
-    public String editStepView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+    public String editStepView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
         request.setAttribute("activeTab", request.getParameter("activeTab"));
         request.setAttribute("activeFormTab", request.getParameter("activeFormTab"));
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        validateModel(form, nuxeoController);
         return EDIT_VIEW;
     }
 
     @RenderMapping(params = "action=editTdb")
-    public String editTdbView(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+    public String editTdbView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        validateModel(form, nuxeoController);
         return EDIT_TDB;
     }
 
@@ -244,19 +253,26 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @RenderMapping(params = "action=editAction")
-    public String endStepView(RenderRequest request, RenderResponse response, @RequestParam(value = "editAction", required = false) String editAction)
+    public String endStepView(RenderRequest request, RenderResponse response, @RequestParam(value = "editAction", required = false) String editAction,
+            @ModelAttribute(value = "form") Form form)
             throws PortletException, CMSException {
         request.setAttribute("activeTab", request.getParameter("activeTab"));
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        validateModel(form, nuxeoController);
         return VIEW_ACTION;
     }
 
     @RenderMapping(params = "action=viewProcedure")
-    public String viewProcedure(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+    public String viewProcedure(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        validateModel(form, nuxeoController);
         return VIEW_PROCEDURE;
     }
 
     @RenderMapping(params = "action=manageVariables")
-    public String viewManageVariables(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
+    public String viewManageVariables(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        validateModel(form, nuxeoController);
         return MANAGE_VIEW;
     }
 
@@ -412,6 +428,47 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             ((RenderResponse) response).setTitle(form.getProcedureModel().getName());
         }
         return form;
+    }
+
+    /**
+     * Displays warning(s) if model is missing critical elements
+     * 
+     * @param form
+     * @param nuxeoController
+     */
+    private void validateModel(Form form, NuxeoController nuxeoController) {
+        
+        ProcedureModel procedureModel = form.getProcedureModel();
+        
+        if (procedureModel != null) {
+            List<Step> steps = procedureModel.getSteps();
+            if(steps == null || steps.size()==0){
+                String message = bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString("WARNING_NO_STEPS");
+                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), message, NotificationsType.WARNING);
+            }else{
+                for (Step step : steps) {
+                    List<Action> actions = step.getActions();
+                    String stepName = step.getStepName();
+                    if(actions == null || actions.size()==0){
+                        String message = bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString("WARNING_STEP_WITHOUT_ACTION", stepName);
+                        getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), message, NotificationsType.WARNING);
+                    }else{
+                        for (Action action : actions) {
+                            String stepReference = action.getStepReference();
+                            if (StringUtils.isBlank(stepReference)) {
+                                String message = bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString("WARNING_ACTION_WITHOUT_STEP", action.getLabel(), stepName);
+                                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), message, NotificationsType.WARNING);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (StringUtils.isBlank(procedureModel.getStartingStep())) {
+                String message = bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString("WARNING_NO_STARTING_STEP");
+                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), message, NotificationsType.WARNING);
+            }
+        }
     }
 
     @ModelAttribute(value = "procedureList")

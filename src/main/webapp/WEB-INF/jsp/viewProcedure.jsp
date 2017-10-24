@@ -22,10 +22,6 @@
             <h3 class="panel-title">${form.theCurrentStep.stepName}</h3>
         </div>
         <div class="panel-body">
-            <c:if test="${not empty form.alertSuccess}">
-                <div class="alert alert-success" role="alert">${form.alertSuccess}</div>
-            </c:if>
-        
             <ul class="procedure-sortable list-unstyled">
                 <c:forEach var="field" items="${form.theCurrentStep.fields}" varStatus="status">
 	                <c:set var="field" value="${field}" scope="request"/>

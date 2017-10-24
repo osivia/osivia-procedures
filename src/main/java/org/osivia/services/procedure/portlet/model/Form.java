@@ -30,9 +30,6 @@ public class Form {
 
     private Record record;
 
-    /** alertSuccess */
-    private String alertSuccess;
-
     /** addField */
     private AddField newField;
 
@@ -218,24 +215,6 @@ public class Form {
      */
     public void setProcedureInstance(ProcedureInstance procedureInstance) {
         this.procedureInstance = procedureInstance;
-    }
-
-    /**
-     * Getter for alertSuccess.
-     *
-     * @return the alertSuccess
-     */
-    public String getAlertSuccess() {
-        return alertSuccess;
-    }
-
-    /**
-     * Setter for alertSuccess.
-     *
-     * @param alertSuccess the alertSuccess to set
-     */
-    public void setAlertSuccess(String alertSuccess) {
-        this.alertSuccess = alertSuccess;
     }
 
     /**
