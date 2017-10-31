@@ -737,7 +737,7 @@ function selector(button, value, name) {
 };
 
 function formatProfil (group) {
-	return group.text + ' (' + group.id + ')';
+	return group.text;
 };
 
 function formatField(variable) {
