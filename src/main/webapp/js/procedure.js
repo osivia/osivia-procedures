@@ -198,9 +198,10 @@ $JQry(function() {
 		axis: "y",
 		items: " .procedure-export",
 		stop: function(event, ui) {
-			var exportVarList;
+			var exportVarList = [];
 			$JQry(this).find(".procedure-export").each(function(index, element) {
-				exportVarList = exportVarList + ',' + $JQry(element).find("td").first().text();
+				var exportVar = $JQry(element).find("td").first().text();
+				exportVarList.push(exportVar);
 			});
 			
 			selector(this,exportVarList,'exportVarList');
