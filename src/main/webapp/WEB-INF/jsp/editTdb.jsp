@@ -34,7 +34,16 @@
     </div>
 </div>
 
-<form:form modelAttribute="form" action="${editTdbUrl}" method="post" role="form">
+<!-- Ajax shadowbox -->
+<div class="ajax-shadowbox">
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped active" role="progressbar">
+            <span><op:translate key="AJAX_REFRESH" /></span>
+        </div>
+    </div>
+</div>
+
+<form:form modelAttribute="form" action="${editTdbUrl}" method="post" role="form" data-ajax-shadowbox=".ajax-shadowbox">
 
     <div class="form-horizontal">
 	    <div class="form-group">
@@ -97,10 +106,10 @@
 		    </c:forEach>
 		    <tr>
 	           <td><form:input path="newColumn.label" type="text" cssClass="form-control" /></td>
-               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-autofill="true">
+               <td><form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true" data-autofill="true">
                 </form:select></td>
-               <td><form:checkbox path="newColumn.sortable" cssClass="form-control" /></td>
-               <td><form:checkbox path="newColumn.enableLink" cssClass="form-control" /></td>
+               <td><div class="checkbox text-center"><form:checkbox path="newColumn.sortable"/></div></td>
+               <td><div class="checkbox text-center"><form:checkbox path="newColumn.enableLink"/></div></td>
                <td><button type="submit" class="btn btn-default" name="addColumn"><op:translate key="ADD" /></button></td>
 		    </tr>
         </tbody>
@@ -123,7 +132,7 @@
                 </tr>
             </c:forEach>
             <tr>
-               <td><form:select path="newExportVar" class="fieldSelect-select2 form-control select2 " cssStyle="width: 100%;" data-url="${fieldSearchUrl}" >
+               <td><form:select path="newExportVar" class="fieldSelect-select2 form-control select2 " cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true">
                 </form:select></td>
                <td><button type="submit" class="btn btn-default" name="addExportVar"><op:translate key="ADD" /></button></td>
             </tr>
