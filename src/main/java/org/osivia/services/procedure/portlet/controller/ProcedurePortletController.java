@@ -252,17 +252,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @RenderMapping(params = "action=editAction")
-    public String endStepView(RenderRequest request, RenderResponse response, @RequestParam(value = "editAction", required = false) String editAction,
-            @ModelAttribute(value = "form") Form form)
+    public String endStepView(RenderRequest request, RenderResponse response, @RequestParam(value = "editAction", required = false) String editAction)
             throws PortletException, CMSException {
         request.setAttribute("activeTab", request.getParameter("activeTab"));
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        validateModel(form, nuxeoController);
         return VIEW_ACTION;
     }
 
     @RenderMapping(params = "action=viewProcedure")
-    public String viewProcedure(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
+    public String viewProcedure(RenderRequest request, RenderResponse response) throws PortletException, CMSException {
         return VIEW_PROCEDURE;
     }
 

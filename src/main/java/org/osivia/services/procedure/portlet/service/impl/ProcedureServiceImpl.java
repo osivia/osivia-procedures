@@ -16,6 +16,7 @@ import net.sf.json.JSONArray;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
@@ -99,10 +100,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             return new ProcedureModel(procedureModelInstance, nuxeoController);
 
         } catch (final NuxeoException e) {
-
-            Throwable rootCause = getRootCause(e);
-            String errorMessage = rootCause.getMessage();
-
+            String errorMessage = ExceptionUtils.getRootCauseMessage(e);
             if (WEBID_ERROR.matcher(errorMessage).matches()) {
                 throw new WebIdException();
             } else {
@@ -127,19 +125,6 @@ public class ProcedureServiceImpl implements IProcedureService {
             throw new PortletException(e);
         }
         return procedureModel;
-    }
-
-    /**
-     * Finds the root cause in a throwable
-     * 
-     * @param t
-     * @return the root cause
-     */
-    private Throwable getRootCause(Throwable t) {
-        while (t.getCause() != null) {
-            t = t.getCause();
-        }
-        return t;
     }
 
     @Override
@@ -168,10 +153,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             return new ProcedureModel(procedureModelInstance, nuxeoController);
 
         } catch (final NuxeoException e) {
-
-            Throwable rootCause = getRootCause(e);
-            String errorMessage = rootCause.getMessage();
-
+            String errorMessage = ExceptionUtils.getRootCauseMessage(e);
             if (errorMessage != null && WEBID_ERROR.matcher(errorMessage).matches()) {
                 throw new WebIdException();
             } else {
