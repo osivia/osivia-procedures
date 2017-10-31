@@ -632,7 +632,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
         } else {
             listeVar.addAll(form.getProcedureModel().getVariables().values());
-            if (StringUtils.equals(form.getProcedureModel().getProcedureType(), DocumentTypeEnum.RECORDFOLDER.getDocType()) && BooleanUtils.isTrue(defaultVars)) {
+            if (BooleanUtils.isTrue(defaultVars)) {
                 // add default vars
                 listeVar.add(Variable.DC_CREATOR);
                 listeVar.add(Variable.DC_CREATED);
@@ -1425,6 +1425,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             final Field field = new Field(form.getTheSelectedStep().getNextPath(), addField, false);
             variables.put(addField.getVariableName(), new Variable(addField));
             updateProcedureWithForm(request, response, form, field, action, forceInput);
+        } else {
+            response.setRenderParameter("activeTab", "form");
+            response.setRenderParameter("action", action);
         }
     }
 
