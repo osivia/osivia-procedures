@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.osivia.portal.api.PortalException;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
@@ -60,7 +61,7 @@ public class IfFilter implements FormFilter {
     }
 
     @Override
-    public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException {
+    public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException, PortalException {
 
         String condition = context.getParamValue(executor, condition_key);
         if (BooleanUtils.toBoolean(condition)) {

@@ -356,8 +356,11 @@ public class ProcedureServiceImpl implements IProcedureService {
 
     private void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException {
         final Map<String, ObjetMetier> ojMap = new HashMap<String, ObjetMetier>();
-        for (final Field field : form.getTheCurrentStep().getFields()) {
-            updateFormWithObjectsValues(field, ojMap, nuxeoController, form);
+        Step theCurrentStep = form.getTheCurrentStep();
+        if (theCurrentStep != null) {
+            for (final Field field : theCurrentStep.getFields()) {
+                updateFormWithObjectsValues(field, ojMap, nuxeoController, form);
+            }
         }
     }
 
@@ -551,9 +554,12 @@ public class ProcedureServiceImpl implements IProcedureService {
      * @param form
      */
     public void updateVarsWithOptions(Form form) {
-        List<Field> fields = form.getTheCurrentStep().getFields();
-        for (Field field : fields) {
-            updateVarWithOptions(form, field);
+        Step theCurrentStep = form.getTheCurrentStep();
+        if (theCurrentStep != null) {
+            List<Field> fields = theCurrentStep.getFields();
+            for (Field field : fields) {
+                updateVarWithOptions(form, field);
+            }
         }
     }
 

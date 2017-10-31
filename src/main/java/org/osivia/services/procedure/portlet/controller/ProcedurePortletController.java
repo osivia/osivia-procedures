@@ -47,9 +47,6 @@ import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.model.Group;
 import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.portal.api.internationalization.IInternationalizationService;
-import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -127,6 +124,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     private static final String MANAGE_VIEW = "manageVariables";
     /** dashboard view */
     private static final String DASHBOARD_VIEW = "procedureDashboard";
+    /** VIEW_ERROR */
+    private static final String VIEW_ERROR = "error";
 
 
     /** Portlet context. */
@@ -141,18 +140,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     /** groupService */
     private GroupService groupService;
 
-    /** Internationalization bundle factory. */
-    private final IBundleFactory bundleFactory;
 
     public ProcedurePortletController() {
         super();
 
         this.groupService = DirServiceFactory.getService(GroupService.class);
 
-        // Internationalization bundle factory
-        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
-                IInternationalizationService.MBEAN_NAME);
-        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
     /**
@@ -176,6 +169,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      */
     @RenderMapping
     public String defaultView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
+
+        if (StringUtils.isNotBlank((String) request.getAttribute("errorText"))) {
+            request.setAttribute("errorText", request.getAttribute("errorText"));
+            return VIEW_ERROR;
+        }
+
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         defaultRenderAction(nuxeoController);
         if (StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
@@ -264,8 +263,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @RenderMapping(params = "action=viewProcedure")
     public String viewProcedure(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        validateModel(form, nuxeoController);
         return VIEW_PROCEDURE;
     }
 
@@ -286,6 +283,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         request.setAttribute("closeUrl", closeUrl);
 
         return VIEW_ENDSTEP;
+    }
+
+    @RenderMapping(params = "action=error")
+    public String errorView(RenderRequest request, RenderResponse response) {
+        request.setAttribute("errorText", request.getParameter("errorText"));
+        return VIEW_ERROR;
     }
 
     private void defaultRenderAction(NuxeoController nuxeoController) {
@@ -329,9 +332,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                             .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), null);
                     form.setProcedureInstance(new ProcedureInstance(initVariables));
                 } catch (PortalException e) {
-                    throw new PortletException(e);
+                    if (StringUtils.isNotBlank(e.getMessage())) {
+                        request.setAttribute("errorText", e.getMessage());
+                    } else {
+                        throw new PortletException(e);
+                    }
                 } catch (FormFilterException e) {
-                    getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+                    addNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
                 }
             }
 
@@ -354,9 +361,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                         .init(nuxeoController.getPortalCtx(), procedureInstance.getOriginalDocument(), null);
                 procedureInstance.getGlobalVariablesValues().putAll(initVariables);
             } catch (PortalException e) {
-                throw new PortletException(e);
+                if (StringUtils.isNotBlank(e.getMessage())) {
+                    request.setAttribute("errorText", e.getMessage());
+                } else {
+                    throw new PortletException(e);
+                }
             } catch (FormFilterException e) {
-                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+                addNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
             }
 
             procedureService.updateData(nuxeoController, form);
@@ -377,9 +388,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     form.getProcedureModel().setStartingStep(initVariables.get("pcd:startingStep"));
                     form.setProcedureInstance(new ProcedureInstance(initVariables));
                 } catch (PortalException e) {
-                    throw new PortletException(e);
+                    if (StringUtils.isNotBlank(e.getMessage())) {
+                        request.setAttribute("errorText", e.getMessage());
+                    } else {
+                        throw new PortletException(e);
+                    }
                 } catch (FormFilterException e) {
-                    getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+                    addNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
                 }
 
                 procedureService.updateData(nuxeoController, form);
@@ -403,9 +418,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     form.getProcedureModel().setStartingStep(initVariables.get("pcd:startingStep"));
                     form.setProcedureInstance(new ProcedureInstance(initVariables));
                 } catch (PortalException e) {
-                    throw new PortletException(e);
+                    if (StringUtils.isNotBlank(e.getMessage())) {
+                        request.setAttribute("errorText", e.getMessage());
+                    } else {
+                        throw new PortletException(e);
+                    }
                 } catch (FormFilterException e) {
-                    getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+                    addNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
                 }
             }
             procedureService.updateData(nuxeoController, form);
@@ -443,21 +462,19 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (procedureModel != null) {
             List<Step> steps = procedureModel.getSteps();
             if(steps == null || steps.size()==0){
-                String message = bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString("WARNING_NO_STEPS");
-                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), message, NotificationsType.WARNING);
+                addNotification(nuxeoController.getPortalCtx(), "WARNING_NO_STEPS", NotificationsType.WARNING);
             }else{
                 for (Step step : steps) {
                     List<Action> actions = step.getActions();
                     String stepName = step.getStepName();
                     if(actions == null || actions.size()==0){
-                        String message = bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString("WARNING_STEP_WITHOUT_ACTION", stepName);
-                        getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), message, NotificationsType.WARNING);
+                        addNotification(nuxeoController.getPortalCtx(), "WARNING_STEP_WITHOUT_ACTION", NotificationsType.WARNING, stepName);
                     }else{
                         for (Action action : actions) {
                             String stepReference = action.getStepReference();
                             if (StringUtils.isBlank(stepReference)) {
-                                String message = bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString("WARNING_ACTION_WITHOUT_STEP", action.getLabel(), stepName);
-                                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), message, NotificationsType.WARNING);
+                                addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WITHOUT_STEP", NotificationsType.WARNING, action.getLabel(),
+                                        stepName);
                             }
                         }
                     }
@@ -465,8 +482,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
 
             if (StringUtils.isBlank(procedureModel.getStartingStep())) {
-                String message = bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString("WARNING_NO_STARTING_STEP");
-                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), message, NotificationsType.WARNING);
+                addNotification(nuxeoController.getPortalCtx(), "WARNING_NO_STARTING_STEP", NotificationsType.WARNING);
             }
         }
     }
@@ -563,9 +579,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void getSteps(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
             required = false) String filter) throws PortletException {
 
-        final List<Map<String, String>> listeSteps = new ArrayList<Map<String, String>>();
+        NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
-        Bundle bundle = bundleFactory.getBundle(request.getLocale());
+        final List<Map<String, String>> listeSteps = new ArrayList<Map<String, String>>();
 
         List<Step> steps = form.getProcedureModel().getSteps();
         for (Step step : steps) {
@@ -578,7 +594,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
         Map<String, String> demoGroup = new HashMap<String, String>(2);
         demoGroup.put("id", "endStep");
-        demoGroup.put("text", bundle.getString("END_STEP"));
+        demoGroup.put("text", getMessage(nuxeoController.getPortalCtx(), "END_STEP"));
         
         listeSteps.add(demoGroup);
         response.setContentType("application/json");
@@ -633,7 +649,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             final ObjectMapper mapper = new ObjectMapper();
             // VariableTypesEnumJsonSerializer pour avoir les bons label
             SimpleModule simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
-            Bundle bundle = bundleFactory.getBundle(request.getLocale());
+            Bundle bundle = getBundleFactory().getBundle(request.getLocale());
             simpleModule.addSerializer(VariableTypesAllEnum.class, new VariableTypesEnumJsonSerializer(bundle));
             mapper.registerModule(simpleModule);
 
@@ -725,6 +741,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void proceedProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
             @RequestParam(value = "actionId") String actionId, SessionStatus sessionStatus) throws PortletException {
 
+        if (StringUtils.isNotBlank((String) request.getAttribute("errorText"))) {
+            response.setRenderParameter("errorText", (String) request.getAttribute("errorText"));
+            response.setRenderParameter("action", "error");
+            return;
+        }
+
         if (request instanceof MultipartActionRequest) {
             // set the uploaded files in the instance
             final MultipartActionRequest multipartActionRequest = (MultipartActionRequest) request;
@@ -774,9 +796,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 response.setRenderParameter("action", "viewProcedure");
             }
         } catch (PortalException e) {
-            throw new PortletException(e);
+            if (StringUtils.isNotBlank(e.getMessage())) {
+                response.setRenderParameter("errorText", e.getMessage());
+                response.setRenderParameter("action", "error");
+            } else {
+                throw new PortletException(e);
+            }
         } catch (final FormFilterException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
             request.setAttribute("filterMessage", e.getMessage());
             response.setRenderParameter("action", "viewProcedure");
         }
@@ -807,7 +834,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     .get(IFormsService.REDIRECT_MESSAGE_PARAMETER) : form.getTheCurrentStep().getStringMsg();
 
             if (StringUtils.isNotBlank(notificationMessage)) {
-                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
+                addNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
             }
             sessionStatus.setComplete();
         }else{
@@ -842,8 +869,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (IOException e) {
             throw new PortletException(e);
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -892,8 +918,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (IOException e) {
             throw new PortletException(e);
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -910,7 +935,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         addAllFiltersToSet(form);
         try {
             Dashboard newDashboard = new Dashboard();
-            newDashboard.setName(bundleFactory.getBundle(request.getLocale()).getString("PROCEDURE_DASHBOARD"));
+            newDashboard.setName(getMessage(nuxeoController.getPortalCtx(), "PROCEDURE_DASHBOARD"));
             if (StringUtils.isNotEmpty(path)) {
                 // if the procedure exist in database, update it
                 form.getProcedureModel().getDashboards().add(newDashboard);
@@ -927,8 +952,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (IOException e) {
             throw new PortletException(e);
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -997,8 +1021,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1053,8 +1076,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (IOException e) {
             throw new PortletException(e);
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1071,8 +1093,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1164,8 +1185,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1180,8 +1200,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1204,13 +1223,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 }
                 sessionStatus.setComplete();
 
-                Bundle bundle = bundleFactory.getBundle(request.getLocale());
-                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), bundle.getString("MODEL_SAVED"), NotificationsType.SUCCESS);
+                addNotification(nuxeoController.getPortalCtx(), "MODEL_SAVED", NotificationsType.SUCCESS);
             } catch (IOException e) {
                 throw new PortletException(e);
             } catch (WebIdException e) {
-                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                        bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+                addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
             }
         }
     }
@@ -1275,8 +1292,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1294,8 +1310,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1311,8 +1326,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1356,8 +1370,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("action", "editProcedure");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
@@ -1761,8 +1774,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("activeTab", "action");
             sessionStatus.setComplete();
         } catch (WebIdException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(),
-                    bundleFactory.getBundle(request.getLocale()).getString("WEBID_ERROR"), NotificationsType.ERROR);
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 

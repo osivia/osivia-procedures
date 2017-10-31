@@ -30,6 +30,7 @@ import org.osivia.services.procedure.formFilters.DefineVariableFilter;
 import org.osivia.services.procedure.formFilters.DeleteOnEndingFormFilter;
 import org.osivia.services.procedure.formFilters.DeleteRecordFilter;
 import org.osivia.services.procedure.formFilters.EditRecordFilter;
+import org.osivia.services.procedure.formFilters.ErrorFormFilter;
 import org.osivia.services.procedure.formFilters.IfFilter;
 import org.osivia.services.procedure.formFilters.SendMailFilter;
 import org.osivia.services.procedure.formFilters.SetActorFormFilter;
@@ -166,6 +167,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(CreateRecordFilter.ID, new CreateRecordFilter());
         formFilters.put(EditRecordFilter.ID, new EditRecordFilter());
         formFilters.put(DeleteRecordFilter.ID, new DeleteRecordFilter());
+        formFilters.put(ErrorFormFilter.ID, new ErrorFormFilter());
     }
 
     @Override
