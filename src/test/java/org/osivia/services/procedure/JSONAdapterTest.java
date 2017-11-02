@@ -20,7 +20,7 @@ import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
-import org.osivia.services.procedure.portlet.model.VariableTypesEnum;
+import org.osivia.services.procedure.portlet.model.VariableTypesAllEnum;
 
 
 public class JSONAdapterTest {
@@ -63,7 +63,7 @@ public class JSONAdapterTest {
         initAction.setFiltersList(filtersList);
         step.setInitAction(initAction);
         procedure.getSteps().add(step);
-        final Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesEnum.TEXT, null);
+        final Variable variable = new Variable("fieldName", "fieldLabel", VariableTypesAllEnum.TEXT, null);
         procedure.getVariables().put("fieldName", variable);
 
         String json = ProcedureJSONAdapter.getInstance().toJSON(procedure.getVariables().values());
