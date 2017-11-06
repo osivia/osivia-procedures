@@ -291,20 +291,25 @@ public class ProcedureServiceImpl implements IProcedureService {
      * @param procedureModel
      * @throws PortalException
      */
-    private String getEditUrl(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurepath)
+    private String getEditUrl(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurePath)
             throws PortalException {
 
-        Map<String, String> windowProperties;
-        if (StringUtils.equals(procedureModel.getProcedureType(), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
-            windowProperties = getWindowProperties(procedurepath, "adminrecord", procedureModel.getProcedureType());
-        } else {
-            windowProperties = getWindowProperties(procedurepath, "adminproc", procedureModel.getProcedureType());
+        String startPortletUrl = null;
+        if (StringUtils.isNotBlank(procedurePath) && nuxeoController.getDocumentContext(procedurePath).getPermissions().isEditable()) {
+            Map<String, String> windowProperties;
+            if (StringUtils.equals(procedureModel.getProcedureType(), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
+                windowProperties = getWindowProperties(procedurePath, "adminrecord", procedureModel.getProcedureType());
+            } else {
+                windowProperties = getWindowProperties(procedurePath, "adminproc", procedureModel.getProcedureType());
+            }
+
+            windowProperties.put("osivia.services.procedure.webid", procedureModel.getCurrentWebId());
+            windowProperties.put("osivia.title", "Éditer une procedure");
+            startPortletUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
+                    "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
         }
 
-        windowProperties.put("osivia.services.procedure.webid", procedureModel.getCurrentWebId());
-        windowProperties.put("osivia.title", "Éditer une procedure");
-        return nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-                windowProperties, PortalUrlType.DEFAULT);
+        return startPortletUrl;
     }
 
     /**
@@ -327,10 +332,15 @@ public class ProcedureServiceImpl implements IProcedureService {
     @Override
     public String getAddUrl(NuxeoController nuxeoController, String procedurePath, String displayContext, String procedureType) throws PortletException {
         try {
-            final Map<String, String> windowProperties = getWindowProperties(procedurePath, displayContext, procedureType);
-            windowProperties.put("osivia.title", "Créer une procedure");
-            return nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(), "osivia-services-procedure-portletInstance",
-                    windowProperties, PortalUrlType.DEFAULT);
+
+            String startPortletUrl = null;
+            if (StringUtils.isNotBlank(procedurePath) && nuxeoController.getDocumentContext(procedurePath).getPermissions().isEditable()) {
+                final Map<String, String> windowProperties = getWindowProperties(procedurePath, displayContext, procedureType);
+                windowProperties.put("osivia.title", "Créer une procedure");
+                startPortletUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
+                        "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
+            }
+            return startPortletUrl;
         } catch (final PortalException e) {
             throw new PortletException(e);
         }
@@ -552,46 +562,48 @@ public class ProcedureServiceImpl implements IProcedureService {
      * @param field
      */
     private void updateVarWithOptions(Form form, Field field) {
-        String variableValue = form.getProcedureInstance().getGlobalVariablesValues().get(field.getName());
-        if (!field.isInput() && StringUtils.isNotBlank(variableValue)) {
+        if (form.getProcedureInstance() != null) {
+            String variableValue = form.getProcedureInstance().getGlobalVariablesValues().get(field.getName());
+            if (!field.isInput() && StringUtils.isNotBlank(variableValue)) {
 
-            Map<String, String> varOptionsMap = null;
-            String varOptions = field.getVarOptions();
-            if (StringUtils.isNotBlank(varOptions)) {
-                varOptions = StringUtils.substringBetween(varOptions, "[", "]");
-                String[] varOptionT = StringUtils.splitByWholeSeparator(varOptions, "},{");
+                Map<String, String> varOptionsMap = null;
+                String varOptions = field.getVarOptions();
+                if (StringUtils.isNotBlank(varOptions)) {
+                    varOptions = StringUtils.substringBetween(varOptions, "[", "]");
+                    String[] varOptionT = StringUtils.splitByWholeSeparator(varOptions, "},{");
 
-                varOptionsMap = new HashMap<String, String>(varOptionT.length);
+                    varOptionsMap = new HashMap<String, String>(varOptionT.length);
 
-                for (int j = 0; j < varOptionT.length; j++) {
-                    String varOption = varOptionT[j];
-                    String[] varOptionLV = StringUtils.split(varOption, ',');
-                    if (varOptionLV != null) {
-                        String varOptionValue = null;
-                        String varOptionLabel = null;
-                        for (int k = 0; k < varOptionLV.length; k++) {
-                            String varOptionLVS = varOptionLV[k];
-                            varOptionLVS = StringUtils.replaceChars(varOptionLVS, "\"{}", StringUtils.EMPTY);
+                    for (int j = 0; j < varOptionT.length; j++) {
+                        String varOption = varOptionT[j];
+                        String[] varOptionLV = StringUtils.split(varOption, ',');
+                        if (varOptionLV != null) {
+                            String varOptionValue = null;
+                            String varOptionLabel = null;
+                            for (int k = 0; k < varOptionLV.length; k++) {
+                                String varOptionLVS = varOptionLV[k];
+                                varOptionLVS = StringUtils.replaceChars(varOptionLVS, "\"{}", StringUtils.EMPTY);
 
-                            if (StringUtils.startsWith(varOptionLVS, "label")) {
-                                varOptionLabel = StringUtils.substringAfterLast(varOptionLVS, ":");
-                            } else if (StringUtils.startsWith(varOptionLVS, "value")) {
-                                varOptionValue = StringUtils.substringAfterLast(varOptionLVS, ":");
+                                if (StringUtils.startsWith(varOptionLVS, "label")) {
+                                    varOptionLabel = StringUtils.substringAfterLast(varOptionLVS, ":");
+                                } else if (StringUtils.startsWith(varOptionLVS, "value")) {
+                                    varOptionValue = StringUtils.substringAfterLast(varOptionLVS, ":");
+                                }
+                            }
+                            if (StringUtils.isNotBlank(varOptionValue) && StringUtils.isNotBlank(varOptionLabel)) {
+                                varOptionsMap.put(varOptionValue, varOptionLabel);
                             }
                         }
-                        if (StringUtils.isNotBlank(varOptionValue) && StringUtils.isNotBlank(varOptionLabel)) {
-                            varOptionsMap.put(varOptionValue, varOptionLabel);
+                    }
+                    String[] values = StringUtils.split(variableValue, ',');
+                    if (ArrayUtils.isNotEmpty(values)) {
+                        for (int i = 0; i < values.length; i++) {
+                            values[i] = varOptionsMap.get(values[i]) != null ? varOptionsMap.get(values[i]) : values[i];
                         }
                     }
+                    variableValue = StringUtils.join(values, ',');
+                    form.getProcedureInstance().getGlobalVariablesValues().put(field.getName(), variableValue);
                 }
-                String[] values = StringUtils.split(variableValue, ',');
-                if (ArrayUtils.isNotEmpty(values)) {
-                    for (int i = 0; i < values.length; i++) {
-                        values[i] = varOptionsMap.get(values[i]) != null ? varOptionsMap.get(values[i]) : values[i];
-                    }
-                }
-                variableValue = StringUtils.join(values, ',');
-                form.getProcedureInstance().getGlobalVariablesValues().put(field.getName(), variableValue);
             }
         }
     }

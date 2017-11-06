@@ -34,6 +34,9 @@ public class ProcedureModel {
     /** the ordered list of steps in the procedure */
     private List<Step> steps;
 
+    /** stepsMap */
+    private Map<String, Step> stepsMap;
+
     /** procedureObjects */
     private List<ProcedureObject> procedureObjects;
 
@@ -70,12 +73,14 @@ public class ProcedureModel {
     public ProcedureModel() {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();
+        stepsMap = new HashMap<String, Step>();
         procedureObjects = new ArrayList<ProcedureObject>();
     }
 
     public ProcedureModel(Document document, NuxeoController nuxeoController) {
         variables = new HashMap<String, Variable>();
         steps = new ArrayList<Step>();
+        stepsMap = new HashMap<String, Step>();
         procedureObjects = new ArrayList<ProcedureObject>();
 
         setOriginalDocument(document);
@@ -189,6 +194,7 @@ public class ProcedureModel {
     public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
+
 
     /**
      * Getter for description.
@@ -446,6 +452,30 @@ public class ProcedureModel {
             }
             setVariables(variablesU);
         }
+    }
+
+    /**
+     * Getter for stepsMap.
+     * @return the stepsMap
+     */
+    public Map<String, Step> getStepsMap() {
+        if (stepsMap == null) {
+            stepsMap = new HashMap<String, Step>();
+        }
+
+        for (Step step : steps) {
+            stepsMap.put(step.getReference(), step);
+        }
+
+        return stepsMap;
+    }
+
+    /**
+     * Setter for stepsMap.
+     * @param stepsMap the stepsMap to set
+     */
+    public void setStepsMap(Map<String, Step> stepsMap) {
+        this.stepsMap = stepsMap;
     }
 
 }

@@ -393,7 +393,15 @@
                           </div>
                           <div class="col-sm-4">
                                 <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
-                                   <option value="${form.theCurrentStep.reference}" selected="selected">${form.theCurrentStep.stepName}</option>
+                                   <c:choose>
+                                        <c:when test="${'endStep' eq form.theSelectedStep.actions[status.index].stepReference}">
+                                            <option value="${form.theSelectedStep.actions[status.index].stepReference}" selected="selected"><op:translate key="END_STEP" /></option>
+                                        </c:when>
+                                        <c:otherwise>
+	                                        <c:set var="stepName" value="${form.procedureModel.stepsMap[form.theSelectedStep.actions[status.index].stepReference].stepName}" scope="request"/> 
+		                                    <option value="${form.theSelectedStep.actions[status.index].stepReference}" selected="selected">${stepName}</option>
+                                        </c:otherwise>
+                                   </c:choose>
                                 </form:select>
                             </div>
                      </c:if>
