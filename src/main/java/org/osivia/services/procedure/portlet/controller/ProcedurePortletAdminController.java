@@ -72,6 +72,7 @@ public class ProcedurePortletAdminController extends CMSPortlet implements Portl
             throws Exception {
         final PortalWindow window = WindowFactory.getWindow(request);
         window.setProperty(PROCEDURE_PATH_KEY, adminForm.getProcedurePath());
+        window.setProperty("osivia.hideEmptyPortlet", "1");
         response.setPortletMode(PortletMode.VIEW);
         response.setRenderParameter("action", "default");
         response.setWindowState(WindowState.NORMAL);

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -34,6 +35,8 @@ import net.sf.json.JSONArray;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
@@ -99,6 +102,9 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 @SessionAttributes("form")
 @RequestMapping(value = "VIEW")
 public class ProcedurePortletController extends CMSPortlet implements PortletContextAware, PortletConfigAware {
+
+    /** logger */
+    private static final Log logger = LogFactory.getLog(ProcedurePortletController.class);
 
     /** create view. */
     private static final String CREATE_VIEW = "editProcedure";
@@ -168,7 +174,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
      * @throws CMSException
      */
     @RenderMapping
-    public String defaultView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
+    public String defaultView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form, @ModelAttribute(
+            value = "addProcedureUrl") String addProcedureUrl, @ModelAttribute(value = "procedureList") List<ProcedureModel> procedureModels) throws PortletException, CMSException {
 
         if (StringUtils.isNotBlank((String) request.getAttribute("errorText"))) {
             request.setAttribute("errorText", request.getAttribute("errorText"));
@@ -186,6 +193,22 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 return VIEW_PROCEDURE;
             } else {
                 // liste des procédures du path
+                if (StringUtils.isBlank(addProcedureUrl)) {
+                    boolean hide = true;
+                    if (procedureModels != null) {
+                        Iterator<ProcedureModel> procedureModelsI = procedureModels.iterator();
+                        while (hide && procedureModelsI.hasNext()) {
+                            ProcedureModel procedureModel = procedureModelsI.next();
+                            if (StringUtils.isNotBlank(procedureModel.getUrl())) {
+                                hide = false;
+                            }
+                        }
+                    }
+                    if (hide) {
+                        // If the user cannot edit any procedure and can't add, then don't display the portlet
+                        request.setAttribute("osivia.emptyResponse", "1");
+                    }
+                }
                 return LIST_PROC_VIEW;
             }
         } else if (StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
@@ -215,6 +238,22 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 return VIEW_PROCEDURE;
             } else {
                 // liste des procédures du path
+                if (StringUtils.isBlank(addProcedureUrl)) {
+                    boolean hide = true;
+                    if (procedureModels != null) {
+                        Iterator<ProcedureModel> procedureModelsI = procedureModels.iterator();
+                        while (hide && procedureModelsI.hasNext()) {
+                            ProcedureModel procedureModel = procedureModelsI.next();
+                            if (StringUtils.isNotBlank(procedureModel.getUrl())) {
+                                hide = false;
+                            }
+                        }
+                    }
+                    if (hide) {
+                        // If the user cannot edit any procedure and can't add, then don't display the portlet
+                        request.setAttribute("osivia.emptyResponse", "1");
+                    }
+                }
                 return LIST_PROC_VIEW;
             }
         }
@@ -796,11 +835,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             if (StringUtils.isNotBlank(e.getMessage())) {
                 response.setRenderParameter("errorText", e.getMessage());
                 response.setRenderParameter("action", "error");
+                logger.debug(e.getMessage(), e);
             } else {
                 throw new PortletException(e);
             }
         } catch (final FormFilterException e) {
-            addNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
             request.setAttribute("filterMessage", e.getMessage());
             response.setRenderParameter("action", "viewProcedure");
         }
