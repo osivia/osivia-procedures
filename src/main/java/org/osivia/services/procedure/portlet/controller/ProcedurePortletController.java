@@ -1337,17 +1337,17 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         form.getProcedureModel().updateStepsIndexes();
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        try {
+            if (StringUtils.isNotEmpty(form.getProcedureModel().getCurrentWebId())) {
+                // if the procedure exist in database, update it
+                form.setProcedureModel(procedureService.updateProcedure(nuxeoController, form.getProcedureModel()));
+            }
+        } catch (WebIdException e) {
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
+        }
         response.setRenderParameter("action", "editProcedure");
-    }
-
-    @ActionMapping(value = "editProcedure", params = "deleteStep")
-    public void deleteStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedStep",
-            required = false) String selectedStep) throws PortletException {
-        form.getProcedureModel().getSteps().remove(Integer.valueOf(selectedStep).intValue());
-        form.getProcedureModel().updateStepsIndexes();
-        addAllFieldsToSet(form);
-        addAllFiltersToSet(form);
-        response.setRenderParameter("action", "editProcedure");
+        form.setSelectedStep(null);
     }
 
     @ActionMapping(value = "editTdb", params = "deleteTdb")
@@ -1356,7 +1356,21 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         form.getProcedureModel().getDashboards().remove(Integer.valueOf(form.getSelectedTdb()).intValue());
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        response.setRenderParameter("action", "editProcedure");
+
+        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        try {
+            addAllFieldsToSet(form);
+            addAllFiltersToSet(form);
+
+            if (StringUtils.isNotEmpty(form.getProcedureModel().getCurrentWebId())) {
+                // if the procedure exist in database, update it
+                form.setProcedureModel(procedureService.updateProcedure(nuxeoController, form.getProcedureModel()));
+            }
+            response.setRenderParameter("action", "editProcedure");
+            form.setSelectedTdb(null);
+        } catch (WebIdException e) {
+            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
+        }
     }
 
     @ActionMapping(value = "editTdb", params = "deleteCol")
@@ -1384,16 +1398,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
         response.setRenderParameter("action", "editRecord");
         response.setRenderParameter("activeTab", "dashboard");
-    }
-
-    @ActionMapping(value = "editProcedure", params = "deleteTdb")
-    public void deleteTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedTdb",
-            required = false) String selectedTdb) throws PortletException {
-
-        form.getProcedureModel().getDashboards().remove(Integer.valueOf(selectedTdb).intValue());
-        addAllFieldsToSet(form);
-        addAllFiltersToSet(form);
-        response.setRenderParameter("action", "editProcedure");
     }
 
     private void editField(ActionResponse response, Form form, String action) {

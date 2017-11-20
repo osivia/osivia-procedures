@@ -514,9 +514,25 @@
 	    </div>
 	</div>
     <hr>
+    
     <button type="submit" class="btn btn-default" name="cancelStep"><op:translate key="CANCEL" /></button>
 	<button type="submit" class="btn btn-primary" name="saveStep"><op:translate key="SAVE_STEP" /></button>
-	<button type="submit" class="btn btn-danger pull-right" name="deleteStep"><op:translate key="DELETE_STEP" /></button>
+	<c:if test="${form.theSelectedStep.persisted}">
+		<a href="javascript:;" class="btn btn-danger pull-right" data-fancybox="" data-src="#STEP_DELETE"><op:translate key="DELETE_STEP" /></a>
+	</c:if>
 	<input type="submit" class="hidden" name="updateForm">
 	<input type="submit" class="hidden" name="selectField">
 </form:form>
+
+
+<div class="hidden">
+    <div id="STEP_DELETE">
+        <form:form modelAttribute="form" action="${editStepUrl}" method="post" role="form" >
+            <p><op:translate key="DELETE_STEP_WARNING" /></p>
+			<button type="submit" class="btn btn-warning" name="deleteStep"><i class="halflings halflings-alert"></i>
+			     <span class="hidden-xs"><op:translate key="DELETE_STEP" /></span>
+			</button>
+			<button class="btn btn-default" type="button" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+        </form:form>
+    </div>
+</div>

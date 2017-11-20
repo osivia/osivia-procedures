@@ -141,7 +141,21 @@
 	    
     <button type="submit" class="btn btn-default" name="cancelTdb"><op:translate key="CANCEL" /></button>
     <button type="submit" class="btn btn-primary" name="saveTdb"><op:translate key="SAVE_DASHBOARD" /></button>
-    <button type="submit" class="btn btn-danger pull-right" name="deleteTdb"><op:translate key="DELETE_DASHBOARD" /></button>
+    <c:if test="${form.theSelectedTdb.persisted}">
+	    <a href="javascript:;" class="btn btn-danger pull-right" data-fancybox="" data-src="#DASHBOARD_DELETE"><op:translate key="DELETE_DASHBOARD" /></a>
+    </c:if>
     <input type="submit" class="hidden" name="updateDashboard">
 
 </form:form>
+
+<div class="hidden">
+    <div id="DASHBOARD_DELETE">
+        <form:form modelAttribute="form" action="${editTdbUrl}" method="post" role="form" >
+            <p><op:translate key="DELETE_DASHBOARD_WARNING" /></p>
+            <button type="submit" class="btn btn-warning" name="deleteTdb"><i class="halflings halflings-alert"></i>
+                 <span class="hidden-xs"><op:translate key="DELETE_DASHBOARD" /></span>
+            </button>
+            <button class="btn btn-default" type="button" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+        </form:form>
+    </div>
+</div>

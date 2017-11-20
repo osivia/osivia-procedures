@@ -91,9 +91,6 @@
                             <button type="submit" name="editStep" onclick="selector(this,'${status.index}','selectedStep')" class="btn btn-default pull-riht">
                                 <i class="glyphicons glyphicons-edit"></i>
                             </button>
-                            <button type="submit" name="deleteStep" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedStep')">
-                                <i class="glyphicons glyphicons-bin"></i>
-                            </button>
                         </div>
                         <form:hidden path="procedureModel.steps[${status.index}].index"/>
                     </li>
@@ -204,9 +201,6 @@
 	                         <button type="submit" name="editTdb" onclick="selector(this,'${status.index}','selectedTdb')" class="btn btn-default pull-riht">
 	                             <i class="glyphicons glyphicons-edit"></i>
 	                         </button>
-	                         <button type="submit" name="deleteTdb" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedTdb')">
-	                             <i class="glyphicons glyphicons-bin"></i>
-	                         </button>
 	                     </div>
 	                 </li>
                 </c:forEach>
@@ -224,7 +218,19 @@
 
     <button type="submit" class="btn btn-primary" name="saveProcedure"><op:translate key="SAVE_PROCEDURE" /></button>
     <c:if test="${not empty form.procedureModel.currentWebId}">
-	    <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure"><op:translate key="DELETE_PROCEDURE" /></button>
+	    <a href="javascript:;" class="btn btn-danger pull-right" data-fancybox="" data-src="#PROCEDURE_DELETE"><op:translate key="DELETE_PROCEDURE" /></a>
     </c:if>
 </form:form>
 
+
+<div class="hidden">
+    <div id="PROCEDURE_DELETE">
+        <form:form modelAttribute="form" action="${editProcedureUrl}" method="post" role="form" >
+            <p><op:translate key="DELETE_PROCEDURE_WARNING" /></p>
+            <button type="submit" class="btn btn-warning" name="deleteProcedure"><i class="halflings halflings-alert"></i>
+                 <span class="hidden-xs"><op:translate key="DELETE_PROCEDURE" /></span>
+            </button>
+            <button class="btn btn-default" type="button" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+        </form:form>
+    </div>
+</div>
