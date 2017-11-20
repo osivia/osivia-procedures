@@ -282,8 +282,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @RenderMapping(params = "action=editTdb")
     public String editTdbView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
-        // final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        // validateModel(form, nuxeoController);
         return EDIT_TDB;
     }
 
@@ -308,8 +306,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @RenderMapping(params = "action=manageVariables")
     public String viewManageVariables(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
-        // final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        // validateModel(form, nuxeoController);
         return MANAGE_VIEW;
     }
 
@@ -516,6 +512,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                                 if (StringUtils.isBlank(stepReference)) {
                                     addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WITHOUT_STEP", NotificationsType.WARNING,
                                             action.getLabel(), stepName);
+                                } else if (procedureModel.getStepsMap().get(stepReference) == null) {
+                                    addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WRONG_STEP", NotificationsType.WARNING, action.getLabel(),
+                                            stepName);
                                 }
                             }
                         }
@@ -525,6 +524,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
             if (StringUtils.isBlank(procedureModel.getStartingStep())) {
                 addNotification(nuxeoController.getPortalCtx(), "WARNING_NO_STARTING_STEP", NotificationsType.WARNING);
+            } else if (procedureModel.getStepsMap().get(procedureModel.getStartingStep()) == null) {
+                addNotification(nuxeoController.getPortalCtx(), "WARNING_WRONG_STARTING_STEP", NotificationsType.WARNING);
             }
         }
     }
@@ -548,6 +549,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     String stepReference = action.getStepReference();
                     if (StringUtils.isBlank(stepReference)) {
                         addNotification(nuxeoController.getPortalCtx(), "WARNING_THIS_STEP_ACTION_WITHOUT_STEP", NotificationsType.WARNING, action.getLabel());
+                    } else if (procedureModel.getStepsMap().get(procedureModel.getStartingStep()) == null) {
+                        addNotification(nuxeoController.getPortalCtx(), "WARNING_THIS_STEP_ACTION_WRONG_STEP", NotificationsType.WARNING, action.getLabel());
                     }
                 }
             }
@@ -1204,8 +1207,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 // if the procedure doesn't exist in database, create it
                 form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
             }
-            // String redirectUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl();
-            // response.sendRedirect(redirectUrl);
             response.setRenderParameter("action", "editProcedure");
             form.setSelectedStep(null);
         } catch (WebIdException e) {
@@ -1228,8 +1229,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 // if the procedure doesn't exist in database, create it
                 form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
             }
-            // String redirectUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl();
-            // response.sendRedirect(redirectUrl);
             response.setRenderParameter("action", "editProcedure");
             form.setSelectedTdb(null);
         } catch (WebIdException e) {
@@ -1783,8 +1782,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 // if the procedure doesn't exist in database, create it
                 form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
             }
-            // String redirectUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminprocstep").getUrl();
-            // response.sendRedirect(redirectUrl);
             response.setRenderParameter("action", "editStep");
             response.setRenderParameter("activeTab", "action");
         } catch (WebIdException e) {
