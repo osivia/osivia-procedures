@@ -1,7 +1,10 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -458,6 +461,64 @@ public class Form {
      */
     public void setNewExportVar(String newExportVar) {
         this.newExportVar = newExportVar;
+    }
+
+    public void cancelSteps() {
+        if (getProcedureModel() != null && getProcedureModel().getSteps() != null) {
+            ListIterator<Step> listIterator = getProcedureModel().getSteps().listIterator();
+            while (listIterator.hasNext()) {
+                Step step = listIterator.next();
+                if (!step.isPersisted()) {
+                    listIterator.remove();
+                } else {
+                    cancelFields(step.getFields());
+                }
+            }
+        }
+    }
+
+    private void cancelFields(List<Field> fields) {
+        if (CollectionUtils.isNotEmpty(fields)) {
+            ListIterator<Field> fieldListIterator = fields.listIterator();
+            while (fieldListIterator.hasNext()) {
+                Field field = fieldListIterator.next();
+                if (!field.isPersisted()) {
+                    fieldListIterator.remove();
+                } else {
+                    cancelFields(field.getFields());
+                }
+            }
+        }
+    }
+
+    public void cancelTdb() {
+        if (getProcedureModel() != null && getProcedureModel().getDashboards() != null) {
+            ListIterator<Dashboard> listIterator = getProcedureModel().getDashboards().listIterator();
+            while (listIterator.hasNext()) {
+                Dashboard dashboard = listIterator.next();
+                if (!dashboard.isPersisted()) {
+                    listIterator.remove();
+                }
+            }
+        }
+    }
+
+    public void cancelActions() {
+        if (getProcedureModel() != null && getProcedureModel().getSteps() != null) {
+            Iterator<Step> iterator = getProcedureModel().getSteps().iterator();
+            while (iterator.hasNext()) {
+                Step step = iterator.next();
+                if (step.getActions() != null) {
+                    ListIterator<Action> listIterator = step.getActions().listIterator();
+                    while (listIterator.hasNext()) {
+                        Action action = listIterator.next();
+                        if (!action.isPersisted()) {
+                            listIterator.remove();
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

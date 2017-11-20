@@ -87,9 +87,6 @@ public class ProcedureServiceImpl implements IProcedureService {
             command = new ListModelsContainerCommand(procedurepath);
             final Document container = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
 
-
-            String webId = StringUtils.isBlank(procedureModel.getNewWebId()) ? null : IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId();
-
             DocumentTypeEnum type = StringUtils.isNotBlank(procedureModel.getProcedureType()) ? DocumentTypeEnum.get(procedureModel.getProcedureType())
                     : DocumentTypeEnum.PROCEDUREMODEL;
 
@@ -97,7 +94,8 @@ public class ProcedureServiceImpl implements IProcedureService {
 
             final Document procedureModelInstance = (Document) nuxeoController.executeNuxeoCommand(command);
 
-            return new ProcedureModel(procedureModelInstance, nuxeoController);
+            procedureModel = new ProcedureModel(procedureModelInstance, nuxeoController);
+            return procedureModel;
 
         } catch (final NuxeoException e) {
             String errorMessage = ExceptionUtils.getRootCauseMessage(e);
@@ -177,9 +175,9 @@ public class ProcedureServiceImpl implements IProcedureService {
     private PropertyMap buildProperties(ProcedureModel procedureModel) throws JsonGenerationException, JsonMappingException, IOException {
         final PropertyMap propMap = new PropertyMap();
         propMap.set("dc:title", procedureModel.getName());
-        String webId = StringUtils.isNotBlank(procedureModel.getNewWebId()) ? IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId() : null;
-        if (webId != null) {
-            propMap.set("ttc:webid", webId);
+        String newWebId = StringUtils.isNotBlank(procedureModel.getNewWebId()) ? IFormsService.FORMS_WEB_ID_PREFIX + procedureModel.getNewWebId() : null;
+        if (newWebId != null) {
+            propMap.set("ttc:webid", newWebId);
         }
         propMap.set("pcd:webIdParent", procedureModel.getWebIdParent());
         propMap.set("pcd:steps", ProcedureJSONAdapter.getInstance().toJSON(procedureModel.getSteps()));
@@ -264,24 +262,24 @@ public class ProcedureServiceImpl implements IProcedureService {
                 Document modelsContainer = documentList.get(0);
                 command = new ListProceduresModelsCommand(modelsContainer.getPath());
                 documentList = (Documents) nuxeoController.executeNuxeoCommand(command);
+                if (documentList != null && !documentList.isEmpty()) {
+                    ProcedureModel procedureModel;
+                    for (final Document document : documentList) {
+                        procedureModel = new ProcedureModel(document, nuxeoController);
+                        try {
+                            procedureModel.setUrl(getEditUrl(nuxeoController, procedureModel, procedurepath));
+                        } catch (final PortalException e) {
+                            new PortletException(e);
+                        }
+                        procedureModels.add(procedureModel);
+                    }
+                    // Collections.sort(procedureModels);
+                }
             }
         } catch (final Exception e) {
             throw new PortletException(e);
         }
-        if (documentList != null && !documentList.isEmpty()) {
-            ProcedureModel procedureModel;
-            for (final Document document : documentList) {
-                procedureModel = new ProcedureModel(document, nuxeoController);
 
-                try {
-                    procedureModel.setUrl(getEditUrl(nuxeoController, procedureModel, procedurepath));
-                } catch (final PortalException e) {
-                    new PortletException(e);
-                }
-
-                procedureModels.add(procedureModel);
-            }
-        }
         return procedureModels;
     }
 

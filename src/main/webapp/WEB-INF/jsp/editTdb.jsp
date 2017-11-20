@@ -140,8 +140,8 @@
     </table>
 	    
     <button type="submit" class="btn btn-default" name="cancelTdb"><op:translate key="CANCEL" /></button>
-    <button type="submit" class="btn btn-primary" name="saveTdb"><op:translate key="SAVE" /></button>
-    <button type="submit" class="btn btn-danger pull-right" name="deleteTdb"><op:translate key="DELETE" /></button>
+    <button type="submit" class="btn btn-primary" name="saveTdb"><op:translate key="SAVE_DASHBOARD" /></button>
+    <button type="submit" class="btn btn-danger pull-right" name="deleteTdb"><op:translate key="DELETE_DASHBOARD" /></button>
     <input type="submit" class="hidden" name="updateDashboard">
 
 </form:form>

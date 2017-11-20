@@ -32,6 +32,7 @@ import javax.portlet.ResourceResponse;
 
 import net.sf.json.JSONArray;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -272,14 +273,17 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         request.setAttribute("activeTab", request.getParameter("activeTab"));
         request.setAttribute("activeFormTab", request.getParameter("activeFormTab"));
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        validateModel(form, nuxeoController);
+        if (StringUtils.isBlank(request.getParameter("activeTab")) && form.getTheSelectedStep().isPersisted()) {
+            // valide the model except when refreshing and creating
+            validateStep(form, nuxeoController);
+        }
         return EDIT_VIEW;
     }
 
     @RenderMapping(params = "action=editTdb")
     public String editTdbView(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        validateModel(form, nuxeoController);
+        // final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        // validateModel(form, nuxeoController);
         return EDIT_TDB;
     }
 
@@ -304,8 +308,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @RenderMapping(params = "action=manageVariables")
     public String viewManageVariables(RenderRequest request, RenderResponse response, @ModelAttribute(value = "form") Form form) throws PortletException, CMSException {
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        validateModel(form, nuxeoController);
+        // final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        // validateModel(form, nuxeoController);
         return MANAGE_VIEW;
     }
 
@@ -501,16 +505,18 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 addNotification(nuxeoController.getPortalCtx(), "WARNING_NO_STEPS", NotificationsType.WARNING);
             }else{
                 for (Step step : steps) {
-                    List<Action> actions = step.getActions();
-                    String stepName = step.getStepName();
-                    if(actions == null || actions.size()==0){
-                        addNotification(nuxeoController.getPortalCtx(), "WARNING_STEP_WITHOUT_ACTION", NotificationsType.WARNING, stepName);
-                    }else{
-                        for (Action action : actions) {
-                            String stepReference = action.getStepReference();
-                            if (StringUtils.isBlank(stepReference)) {
-                                addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WITHOUT_STEP", NotificationsType.WARNING, action.getLabel(),
-                                        stepName);
+                    String stepName = StringUtils.defaultIfBlank(step.getStepName(), step.getReference());
+                    if (StringUtils.isNotBlank(stepName)) {
+                        List<Action> actions = step.getActions();
+                        if (actions == null || actions.size() == 0) {
+                            addNotification(nuxeoController.getPortalCtx(), "WARNING_STEP_WITHOUT_ACTION", NotificationsType.WARNING, stepName);
+                        } else {
+                            for (Action action : actions) {
+                                String stepReference = action.getStepReference();
+                                if (StringUtils.isBlank(stepReference)) {
+                                    addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WITHOUT_STEP", NotificationsType.WARNING,
+                                            action.getLabel(), stepName);
+                                }
                             }
                         }
                     }
@@ -522,6 +528,32 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             }
         }
     }
+
+    /**
+     * Displays warning(s) if step is missing critical elements
+     * 
+     * @param form
+     * @param nuxeoController
+     */
+    private void validateStep(Form form, NuxeoController nuxeoController) {
+        ProcedureModel procedureModel = form.getProcedureModel();
+        
+        if (procedureModel != null && CollectionUtils.isNotEmpty(procedureModel.getSteps())) {
+
+            List<Action> actions = form.getTheSelectedStep().getActions();
+            if (CollectionUtils.isEmpty(actions)) {
+                addNotification(nuxeoController.getPortalCtx(), "WARNING_THIS_STEP_WITHOUT_ACTION", NotificationsType.WARNING);
+            } else {
+                for (Action action : actions) {
+                    String stepReference = action.getStepReference();
+                    if (StringUtils.isBlank(stepReference)) {
+                        addNotification(nuxeoController.getPortalCtx(), "WARNING_THIS_STEP_ACTION_WITHOUT_STEP", NotificationsType.WARNING, action.getLabel());
+                    }
+                }
+            }
+        }
+    }
+
 
     @ModelAttribute(value = "procedureList")
     public List<ProcedureModel> getListProcedureModel(PortletRequest request, PortletResponse response) throws PortletException {
@@ -775,7 +807,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "actionProcedure", params = "proceedProcedure")
     public void proceedProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam(value = "actionId") String actionId, SessionStatus sessionStatus) throws PortletException {
+            @RequestParam(value = "actionId") String actionId) throws PortletException {
 
         if (StringUtils.isNotBlank((String) request.getAttribute("errorText"))) {
             response.setRenderParameter("errorText", (String) request.getAttribute("errorText"));
@@ -800,33 +832,33 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
                 globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
                         .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
-                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
+                manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
                 // instance already exist
                 PropertyMap taskProperties = form.getProcedureInstance().getTaskDoc();
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
                         .proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
-                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
+                manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getDocType())) {
                 // instance already exist
                 PropertyMap taskProperties = form.getProcedureInstance().getTaskDoc();
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
                         .proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
-                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
+                manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
                 globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
                         .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
-                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
+                manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
                 PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
                 globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
                         .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
-                manageEndStep(nuxeoController, globalVariablesValues, form, sessionStatus);
+                manageEndStep(nuxeoController, globalVariablesValues, form);
             } else {
                 // shouldn't happen
                 response.setRenderParameter("action", "viewProcedure");
@@ -846,7 +878,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
-    private void manageEndStep(NuxeoController nuxeoController, Map<String, String> globalVariablesValues, Form form, SessionStatus sessionStatus)
+    private void manageEndStep(NuxeoController nuxeoController, Map<String, String> globalVariablesValues, Form form)
             throws PortletException {
         
         ActionResponse response = (ActionResponse) nuxeoController.getResponse();
@@ -873,35 +905,34 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             if (StringUtils.isNotBlank(notificationMessage)) {
                 addNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
             }
-            sessionStatus.setComplete();
+
         }else{
             // redirect to end of step page
             response.setRenderParameter("action", "endStep");
-            sessionStatus.setComplete();
+
         }
     }
 
 
     @ActionMapping(value = "editProcedure", params = "saveProcedure")
-    public void saveProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void saveProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         try {
             if (StringUtils.isNotBlank(form.getProcedureModel().getName())) {
-                final String webId = getWebId(request);
                 addAllFieldsToSet(form);
                 addAllFiltersToSet(form);
-                if (StringUtils.isNotEmpty(webId)) {
+                if (StringUtils.isNotEmpty(form.getProcedureModel().getCurrentWebId())) {
                     // if the procedure exist in database, update it
-                    procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+                    form.setProcedureModel(procedureService.updateProcedure(nuxeoController, form.getProcedureModel()));
                 } else {
                     // if the procedure doesn't exist in database, create it
-                    procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
+                    form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
                 }
                 String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
                 response.sendRedirect(redirectUrl);
-                sessionStatus.setComplete();
+
             }
         } catch (IOException e) {
             throw new PortletException(e);
@@ -911,7 +942,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editProcedure", params = "deleteProcedure")
-    public void deleteProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void deleteProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
@@ -923,78 +954,41 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (IOException e) {
             throw new PortletException(e);
         }
-        sessionStatus.setComplete();
+
     }
 
     @ActionMapping(value = "editProcedure", params = "addStep")
-    public void addStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void addStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
 
         final Integer newIndex = Integer.valueOf(form.getProcedureModel().getSteps().size());
-        final String path = getWebId(request);
-
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        try {
-            if (StringUtils.isNotEmpty(path)) {
-                // if the procedure exist in database, update it
-                form.getProcedureModel().getSteps().add(new Step(newIndex));
-                form.setSelectedStep(String.valueOf(newIndex));
-                procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-                response.setRenderParameter("action", "editStep");
-            } else {
-                // if the procedure doesn't exist in database, create it
-                form.getProcedureModel().getSteps().add(new Step(newIndex));
-                final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
-                String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminprocstep").getUrl();
-                response.sendRedirect(redirectUrl);
-            }
-            sessionStatus.setComplete();
-        } catch (IOException e) {
-            throw new PortletException(e);
-        } catch (WebIdException e) {
-            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
-        }
+        form.getProcedureModel().getSteps().add(new Step(newIndex));
+        form.setSelectedStep(String.valueOf(newIndex));
+        response.setRenderParameter("action", "editStep");
     }
 
     @ActionMapping(value = "editProcedure", params = "addTdb")
-    public void addTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void addTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         addDashboard(request, response, form);
     }
 
     private void addDashboard(ActionRequest request, ActionResponse response, Form form) throws PortletException {
-        final String path = getWebId(request);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        try {
-            Dashboard newDashboard = new Dashboard();
-            newDashboard.setName(getMessage(nuxeoController.getPortalCtx(), "PROCEDURE_DASHBOARD"));
-            if (StringUtils.isNotEmpty(path)) {
-                // if the procedure exist in database, update it
-                form.getProcedureModel().getDashboards().add(newDashboard);
-                form.setSelectedTdb(String.valueOf(form.getProcedureModel().getDashboards().size() - 1));
-                procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-                response.setRenderParameter("action", "editTdb");
-            } else {
-                // if the procedure doesn't exist in database, create it
-                form.getProcedureModel().getDashboards().add(newDashboard);
-                final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
-                String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminprocstep").getUrl();
-                response.sendRedirect(redirectUrl);
-            }
-        } catch (IOException e) {
-            throw new PortletException(e);
-        } catch (WebIdException e) {
-            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
-        }
+        Dashboard newDashboard = new Dashboard();
+        newDashboard.setName(getMessage(nuxeoController.getPortalCtx(), "PROCEDURE_DASHBOARD"));
+        form.getProcedureModel().getDashboards().add(newDashboard);
+        form.setSelectedTdb(String.valueOf(form.getProcedureModel().getDashboards().size() - 1));
+        response.setRenderParameter("action", "editTdb");
     }
 
     @ActionMapping(value = "editRecord", params = "addColumn")
-    public void addColumnEditRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void addColumnEditRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         form.getTheSelectedTdb().getColumns().add(form.getNewColumn());
         form.setNewColumn(new Column());
@@ -1003,7 +997,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editTdb", params = "addColumn")
-    public void addColumn(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void addColumn(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         form.getTheSelectedTdb().getColumns().add(form.getNewColumn());
         form.setNewColumn(new Column());
@@ -1011,7 +1005,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editTdb", params = "addExportVar")
-    public void addExportVar(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void addExportVar(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         form.getTheSelectedTdb().getExportVarList().add(form.getNewExportVar());
         form.setNewExportVar(null);
@@ -1020,7 +1014,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
 
     @ActionMapping(value = "editProcedure", params = "manageVariables")
-    public void manageVariables(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void manageVariables(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
 
         for (Step step : form.getProcedureModel().getSteps()) {
@@ -1041,24 +1035,34 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "manageVariables", params = "cancel")
-    public void cancel(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+    public void cancel(ActionRequest request, ActionResponse response) {
         response.setRenderParameter("action", "editProcedure");
-        sessionStatus.setComplete();
     }
 
     @ActionMapping(value = "manageVariables", params = "save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void save(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
         updateStartingStep(form);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         try {
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-            response.setRenderParameter("action", "editProcedure");
-            sessionStatus.setComplete();
+
+            if (StringUtils.isNotEmpty(form.getProcedureModel().getCurrentWebId())) {
+                // if the procedure exist in database, update it
+                form.setProcedureModel(procedureService.updateProcedure(nuxeoController, form.getProcedureModel()));
+            } else {
+                // if the procedure doesn't exist in database, create it
+                form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
+            }
+            String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
+            response.sendRedirect(redirectUrl);
+            // response.setRenderParameter("action", "editProcedure");
+
         } catch (WebIdException e) {
             addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
+        } catch (IOException e) {
+            throw new PortletException(e);
         }
     }
 
@@ -1071,7 +1075,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "manageVariables", params = "selectVariable")
     public void selectVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedVar",
-            required = false) String selectedVar, SessionStatus sessionStatus) throws PortletException {
+            required = false) String selectedVar) throws PortletException {
         Variable selectedVariable = form.getProcedureModel().getVariables().get(selectedVar);
         form.setSelectedVariable(selectedVariable);
         response.setRenderParameter("action", "manageVariables");
@@ -1088,50 +1092,23 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editProcedure", params = "addObject")
-    public void addObject(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void addObject(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
 
-        final String path = getWebId(request);
-
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        try {
-            if (StringUtils.isNotEmpty(path)) {
-                // if the procedure exist in database, update it
-                form.getProcedureModel().getProcedureObjects().add(new ProcedureObject());
-                procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-                response.setRenderParameter("action", "editProcedure");
-            } else {
-                // if the procedure doesn't exist in database, create it
-                form.getProcedureModel().getProcedureObjects().add(new ProcedureObject());
-                final ProcedureModel createdProcedure = procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
-                String redirectUrl = nuxeoController.getLink(createdProcedure.getOriginalDocument(), "adminproc").getUrl();
-                response.sendRedirect(redirectUrl);
-            }
-            sessionStatus.setComplete();
-        } catch (IOException e) {
-            throw new PortletException(e);
-        } catch (WebIdException e) {
-            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
-        }
+        form.getProcedureModel().getProcedureObjects().add(new ProcedureObject());
+        response.setRenderParameter("action", "editProcedure");
     }
 
     @ActionMapping(value = "editProcedure", params = "deleteObject")
     public void deleteObject(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedObject",
-            required = false) String selectedObject, SessionStatus sessionStatus) throws PortletException {
+            required = false) String selectedObject) throws PortletException {
 
         form.getProcedureModel().getProcedureObjects().remove(Integer.valueOf(selectedObject).intValue());
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        try {
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-            response.setRenderParameter("action", "editProcedure");
-            sessionStatus.setComplete();
-        } catch (WebIdException e) {
-            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
-        }
+        response.setRenderParameter("action", "editProcedure");
     }
 
     /**
@@ -1195,19 +1172,21 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editStep", params = "cancelStep")
-    public void cancelStep(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+    public void cancelStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
         response.setRenderParameter("action", "editProcedure");
-        sessionStatus.setComplete();
+        form.cancelSteps();
+        form.setSelectedField(null);
+        form.setSelectedStep(null);
     }
 
     @ActionMapping(value = "editTdb", params = "cancelTdb")
-    public void cancelTdb(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+    public void cancelTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
         response.setRenderParameter("action", (String) request.getParameter("cancelTdb"));
-        sessionStatus.setComplete();
+        form.cancelTdb();
     }
 
     @ActionMapping(value = "editStep", params = "saveStep")
-    public void saveStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void saveStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
 
         addAllFieldsToSet(form);
@@ -1218,24 +1197,41 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         try {
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+            if (StringUtils.isNotEmpty(form.getProcedureModel().getCurrentWebId())) {
+                // if the procedure exist in database, update it
+                form.setProcedureModel(procedureService.updateProcedure(nuxeoController, form.getProcedureModel()));
+            } else {
+                // if the procedure doesn't exist in database, create it
+                form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
+            }
+            // String redirectUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl();
+            // response.sendRedirect(redirectUrl);
             response.setRenderParameter("action", "editProcedure");
-            sessionStatus.setComplete();
+            form.setSelectedStep(null);
         } catch (WebIdException e) {
             addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
     }
 
     @ActionMapping(value = "editTdb", params = "saveTdb")
-    public void saveTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void saveTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         try {
             addAllFieldsToSet(form);
             addAllFiltersToSet(form);
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+
+            if (StringUtils.isNotEmpty(form.getProcedureModel().getCurrentWebId())) {
+                // if the procedure exist in database, update it
+                form.setProcedureModel(procedureService.updateProcedure(nuxeoController, form.getProcedureModel()));
+            } else {
+                // if the procedure doesn't exist in database, create it
+                form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
+            }
+            // String redirectUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl();
+            // response.sendRedirect(redirectUrl);
             response.setRenderParameter("action", "editProcedure");
-            sessionStatus.setComplete();
+            form.setSelectedTdb(null);
         } catch (WebIdException e) {
             addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
@@ -1246,15 +1242,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             throws PortletException {
         if (StringUtils.isNotBlank(form.getProcedureModel().getName())) {
             addAllFieldsToSet(form);
-            final String webId = getWebId(request);
             final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
             try {
-                if (StringUtils.isNotEmpty(webId)) {
+                if (StringUtils.isNotEmpty(form.getProcedureModel().getCurrentWebId())) {
                     // if the procedure exist in database, update it
-                    procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+                    form.setProcedureModel(procedureService.updateProcedure(nuxeoController, form.getProcedureModel()));
                 } else {
                     // if the procedure doesn't exist in database, create it
-                    procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request));
+                    form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
                     String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
                     response.sendRedirect(redirectUrl);
                 }
@@ -1276,9 +1271,11 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 addAllFiltersToSet(filtersList, action.getFilters());
                 action.setFiltersList(filtersList);
             }
-            Set<Filter> filtersList = new HashSet<Filter>();
-            addAllFiltersToSet(filtersList, step.getInitAction().getFilters());
-            step.getInitAction().setFiltersList(filtersList);
+            if (step.getInitAction() != null) {
+                Set<Filter> filtersList = new HashSet<Filter>();
+                addAllFiltersToSet(filtersList, step.getInitAction().getFilters());
+                step.getInitAction().setFiltersList(filtersList);
+            }
         }
     }
 
@@ -1317,59 +1314,37 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editStep", params = "deleteStep")
-    public void deleteStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void deleteStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         form.getProcedureModel().getSteps().remove(Integer.valueOf(form.getSelectedStep()).intValue());
         form.getProcedureModel().updateStepsIndexes();
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        try {
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-            response.setRenderParameter("action", "editProcedure");
-            sessionStatus.setComplete();
-        } catch (WebIdException e) {
-            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
-        }
+        response.setRenderParameter("action", "editProcedure");
     }
 
     @ActionMapping(value = "editProcedure", params = "deleteStep")
     public void deleteStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedStep",
-            required = false) String selectedStep, SessionStatus sessionStatus) throws PortletException {
-
+            required = false) String selectedStep) throws PortletException {
         form.getProcedureModel().getSteps().remove(Integer.valueOf(selectedStep).intValue());
         form.getProcedureModel().updateStepsIndexes();
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        try {
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-            response.setRenderParameter("action", "editProcedure");
-            sessionStatus.setComplete();
-        } catch (WebIdException e) {
-            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
-        }
+        response.setRenderParameter("action", "editProcedure");
     }
 
     @ActionMapping(value = "editTdb", params = "deleteTdb")
-    public void deleteTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void deleteTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         form.getProcedureModel().getDashboards().remove(Integer.valueOf(form.getSelectedTdb()).intValue());
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        try {
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-            response.setRenderParameter("action", "editProcedure");
-            sessionStatus.setComplete();
-        } catch (WebIdException e) {
-            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
-        }
+        response.setRenderParameter("action", "editProcedure");
     }
 
     @ActionMapping(value = "editTdb", params = "deleteCol")
     public void deleteCol(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedCol",
-            required = false) String selectedCol, SessionStatus sessionStatus) throws PortletException {
+            required = false) String selectedCol) throws PortletException {
 
         form.getTheSelectedTdb().getColumns().remove(Integer.valueOf(selectedCol).intValue());
         response.setRenderParameter("action", "editTdb");
@@ -1377,7 +1352,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editTdb", params = "deleteExportVar")
     public void deleteExportVar(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedCol",
-            required = false) String selectedCol, SessionStatus sessionStatus) throws PortletException {
+            required = false) String selectedCol) throws PortletException {
 
         form.getTheSelectedTdb().getExportVarList().remove(Integer.valueOf(selectedCol).intValue());
         response.setRenderParameter("action", "editTdb");
@@ -1385,7 +1360,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editRecord", params = "deleteCol")
     public void deleteColEditRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
-            value = "selectedCol", required = false) String selectedCol, SessionStatus sessionStatus) throws PortletException {
+            value = "selectedCol", required = false) String selectedCol) throws PortletException {
 
         if (form.getTheSelectedTdb().getColumns().get(Integer.valueOf(selectedCol)).isDeletable()) {
             form.getTheSelectedTdb().getColumns().remove(Integer.valueOf(selectedCol).intValue());
@@ -1396,19 +1371,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ActionMapping(value = "editProcedure", params = "deleteTdb")
     public void deleteTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedTdb",
-            required = false) String selectedTdb, SessionStatus sessionStatus) throws PortletException {
+            required = false) String selectedTdb) throws PortletException {
 
         form.getProcedureModel().getDashboards().remove(Integer.valueOf(selectedTdb).intValue());
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        try {
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
-            response.setRenderParameter("action", "editProcedure");
-            sessionStatus.setComplete();
-        } catch (WebIdException e) {
-            addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
-        }
+        response.setRenderParameter("action", "editProcedure");
     }
 
     private void editField(ActionResponse response, Form form, String action) {
@@ -1698,28 +1666,27 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editAction", params = "cancelAction")
-    public void cancelAction(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+    public void cancelAction(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
         response.setRenderParameter("action", "editStep");
         response.setRenderParameter("activeTab", "action");
-        sessionStatus.setComplete();
+        form.cancelActions();
     }
 
     @ActionMapping(value = "editAction", params = "cancelAction=toStep")
-    public void cancelActionToEditStep(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+    public void cancelActionToEditStep(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
         response.setRenderParameter("action", "editStep");
-        sessionStatus.setComplete();
+        form.cancelActions();
     }
 
     @ActionMapping(value = "editAction", params = "cancelAction=toProc")
-    public void cancelActionToEditProcedure(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+    public void cancelActionToEditProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
         response.setRenderParameter("action", "editProcedure");
-        sessionStatus.setComplete();
+        form.cancelActions();
     }
 
     @ActionMapping(value = "editTdb", params = "cancelAction=toProc")
-    public void cancelEditTdbActionToEditProcedure(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) {
+    public void cancelEditTdbActionToEditProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
         response.setRenderParameter("action", "editProcedure");
-        sessionStatus.setComplete();
     }
 
     private void updateFiltersPath(List<Filter> filters, String currentPath) {
@@ -1801,7 +1768,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editAction", params = "saveAction")
-    public void saveAction(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void saveAction(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
 
         addAllFieldsToSet(form);
@@ -1809,10 +1776,17 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         try {
-            procedureService.updateProcedure(nuxeoController, form.getProcedureModel());
+            if (StringUtils.isNotEmpty(form.getProcedureModel().getCurrentWebId())) {
+                // if the procedure exist in database, update it
+                form.setProcedureModel(procedureService.updateProcedure(nuxeoController, form.getProcedureModel()));
+            } else {
+                // if the procedure doesn't exist in database, create it
+                form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
+            }
+            // String redirectUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminprocstep").getUrl();
+            // response.sendRedirect(redirectUrl);
             response.setRenderParameter("action", "editStep");
             response.setRenderParameter("activeTab", "action");
-            sessionStatus.setComplete();
         } catch (WebIdException e) {
             addNotification(nuxeoController.getPortalCtx(), "WEBID_ERROR", NotificationsType.ERROR);
         }
@@ -1894,7 +1868,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editRecord", params = "deleteRecord")
-    public void deleteRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, SessionStatus sessionStatus)
+    public void deleteRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.deleteProcedure(nuxeoController, form.getProcedureModel());
@@ -1905,7 +1879,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         } catch (IOException e) {
             throw new PortletException(e);
         }
-        sessionStatus.setComplete();
     }
 
     private void updateFieldsPath(List<Field> list, String currentPath) {

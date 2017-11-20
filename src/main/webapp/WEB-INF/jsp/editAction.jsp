@@ -103,7 +103,7 @@
 	                         <div class="panel-heading">
 	                             <div class="form-group">
 	                             	<div class="col-sm-8">
-	                             		<h3 class="panel-title"><op:translate key="${form.selectedFilter.labelKey}" classLoader="${form.selectedFilter.class.classLoader}"/></h3>
+	                             		<h3 class="panel-title"><op:translate key="${form.selectedFilter.labelKey}" classLoader="${form.selectedFilter.classLoader}"/></h3>
                     				</div>
                     				<div class="col-sm-4">
 			                             <div class="pull-right">
@@ -125,7 +125,7 @@
 				                    </div>
 		                        </div>
 	                             <c:if test="${not empty form.selectedFilter.descriptionKey}">
-	                              <op:translate key="${form.selectedFilter.descriptionKey}" classLoader="${form.selectedFilter.class.classLoader}"/>
+	                              <op:translate key="${form.selectedFilter.descriptionKey}" classLoader="${form.selectedFilter.classLoader}"/>
 	                             </c:if>
 		                        <c:if test="${not empty form.selectedFilter.argumentsList}">
 		                            <h3><op:translate key="ACTION_FILTER_ARGS" /></h3>
@@ -212,7 +212,7 @@
 	</div>
     <hr>
     <button type="submit" class="btn btn-default" name="cancelAction"><op:translate key="CANCEL" /></button>
-	<button type="submit" class="btn btn-primary" name="saveAction"><op:translate key="SAVE" /></button>
+	<button type="submit" class="btn btn-primary" name="saveAction"><op:translate key="SAVE_ACTION" /></button>
 	<input type="submit" class="hidden" name="updateForm">
 	<input type="submit" class="hidden" name="selectFilter">
 

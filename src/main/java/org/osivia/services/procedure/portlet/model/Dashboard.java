@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
@@ -38,11 +39,16 @@ public class Dashboard {
     @JsonProperty("exportVarList")
     private List<String> exportVarList;
 
+    /** persisted */
+    @JsonIgnore
+    private boolean persisted;
 
     /**
      * @param dashboardObjectMap
      */
     public Dashboard(PropertyMap dashboardObjectMap) {
+
+        persisted = true;
 
         if (dashboardObjectMap != null) {
             setName(dashboardObjectMap.getString("name"));
@@ -80,6 +86,7 @@ public class Dashboard {
     }
 
     public Dashboard() {
+        persisted = false;
     }
 
     /**
@@ -193,6 +200,26 @@ public class Dashboard {
      */
     public void setExportVarList(List<String> exportVarList) {
         this.exportVarList = exportVarList;
+    }
+
+
+    /**
+     * Getter for persisted.
+     * 
+     * @return the persisted
+     */
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+
+    /**
+     * Setter for persisted.
+     * 
+     * @param persisted the persisted to set
+     */
+    public void setPersisted(boolean persisted) {
+        this.persisted = persisted;
     }
 
 

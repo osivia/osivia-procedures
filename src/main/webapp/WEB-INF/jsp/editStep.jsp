@@ -515,8 +515,8 @@
 	</div>
     <hr>
     <button type="submit" class="btn btn-default" name="cancelStep"><op:translate key="CANCEL" /></button>
-	<button type="submit" class="btn btn-primary" name="saveStep"><op:translate key="SAVE" /></button>
-	<button type="submit" class="btn btn-danger pull-right" name="deleteStep"><op:translate key="DELETE" /></button>
+	<button type="submit" class="btn btn-primary" name="saveStep"><op:translate key="SAVE_STEP" /></button>
+	<button type="submit" class="btn btn-danger pull-right" name="deleteStep"><op:translate key="DELETE_STEP" /></button>
 	<input type="submit" class="hidden" name="updateForm">
 	<input type="submit" class="hidden" name="selectField">
 </form:form>

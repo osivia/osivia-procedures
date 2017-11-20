@@ -104,15 +104,20 @@ public class Step implements Comparable<Step> {
     @JsonProperty("endStepMsg")
     private String endStepMsg;
 
+    /** persisted */
+    @JsonIgnore
+    private boolean persisted;
 
     public Step() {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
+        persisted = false;
     }
 
     public Step(final PropertyMap stepM, Map<String, Variable> variables, NuxeoController nuxeoController) {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
+        persisted = true;
 
         final PropertyList gvvList = stepM.getList("globalVariablesReferences");
         if (gvvList != null) {
@@ -219,6 +224,7 @@ public class Step implements Comparable<Step> {
         setReference(String.valueOf(index));
         setNotifiable(true);
         setStringMsg(DEFAULT_NOTIFICATION_MSG);
+        persisted = false;
     }
 
     /**
@@ -636,6 +642,24 @@ public class Step implements Comparable<Step> {
      */
     public void setActors(List<String> actors) {
         this.actors = actors;
+    }
+
+    /**
+     * Getter for persisted.
+     * 
+     * @return the persisted
+     */
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+    /**
+     * Setter for persisted.
+     * 
+     * @param persisted the persisted to set
+     */
+    public void setPersisted(boolean persisted) {
+        this.persisted = persisted;
     }
 
 }

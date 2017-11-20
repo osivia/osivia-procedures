@@ -222,7 +222,9 @@
     </div>
     
 
-    <button type="submit" class="btn btn-primary" name="saveProcedure"><op:translate key="SAVE" /></button>
-    <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure"><op:translate key="DELETE" /></button>
+    <button type="submit" class="btn btn-primary" name="saveProcedure"><op:translate key="SAVE_PROCEDURE" /></button>
+    <c:if test="${not empty form.procedureModel.currentWebId}">
+	    <button type="submit" class="btn btn-danger pull-right" name="deleteProcedure"><op:translate key="DELETE_PROCEDURE" /></button>
+    </c:if>
 </form:form>
 

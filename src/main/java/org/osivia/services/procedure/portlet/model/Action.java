@@ -44,14 +44,20 @@ public class Action {
     @JsonIgnore
     private List<Filter> filters;
 
+    /** persisted */
+    @JsonIgnore
+    private boolean persisted;
+
     public Action() {
         filtersList = new HashSet<Filter>();
         filters = new ArrayList<Filter>();
+        persisted = false;
     }
 
     public Action(String actionId) {
         filtersList = new HashSet<Filter>();
         filters = new ArrayList<Filter>();
+        persisted = false;
         setActionId(actionId);
     }
 
@@ -65,6 +71,7 @@ public class Action {
         setStepReference(propertyMap.getString("stepReference"));
         filtersList = new HashSet<Filter>();
         filters = new ArrayList<Filter>();
+        persisted = true;
 
         final PropertyList filtersPList = propertyMap.getList("filtersList");
         if (filtersPList != null) {
@@ -193,5 +200,25 @@ public class Action {
      */
     public void setFilters(List<Filter> filters) {
         this.filters = filters;
+    }
+
+
+    /**
+     * Getter for persisted.
+     * 
+     * @return the persisted
+     */
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+
+    /**
+     * Setter for persisted.
+     * 
+     * @param persisted the persisted to set
+     */
+    public void setPersisted(boolean persisted) {
+        this.persisted = persisted;
     }
 }

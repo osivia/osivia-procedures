@@ -73,8 +73,12 @@ public class Field implements Comparable<Field> {
     @JsonProperty("helpText")
     private String helpText;
 
+    /** persisted */
+    @JsonIgnore
+    private boolean persisted;
 
     public Field() {
+        persisted = false;
     }
 
     /**
@@ -88,6 +92,7 @@ public class Field implements Comparable<Field> {
         setFieldSet(BooleanUtils.isTrue(propertyMap.getBoolean("isFieldSet")));
         setPath(propertyMap.getString("path"));
         setHelpText(propertyMap.getString("helpText"));
+        persisted = true;
 
         final Variable variable = variables.get(propertyMap.getString("variableName"));
         if (variable != null) {
@@ -104,6 +109,7 @@ public class Field implements Comparable<Field> {
      * @param path
      */
     public Field(String path, AddField addField, boolean isFieldSet) {
+        persisted = false;
         setPath(path);
         setInput(addField.isInput());
         setRequired(addField.isRequired());
@@ -389,6 +395,26 @@ public class Field implements Comparable<Field> {
      */
     public void setPath(String path) {
         this.path = path;
+    }
+
+
+    /**
+     * Getter for persisted.
+     * 
+     * @return the persisted
+     */
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+
+    /**
+     * Setter for persisted.
+     * 
+     * @param persisted the persisted to set
+     */
+    public void setPersisted(boolean persisted) {
+        this.persisted = persisted;
     }
 
 }

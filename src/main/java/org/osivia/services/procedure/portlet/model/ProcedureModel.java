@@ -90,6 +90,7 @@ public class ProcedureModel {
         currentWebId = properties.getString("ttc:webid");
         newWebId = StringUtils.startsWith(currentWebId, IFormsService.FORMS_WEB_ID_PREFIX) ? StringUtils.removeStart(currentWebId,
                 IFormsService.FORMS_WEB_ID_PREFIX) : null;
+
         path = document.getPath();
         startingStep = properties.getString("pcd:startingStep");
         procedureType = document.getType();
