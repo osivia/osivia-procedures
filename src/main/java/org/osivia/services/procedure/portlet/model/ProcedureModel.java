@@ -1,6 +1,7 @@
 package org.osivia.services.procedure.portlet.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -167,6 +168,17 @@ public class ProcedureModel {
      */
     public Map<String, Variable> getVariables() {
         return variables;
+    }
+
+    public List<Variable> getSortedVariables() {
+
+        Collection<Variable> values = getVariables().values();
+
+        List<Variable> sortedVariables = new ArrayList<>(values);
+
+        Collections.sort(sortedVariables);
+
+        return sortedVariables;
     }
 
     /**

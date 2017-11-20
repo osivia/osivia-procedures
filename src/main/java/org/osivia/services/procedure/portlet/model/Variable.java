@@ -14,7 +14,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
  */
 @JsonAutoDetect(isGetterVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE,
 creatorVisibility = Visibility.NONE)
-public class Variable {
+public class Variable implements Comparable<Variable> {
 
     /** DC_CREATOR */
     public static final Variable DC_CREATOR = new Variable("dc:creator", "Créé par", VariableTypesAllEnum.TEXT, null);
@@ -183,5 +183,9 @@ public class Variable {
         this.usedInFields = usedInFields;
     }
 
+    @Override
+    public int compareTo(Variable variable) {
+        return getName().compareTo(variable.getName());
+    }
 
 }

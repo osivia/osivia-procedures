@@ -50,15 +50,15 @@
 				</div>
 			</div>
 			<div class="procedure-variables-dico col-sm-12">
-				<c:forEach var="variable" items="${form.procedureModel.variables}"> 
-				    <c:if test="${variable.value.type ne 'FIELDSET'}">
+				<c:forEach var="variable" items="${form.procedureModel.sortedVariables}"> 
+				    <c:if test="${variable.type ne 'FIELDSET'}">
 						<div class="row">
 		 					<div class="col-sm-3">
-	 							${variable.value.name}
+	 							${variable.name}
 		 					</div>
 		 					<div class="col-sm-3">
 		 						<c:if test="${not empty form.selectedVariable}">
-			 						<c:if test="${variable.value.label eq form.selectedVariable.label}">
+			 						<c:if test="${variable.label eq form.selectedVariable.label}">
 			 							<div class="form-group">
 					 						<form:input path="selectedVariable.label" type="text" cssClass="form-control"/>
 					 						<button type="submit" class="btn btn-default" name="saveVariable">
@@ -66,28 +66,28 @@
 					 						</button>
 			 							</div>
 			 						</c:if>
-			 						<c:if test="${variable.value.label ne form.selectedVariable.label}">
-					 					${variable.value.label}
+			 						<c:if test="${variable.label ne form.selectedVariable.label}">
+					 					${variable.label}
 			 						</c:if>
 		 						</c:if>
 		 						<c:if test="${empty form.selectedVariable}">
-		 							${variable.value.label}
+		 							${variable.label}
 		 						</c:if>
 		 					</div>
-		 					<div class="col-sm-3"><op:translate key="${variable.value.type}" /></div>
+		 					<div class="col-sm-3"><op:translate key="${variable.type}" /></div>
 		 					<div class="col-sm-3">
 			 					<div class="pull-right">
-			 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.value.name}','selectedVar')" name="selectVariable">
+			 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.name}','selectedVar')" name="selectVariable">
 			 							<i class="glyphicons glyphicons-edit"></i>
 			 						</button>
-			 						<c:if test="${empty variable.value.usedInFields}">
-				 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.value.name}','selectedVar')" name="deleteVariable">
+			 						<c:if test="${empty variable.usedInFields}">
+				 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.name}','selectedVar')" name="deleteVariable">
 				 							<i class="glyphicons glyphicons-bin"></i>
 				 						</button>
 			 						</c:if>
 		 						</div>
 		 					</div>
-		 					<c:forEach var="usedInField" items="${variable.value.usedInFields}">
+		 					<c:forEach var="usedInField" items="${variable.usedInFields}">
 		 						<c:forEach var="fieldStep" items="${usedInField.value}">
 			 						<div class="col-sm-offset-3 col-sm-3">${fieldStep.superLabel}</div>
 				 					<div class="col-sm-offset-3 col-sm-3">${usedInField.key}</div>

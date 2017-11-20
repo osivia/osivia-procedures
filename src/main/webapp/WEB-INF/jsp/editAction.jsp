@@ -186,12 +186,12 @@
 	           			</div>
             		</div>
            			<div class="procedure-variables col-sm-12">
-	          			<c:forEach var="variable" items="${form.procedureModel.variables}" varStatus="varStatus">
-	          			  <c:if test="${variable.value.type ne 'FIELDSET'}">
+	          			<c:forEach var="variable" items="${form.procedureModel.sortedVariables}" varStatus="varStatus">
+	          			  <c:if test="${variable.type ne 'FIELDSET'}">
 		           			<div class="row" onclick="insertVarValueAtCaret(this);">
-		           				<div class="col-sm-4">${variable.value.name}</div>
-		           				<div class="col-sm-4">${variable.value.label}</div>
-		           				<div class="col-sm-4">${variable.value.type}</div>
+		           				<div class="col-sm-4">${variable.name}</div>
+		           				<div class="col-sm-4">${variable.label}</div>
+		           				<div class="col-sm-4">${variable.type}</div>
 		           			</div>
 	          			  </c:if>
 	          			</c:forEach>
