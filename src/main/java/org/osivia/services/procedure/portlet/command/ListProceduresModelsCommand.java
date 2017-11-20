@@ -20,7 +20,7 @@ public class ListProceduresModelsCommand implements INuxeoCommand {
     /** where */
     private static final String where = " WHERE ecm:path startswith '";
     /** end */
-    private static final String end = "' ";
+    private static final String end = "' ORDER BY dc:title";
 
     /** path */
     private String path;
