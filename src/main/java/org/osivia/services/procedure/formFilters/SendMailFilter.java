@@ -183,13 +183,14 @@ public class SendMailFilter implements FormFilter {
         MimeMessage message = new MimeMessage(mailSession);
 
         // "Mail from" address
-        InternetAddress mailFromAddr;
-        try {
-            mailFromAddr = new InternetAddress(mailFromVar);
-        } catch (AddressException e1) {
-            throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
+        InternetAddress mailFromAddr = null;
+        if (StringUtils.isNotBlank(mailFromVar)) {
+            try {
+                mailFromAddr = new InternetAddress(mailFromVar);
+            } catch (AddressException e1) {
+                throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
+            }
         }
-
         // "Mail to" address
         InternetAddress[] mailToAddr;
         try {
@@ -212,10 +213,11 @@ public class SendMailFilter implements FormFilter {
 
             message.setSentDate(new Date());
 
-            InternetAddress[] replyToTab = new InternetAddress[1];
-            replyToTab[0] = mailFromAddr;
-            message.setReplyTo(replyToTab);
-
+            if (mailFromAddr != null) {
+                InternetAddress[] replyToTab = new InternetAddress[1];
+                replyToTab[0] = mailFromAddr;
+                message.setReplyTo(replyToTab);
+            }
             // SMTP transport
             SMTPTransport transport = (SMTPTransport) mailSession.getTransport();
             transport.connect();
