@@ -1047,7 +1047,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             throws PortletException {
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        updateStartingStep(form);
+        updateStepReferences(form);
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         try {
 
@@ -1194,7 +1194,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
-        updateStartingStep(form);
+        updateStepReferences(form);
 
         form.getProcedureModel().getSteps().set(Integer.valueOf(form.getTheSelectedStep().getIndex()), form.getTheSelectedStep());
 
@@ -1304,10 +1304,28 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
-    private void updateStartingStep(Form form) {
+    private void updateStepReferences(Form form) {
+        // if stepReference has changed
         if (!StringUtils.equals(form.getTheSelectedStep().getReference(), form.getTheSelectedStep().getOldReference())) {
+            
+            //update starting step reference if it's the one that has changed
             if (StringUtils.equals(form.getProcedureModel().getStartingStep(), form.getTheSelectedStep().getOldReference())) {
                 form.getProcedureModel().setStartingStep(form.getTheSelectedStep().getReference());
+            }
+            
+            // update action's stepreference if it's the one that has changed
+            List<Step> steps = form.getProcedureModel().getSteps();
+            if(steps!=null){
+                for (Step step : steps) {
+                    List<Action> actions = step.getActions();
+                    if(actions!=null){
+                        for (Action action : actions) {
+                            if (StringUtils.equals(action.getStepReference(), form.getTheSelectedStep().getOldReference())) {
+                                action.setStepReference(form.getTheSelectedStep().getReference());
+                            }
+                        }
+                    }
+                }
             }
         }
     }
