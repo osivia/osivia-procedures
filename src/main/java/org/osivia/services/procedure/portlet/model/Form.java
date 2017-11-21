@@ -1,10 +1,7 @@
 package org.osivia.services.procedure.portlet.model;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -65,6 +62,15 @@ public class Form {
 
     /** procedureInstance */
     private List<ProcedureInstance> procedureInstances;
+    
+    /** editedStep */
+    private Step editedStep;
+
+    /** editedAction */
+    private Action editedAction;
+
+    /** editedDashboard */
+    private Dashboard editedDashboard;
 
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
@@ -106,7 +112,7 @@ public class Form {
      * @return the selected step
      */
     public Step getTheSelectedStep() {
-        return getProcedureModel().getSteps().get(NumberUtils.toInt(getSelectedStep()));
+        return editedStep;
     }
 
 
@@ -156,12 +162,23 @@ public class Form {
         if (StringUtils.equals(selectedAction, "-1")) {
             return getTheSelectedStep().getInitAction();
         } else {
-            return getTheSelectedStep().getActions().get(NumberUtils.toInt(selectedAction));
+            return editedAction;
         }
     }
 
     public Dashboard getTheSelectedTdb() {
-        return getSelectedTdb() != null ? getProcedureModel().getDashboards().get(NumberUtils.toInt(getSelectedTdb())) : null;
+        return editedDashboard;
+    }
+
+    public boolean isSelectedTdbPersisted() {
+        if (StringUtils.isNotBlank(getSelectedTdb())) {
+            int selectedTdbIndex = NumberUtils.toInt(getSelectedTdb());
+            int dashBoardsAmnt = getProcedureModel().getDashboards().size();
+            if (selectedTdbIndex >= dashBoardsAmnt) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -463,62 +480,54 @@ public class Form {
         this.newExportVar = newExportVar;
     }
 
-    public void cancelSteps() {
-        if (getProcedureModel() != null && getProcedureModel().getSteps() != null) {
-            ListIterator<Step> listIterator = getProcedureModel().getSteps().listIterator();
-            while (listIterator.hasNext()) {
-                Step step = listIterator.next();
-                if (!step.isPersisted()) {
-                    listIterator.remove();
-                } else {
-                    cancelFields(step.getFields());
-                }
-            }
-        }
+    /**
+     * Getter for editedStep.
+     * @return the editedStep
+     */
+    public Step getEditedStep() {
+        return editedStep;
     }
 
-    private void cancelFields(List<Field> fields) {
-        if (CollectionUtils.isNotEmpty(fields)) {
-            ListIterator<Field> fieldListIterator = fields.listIterator();
-            while (fieldListIterator.hasNext()) {
-                Field field = fieldListIterator.next();
-                if (!field.isPersisted()) {
-                    fieldListIterator.remove();
-                } else {
-                    cancelFields(field.getFields());
-                }
-            }
-        }
+    /**
+     * Setter for editedStep.
+     * @param editedStep the editedStep to set
+     */
+    public void setEditedStep(Step editedStep) {
+        this.editedStep = editedStep;
     }
 
-    public void cancelTdb() {
-        if (getProcedureModel() != null && getProcedureModel().getDashboards() != null) {
-            ListIterator<Dashboard> listIterator = getProcedureModel().getDashboards().listIterator();
-            while (listIterator.hasNext()) {
-                Dashboard dashboard = listIterator.next();
-                if (!dashboard.isPersisted()) {
-                    listIterator.remove();
-                }
-            }
-        }
+    /**
+     * Getter for editedAction.
+     * @return the editedAction
+     */
+    public Action getEditedAction() {
+        return editedAction;
     }
 
-    public void cancelActions() {
-        if (getProcedureModel() != null && getProcedureModel().getSteps() != null) {
-            Iterator<Step> iterator = getProcedureModel().getSteps().iterator();
-            while (iterator.hasNext()) {
-                Step step = iterator.next();
-                if (step.getActions() != null) {
-                    ListIterator<Action> listIterator = step.getActions().listIterator();
-                    while (listIterator.hasNext()) {
-                        Action action = listIterator.next();
-                        if (!action.isPersisted()) {
-                            listIterator.remove();
-                        }
-                    }
-                }
-            }
-        }
+    /**
+     * Setter for editedAction.
+     * @param editedAction the editedAction to set
+     */
+    public void setEditedAction(Action editedAction) {
+        this.editedAction = editedAction;
+    }
+
+    /**
+     * Getter for editedDashboard.
+     * 
+     * @return the editedDashboard
+     */
+    public Dashboard getEditedDashboard() {
+        return editedDashboard;
+    }
+
+    /**
+     * Setter for editedDashboard.
+     * 
+     * @param editedDashboard the editedDashboard to set
+     */
+    public void setEditedDashboard(Dashboard editedDashboard) {
+        this.editedDashboard = editedDashboard;
     }
 
 }

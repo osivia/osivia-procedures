@@ -44,20 +44,14 @@ public class Action {
     @JsonIgnore
     private List<Filter> filters;
 
-    /** persisted */
-    @JsonIgnore
-    private boolean persisted;
-
     public Action() {
         filtersList = new HashSet<Filter>();
         filters = new ArrayList<Filter>();
-        persisted = false;
     }
 
     public Action(String actionId) {
         filtersList = new HashSet<Filter>();
         filters = new ArrayList<Filter>();
-        persisted = false;
         setActionId(actionId);
     }
 
@@ -71,7 +65,6 @@ public class Action {
         setStepReference(propertyMap.getString("stepReference"));
         filtersList = new HashSet<Filter>();
         filters = new ArrayList<Filter>();
-        persisted = true;
 
         final PropertyList filtersPList = propertyMap.getList("filtersList");
         if (filtersPList != null) {
@@ -103,6 +96,14 @@ public class Action {
                 }
             }
         }
+    }
+
+    public Action(Action action){
+        setActionId(action.getActionId());
+        getFilters().addAll(action.getFilters());
+        getFiltersList().addAll(action.getFiltersList());
+        setLabel(action.getLabel());
+        setStepReference(action.getStepReference());
     }
 
     /**
@@ -169,6 +170,9 @@ public class Action {
      * @return the filtersList
      */
     public Set<Filter> getFiltersList() {
+        if (filtersList == null) {
+            filtersList = new HashSet<Filter>();
+        }
         return filtersList;
     }
 
@@ -189,6 +193,9 @@ public class Action {
      * @return the filters
      */
     public List<Filter> getFilters() {
+        if (filters == null) {
+            filters = new ArrayList<Filter>();
+        }
         return filters;
     }
 
@@ -202,23 +209,4 @@ public class Action {
         this.filters = filters;
     }
 
-
-    /**
-     * Getter for persisted.
-     * 
-     * @return the persisted
-     */
-    public boolean isPersisted() {
-        return persisted;
-    }
-
-
-    /**
-     * Setter for persisted.
-     * 
-     * @param persisted the persisted to set
-     */
-    public void setPersisted(boolean persisted) {
-        this.persisted = persisted;
-    }
 }

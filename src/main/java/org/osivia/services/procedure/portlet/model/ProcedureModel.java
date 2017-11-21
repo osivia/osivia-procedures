@@ -181,6 +181,14 @@ public class ProcedureModel {
         return sortedVariables;
     }
 
+    public String getNewStepReference() {
+        int i = 0;
+        while (getStepsMap().get(String.valueOf(i)) != null) {
+            i++;
+        }
+        return String.valueOf(i);
+    }
+
     /**
      * Setter for variables.
      *
@@ -196,6 +204,9 @@ public class ProcedureModel {
      * @return the steps
      */
     public List<Step> getSteps() {
+        if (steps == null) {
+            steps = new ArrayList<Step>();
+        }
         return steps;
     }
 

@@ -104,20 +104,14 @@ public class Step implements Comparable<Step> {
     @JsonProperty("endStepMsg")
     private String endStepMsg;
 
-    /** persisted */
-    @JsonIgnore
-    private boolean persisted;
-
     public Step() {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
-        persisted = false;
     }
 
     public Step(final PropertyMap stepM, Map<String, Variable> variables, NuxeoController nuxeoController) {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
-        persisted = true;
 
         final PropertyList gvvList = stepM.getList("globalVariablesReferences");
         if (gvvList != null) {
@@ -172,11 +166,9 @@ public class Step implements Comparable<Step> {
 
         final PropertyList actorsObjectsList = stepM.getList("actors");
         if (actorsObjectsList != null) {
-            final List<String> actors = new ArrayList<String>();
             for (final Object actorsObject : actorsObjectsList.list()) {
-                actors.add((String) actorsObject);
+                getActors().add((String) actorsObject);
             }
-            setActors(actors);
         }
         setStepName(stepM.getString("name"));
         setIndex(stepM.getLong("index").intValue());
@@ -192,6 +184,28 @@ public class Step implements Comparable<Step> {
         setActionIdDefault(stepM.getString("actionIdDefault"));
         setActionIdClosable(stepM.getString("actionIdClosable"));
         setEndStepMsg(stepM.getString("endStepMsg"));
+    }
+
+    public Step(Step step) {
+        setAcquitable(step.getAcquitable());
+        setActionIdClosable(step.getActionIdClosable());
+        setActionIdDefault(step.getActionIdDefault());
+        setActionIdNo(step.getActionIdNo());
+        setActionIdYes(step.getActionIdYes());
+        getActions().addAll(step.getActions());
+        getActors().addAll(step.getActors());
+        setClosable(step.getClosable());
+        setEndStepMsg(step.getEndStepMsg());
+        getFields().addAll(step.getFields());
+        getFieldsSet().addAll(step.getFieldsSet());
+        setIndex(step.getIndex());
+        setInitAction(step.getInitAction());
+        setNotifEmail(step.getNotifEmail());
+        setNotifiable(step.getNotifiable());
+        setOldReference(step.getOldReference());
+        setReference(step.getReference());
+        setStepName(step.getStepName());
+        setStringMsg(step.getStringMsg());
     }
 
 
@@ -217,14 +231,13 @@ public class Step implements Comparable<Step> {
         }
     }
 
-    public Step(Integer index) {
+    public Step(Integer index, String reference) {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
         setIndex(index);
-        setReference(String.valueOf(index));
+        setReference(reference);
         setNotifiable(true);
         setStringMsg(DEFAULT_NOTIFICATION_MSG);
-        persisted = false;
     }
 
     /**
@@ -278,6 +291,9 @@ public class Step implements Comparable<Step> {
      * @return the fields
      */
     public List<Field> getFields() {
+        if (fields == null) {
+            fields = new ArrayList<Field>();
+        }
         return fields;
     }
 
@@ -298,6 +314,9 @@ public class Step implements Comparable<Step> {
      * @return the actions
      */
     public List<Action> getActions() {
+        if (actions == null) {
+            actions = new ArrayList<Action>();
+        }
         return actions;
     }
 
@@ -392,6 +411,9 @@ public class Step implements Comparable<Step> {
     }
 
     public Set<Field> getFieldsSet() {
+        if (fieldsSet == null) {
+            fieldsSet = new HashSet<Field>();
+        }
         return fieldsSet;
     }
 
@@ -631,6 +653,9 @@ public class Step implements Comparable<Step> {
      * @return the actors
      */
     public List<String> getActors() {
+        if (actors == null) {
+            actors = new ArrayList<String>();
+        }
         return actors;
     }
 
@@ -642,24 +667,6 @@ public class Step implements Comparable<Step> {
      */
     public void setActors(List<String> actors) {
         this.actors = actors;
-    }
-
-    /**
-     * Getter for persisted.
-     * 
-     * @return the persisted
-     */
-    public boolean isPersisted() {
-        return persisted;
-    }
-
-    /**
-     * Setter for persisted.
-     * 
-     * @param persisted the persisted to set
-     */
-    public void setPersisted(boolean persisted) {
-        this.persisted = persisted;
     }
 
 }

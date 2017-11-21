@@ -29,7 +29,7 @@ public class ProcedureRepository {
 
         procedureModel.setSteps(new ArrayList<Step>(1));
 
-        Step step1 = new Step(0);
+        Step step1 = new Step(0, procedureModel.getNewStepReference());
         step1.setReference(IFormsService.FORM_STEP_REFERENCE);
         step1.setStepName("Formulaire");
         step1.setActions(new ArrayList<Action>());

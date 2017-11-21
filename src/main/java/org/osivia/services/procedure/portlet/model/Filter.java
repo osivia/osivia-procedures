@@ -12,6 +12,9 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
@@ -65,6 +68,14 @@ public class Filter implements Comparable<Filter> {
     @JsonIgnore
     private ClassLoader classLoader;
 
+    /** bundleFactory */
+    @JsonIgnore
+    private IBundleFactory bundleFactory;
+
+    /** parameterNames */
+    @JsonIgnore
+    private Map<String, String> parameterNames;
+
     public Filter() {
     }
 
@@ -76,6 +87,9 @@ public class Filter implements Comparable<Filter> {
         setLabelKey(formFilter.getLabelKey());
         setDescriptionKey(formFilter.getDescriptionKey());
         setClassLoader(formFilter.getClass().getClassLoader());
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        setBundleFactory(internationalizationService.getBundleFactory(getClassLoader()));
         if (formFilter.getParameters() != null) {
             final List<Argument> argumentsList = new ArrayList<Argument>(formFilter.getParameters().entrySet().size());
             for (Entry<String, FormFilterParameterType> argumentEntry : formFilter.getParameters().entrySet()) {
@@ -101,6 +115,9 @@ public class Filter implements Comparable<Filter> {
             setDescriptionKey(formFilter.getDescriptionKey());
             setHasChildren(formFilter.hasChildren());
             setClassLoader(formFilter.getClass().getClassLoader());
+            IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                    IInternationalizationService.MBEAN_NAME);
+            setBundleFactory(internationalizationService.getBundleFactory(getClassLoader()));
         }
         final PropertyList argumentsPptyList = propertyMap.getList("argumentsList");
         if (argumentsPptyList != null) {
@@ -351,6 +368,42 @@ public class Filter implements Comparable<Filter> {
      */
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
+    }
+
+    /**
+     * Getter for bundleFactory.
+     * 
+     * @return the bundleFactory
+     */
+    public IBundleFactory getBundleFactory() {
+        return bundleFactory;
+    }
+
+    /**
+     * Setter for bundleFactory.
+     * 
+     * @param bundleFactory the bundleFactory to set
+     */
+    public void setBundleFactory(IBundleFactory bundleFactory) {
+        this.bundleFactory = bundleFactory;
+    }
+
+    /**
+     * Getter for parameterNames.
+     * 
+     * @return the parameterNames
+     */
+    public Map<String, String> getParameterNames() {
+        return parameterNames;
+    }
+
+    /**
+     * Setter for parameterNames.
+     * 
+     * @param parameterNames the parameterNames to set
+     */
+    public void setParameterNames(Map<String, String> parameterNames) {
+        this.parameterNames = parameterNames;
     }
 
 }

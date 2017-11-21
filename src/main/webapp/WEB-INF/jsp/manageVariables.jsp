@@ -100,5 +100,5 @@
 		</div>
 	</div>
 	<button type="submit" class="btn btn-default" name="cancel"><op:translate key="CANCEL" /></button>
-	<button type="submit" class="btn btn-primary" name="save"><op:translate key="SAVE" /></button>
+	<button type="submit" class="btn btn-primary" name="save"><op:translate key="VALIDATE" /></button>
 </form:form>

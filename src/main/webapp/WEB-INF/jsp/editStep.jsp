@@ -517,9 +517,9 @@
     
     <button type="submit" class="btn btn-default" name="cancelStep"><op:translate key="CANCEL" /></button>
 	<button type="submit" class="btn btn-primary" name="saveStep"><op:translate key="SAVE_STEP" /></button>
-	<c:if test="${form.theSelectedStep.persisted}">
-		<a href="javascript:;" class="btn btn-danger pull-right" data-fancybox="" data-src="#STEP_DELETE"><op:translate key="DELETE_STEP" /></a>
-	</c:if>
+    <c:if test="${not empty form.procedureModel.stepsMap[form.theSelectedStep.reference]}">
+    	<a href="javascript:;" class="btn btn-danger pull-right" data-fancybox="" data-src="#STEP_DELETE"><op:translate key="DELETE_STEP" /></a>
+    </c:if>
 	<input type="submit" class="hidden" name="updateForm">
 	<input type="submit" class="hidden" name="selectField">
 </form:form>

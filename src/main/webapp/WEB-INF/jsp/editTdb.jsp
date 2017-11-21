@@ -141,7 +141,7 @@
 	    
     <button type="submit" class="btn btn-default" name="cancelTdb"><op:translate key="CANCEL" /></button>
     <button type="submit" class="btn btn-primary" name="saveTdb"><op:translate key="SAVE_DASHBOARD" /></button>
-    <c:if test="${form.theSelectedTdb.persisted}">
+    <c:if test="${form.selectedTdbPersisted}">
 	    <a href="javascript:;" class="btn btn-danger pull-right" data-fancybox="" data-src="#DASHBOARD_DELETE"><op:translate key="DELETE_DASHBOARD" /></a>
     </c:if>
     <input type="submit" class="hidden" name="updateDashboard">
