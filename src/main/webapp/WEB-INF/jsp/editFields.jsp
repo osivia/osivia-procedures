@@ -34,7 +34,12 @@
 	   			</div>
    			</div>
 			<c:forEach var="pathPart" items="${fieldBkp.path}" varStatus="status">
-				<c:set var="springPathNested" value="${status.first ? 'theCurrentStep' : springPathNested}.fields[${pathPart}]" scope="request"/>
+                <c:if test="${not empty form.procedureInstance}">
+                    <c:set var="springPathNested" value="${status.first ? 'theCurrentStep' : springPathNested}.fields[${pathPart}]" scope="request"/>
+                </c:if>
+                <c:if test="${empty form.procedureInstance}">
+                    <c:set var="springPathNested" value="${status.first ? 'theSelectedStep' : springPathNested}.fields[${pathPart}]" scope="request"/>
+                </c:if>
 			</c:forEach>
 			<form:hidden path="${springPathNested}.path"/>
    		</li>

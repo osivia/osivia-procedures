@@ -236,8 +236,11 @@
 		</div>
 	</div> 
 	<c:forEach var="pathPart" items="${field.path}" varStatus="status">
-		<c:set var="springPath"
-			value="${status.first ? 'theCurrentStep' : springPath}.fields[${pathPart}]"
-			scope="request" />
+        <c:if test="${not empty form.procedureInstance}">
+    		<c:set var="springPath" value="${status.first ? 'theCurrentStep' : springPath}.fields[${pathPart}]" scope="request" />
+        </c:if>
+        <c:if test="${empty form.procedureInstance}">
+            <c:set var="springPath" value="${status.first ? 'theSelectedStep' : springPath}.fields[${pathPart}]" scope="request" />
+        </c:if>
 	</c:forEach> <form:hidden path="${springPath}.path" />
 </li>
