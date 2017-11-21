@@ -512,7 +512,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                                 if (StringUtils.isBlank(stepReference)) {
                                     addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WITHOUT_STEP", NotificationsType.WARNING,
                                             action.getLabel(), stepName);
-                                } else if (procedureModel.getStepsMap().get(stepReference) == null) {
+                                } else if (!StringUtils.equals(stepReference, "endStep") && procedureModel.getStepsMap().get(stepReference) == null) {
                                     addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WRONG_STEP", NotificationsType.WARNING, action.getLabel(),
                                             stepName);
                                 }
@@ -549,7 +549,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     String stepReference = action.getStepReference();
                     if (StringUtils.isBlank(stepReference)) {
                         addNotification(nuxeoController.getPortalCtx(), "WARNING_THIS_STEP_ACTION_WITHOUT_STEP", NotificationsType.WARNING, action.getLabel());
-                    } else if (procedureModel.getStepsMap().get(procedureModel.getStartingStep()) == null) {
+                    } else if (!StringUtils.equals(stepReference, "endStep") && procedureModel.getStepsMap().get(procedureModel.getStartingStep()) == null) {
                         addNotification(nuxeoController.getPortalCtx(), "WARNING_THIS_STEP_ACTION_WRONG_STEP", NotificationsType.WARNING, action.getLabel());
                     }
                 }
