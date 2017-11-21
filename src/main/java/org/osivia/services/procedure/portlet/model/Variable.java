@@ -81,6 +81,13 @@ public class Variable implements Comparable<Variable> {
         this.varOptions = varOptions;
     }
 
+    public Variable(Variable variable) {
+        setLabel(variable.getLabel());
+        setName(variable.getName());
+        setType(variable.getType());
+        setVarOptions(variable.getVarOptions());
+    }
+
     /**
      * Getter for name.
      *

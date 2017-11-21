@@ -72,6 +72,9 @@ public class Form {
     /** editedDashboard */
     private Dashboard editedDashboard;
 
+    /** editedVariables */
+    private List<Variable> editedVariables;
+
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
         newField = new AddField();
@@ -529,5 +532,22 @@ public class Form {
     public void setEditedDashboard(Dashboard editedDashboard) {
         this.editedDashboard = editedDashboard;
     }
+
+    /**
+     * Getter for editedVariables.
+     * @return the editedVariables
+     */
+    public List<Variable> getEditedVariables() {
+        return editedVariables;
+    }
+
+    /**
+     * Setter for editedVariables.
+     * @param editedVariables the editedVariables to set
+     */
+    public void setEditedVariables(List<Variable> editedVariables) {
+        this.editedVariables = editedVariables;
+    }
+
 
 }

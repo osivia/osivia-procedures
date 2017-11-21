@@ -50,7 +50,7 @@
 				</div>
 			</div>
 			<div class="procedure-variables-dico col-sm-12">
-				<c:forEach var="variable" items="${form.procedureModel.sortedVariables}"> 
+				<c:forEach var="variable" items="${form.editedVariables}"> 
 				    <c:if test="${variable.type ne 'FIELDSET'}">
 						<div class="row">
 		 					<div class="col-sm-3">

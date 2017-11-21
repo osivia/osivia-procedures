@@ -1029,19 +1029,31 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void manageVariables(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
 
+        Map<String, Variable> variables = form.getProcedureModel().getVariables();
+
+        List<Variable> sortedVariables = new ArrayList<>(variables.size());
+        for (Entry<String, Variable> entryVar : variables.entrySet()) {
+            sortedVariables.add(new Variable(entryVar.getValue()));
+        }
+
+        Collections.sort(sortedVariables);
+
         for (Step step : form.getProcedureModel().getSteps()) {
             for (Field field : step.getFields()) {
-                Variable variable = form.getProcedureModel().getVariables().get(field.getName());
-                if (variable != null) {
-                    List<Field> usedInFields = variable.getUsedInFields().get(step.getStepName());
-                    if (usedInFields == null) {
-                        usedInFields = new ArrayList<Field>();
+                for (Variable variable : sortedVariables) {
+                    if (StringUtils.equals(variable.getName(), field.getName())) {
+                        List<Field> usedInFields = variable.getUsedInFields().get(step.getStepName());
+                        if (usedInFields == null) {
+                            usedInFields = new ArrayList<Field>();
+                        }
+                        usedInFields.add(field);
+                        variable.getUsedInFields().put(step.getStepName(), usedInFields);
                     }
-                    usedInFields.add(field);
-                    variable.getUsedInFields().put(step.getStepName(), usedInFields);
                 }
             }
         }
+
+        form.setEditedVariables(sortedVariables);
 
         response.setRenderParameter("action", "manageVariables");
     }
@@ -1054,6 +1066,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "manageVariables", params = "save")
     public void save(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException {
+
+        List<Variable> editedVariables = form.getEditedVariables();
+        for (Variable variable : editedVariables) {
+            form.getProcedureModel().getVariables().put(variable.getName(), variable);
+        }
+
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
         updateStepReferences(form);
@@ -1064,15 +1082,28 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "manageVariables", params = "deleteVariable")
     public void deleteVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
             @RequestParam(value = "selectedVar") String selectedVar) throws PortletException {
-        form.getProcedureModel().getVariables().remove(selectedVar);
+
+        ListIterator<Variable> listIterator = form.getEditedVariables().listIterator();
+        while (listIterator.hasNext()) {
+            Variable variable = listIterator.next();
+            if (StringUtils.equals(selectedVar, variable.getName())) {
+                listIterator.remove();
+            }
+        }
+
         response.setRenderParameter("action", "manageVariables");
     }
 
     @ActionMapping(value = "manageVariables", params = "selectVariable")
     public void selectVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedVar",
             required = false) String selectedVar) throws PortletException {
-        Variable selectedVariable = form.getProcedureModel().getVariables().get(selectedVar);
-        form.setSelectedVariable(selectedVariable);
+
+        for (Variable variable : form.getEditedVariables()) {
+            if (StringUtils.equals(selectedVar, variable.getName())) {
+                form.setSelectedVariable(variable);
+            }
+        }
+
         response.setRenderParameter("action", "manageVariables");
     }
 
@@ -1080,7 +1111,16 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void saveVariable(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         Variable selectedVariable = form.getSelectedVariable();
         if (StringUtils.isNotBlank(selectedVariable.getName())) {
-            form.getProcedureModel().getVariables().put(selectedVariable.getName(), selectedVariable);
+
+            ListIterator<Variable> listIterator = form.getEditedVariables().listIterator();
+            while (listIterator.hasNext()) {
+                Variable variable = listIterator.next();
+                if (StringUtils.equals(selectedVariable.getName(), variable.getName())) {
+                    listIterator.remove();
+                    listIterator.add(selectedVariable);
+                }
+            }
+
             form.setSelectedVariable(null);
         }
         response.setRenderParameter("action", "manageVariables");
@@ -1293,7 +1333,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     private void updateStepReferences(Form form) {
         // if stepReference has changed
-        if (!StringUtils.equals(form.getTheSelectedStep().getReference(), form.getTheSelectedStep().getOldReference())) {
+        if (form.getTheSelectedStep() != null && !StringUtils.equals(form.getTheSelectedStep().getReference(), form.getTheSelectedStep().getOldReference())) {
             
             //update starting step reference if it's the one that has changed
             if (StringUtils.equals(form.getProcedureModel().getStartingStep(), form.getTheSelectedStep().getOldReference())) {
