@@ -1391,10 +1391,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     @ActionMapping(value = "editTdb", params = "deleteExportVar")
-    public void deleteExportVar(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "selectedCol",
-            required = false) String selectedCol) throws PortletException {
+    public void deleteExportVar(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
+            value = "selectedExportVar", required = false) String selectedExportVar) throws PortletException {
 
-        form.getTheSelectedTdb().getExportVarList().remove(Integer.valueOf(selectedCol).intValue());
+        form.getTheSelectedTdb().getExportVarList().remove(Integer.valueOf(selectedExportVar).intValue());
         response.setRenderParameter("action", "editTdb");
     }
 
