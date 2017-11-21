@@ -237,7 +237,7 @@
 	</div> 
 	<c:forEach var="pathPart" items="${field.path}" varStatus="status">
 		<c:set var="springPath"
-			value="${status.first ? 'theSelectedStep' : springPath}.fields[${pathPart}]"
+			value="${status.first ? 'theCurrentStep' : springPath}.fields[${pathPart}]"
 			scope="request" />
 	</c:forEach> <form:hidden path="${springPath}.path" />
 </li>
