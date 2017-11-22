@@ -274,7 +274,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         request.setAttribute("activeTab", request.getParameter("activeTab"));
         request.setAttribute("activeFormTab", request.getParameter("activeFormTab"));
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        if (StringUtils.isBlank(request.getParameter("activeTab"))) {
+        if (StringUtils.isBlank(request.getParameter("activeTab")) && StringUtils.isNotBlank(form.getProcedureModel().getCurrentWebId())) {
             // valide the model except when refreshing and creating
             validateStep(form, nuxeoController);
         }
@@ -651,7 +651,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ResourceMapping(value = "stepSearch")
     public void getSteps(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
-            required = false) String filter) throws PortletException {
+            required = false) String filter, @RequestParam(value = "includeEndstep", required = false) Boolean includeEndstep) throws PortletException {
 
         NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
@@ -666,11 +666,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 listeSteps.add(demoGroup);
             }
         }
-        Map<String, String> demoGroup = new HashMap<String, String>(2);
-        demoGroup.put("id", "endStep");
-        demoGroup.put("text", getMessage(nuxeoController.getPortalCtx(), "END_STEP"));
-        
-        listeSteps.add(demoGroup);
+        if (BooleanUtils.isTrue(includeEndstep)) {
+            Map<String, String> endStep = new HashMap<String, String>(2);
+            endStep.put("id", "endStep");
+            endStep.put("text", getMessage(nuxeoController.getPortalCtx(), "END_STEP"));
+            listeSteps.add(endStep);
+        }
         response.setContentType("application/json");
         try {
             final ObjectMapper mapper = new ObjectMapper();

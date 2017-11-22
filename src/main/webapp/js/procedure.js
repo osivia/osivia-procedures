@@ -426,6 +426,7 @@ $JQry(function() {
 	$JQry(".stepSelect-select2").each(function(index, element) {
 		var $element = $JQry(element);
 		var stepSearchUrl = $element.data("url");
+		var includeEndstep = $element.data("include-endstep");
 		
 		$element.select2({
 			ajax: {
@@ -434,7 +435,8 @@ $JQry(function() {
 				delay: 300,
 				data: function (params) {
 					return {
-						filter: params.term
+						filter: params.term,
+						includeEndstep: includeEndstep
 					};
 				},
 				processResults: function (data, params) {

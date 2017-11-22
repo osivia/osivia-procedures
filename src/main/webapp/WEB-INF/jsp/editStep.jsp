@@ -392,7 +392,7 @@
                               <input name="theSelectedStep.actions[${status.index}].label" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.theSelectedStep.actions[status.index].label}" type="text">
                           </div>
                           <div class="col-sm-4">
-                                <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}">
+                                <form:select path="theSelectedStep.actions[${status.index}].stepReference" class="stepSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${stepSearchUrl}" data-include-endstep="true">
                                    <c:choose>
                                         <c:when test="${'endStep' eq form.theSelectedStep.actions[status.index].stepReference}">
                                             <option value="${form.theSelectedStep.actions[status.index].stepReference}" selected="selected"><op:translate key="END_STEP" /></option>
