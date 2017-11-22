@@ -1628,6 +1628,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         Collections.sort(sortedVariables);
         form.setEditedVariables(sortedVariables);
+        form.setSelectedFilter(null);
 
         response.setRenderParameter("action", "editAction");
     }
