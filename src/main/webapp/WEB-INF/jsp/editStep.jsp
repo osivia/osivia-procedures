@@ -61,10 +61,10 @@
             <div class="btn-group pull-right">
                 <c:if test="${!form.advancedMode}">
                     <button type="submit" class="btn btn-default" name="changeMode"><op:translate key="ADVANCED_MODE" /></button>
-                    <button type="submit" class="btn btn-info active" name="changeMode"><op:translate key="SIMPLE_MODE" /></button>
+                    <button type="submit" class="btn btn-primary active" name="changeMode"><op:translate key="SIMPLE_MODE" /></button>
                 </c:if>
                 <c:if test="${form.advancedMode}">
-                    <button type="submit" class="btn btn-info active" name="changeMode"><op:translate key="ADVANCED_MODE" /></button>
+                    <button type="submit" class="btn btn-primary active" name="changeMode"><op:translate key="ADVANCED_MODE" /></button>
                     <button type="submit" class="btn btn-default" name="changeMode"><op:translate key="SIMPLE_MODE" /></button>
                 </c:if>
             </div>
