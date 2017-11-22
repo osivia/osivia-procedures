@@ -216,7 +216,7 @@
     </div>
     
 
-    <button type="submit" class="btn btn-default" name="exit"><op:translate key="CANCEL" /></button>
+    <button type="submit" class="btn btn-default" name="exit"><op:translate key="EXIT" /></button>
     <button type="submit" class="btn btn-primary" name="saveProcedure"><op:translate key="SAVE_PROCEDURE" /></button>
     <c:if test="${not empty form.procedureModel.currentWebId}">
 	    <a href="javascript:;" class="btn btn-danger pull-right" data-fancybox="" data-src="#PROCEDURE_DELETE"><op:translate key="DELETE_PROCEDURE" /></a>
