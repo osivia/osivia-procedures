@@ -1521,6 +1521,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             field.setInput(true);
         }
         form.getTheSelectedStep().getFields().add(field);
+        updateFieldsPath(form.getTheSelectedStep().getFields(), StringUtils.EMPTY);
         form.setNewField(new AddField());
         form.setNewFieldSet(new AddField());
         response.setRenderParameter("activeTab", "form");
