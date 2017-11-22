@@ -367,7 +367,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 try {
                     Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
                             .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), null);
-                    form.setProcedureInstance(new ProcedureInstance(initVariables));
+                    ProcedureInstance procedureInstance = new ProcedureInstance(initVariables);
+                    procedureInstance.setCurrentStep(form.getProcedureModel().getStartingStep());
+                    form.setProcedureInstance(procedureInstance);
                 } catch (PortalException e) {
                     if (StringUtils.isNotBlank(e.getMessage())) {
                         request.setAttribute("errorText", e.getMessage());
