@@ -1615,6 +1615,16 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         form.setEditedAction(new Action(action));
         form.setSelectedAction(index);
 
+        Map<String, Variable> variables = form.getProcedureModel().getVariables();
+
+        List<Variable> sortedVariables = new ArrayList<>(variables.size());
+        for (Entry<String, Variable> entryVar : variables.entrySet()) {
+            sortedVariables.add(new Variable(entryVar.getValue()));
+        }
+
+        Collections.sort(sortedVariables);
+        form.setEditedVariables(sortedVariables);
+
         response.setRenderParameter("action", "editAction");
     }
 
@@ -1820,7 +1830,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
 
         response.setRenderParameter("action", "editStep");
-        response.setRenderParameter("activeFormTab", "action");
+        response.setRenderParameter("activeTab", "action");
     }
 
     @ActionMapping(value = "editAction", params = "updateForm")
