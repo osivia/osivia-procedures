@@ -2,8 +2,6 @@ package org.osivia.services.procedure.portlet.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +31,6 @@ import javax.portlet.ResourceResponse;
 import net.sf.json.JSONArray;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -76,6 +73,7 @@ import org.osivia.services.procedure.portlet.model.Variable;
 import org.osivia.services.procedure.portlet.model.VariableTypesAllEnum;
 import org.osivia.services.procedure.portlet.model.WebIdException;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
+import org.osivia.services.procedure.portlet.util.ProcedureUtils;
 import org.osivia.services.procedure.portlet.util.VariableTypesEnumJsonSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -692,8 +690,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 if (VariableTypesAllEnum.FIELDSET.equals(entryVar.getValue().getType())) {
                     if (StringUtils.equalsIgnoreCase(entryVar.getValue().getName(), filter)) {
                         exactMatch = true;
-                        listeVar.add(0, new Variable(buildUniqueVariableName(form.getProcedureModel().getVariables(), filter), null, VariableTypesAllEnum.TEXT,
-                                null));
+                        listeVar.add(0, new Variable(ProcedureUtils.buildUniqueVariableName(form.getProcedureModel().getVariables(), filter), null,
+                                VariableTypesAllEnum.TEXT, null));
                     }
                 } else {
                     if (StringUtils.equalsIgnoreCase(entryVar.getValue().getName(), filter)) {
@@ -706,7 +704,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 }
             }
             if (!exactMatch && BooleanUtils.isNotTrue(defaultVars)) {
-                listeVar.add(0, new Variable(StringUtils.deleteWhitespace(filter), null, VariableTypesAllEnum.TEXT, null));
+                listeVar.add(0, new Variable(ProcedureUtils.buildUniqueVariableName(form.getProcedureModel().getVariables(), filter), null,
+                        VariableTypesAllEnum.TEXT, null));
             }
         } else {
             listeVar.addAll(form.getProcedureModel().getVariables().values());
@@ -1414,7 +1413,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     private void editField(ActionResponse response, Form form, String action) {
         final String[] path = form.getSelectedField().getPath().split(",");
-        final Field editedField = getFieldByPath(form.getTheSelectedStep().getFields(), path);
+        final Field editedField = ProcedureUtils.getFieldByPath(form.getTheSelectedStep().getFields(), path);
         if (editedField != null) {
             form.getProcedureModel().getVariables().put(editedField.getName(), new Variable(editedField));
         }
@@ -1434,34 +1433,15 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         editField(response, form, "editRecord");
     }
 
-    private Field getFieldByPath(List<Field> fields, String[] path) {
-        final Integer index = Integer.parseInt(path[0]);
-        Field nestedField;
-        if ((path.length == 1) && (fields != null)) {
-            // on a fini de parcourir le path
-            final ListIterator<Field> listIterator = fields.listIterator();
-            while (listIterator.hasNext()) {
-                final Field field = listIterator.next();
-                final String[] pathArray = StringUtils.split(field.getPath(), ',');
-                if ((pathArray.length > 0) && (Integer.parseInt(pathArray[pathArray.length - 1]) == index)) {
-                    return field;
-                }
-            }
-        } else {
-            // on continue de parcourir le path
-            nestedField = fields.get(index);
-            path = (String[]) ArrayUtils.remove(path, 0);
-            return getFieldByPath(nestedField.getFields(), path);
-        }
-        return null;
-    }
 
     private void addField(ActionRequest request, ActionResponse response, Form form, String action, Boolean forceInput) throws PortletException {
         final AddField addField = form.getNewField();
         if (StringUtils.isNotBlank(addField.getVariableName()) || StringUtils.isNotBlank(addField.getLabel())) {
             Map<String, Variable> variables = form.getProcedureModel().getVariables();
             if (StringUtils.isBlank(addField.getVariableName())) {
-                addField.setVariableName(buildUniqueVariableName(variables, addField.getLabel()));
+                addField.setVariableName(ProcedureUtils.buildUniqueVariableName(variables, addField.getLabel()));
+            } else {
+                addField.setVariableName(ProcedureUtils.normalizeVariableName(addField.getVariableName()));
             }
             final Field field = new Field(form.getTheSelectedStep().getNextPath(), addField, false);
             variables.put(addField.getVariableName(), new Variable(addField));
@@ -1470,22 +1450,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             response.setRenderParameter("activeTab", "form");
             response.setRenderParameter("action", action);
         }
-    }
-
-    private String buildUniqueVariableName(Map<String, Variable> variables, String label) throws PortletException {
-        String cleanLabel;
-        try {
-            cleanLabel = URLEncoder.encode(StringUtils.deleteWhitespace(label), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new PortletException(e);
-        }
-        int i = 0;
-        String uniqueVarName = StringUtils.isNotBlank(cleanLabel) ? cleanLabel : cleanLabel+i;
-        while (variables.containsKey(uniqueVarName)) {
-            uniqueVarName = cleanLabel + i;
-            i++;
-        }
-        return uniqueVarName;
     }
 
     @ActionMapping(value = "editStep", params = "addField")
@@ -1504,7 +1468,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         newFieldSet.setType(VariableTypesAllEnum.FIELDSET);
         Map<String, Variable> variables = form.getProcedureModel().getVariables();
         if (StringUtils.isBlank(newFieldSet.getVariableName())) {
-            newFieldSet.setVariableName(buildUniqueVariableName(variables, newFieldSet.getLabel()));
+            newFieldSet.setVariableName(ProcedureUtils.buildUniqueVariableName(variables, newFieldSet.getLabel()));
         }
         final Field field = new Field(form.getTheSelectedStep().getNextPath(), newFieldSet, true);
         variables.put(newFieldSet.getVariableName(), new Variable(newFieldSet));
@@ -1522,7 +1486,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             field.setInput(true);
         }
         form.getTheSelectedStep().getFields().add(field);
-        updateFieldsPath(form.getTheSelectedStep().getFields(), StringUtils.EMPTY);
+        ProcedureUtils.updateFieldsPath(form.getTheSelectedStep().getFields(), StringUtils.EMPTY);
         form.setNewField(new AddField());
         form.setNewFieldSet(new AddField());
         response.setRenderParameter("activeTab", "form");
@@ -1530,14 +1494,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     private void updateForm(ActionResponse response, Form form, String activeTab, String action) {
-        final Map<String, List<Field>> allFieldsMap = new HashMap<String, List<Field>>();
-
 
         if (form.getTheSelectedStep() != null) {
             form.setSelectedField(null);
-            addAllFields(allFieldsMap, form.getTheSelectedStep().getFields());
-
-            rebuildStep(allFieldsMap, form.getTheSelectedStep());
+            ProcedureUtils.rebuildStep(form.getTheSelectedStep());
         }
         if (form.getTheSelectedTdb() != null) {
             Collections.sort(form.getTheSelectedTdb().getColumns());
@@ -1563,48 +1523,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         updateForm(response, form, "dashboard", "editTdb");
         if (StringUtils.isNotBlank(exportVarList)) {
             form.getTheSelectedTdb().setExportVarList(Arrays.asList(StringUtils.split(exportVarList, ',')));
-        }
-    }
-
-    private void rebuildStep(Map<String, List<Field>> allFieldsMap, Step step) {
-        final List<Field> baseFields = new ArrayList<Field>();
-
-        final List<Field> fieldList = allFieldsMap.get(StringUtils.EMPTY);
-        if (fieldList != null) {
-            baseFields.addAll(fieldList);
-            Collections.sort(baseFields);
-        }
-        rebuildFields(allFieldsMap, baseFields);
-
-        step.setFields(baseFields);
-    }
-
-    private void rebuildFields(Map<String, List<Field>> allFieldsMap, List<Field> fields) {
-        if (fields != null) {
-            for (final Field field : fields) {
-                field.setFields(allFieldsMap.get(field.getPath()));
-                rebuildFields(allFieldsMap, field.getFields());
-            }
-        }
-    }
-
-    private void addAllFields(Map<String, List<Field>> allFieldsMap, List<Field> fields) {
-        if (fields != null) {
-            for (final Field field : fields) {
-                if (field.getPath() != null) {
-                    // on ajoute la field dans la map avec le path parent comme clé
-                    final String parentPath = StringUtils.split(field.getPath(), ',').length > 1 ? StringUtils.substringBeforeLast(field.getPath(), ",")
-                            : StringUtils.EMPTY;
-                    List<Field> parentFields = allFieldsMap.get(parentPath);
-                    if (parentFields == null) {
-                        parentFields = new ArrayList<Field>();
-                    }
-                    parentFields.add(field);
-                    Collections.sort(parentFields);
-                    allFieldsMap.put(parentPath, parentFields);
-                    addAllFields(allFieldsMap, field.getFields());
-                }
-            }
         }
     }
 
@@ -1651,7 +1569,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     private void fillEditFieldTab(ActionResponse response, Form form, String selectedFieldPath, String action) {
-        Field fieldByFieldPath = getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
+        Field fieldByFieldPath = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
         form.setSelectedField(fieldByFieldPath);
         response.setRenderParameter("activeTab", "form");
         response.setRenderParameter("activeFormTab", "edit");
@@ -1668,22 +1586,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void fillEditFieldTabList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "selectedFieldPath") String selectedFieldPath) {
         fillEditFieldTab(response, form, selectedFieldPath, "editRecord");
-    }
-
-    private Field getFieldByFieldPath(List<Field> fields, String selectedFieldPath) {
-        Field returnField = null;
-        if (fields != null) {
-            for (Field field : fields) {
-                if (StringUtils.equals(field.getPath(), selectedFieldPath)) {
-                    returnField = field;
-                }
-                Field fieldByPath = getFieldByFieldPath(field.getFields(), selectedFieldPath);
-                if (fieldByPath != null) {
-                    returnField = fieldByPath;
-                }
-            }
-        }
-        return returnField;
     }
 
     @ActionMapping(value = "editAction", params = "addFilter")
@@ -1710,9 +1612,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editAction", params = "deleteFilter")
     public void deleteFilter(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        if (removeFilterByFilterPath(form.getTheSelectedAction().getFilters(), form.getSelectedFilter().getFilterPath())) {
-            updateFiltersPath(form.getTheSelectedAction().getFilters(), StringUtils.EMPTY);
-        }
+        ProcedureUtils.removeFilterByFilterPath(form.getTheSelectedAction(), form.getSelectedFilter().getFilterPath());
         form.setSelectedFilter(null);
         response.setRenderParameter("action", "editAction");
         response.setRenderParameter("activeTab", "");
@@ -1739,36 +1639,10 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         response.setRenderParameter("action", "editProcedure");
     }
 
-    private void updateFiltersPath(List<Filter> filters, String currentPath) {
-        if (filters != null) {
-            for (int i = 0; i < filters.size(); i++) {
-                String newPath = currentPath.length() > 0 ? currentPath.concat(",").concat(String.valueOf(i)) : String.valueOf(i);
-                filters.get(i).updateFilterPath(newPath);
-                updateFiltersPath(filters.get(i).getFilters(), newPath);
-            }
-        }
-    }
-
-    private boolean removeFilterByFilterPath(List<Filter> filters, String filterPath) {
-        if (filters != null) {
-            ListIterator<Filter> filtersI = filters.listIterator();
-            while (filtersI.hasNext()) {
-                Filter filter = filtersI.next();
-                if (StringUtils.equals(filter.getFilterPath(), filterPath)) {
-                    filtersI.remove();
-                    return true;
-                }
-                if (removeFilterByFilterPath(filter.getFilters(), filterPath)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     @ActionMapping(value = "editAction", params = "editFilter")
     public void editFilter(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
-        updateFilterByFilterPath(form.getTheSelectedAction().getFilters(), form.getSelectedFilter());
+        ProcedureUtils.updateFilter(form.getTheSelectedAction().getFilters(), form.getSelectedFilter());
         response.setRenderParameter("action", "editAction");
         response.setRenderParameter("activeTab", "edit");
     }
@@ -1781,40 +1655,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             form.setSelectedFilter(null);
             response.setRenderParameter("activeTab", "");
         } else {
-            Filter filterByFilterPath = getFilterByFilterPath(form.getTheSelectedAction().getFilters(), selectedFilterPath);
+            Filter filterByFilterPath = ProcedureUtils.getFilterByFilterPath(form.getTheSelectedAction().getFilters(), selectedFilterPath);
             form.setSelectedFilter(filterByFilterPath);
             response.setRenderParameter("activeTab", "edit");
         }
         response.setRenderParameter("action", "editAction");
 
-    }
-
-    private Filter getFilterByFilterPath(List<Filter> filtersList, String selectedFilterPath) {
-        Filter returnFilter = null;
-        if (filtersList != null) {
-            for (Filter filter : filtersList) {
-                if (StringUtils.equals(filter.getFilterPath(), selectedFilterPath)) {
-                    returnFilter = filter;
-                }
-                Filter filterbyId = getFilterByFilterPath(filter.getFilters(), selectedFilterPath);
-                if (filterbyId != null) {
-                    returnFilter = filterbyId;
-                }
-            }
-        }
-        return returnFilter;
-    }
-
-    private void updateFilterByFilterPath(List<Filter> filtersList, Filter filterUpdate) {
-        if (filtersList != null) {
-            for (Filter filter : filtersList) {
-                if (StringUtils.equals(filter.getFilterPath(), filterUpdate.getFilterPath())) {
-                    filter.updateFilter(filterUpdate);
-                    return;
-                }
-                updateFilterByFilterPath(filter.getFilters(), filterUpdate);
-            }
-        }
     }
 
     @ActionMapping(value = "editAction", params = "saveAction")
@@ -1841,61 +1687,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ActionMapping(value = "editAction", params = "updateForm")
     public void updateFormAction(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
 
-        final Map<String, List<Filter>> allFiltersMap = new HashMap<String, List<Filter>>();
-        addAllFilters(allFiltersMap, form.getTheSelectedAction().getFilters());
-        rebuildAction(allFiltersMap, form.getTheSelectedAction());
+        ProcedureUtils.rebuildAction(form.getTheSelectedAction());
         form.setSelectedFilter(null);
         response.setRenderParameter("action", "editAction");
     }
 
-    private void addAllFilters(Map<String, List<Filter>> allFiltersMap, List<Filter> filters) {
-        if (filters != null) {
-            for (final Filter filter : filters) {
-                if (filter.getFilterPath() != null) {
-                    // on ajoute le filtre dans la map avec le path parent comme clé
-                    final String parentPath = filter.getFilterPath().length() > 1 ? StringUtils.substringBeforeLast(filter.getFilterPath(), ",")
-                            : StringUtils.EMPTY;
-                    List<Filter> parentFilters = allFiltersMap.get(parentPath);
-                    if (parentFilters == null) {
-                        parentFilters = new ArrayList<Filter>();
-                    }
-                    filter.setFilterInstanceId(filter.getFilterId().concat(filter.getFilterPath()));
-                    parentFilters.add(filter);
-                    Collections.sort(parentFilters);
-                    allFiltersMap.put(parentPath, parentFilters);
-                    addAllFilters(allFiltersMap, filter.getFilters());
-                }
-            }
-        }
-    }
-
-    private void rebuildAction(Map<String, List<Filter>> allFiltersMap, Action action) {
-        final List<Filter> baseFilters = new ArrayList<Filter>();
-
-        final List<Filter> filtersList = allFiltersMap.get(StringUtils.EMPTY);
-        if (filtersList != null) {
-            baseFilters.addAll(filtersList);
-            Collections.sort(baseFilters);
-        }
-        rebuildFilters(allFiltersMap, baseFilters);
-
-        action.setFilters(baseFilters);
-    }
-
-    private void rebuildFilters(Map<String, List<Filter>> allFiltersMap, List<Filter> baseFilters) {
-        if (baseFilters != null) {
-            for (final Filter filter : baseFilters) {
-                filter.setFilters(allFiltersMap.get(filter.getFilterPath()));
-                rebuildFilters(allFiltersMap, filter.getFilters());
-            }
-        }
-    }
-
     private void deleteField(ActionResponse response, Form form, String action) {
         if (form.getSelectedField().isDeletable()) {
-            if (removeFieldsByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedField().getPath())) {
-                updateFieldsPath(form.getTheSelectedStep().getFields(), StringUtils.EMPTY);
-            }
+            ProcedureUtils.removeFieldsByFieldPath(form.getTheSelectedStep(), form.getSelectedField().getPath());
             form.setSelectedField(null);
         }
         response.setRenderParameter("activeTab", "form");
@@ -1927,32 +1726,6 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
-    private void updateFieldsPath(List<Field> list, String currentPath) {
-        if (list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                String newPath = currentPath.length() > 0 ? currentPath.concat(",").concat(String.valueOf(i)) : String.valueOf(i);
-                list.get(i).setPath(newPath);
-                updateFieldsPath(list.get(i).getFields(), newPath);
-            }
-        }
-    }
-
-    private boolean removeFieldsByFieldPath(List<Field> list, String fieldPath) {
-        if (list != null) {
-            ListIterator<Field> filtersI = list.listIterator();
-            while (filtersI.hasNext()) {
-                Field field = filtersI.next();
-                if (StringUtils.equals(field.getPath(), fieldPath)) {
-                    filtersI.remove();
-                    return true;
-                }
-                if (removeFieldsByFieldPath(field.getFields(), fieldPath)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     /**
      * set the uploaded files in the instance, traversing recursive fields
