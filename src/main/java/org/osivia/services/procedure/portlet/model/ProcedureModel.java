@@ -109,8 +109,14 @@ public class ProcedureModel {
                     varOptions = varOptionsO.toString();
                 }
 
-                var = new Variable(globalVariable.getString("name"), globalVariable.getString("label"), VariableTypesAllEnum.valueOf(StringUtils
-                        .defaultIfBlank(globalVariable.getString("type"), VariableTypesAllEnum.TEXT.name())), varOptions);
+                VariableTypesAllEnum varType;
+                try {
+                    varType = VariableTypesAllEnum.valueOf(StringUtils.defaultIfBlank(globalVariable.getString("type"), VariableTypesAllEnum.TEXT.name()));
+                } catch (Exception e) {
+                    varType = VariableTypesAllEnum.TEXT;
+                }
+
+                var = new Variable(globalVariable.getString("name"), globalVariable.getString("label"), varType, varOptions);
                 getVariables().put(var.getName(), var);
             }
         }
