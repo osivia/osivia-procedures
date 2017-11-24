@@ -1040,20 +1040,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
         Collections.sort(sortedVariables);
 
-        for (Step step : form.getProcedureModel().getSteps()) {
-            for (Field field : step.getFields()) {
-                for (Variable variable : sortedVariables) {
-                    if (StringUtils.equals(variable.getName(), field.getName())) {
-                        List<Field> usedInFields = variable.getUsedInFields().get(step.getStepName());
-                        if (usedInFields == null) {
-                            usedInFields = new ArrayList<Field>();
-                        }
-                        usedInFields.add(field);
-                        variable.getUsedInFields().put(step.getStepName(), usedInFields);
-                    }
-                }
-            }
-        }
+        ProcedureUtils.fillUsedInFields(sortedVariables, form.getProcedureModel().getSteps());
 
         form.setEditedVariables(sortedVariables);
 

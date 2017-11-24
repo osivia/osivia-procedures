@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.services.procedure.portlet.model.Action;
@@ -34,6 +35,63 @@ public class ProcedureUtils {
     private ProcedureUtils() {
     }
     
+    /**
+     * build the map of fields where each variable is used in the model
+     * 
+     * @param sortedVariables
+     * @param stepList
+     */
+    public static void fillUsedInFields(List<Variable> sortedVariables, List<Step> stepList) {
+
+        if (CollectionUtils.isNotEmpty(stepList)) {
+            for (Step step : stepList) {
+                fillUsedInFields(sortedVariables, step.getFields(), step.getStepName());
+            }
+        }
+    }
+
+    /**
+     * populate the map of fields used in this step
+     * 
+     * @param sortedVariables
+     * @param fields
+     * @param stepName
+     */
+    private static void fillUsedInFields(List<Variable> sortedVariables, List<Field> fields, String stepName) {
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (Field field : fields) {
+                Variable variable = getVariableByName(sortedVariables, field.getName());
+                if (variable != null) {
+                    List<Field> stepFields = variable.getUsedInFields().get(stepName);
+                    if (stepFields == null) {
+                        stepFields = new ArrayList<>();
+                    }
+                    stepFields.add(field);
+                    variable.getUsedInFields().put(stepName, stepFields);
+                }
+                fillUsedInFields(sortedVariables, field.getFields(), stepName);
+            }
+        }
+    }
+
+    /**
+     * retrieve a Variable in a List by its name, null if it can't be found
+     * 
+     * @param sortedVariables
+     * @param variableName
+     * @return
+     */
+    private static Variable getVariableByName(List<Variable> sortedVariables, String variableName) {
+        if (CollectionUtils.isNotEmpty(sortedVariables)) {
+            for (Variable variable : sortedVariables) {
+                if (StringUtils.equals(variableName, variable.getName())) {
+                    return variable;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * remove a filter from a filter tree given its path
      * 
