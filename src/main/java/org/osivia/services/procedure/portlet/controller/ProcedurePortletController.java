@@ -1070,6 +1070,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             throws PortletException {
 
         List<Variable> editedVariables = form.getEditedVariables();
+        form.getProcedureModel().setVariables(new HashMap<String, Variable>(editedVariables.size()));
         for (Variable variable : editedVariables) {
             form.getProcedureModel().getVariables().put(variable.getName(), variable);
         }
