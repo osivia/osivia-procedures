@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -324,6 +325,9 @@ public class Field implements Comparable<Field> {
      * @return the fields
      */
     public List<Field> getFields() {
+        if (fields == null) {
+            fields = new ArrayList<>();
+        }
         return fields;
     }
 

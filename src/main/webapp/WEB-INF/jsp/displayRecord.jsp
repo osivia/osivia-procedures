@@ -18,7 +18,7 @@
 		                    <c:choose>
 		                        <c:when
 		                            test="${(fieldType eq 'TEXT') or (fieldType eq 'DATE') or (fieldType eq 'SELECTLIST') or (fieldType eq 'RADIOLIST')
-		                                        or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
+		                                        or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'NUMBER')}">
 		                            <label class="col-sm-3 control-label">${field.superLabel}</label>
 		                            <div class="col-sm-9">
 	                                    <p>${form.record.globalVariablesValues[field.name]}</p>
@@ -35,23 +35,6 @@
 		                                    <span class="help-block">${field.helpText}</span>
 		                                </c:if>
 		                            </div>
-		                        </c:when>
-		                        <c:when
-		                            test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
-		                            <label class="col-sm-3 control-label">${field.superLabel}</label>
-		                            <div class="col-sm-9">
-                                        <p>${form.record.globalVariablesValues[field.name]}</p>
-		                                <c:if test="${not empty field.helpText}">
-		                                    <span class="help-block">${field.helpText}</span>
-		                                </c:if>
-		                            </div>
-		                        </c:when>
-		                        <c:when test="${fieldType eq 'FILE'}">
-		                            <div class="col-sm-3">
-		                                <label
-		                                    for="${form.record.globalVariablesValues[field.name]}">${field.superLabel}</label>
-		                            </div>
-		                            <div class="col-sm-3"></div>
 		                        </c:when>
 		                        <c:otherwise>
 		                            <p>error</p>

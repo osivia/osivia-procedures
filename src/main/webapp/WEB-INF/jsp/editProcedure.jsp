@@ -107,7 +107,7 @@
         </div>
     </div>
     
-    <c:if test="${form.advancedMode}">
+    <c:if test="${form.advancedMode and 1==0}">
     
         <div class="panel panel-default">
             <div class="panel-heading">

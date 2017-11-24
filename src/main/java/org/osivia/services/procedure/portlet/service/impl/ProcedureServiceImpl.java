@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
@@ -45,26 +44,20 @@ import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
 import org.osivia.services.procedure.portlet.controller.ProcedurePortletAdminController;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.Field;
-import org.osivia.services.procedure.portlet.model.FilePath;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ObjetMetier;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.Record;
 import org.osivia.services.procedure.portlet.model.Step;
-import org.osivia.services.procedure.portlet.model.Variable;
-import org.osivia.services.procedure.portlet.model.VariableTypesAllEnum;
 import org.osivia.services.procedure.portlet.model.WebIdException;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
-import org.osivia.services.procedure.portlet.util.ObjetMetierUtil;
 import org.osivia.services.procedure.portlet.util.VocabularySelect2Util;
 import org.springframework.stereotype.Service;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
-import fr.toutatice.portail.cms.nuxeo.api.VocabularyEntry;
-import fr.toutatice.portail.cms.nuxeo.api.VocabularyHelper;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
@@ -365,77 +358,87 @@ public class ProcedureServiceImpl implements IProcedureService {
      */
     private void updateFormWithObjectsValues(Field field, Map<String, ObjetMetier> ojMap, NuxeoController nuxeoController, Form form) throws PortletException {
 
-        if (!field.isFieldSet()) {
-            final ObjetMetier objetMetier;
-            if (ObjetMetierUtil.isObject(field.getName())) {
-                if (form.getProcedureInstance().getProcedureObjects().containsKey(ObjetMetierUtil.getObjectName(field.getName()))) {
-                    if (ojMap.containsKey(field.getName())) {
-                        objetMetier = ojMap.get(field.getName());
-                    } else {
-                        INuxeoCommand command;
-                        try {
-                            command = new RetrieveDocumentByWebIdCommand(form.getProcedureInstance().getProcedureObjects()
-                                    .get(ObjetMetierUtil.getObjectName(field.getName())).getProcedureObjectid());
-                        } catch (final Exception e) {
-                            throw new PortletException(e);
-                        }
-                        final Document objetMetierDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-                        nuxeoController.setDisplayLiveVersion("1");
-                        final String downloadLink = nuxeoController.createFileLink(objetMetierDocument, "file:content");
-                        final FilePath filePath = new FilePath();
-                        filePath.setDownloadLink(downloadLink);
-                        filePath.setFileName(objetMetierDocument.getString("file:filename"));
-                        objetMetier = new ObjetMetier(objetMetierDocument, filePath);
-                        ojMap.put(field.getName(), objetMetier);
-                    }
-                    if (ObjetMetierUtil.isContent(field.getName())) {
-                        if (form.getProcedureInstance().getFilesPath().containsKey(field.getName())) {
-                            form.getProcedureInstance().getFilesPath().get(field.getName()).setDownloadLink(objetMetier.getFilePath().getDownloadLink());
-                        } else {
-                            form.getProcedureInstance().getFilesPath().put(field.getName(), objetMetier.getFilePath());
-                        }
-                    } else {
-                        form.getProcedureInstance().getGlobalVariablesValues()
-                        .put(field.getName(), objetMetier.getProperties().getString(ObjetMetierUtil.getObjectProperty(field.getName())));
-                    }
-                }
-            }
-        } else {
-            if (field.getFields() != null) {
-                for (final Field nestedField : field.getFields()) {
-                    updateFormWithObjectsValues(nestedField, ojMap, nuxeoController, form);
-                }
-            }
-        }
+        // if (!field.isFieldSet()) {
+        // final ObjetMetier objetMetier;
+        // if (ObjetMetierUtil.isObject(field.getName())) {
+        // if (form.getProcedureInstance().getProcedureObjects().containsKey(ObjetMetierUtil.getObjectName(field.getName()))) {
+        // if (ojMap.containsKey(field.getName())) {
+        // objetMetier = ojMap.get(field.getName());
+        // } else {
+        // INuxeoCommand command;
+        // try {
+        // command = new RetrieveDocumentByWebIdCommand(form.getProcedureInstance().getProcedureObjects()
+        // .get(ObjetMetierUtil.getObjectName(field.getName())).getProcedureObjectid());
+        // } catch (final Exception e) {
+        // throw new PortletException(e);
+        // }
+        // final Document objetMetierDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
+        // nuxeoController.setDisplayLiveVersion("1");
+        // final String downloadLink = nuxeoController.createFileLink(objetMetierDocument, "file:content");
+        // final FilePath filePath = new FilePath();
+        // filePath.setDownloadLink(downloadLink);
+        // filePath.setFileName(objetMetierDocument.getString("file:filename"));
+        // objetMetier = new ObjetMetier(objetMetierDocument, filePath);
+        // ojMap.put(field.getName(), objetMetier);
+        // }
+        // if (ObjetMetierUtil.isContent(field.getName())) {
+        // if (form.getProcedureInstance().getFilesPath().containsKey(field.getName())) {
+        // form.getProcedureInstance().getFilesPath().get(field.getName()).setDownloadLink(objetMetier.getFilePath().getDownloadLink());
+        // } else {
+        // form.getProcedureInstance().getFilesPath().put(field.getName(), objetMetier.getFilePath());
+        // }
+        // } else {
+        // form.getProcedureInstance().getGlobalVariablesValues()
+        // .put(field.getName(), objetMetier.getProperties().getString(ObjetMetierUtil.getObjectProperty(field.getName())));
+        // }
+        // }
+        // }
+//            else if (VariableTypesAllEnum.FILE.equals(field.getType())) {
+//                if (form.getProcedureInstance() != null && form.getProcedureInstance().getFilesPath().containsKey(field.getName())) {
+//                    
+//                    FilePath filePath = form.getProcedureInstance().getFilesPath().get(field.getName());
+//                    String fileLink = nuxeoController.createFileLink(form.getProcedureInstance().getOriginalDocument(),
+//                            "pi:attachments/" + String.valueOf(filePath.getIndex()) + "/blob");
+//                    filePath.setDownloadLink(fileLink);
+//                    
+//                }
+//            }
+        // } else {
+        // if (field.getFields() != null) {
+        // for (final Field nestedField : field.getFields()) {
+        // updateFormWithObjectsValues(nestedField, ojMap, nuxeoController, form);
+        // }
+        // }
+        // }
     }
 
     private void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException {
 
-        final Map<String, Variable> variables = form.getProcedureModel().getVariables();
-
-        List<Map<String, String>> varOptions;
-        for (final Entry<String, Variable> entryV : variables.entrySet()) {
-            if (VariableTypesAllEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesAllEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
-                varOptions = new ArrayList<Map<String, String>>();
-                final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions());
-                Map<String, String> vocabEntry;
-                for (final VocabularyEntry entry : vocabularyEntry.getChildren().values()) {
-                    vocabEntry =new HashMap<String, String>(2);
-                    vocabEntry.put("label", entry.getLabel());
-                    vocabEntry.put("value", entry.getId());
-                    varOptions.add(vocabEntry);
-                }
-                try {
-                    entryV.getValue().setVarOptions(ProcedureJSONAdapter.getInstance().toJSON(varOptions));
-                } catch (JsonGenerationException e) {
-                    throw new PortletException(e);
-                } catch (JsonMappingException e) {
-                    throw new PortletException(e);
-                } catch (IOException e) {
-                    throw new PortletException(e);
-                }
-            }
-        }
+        // final Map<String, Variable> variables = form.getProcedureModel().getVariables();
+        //
+        // List<Map<String, String>> varOptions;
+        // for (final Entry<String, Variable> entryV : variables.entrySet()) {
+        // if (VariableTypesAllEnum.CHECKBOXVOCAB.equals(entryV.getValue().getType()) || VariableTypesAllEnum.RADIOVOCAB.equals(entryV.getValue().getType())) {
+        // varOptions = new ArrayList<Map<String, String>>();
+        // final VocabularyEntry vocabularyEntry = VocabularyHelper.getVocabularyEntry(nuxeoController, entryV.getValue().getVarOptions());
+        // Map<String, String> vocabEntry;
+        // for (final VocabularyEntry entry : vocabularyEntry.getChildren().values()) {
+        // vocabEntry =new HashMap<String, String>(2);
+        // vocabEntry.put("label", entry.getLabel());
+        // vocabEntry.put("value", entry.getId());
+        // varOptions.add(vocabEntry);
+        // }
+        // try {
+        // entryV.getValue().setVarOptions(ProcedureJSONAdapter.getInstance().toJSON(varOptions));
+        // } catch (JsonGenerationException e) {
+        // throw new PortletException(e);
+        // } catch (JsonMappingException e) {
+        // throw new PortletException(e);
+        // } catch (IOException e) {
+        // throw new PortletException(e);
+        // }
+        // }
+        // }
     }
 
     @Override

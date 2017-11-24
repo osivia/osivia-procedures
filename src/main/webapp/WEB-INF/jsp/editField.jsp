@@ -71,7 +71,7 @@
 							</div>
 						</c:when>
 						<c:when
-							test="${(fieldType eq 'RADIOLIST') or (fieldType eq 'RADIOVOCAB')}">
+							test="${(fieldType eq 'RADIOLIST')}">
 							<form:label
 								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
@@ -87,7 +87,7 @@
 							</div>
 						</c:when>
 						<c:when
-							test="${(fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB')}">
+							test="${(fieldType eq 'CHECKBOXLIST')}">
 							<form:label
 								path="${fieldNamePath}"
 								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
@@ -129,59 +129,6 @@
 								</c:if>
 							</div>
 						</c:when>
-						<c:when test="${fieldType eq 'SELECTVOCAB'}">
-							<portlet:resourceURL id="vocabularySearch"
-								var="vocabularySearchUrl">
-								<portlet:param name="vocabularyName"
-									value="${fieldVarOptions}" />
-							</portlet:resourceURL>
-							<form:label
-								path="${fieldNamePath}"
-								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
-							<div class="col-sm-9">
-								<form:select
-									path="${fieldNamePath}"
-									class="form-control select2 vocabularySelect-select2"
-									cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
-								<c:if test="${not empty field.helpText}">
-									<span class="help-block">${field.helpText}</span>
-								</c:if>
-							</div>
-						</c:when>
-						<c:when test="${fieldType eq 'SELECTVOCABMULTI'}">
-							<portlet:resourceURL id="vocabularySearch"
-								var="vocabularySearchUrl">
-								<portlet:param name="vocabularyName"
-									value="${fieldVarOptions}" />
-							</portlet:resourceURL>
-							<form:label
-								path="${fieldNamePath}"
-								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
-							<div class="col-sm-9">
-								<form:select
-									path="${fieldNamePath}"
-									multiple="true"
-									class="form-control select2 vocabularySelect-select2"
-									cssStyle="width: 100%;" data-url="${vocabularySearchUrl}" />
-								<c:if test="${not empty field.helpText}">
-									<span class="help-block">${field.helpText}</span>
-								</c:if>
-							</div>
-						</c:when>
-						<c:when test="${fieldType eq 'FILE'}">
-							<form:label
-								path="${fieldNamePath}"
-								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
-							<div class="col-sm-3">
-								<input type="file" name="file:${field.name}" />
-							</div>
-							<div class="col-sm-6">
-								<a href="${downloadLink}" target="_blank">${fileName}</a>
-								<c:if test="${not empty field.helpText}">
-									<span class="help-block">${field.helpText}</span>
-								</c:if>
-							</div>
-						</c:when>
 						<c:otherwise>
 							<p>error</p>
 						</c:otherwise>
@@ -191,7 +138,7 @@
 					<c:choose>
 						<c:when
 							test="${(fieldType eq 'TEXT') or (fieldType eq 'DATE') or (fieldType eq 'SELECTLIST') or (fieldType eq 'RADIOLIST')
-	                    				or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
+	                    				or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'NUMBER')}">
 		                    <label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
 							    <p class="form-control-static">${fieldValue}</p>
@@ -208,25 +155,6 @@
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
 							</div>
-						</c:when>
-						<c:when
-							test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
-							<label class="col-sm-3 control-label">${field.superLabel}</label>
-							<div class="col-sm-9">
-							    <p class="form-control-static">${fieldValue}</p>
-								<c:if test="${not empty field.helpText}">
-									<span class="help-block">${field.helpText}</span>
-								</c:if>
-							</div>
-						</c:when>
-						<c:when test="${fieldType eq 'FILE'}">
-                            <label class="col-sm-3 control-label">${field.superLabel}</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-static"><a href="${downloadLink}" target="_blank">${fileName}</a></p>
-                                <c:if test="${not empty field.helpText}">
-                                    <span class="help-block">${field.helpText}</span>
-                                </c:if>
-                            </div>
 						</c:when>
 						<c:otherwise>
 							<p>error</p>

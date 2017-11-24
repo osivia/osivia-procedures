@@ -23,7 +23,7 @@
 				            <c:choose>
 		                        <c:when
 		                            test="${(fieldType eq 'TEXT') or (fieldType eq 'TEXTAREA') or (fieldType eq 'DATE') or (fieldType eq 'SELECTLIST') or (fieldType eq 'RADIOLIST')
-		                                        or (fieldType eq 'RADIOVOCAB') or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'CHECKBOXVOCAB') or (fieldType eq 'NUMBER')}">
+		                                        or (fieldType eq 'CHECKBOXLIST') or (fieldType eq 'NUMBER')}">
 		                            <div class="col-sm-3">
 		                                ${form.procedureModel.variables[field.name].label} :</div>
 		                            <div class="col-sm-9">
@@ -32,23 +32,6 @@
 		                                    <span class="help-block">${field.helpText}</span>
 		                                </c:if>
 		                            </div>
-		                        </c:when>
-		                        <c:when
-		                            test="${(fieldType eq 'SELECTVOCAB') or (fieldType eq 'SELECTVOCABMULTI')}">
-		                            <div class="col-sm-3">
-		                                ${form.procedureModel.variables[field.name].label} :</div>
-		                            <div class="col-sm-9">${form.procedureInstance.globalVariablesValues[field.name]}
-		                                <c:if test="${not empty field.helpText}">
-		                                    <span class="help-block">${field.helpText}</span>
-		                                </c:if>
-		                            </div>
-		                        </c:when>
-		                        <c:when test="${fieldType eq 'FILE'}">
-		                            <div class="col-sm-3">
-		                                <label
-		                                    for="${form.procedureInstance.globalVariablesValues[field.name]}">${form.procedureModel.variables[field.name].label}</label>
-		                            </div>
-		                            <div class="col-sm-3"></div>
 		                        </c:when>
 		                        <c:otherwise>
 		                            <p>error</p>
