@@ -51,10 +51,10 @@
 										class="halflings halflings-calendar"></i>
 									</span>
 									<form:input path="${fieldNamePath}" type="text" cssClass="form-control dates-selector" />
-									<c:if test="${not empty field.helpText}">
-										<span class="help-block">${field.helpText}</span>
-									</c:if>
 								</div>
+								<c:if test="${not empty field.helpText}">
+									<span class="help-block">${field.helpText}</span>
+								</c:if>
 							</div>
 						</c:when>
 						<c:when test="${fieldType eq 'NUMBER'}">
@@ -176,8 +176,7 @@
 								<input type="file" name="file:${field.name}" />
 							</div>
 							<div class="col-sm-6">
-								<a
-									href="${downloadLink}">${fileName}</a>
+								<a href="${downloadLink}" target="_blank">${fileName}</a>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
@@ -221,11 +220,13 @@
 							</div>
 						</c:when>
 						<c:when test="${fieldType eq 'FILE'}">
-							<div class="col-sm-3">
-								<label
-									for="${fieldValue}">${field.superLabel}</label>
-							</div>
-							<div class="col-sm-3"></div>
+                            <label class="col-sm-3 control-label">${field.superLabel}</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-static"><a href="${downloadLink}" target="_blank">${fileName}</a></p>
+                                <c:if test="${not empty field.helpText}">
+                                    <span class="help-block">${field.helpText}</span>
+                                </c:if>
+                            </div>
 						</c:when>
 						<c:otherwise>
 							<p>error</p>
