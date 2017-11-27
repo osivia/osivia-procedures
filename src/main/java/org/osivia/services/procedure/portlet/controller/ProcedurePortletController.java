@@ -728,6 +728,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 listeVar.add(Variable.DC_MODIFIED);
             }
         }
+        Collections.sort(listeVar);
 
         response.setContentType("application/json");
         try {
