@@ -335,6 +335,7 @@ $JQry(function() {
 		var vocabularySearchUrl = $element.data("url");
 		var defaultVars = $element.data("defaultvars");
 		var autofill = $element.data("autofill");
+		var includeFieldSet = $element.data("include-fieldset");
 		
 		$element.select2({
 			ajax: {
@@ -344,7 +345,8 @@ $JQry(function() {
 				data: function (params) {
 					return {
 						filter: params.term,
-						defaultVars: defaultVars
+						defaultVars: defaultVars,
+						includeFieldSet: includeFieldSet
 					};
 				},
 				processResults: function (data, params) {

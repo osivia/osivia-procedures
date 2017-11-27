@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -681,13 +682,14 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
     @ResourceMapping(value = "fieldSearch")
     public void getFields(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
-            required = false) String filter, @RequestParam(value = "defaultVars", required = false) Boolean defaultVars) throws PortletException {
+            required = false) String filter, @RequestParam(value = "defaultVars", required = false) Boolean defaultVars, @RequestParam(
+            value = "includeFieldSet", required = false) Boolean includeFieldSet) throws PortletException {
 
         List<Variable> listeVar = new ArrayList<Variable>();
         if (StringUtils.isNotBlank(filter)) {
             boolean exactMatch = false;
             for (Entry<String, Variable> entryVar : form.getProcedureModel().getVariables().entrySet()) {
-                if (VariableTypesAllEnum.FIELDSET.equals(entryVar.getValue().getType())) {
+                if (VariableTypesAllEnum.FIELDSET.equals(entryVar.getValue().getType()) && BooleanUtils.isTrue(includeFieldSet)) {
                     if (StringUtils.equalsIgnoreCase(entryVar.getValue().getName(), filter)) {
                         exactMatch = true;
                         listeVar.add(0, new Variable(ProcedureUtils.buildUniqueVariableName(form.getProcedureModel().getVariables(), filter), null,
@@ -708,7 +710,16 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                         VariableTypesAllEnum.TEXT, null));
             }
         } else {
-            listeVar.addAll(form.getProcedureModel().getVariables().values());
+            Collection<Variable> variables = form.getProcedureModel().getVariables().values();
+            if (BooleanUtils.isTrue(includeFieldSet)) {
+                listeVar.addAll(variables);
+            } else {
+                for (Variable variable : variables) {
+                    if (!VariableTypesAllEnum.FIELDSET.equals(variable.getType())) {
+                        listeVar.add(variable);
+                    }
+                }
+            }
             if (BooleanUtils.isTrue(defaultVars)) {
                 // add default vars
                 listeVar.add(Variable.DC_CREATOR);
