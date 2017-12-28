@@ -175,7 +175,11 @@ public class Form {
     }
 
     public Dashboard getTheSelectedTdb() {
-        return editedDashboard;
+    	if (DocumentTypeEnum.RECORDFOLDER.equals(procedureModel.getDocumentType())) {
+            return procedureModel.getDashboards().get(0);
+        } else {
+        	return editedDashboard;
+        }
     }
 
     public boolean isSelectedTdbPersisted() {

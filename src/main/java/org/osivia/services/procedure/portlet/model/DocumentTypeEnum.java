@@ -33,7 +33,7 @@ public enum DocumentTypeEnum {
     }
 
     static {
-        Map<String, DocumentTypeEnum> map = new ConcurrentHashMap<String, DocumentTypeEnum>();
+        Map<String, DocumentTypeEnum> map = new ConcurrentHashMap<>();
         for (DocumentTypeEnum instance : DocumentTypeEnum.values()) {
             map.put(instance.getDocType(), instance);
         }
@@ -42,7 +42,7 @@ public enum DocumentTypeEnum {
 
     /**
      * get enum from docType string
-     * 
+     *
      * @param docType
      * @return the DocumentTypeEnum
      */

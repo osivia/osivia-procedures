@@ -24,6 +24,9 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.portal.api.taskbar.TaskbarFactory;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.services.procedure.formFilters.AddActorFormFilter;
 import org.osivia.services.procedure.formFilters.CreateRecordFilter;
 import org.osivia.services.procedure.formFilters.DefineVariableFilter;
@@ -36,6 +39,7 @@ import org.osivia.services.procedure.formFilters.SetActorFormFilter;
 import org.osivia.services.procedure.formFilters.SetAdditionalAuthorization;
 import org.osivia.services.procedure.formFilters.SetInitiatorVariableFilter;
 import org.osivia.services.procedure.formFilters.ThrowExceptionFilter;
+import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
@@ -76,7 +80,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         // Internationalization bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
-        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -90,12 +94,13 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         updateFormFilters(context);
         updateListTemplates(context);
         customizeMenubarModules(context);
+        customizeTaskbarItems(context);
     }
 
 
     private void updateListTemplates(CustomizationContext context) {
         // Bundle
-        Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
+        Bundle bundle = bundleFactory.getBundle(context.getLocale());
 
         Map<String, ListTemplate> listTemplates = getListTemplates(context);
 
@@ -106,7 +111,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
     /**
      * update players
-     * 
+     *
      * @param context
      */
     @SuppressWarnings("rawtypes")
@@ -118,37 +123,37 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
     /**
      * update document types
-     * 
+     *
      * @param context
      */
     private void updateDocTypes(CustomizationContext context) {
         Map<String, DocumentType> docTypes = getDocTypes(context);
 
-        DocumentType recordContainer = DocumentType.createNode("RecordContainer");
+        DocumentType recordContainer = DocumentType.createNode(DocumentTypeEnum.RECORDCONTAINER.getDocType());
         recordContainer.addSubtypes("RecordFolder");
         recordContainer.setIcon("glyphicons glyphicons-flowchart");
         recordContainer.setNavigable(true);
         recordContainer.setPreventedCreation(true);
         docTypes.put(recordContainer.getName(), recordContainer);
 
-        DocumentType recordFolder = DocumentType.createNode("RecordFolder");
+        DocumentType recordFolder = DocumentType.createNode(DocumentTypeEnum.RECORDFOLDER.getDocType());
         recordFolder.addSubtypes("Record");
         recordFolder.setIcon("glyphicons glyphicons-list-alt");
         recordFolder.setNavigable(true);
         recordFolder.setPreventedCreation(true);
         docTypes.put(recordFolder.getName(), recordFolder);
 
-        DocumentType record = DocumentType.createLeaf("Record");
+        DocumentType record = DocumentType.createLeaf(DocumentTypeEnum.RECORD.getDocType());
         record.setIcon("glyphicons glyphicons-list");
         docTypes.put(record.getName(), record);
 
-        DocumentType tasks = DocumentType.createLeaf("TaskDoc");
+        DocumentType tasks = DocumentType.createLeaf(DocumentTypeEnum.TASKDOC.getDocType());
         docTypes.put(tasks.getName(), tasks);
     }
 
     /**
      * update form filters
-     * 
+     *
      * @param context
      */
     private void updateFormFilters(CustomizationContext context) {
@@ -162,11 +167,27 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         formFilters.put(ThrowExceptionFilter.ID, new ThrowExceptionFilter());
         formFilters.put(DeleteOnEndingFormFilter.ID, new DeleteOnEndingFormFilter());
         formFilters.put(SetAdditionalAuthorization.ID, new SetAdditionalAuthorization());
-    	formFilters.put(SetInitiatorVariableFilter.ID, new SetInitiatorVariableFilter());
+        formFilters.put(SetInitiatorVariableFilter.ID, new SetInitiatorVariableFilter());
         formFilters.put(CreateRecordFilter.ID, new CreateRecordFilter());
         formFilters.put(EditRecordFilter.ID, new EditRecordFilter());
         formFilters.put(DeleteRecordFilter.ID, new DeleteRecordFilter());
         // formFilters.put(ErrorFormFilter.ID, new ErrorFormFilter());
+    }
+    
+    /**
+     * Customize taskbar items.
+     *
+     * @param context customization context
+     */
+    private void customizeTaskbarItems(CustomizationContext context) {
+    	// Taskbar items
+        TaskbarItems items = this.getTaskbarItems(context);
+        // Factory
+        TaskbarFactory factory = this.getTaskbarService().getFactory();
+
+        // Forum
+        TaskbarItem forum = factory.createCmsTaskbarItem("RECORDS", "RECORDS_TASK", "glyphicons glyphicons-list-alt", "RecordContainer");
+        items.add(forum);
     }
 
     @Override
@@ -176,12 +197,12 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
     /**
      * customizeMenubarModules
-     * 
+     *
      * @param context
      */
     private void customizeMenubarModules(CustomizationContext context) {
         // Menubar modules
-        List<MenubarModule> modules = this.getMenubarModules(context);
+        List<MenubarModule> modules = getMenubarModules(context);
 
         MenubarModule mbModule = new ProcedureMenubarModule();
         modules.add(mbModule);
