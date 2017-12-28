@@ -132,20 +132,16 @@
 	                               <div class="form-group">
 	                                    <form:label path="selectedField.type" cssClass="col-sm-3 control-label"><op:translate key="TYPE" /></form:label>
 	                                    <div class="col-sm-9">
-	                                        <form:select path="selectedField.type" cssClass="form-control">
-	                                            <c:forEach items="${form.variableTypesAltEnum}" var="variableType">
-		                                           <form:option value="${variableType}"><op:translate key="${variableType}" /></form:option>
-		                                         </c:forEach>
-	                                        </form:select>
+	                                        <p class="form-control-static"><op:translate key="${form.selectedField.type}" /></p>
+                                            <input name="selectedField.type" value="${form.selectedField.type}" hidden="true">
 	                                    </div>
 	                               </div>
 	                               <div class="form-group hidden">
 	                                    <form:label path="selectedField.varOptions" cssClass="col-sm-3 control-label"><op:translate key="OPTIONS" /></form:label>
 	                                    <div class="col-sm-9">
-	                                      <input name="selectedField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />' value="${form.selectedField.varOptions}" type="text">
+	                                      <input name="selectedField.varOptions" class="form-control" value='${form.selectedField.varOptions}' type="text">
 	                                    </div>
 	                                </div>
-	                                
 	                                <div class="form-group hidden" id="formulaire-selectedField-list-editor">
 	                                  <label class="col-sm-3 control-label"><op:translate key="EDIT_OPTIONS" /></label>
 	                                  <div class="col-sm-9">

@@ -629,7 +629,6 @@ $JQry(function() {
 		element.remove();
 	});
 	
-	$JQry("select[name$='selectedField.type']").each(updateSelectedFieldType);
 	$JQry("input[name$='selectedField.type']").each(updateSelectedFieldType);
 	
 	// éditeur radio/select - edit
