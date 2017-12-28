@@ -921,13 +921,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     .get(IFormsService.REDIRECT_MESSAGE_PARAMETER) : form.getTheCurrentStep().getStringMsg();
 
             if (StringUtils.isNotBlank(notificationMessage)) {
-                addNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
+                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
             }
 
         }else{
             // redirect to end of step page
             response.setRenderParameter("action", "endStep");
-
         }
     }
 
