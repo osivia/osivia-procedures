@@ -184,7 +184,7 @@
 	                              </div>
 	                           <div class="pull-right">
 	                                <button type="submit" name="editField" class="btn btn-default"><op:translate key="MODIFY" /></button>
-	                                <c:if test="${field.deletable}">
+	                                <c:if test="${form.selectedField.deletable}">
 		                                <button type="submit" name="deleteField" class="btn btn-default">
 		                                     <i class="glyphicons glyphicons-bin"></i>
 		                                 </button>

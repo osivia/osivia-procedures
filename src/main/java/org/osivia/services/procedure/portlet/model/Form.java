@@ -115,7 +115,12 @@ public class Form {
      * @return the selected step
      */
     public Step getTheSelectedStep() {
-        return editedStep;
+
+        if (DocumentTypeEnum.RECORDFOLDER.equals(procedureModel.getDocumentType())) {
+            return procedureModel.getSteps().get(0);
+        } else {
+            return editedStep;
+        }
     }
 
 

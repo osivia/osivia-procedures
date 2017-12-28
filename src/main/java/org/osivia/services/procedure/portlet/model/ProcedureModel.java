@@ -404,6 +404,10 @@ public class ProcedureModel {
         this.procedureType = procedureType;
     }
 
+    public DocumentTypeEnum getDocumentType() {
+        return DocumentTypeEnum.get(procedureType);
+    }
+
     /**
      * Getter for webIdParent.
      * 
