@@ -5,10 +5,10 @@
 
 <portlet:defineObjects />
 
-<c:if test="${not empty form.theSelectedStep.endStepMsg}">
-	<h2>${form.theSelectedStep.endStepMsg}</h2>
+<c:if test="${not empty form.theCurrentStep.endStepMsg}">
+	<h2>${form.theCurrentStep.endStepMsg}</h2>
 </c:if>
-<c:if test="${empty form.theSelectedStep.endStepMsg}">
+<c:if test="${empty form.theCurrentStep.endStepMsg}">
 	<h2><op:translate key="ENDSTEP" /></h2>
 </c:if>
 
