@@ -116,7 +116,7 @@ public class Form {
      */
     public Step getTheSelectedStep() {
 
-        if (DocumentTypeEnum.RECORDFOLDER.equals(procedureModel.getDocumentType())) {
+        if (StringUtils.isNotBlank(procedureModel.getProcedureType()) && DocumentTypeEnum.RECORDFOLDER.equals(procedureModel.getDocumentType())) {
             return procedureModel.getSteps().get(0);
         } else {
             return editedStep;
@@ -175,7 +175,7 @@ public class Form {
     }
 
     public Dashboard getTheSelectedTdb() {
-    	if (DocumentTypeEnum.RECORDFOLDER.equals(procedureModel.getDocumentType())) {
+    	if (StringUtils.isNotBlank(procedureModel.getProcedureType()) && DocumentTypeEnum.RECORDFOLDER.equals(procedureModel.getDocumentType())) {
             return procedureModel.getDashboards().get(0);
         } else {
         	return editedDashboard;
