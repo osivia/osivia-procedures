@@ -1529,12 +1529,16 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void editAction(final ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
             value = "selectedButton") String index) throws PortletException {
 
-        List<Action> actions = form.getTheSelectedStep().getActions();
+    	Action action;
+    	if(StringUtils.equals(index, "-1")) {
+			action = form.getTheSelectedStep().getInitAction();
+		} else {
+			List<Action> actions = form.getTheSelectedStep().getActions();
 
-        Action action = actions.get(NumberUtils.toInt(index));
-
-        form.setEditedAction(new Action(action));
-        form.setSelectedAction(index);
+			action = actions.get(NumberUtils.toInt(index));
+		}
+    	form.setSelectedAction(index);
+		form.setEditedAction(new Action(action));
 
         Map<String, Variable> variables = form.getProcedureModel().getVariables();
 
@@ -1673,7 +1677,9 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         
         Integer index = NumberUtils.toInt(form.getSelectedAction());
         
-        if (form.getTheSelectedStep().getActions().size() <= index) {
+        if(index<0) {
+			form.getTheSelectedStep().setInitAction(theSelectedAction);
+		} else if (form.getTheSelectedStep().getActions().size() <= index) {
             form.getTheSelectedStep().getActions().add(theSelectedAction);
         } else {
             form.getTheSelectedStep().getActions().set(index, theSelectedAction);
