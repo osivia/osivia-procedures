@@ -143,7 +143,7 @@
 						                        <form:textarea path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control filter-argument" />
 						                    </c:if>
 						                    <c:if test="${argument.type eq 'BOOLEAN'}">
-						                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" cssClass="form-control" value="true"/>
+						                        <form:checkbox path="selectedFilter.argumentsList[${argStatus.index}].argumentValue" value="true"/>
 						                    </c:if>
 						                </div>
 						            </div>

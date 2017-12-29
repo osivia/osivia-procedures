@@ -276,8 +276,8 @@
 	                            <form:select path="newColumn.variableName" class="fieldSelect-select2 form-control select2" cssStyle="width: 100%;" data-url="${fieldSearchUrl}" data-defaultvars="true" data-autofill="true">
 	                            </form:select>
 	                        </div>
-	                        <div class="col-sm-2 col-md-1 col-lg-1">
-	                            <form:checkbox path="newColumn.sortable" cssClass="form-control" />
+	                        <div class="col-sm-2 col-md-1 col-lg-1 text-center">
+	                            <form:checkbox path="newColumn.sortable" />
 	                        </div>
 	                        <div class="col-sm-1 col-md-1 col-lg-1">
 	                            <button type="submit" class="btn btn-default" name="addColumn"><op:translate key="ADD" /></button>
