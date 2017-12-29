@@ -21,9 +21,11 @@ import javax.portlet.PortletContext;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.player.Player;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
@@ -62,7 +64,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
 
         String displayContext = docCtx.getDisplayContext();
         final Map<String, String> windowProperties = getProcedureWindowProperties((Document) document);
-        windowProperties.put("osivia.title", document.getTitle());
+        windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
         windowProperties.put("osivia.procedure.admin", displayContext);
 
         final Player linkProps = getProcedurePlayer(windowProperties);
@@ -84,7 +86,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         String displayContext = docCtx.getDisplayContext();
         final Map<String, String> windowProperties = getProcedureWindowProperties(document);
 
-        windowProperties.put("osivia.title", docProperties.getString("nt:name"));
+        windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, docProperties.getString("nt:name"));
         windowProperties.put("osivia.procedure.admin", displayContext);
 
         final Player linkProps = getProcedurePlayer(windowProperties);
@@ -123,11 +125,11 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         if (StringUtils.equals(displayContext, "adminproc") || StringUtils.equals(displayContext, "adminprocstep")) {
             // édition d'une procédure
             windowProperties.put("osivia.procedure.admin", displayContext);
-            windowProperties.put("osivia.title", "Éditer une procédure");
+            windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, "Éditer une procédure");
             return getProcedurePlayer(windowProperties);
         } else {
             // vue action des procédures (dashboard)
-            windowProperties.put("osivia.title", document.getTitle());
+            windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
             return getProcedurePlayer(windowProperties);
         }
     }
@@ -156,7 +158,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         if (docCtx.getDocument() != null) {
             player = new Player();
             Map<String, String> windowProperties = new HashMap<String, String>();
-            windowProperties.put("osivia.title", docCtx.getDocument().getTitle());
+            windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, docCtx.getDocument().getTitle());
 
             String displayContext = docCtx.getDisplayContext();
             windowProperties.putAll(getProcedureWindowProperties(docCtx.getDocument()));
@@ -182,11 +184,25 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
      */
     private Player getRecordPlayer(NuxeoDocumentContext docCtx) {
         Player player = null;
-        if (docCtx.getDocument() != null) {
+        Document document = docCtx.getDocument();
+		if (document != null) {
             player = new Player();
             Map<String, String> windowProperties = new HashMap<String, String>();
-            windowProperties.put("osivia.title", docCtx.getDocument().getTitle());
-            windowProperties.putAll(getProcedureWindowProperties(docCtx.getDocument()));
+            
+            PropertyMap properties = document.getProperties();
+            PropertyList globalVariablesValues = properties.getList("rcd:globalVariablesValues");
+            String title =null;
+            for (Object globalVariablesValueO : globalVariablesValues.list()) {
+            	PropertyMap globalVariablesValueM = (PropertyMap) globalVariablesValueO;
+            	String name = globalVariablesValueM.getString("name");
+            	if(StringUtils.equals(name, "_title")) {
+            		title = globalVariablesValueM.getString("value");
+            		break;
+            	}
+			}
+            
+            windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, title);
+            windowProperties.putAll(getProcedureWindowProperties(document));
             windowProperties.put("osivia.procedure.admin", docCtx.getDisplayContext());
             player.setWindowProperties(windowProperties);
             player.setPortletInstance("osivia-services-procedure-portletInstance");
@@ -203,14 +219,14 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
      */
     private Player getRecordContainerPlayer(NuxeoDocumentContext docCtx) {
         Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put("osivia.nuxeoRequest", createFolderRequest(docCtx));
-        windowProperties.put("osivia.cms.style", ProcedurePlugin.STYLE_VIEW_CONTAINER);
+        windowProperties.put(ViewList.NUXEO_REQUEST_WINDOW_PROPERTY, createFolderRequest(docCtx));
+        windowProperties.put(ViewList.TEMPLATE_WINDOW_PROPERTY, ProcedurePlugin.STYLE_VIEW_CONTAINER);
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
         windowProperties.put(Constants.WINDOW_PROP_SCOPE, docCtx.getScope());
         windowProperties.put(Constants.WINDOW_PROP_VERSION, docCtx.getDocumentState().toString());
         windowProperties.put("osivia.document.metadata", String.valueOf(false));
-        windowProperties.put("osivia.title", docCtx.getDocument().getTitle());
+        windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, docCtx.getDocument().getTitle());
         windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, docCtx.getDocument().getPath());
 
         Player player = new Player();
