@@ -330,6 +330,15 @@ $JQry(function() {
 		
 	});
 	
+	
+
+	$JQry(".field-selectList-select2").each(function(index, element) {
+		var $element = $JQry(element);
+		$element.select2({
+			theme : "bootstrap"
+		});
+	});
+	
 	$JQry(".fieldSelect-select2").each(function(index, element) {
 		var $element = $JQry(element);
 		var vocabularySearchUrl = $element.data("url");
@@ -625,9 +634,7 @@ $JQry(function() {
 			makeSelectFromData(this, name, selectList, dataValue);
 		}
 	});
-	$JQry(".field-selectList-json").each(function(index, element){
-		element.remove();
-	});
+
 	
 	$JQry("input[name$='selectedField.type']").each(updateSelectedFieldType);
 	
@@ -682,16 +689,23 @@ function makeCheckboxFromData(name, label, value, dataValue){
 	return $JQry(labelTag).addClass("checkbox-inline").append(inputTag).append(label);
 }
 
-function makeSelectFromData(element, name, selectList, dataValue){
+function makeSelectFromData(element, name, selectList, dataValue) {
 	var selectTag = document.createElement("select");
-	
+	$selectTag = $JQry(selectTag);
+
 	for (var i = 0; i < selectList.length; i++) {
 		var optionTag = document.createElement("option");
-		$JQry(selectTag).append($JQry(optionTag).val(selectList[i].value).text(selectList[i].label));
+		$selectTag.append($JQry(optionTag).val(selectList[i].value).text(selectList[i].label));
 	}
-	$JQry(element).after(selectTag);
-	$JQry(selectTag).val(dataValue);
-	$JQry(selectTag).addClass("form-control").attr("name",name).select2({
+	$element = $JQry(element);
+	$element.after(selectTag);
+	var isEdition = $element.data("isedition");
+
+	$selectTag.val(dataValue);
+	$selectTag.addClass("form-control");
+	$selectTag.css("width", "100%").attr("name", name);
+
+	$selectTag.select2({
 		theme : "bootstrap"
 	});
 }

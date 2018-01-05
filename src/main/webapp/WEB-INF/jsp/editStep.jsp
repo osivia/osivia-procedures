@@ -5,6 +5,9 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 
+<c:set var="editionMode" value="true" scope="request" />
+
+
 <portlet:defineObjects />
 
 <!-- Datepicker language -->

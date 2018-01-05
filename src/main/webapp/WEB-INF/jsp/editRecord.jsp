@@ -3,12 +3,16 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
+<c:set var="editionMode" value="true" scope="request" />
+
 <portlet:defineObjects />
 
 <portlet:actionURL name="editRecord" var="editRecordUrl">
 </portlet:actionURL>
 
 <portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" ></portlet:resourceURL>
+
+
 
 <form:form modelAttribute="form" action="${editRecordUrl}" method="post" cssClass="form-horizontal" role="form">
 

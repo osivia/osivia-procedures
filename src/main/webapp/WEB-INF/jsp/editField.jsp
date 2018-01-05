@@ -103,32 +103,34 @@
 							</div>
 						</c:when>
 						<c:when test="${fieldType eq 'SELECTLIST'}">
-							<script type="text/javascript">
-								$JQry(document)
-										.ready(
-												function() {
-													$JQry(
-															"#selectVariable_${status.index}")
-															.select2(
-																	{
-																		theme : "bootstrap"
-																	});
-												});
-							</script>
-							<form:label
-								path="${fieldNamePath}"
-								cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
+							<form:label path="${fieldNamePath}" cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
+							
 							<div class="col-sm-9">
-								<input type="text"
-									name="${fieldNamePath}"
-									data-varOptions='${fieldVarOptions}'
-									class="hidden field-selectList-json"
-									value="${fieldValue}">
+			
+								<c:if test="${editionMode}">
+								<!-- Incompatibility in selection Mode  -->
+									<c:set var="selectStyle" value="form-control" />
+								</c:if>
+								
+								<c:if test="${not editionMode}">
+									<c:set var="selectStyle" value="field-selectList-select2" />
+								</c:if>			
+
+								<form:select path="${fieldNamePath}" cssClass="${selectStyle}">
+						
+						
+									<c:forEach items="${field.jsonVarOptions}" var="jsonVarOption">
+										<form:option value="${jsonVarOption['value']}">${jsonVarOption['label']}</form:option>
+									</c:forEach>
+								</form:select>
+							
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
 								</c:if>
 							</div>
+							
 						</c:when>
+						
 						<c:otherwise>
 							<p>error</p>
 						</c:otherwise>
@@ -147,7 +149,7 @@
 								</c:if>
 							</div>
 						</c:when>
-						<c:when test="${fieldType eq 'TEXTAREA'}">
+						<c:when test="${(fieldType eq 'TEXTAREA') or (fieldType eq 'TINYMCE')}">
 							<label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
 								<span class="text-pre-wrap"><c:out value="${fieldValue}" /></span>
