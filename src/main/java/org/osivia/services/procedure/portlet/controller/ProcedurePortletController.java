@@ -1515,6 +1515,12 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void updateFormRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         updateForm(response, form, "form", "editRecord");
     }
+    
+    @ActionMapping(value = "editRecord", params = "updateDashboard")
+    public void updateDashboardRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+        updateForm(response, form, "dashboard", "editRecord");
+    }
+
 
     @ActionMapping(value = "editTdb", params = "updateDashboard")
     public void updateDashboard(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(
