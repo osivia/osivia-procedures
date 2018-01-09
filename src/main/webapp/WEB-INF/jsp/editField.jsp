@@ -50,7 +50,14 @@
 									<span class="input-group-addon"> <i
 										class="halflings halflings-calendar"></i>
 									</span>
+									
+								<c:if test="${not editionMode}">
 									<form:input path="${fieldNamePath}" type="text" cssClass="form-control dates-selector" />
+								</c:if>
+								<c:if test="${editionMode}">
+										<form:input path="${fieldNamePath}" type="text" cssClass="form-control" />							
+								</c:if>
+																									
 								</div>
 								<c:if test="${not empty field.helpText}">
 									<span class="help-block">${field.helpText}</span>
@@ -149,7 +156,7 @@
 								</c:if>
 							</div>
 						</c:when>
-						<c:when test="${(fieldType eq 'TEXTAREA') or (fieldType eq 'TINYMCE')}">
+						<c:when test="${(fieldType eq 'TEXTAREA') }">
 							<label class="col-sm-3 control-label">${field.superLabel}</label>
 							<div class="col-sm-9">
 								<span class="text-pre-wrap"><c:out value="${fieldValue}" /></span>

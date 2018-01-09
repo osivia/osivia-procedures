@@ -59,6 +59,9 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
 
     /** STYLE_VIEW_CONTAINER */
     public static final String STYLE_VIEW_CONTAINER = "containerlist";
+    
+    /** STYLE_DASHBOARD */
+    public static final String STYLE_TEMPLATE_DASHBOARD = "proceduredashboard";
 
     /** STYLE_ADMIN */
     public static final String STYLE_ADMIN = "adminproc";
@@ -107,6 +110,10 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         // containerList
         ListTemplate container = new ListTemplate(STYLE_VIEW_CONTAINER, bundle.getString("LIST_TEMPLATE_CONTAINER"), SCHEMAS_ADMIN);
         listTemplates.put(container.getKey(), container);
+        
+        // Dashboards
+        ListTemplate dashboards = new ListTemplate(STYLE_TEMPLATE_DASHBOARD, bundle.getString("LIST_TEMPLATE_DASHBOARD"), SCHEMAS_ADMIN);
+        listTemplates.put(container.getKey(), dashboards);
     }
 
     /**
