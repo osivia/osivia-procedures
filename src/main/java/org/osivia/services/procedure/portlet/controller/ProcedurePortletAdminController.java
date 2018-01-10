@@ -1,10 +1,7 @@
 package org.osivia.services.procedure.portlet.controller;
 
-import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -22,19 +19,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.context.PortletConfigAware;
-import org.springframework.web.portlet.context.PortletContextAware;
-
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 
 @Controller
 @RequestMapping("ADMIN")
-public class ProcedurePortletAdminController extends CMSPortlet implements PortletContextAware, PortletConfigAware {
-
-    /** Portlet context. */
-    private PortletContext portletContext;
-    /** Portlet config. */
-    private PortletConfig portletConfig;
+public class ProcedurePortletAdminController {
 
     private static final String ADMIN_VIEW = "admin";
 
@@ -43,16 +31,6 @@ public class ProcedurePortletAdminController extends CMSPortlet implements Portl
 
     public ProcedurePortletAdminController() {
         super();
-    }
-
-    /**
-     * Portlet initialization.
-     *
-     * @throws PortletException
-     */
-    @PostConstruct
-    public void postConstruct() throws PortletException {
-        super.init(portletConfig);
     }
 
 
@@ -76,22 +54,6 @@ public class ProcedurePortletAdminController extends CMSPortlet implements Portl
         response.setPortletMode(PortletMode.VIEW);
         response.setRenderParameter("action", "default");
         response.setWindowState(WindowState.NORMAL);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        this.portletContext = portletContext;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletConfig(PortletConfig portletConfig) {
-        this.portletConfig = portletConfig;
     }
 
 }

@@ -14,6 +14,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /**
@@ -78,7 +79,7 @@ public class Field implements Comparable<Field> {
     private String helpText;
     
     @JsonIgnore
-    private JSONArray jsonVarOptions;
+    private Object jsonVarOptions;
 
     public Field() {
     }
@@ -381,8 +382,15 @@ public class Field implements Comparable<Field> {
     public void setVarOptions(String varOptions) {
         this.varOptions = varOptions;
         
-        if(VariableTypesAllEnum.SELECTLIST.equals(type)) {
+        if (VariableTypesAllEnum.SELECTLIST.equals(type) || VariableTypesAllEnum.RADIOLIST.equals(this.type)
+                || VariableTypesAllEnum.CHECKBOXLIST.equals(this.type)) {
         	jsonVarOptions = JSONArray.fromObject(varOptions);
+        } else if (VariableTypesAllEnum.VOCABULARY.equals(this.type)) {
+            try {
+                jsonVarOptions = JSONObject.fromObject(varOptions);
+            } catch (JSONException e) {
+                jsonVarOptions = null;
+            }
         }
     }
 
@@ -404,12 +412,8 @@ public class Field implements Comparable<Field> {
         this.path = path;
     }
 
-	public JSONArray getJsonVarOptions() {
+    public Object getJsonVarOptions() {
 		return jsonVarOptions;
-	}
-
-	public void setJsonVarOptions(JSONArray jsonVarOptions) {
-		this.jsonVarOptions = jsonVarOptions;
 	}
 
 }

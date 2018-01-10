@@ -185,6 +185,13 @@
 		                        </div>
 	                        </div>
 	                        
+                            <div id="formulaire-newField-vocabulary" class="form-group required hidden">
+                                <label class="col-sm-3 control-label"><op:translate key="VOCABULARY_ID" /></label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="vocabularyId" class="form-control" />
+                                </div>
+                            </div>
+                            
 	                        <div class="form-group" id="formulaire-newField-additional-options">
 	                           <div class="col-sm-offset-3 col-sm-9">
 	                               <div class="checkbox">
@@ -315,6 +322,13 @@
 			                                    </div>
 			                                </div>
 			                            </div>
+                                        
+                                        <div id="formulaire-selectedField-vocabulary" class="form-group required hidden">
+                                            <label class="col-sm-3 control-label"><op:translate key="VOCABULARY_ID" /></label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="vocabularyId" class="form-control" />
+                                            </div>
+                                        </div>
 					                  
                                       <div class="form-group" id="formulaire-selectedField-additional-options">
 			                               <div class="col-sm-offset-3 col-sm-9">

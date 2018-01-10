@@ -11,15 +11,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -28,8 +27,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-
-import net.sf.json.JSONArray;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -46,11 +43,13 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.model.Group;
 import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -87,22 +86,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-import org.springframework.web.portlet.context.PortletConfigAware;
-import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.portlet.multipart.MultipartActionRequest;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
+import fr.toutatice.portail.cms.nuxeo.api.portlet.CmsPortletController;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import net.sf.json.JSONArray;
 
 @Controller
 @SessionAttributes("form")
 @RequestMapping(value = "VIEW")
-public class ProcedurePortletController extends CMSPortlet implements PortletContextAware, PortletConfigAware {
+public class ProcedurePortletController extends CmsPortletController {
 
     /** logger */
     private static final Log logger = LogFactory.getLog(ProcedurePortletController.class);
@@ -136,34 +134,37 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
 
 
     /** Portlet context. */
+    @Autowired
     private PortletContext portletContext;
-    /** Portlet config. */
-    private PortletConfig portletConfig;
 
-    /** procedureService */
+    /** Procedure service */
     @Autowired
     private IProcedureService procedureService;
 
-    /** groupService */
+    /** Portal URL factory. */
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
+
+    /** Internationalization bundle factory. */
+    @Autowired
+    private IBundleFactory bundleFactory;
+
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
+
+    /** Group service */
+    @Autowired
     private GroupService groupService;
 
 
+    /**
+     * Constructor.
+     */
     public ProcedurePortletController() {
         super();
-
-        this.groupService = DirServiceFactory.getService(GroupService.class);
-
     }
 
-    /**
-     * Portlet initialization.
-     *
-     * @throws PortletException
-     */
-    @PostConstruct
-    public void postConstruct() throws PortletException {
-        super.init(portletConfig);
-    }
 
     /**
      * View page render mapping.
@@ -651,8 +652,8 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     @ResourceMapping(value = "stepSearch")
     public void getSteps(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
             required = false) String filter, @RequestParam(value = "includeEndstep", required = false) Boolean includeEndstep) throws PortletException {
-
-        NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         final List<Map<String, String>> listeSteps = new ArrayList<Map<String, String>>();
 
@@ -668,7 +669,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         if (BooleanUtils.isTrue(includeEndstep)) {
             Map<String, String> endStep = new HashMap<String, String>(2);
             endStep.put("id", "endStep");
-            endStep.put("text", getMessage(nuxeoController.getPortalCtx(), "END_STEP"));
+            endStep.put("text", bundle.getString("END_STEP"));
             listeSteps.add(endStep);
         }
         response.setContentType("application/json");
@@ -735,7 +736,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             final ObjectMapper mapper = new ObjectMapper();
             // VariableTypesEnumJsonSerializer pour avoir les bons label
             SimpleModule simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
-            Bundle bundle = getBundleFactory().getBundle(request.getLocale());
+            Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
             simpleModule.addSerializer(VariableTypesAllEnum.class, new VariableTypesEnumJsonSerializer(bundle));
             mapper.registerModule(simpleModule);
 
@@ -749,7 +750,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void getModels(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = "form") Form form, @RequestParam(value = "filter",
             required = false) String filter) throws PortletException {
 
-        final NuxeoController nuxeoController = new NuxeoController(request, response, getPortletContext());
+        final NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
 
         final List<Map<String, String>> listeProcedures = new ArrayList<Map<String, String>>();
         List<ProcedureModel> procedureModels = procedureService.retrieveProcedureModels(nuxeoController, getProcedurePath(request), filter);
@@ -777,7 +778,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
             @RequestParam(value = "vocabularyName", required = true) String vocabularyName) throws PortletException {
 
         // Nuxeo controller
-        final NuxeoController nuxeoController = new NuxeoController(request, response, getPortletContext());
+        final NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
         nuxeoController.setCacheTimeOut(TimeUnit.HOURS.toMillis(1));
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
@@ -798,7 +799,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     public void getFormulaire(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
             throws PortletException {
 
-        final NuxeoController nuxeoController = new NuxeoController(request, response, getPortletContext());
+        final NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
 
         List<Map<String, String>> results = procedureService.retrieveStepsByName(nuxeoController, filter);
 
@@ -890,7 +891,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                 throw new PortletException(e);
             }
         } catch (final FormFilterException e) {
-            getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+            this.notificationsService.addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
             request.setAttribute("filterMessage", e.getMessage());
             response.setRenderParameter("action", "viewProcedure");
         }
@@ -921,7 +922,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
                     .get(IFormsService.REDIRECT_MESSAGE_PARAMETER) : form.getTheCurrentStep().getStringMsg();
 
             if (StringUtils.isNotBlank(notificationMessage)) {
-                getNotificationsService().addSimpleNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
+                this.notificationsService.addSimpleNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
             }
 
         }else{
@@ -973,7 +974,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.deleteProcedure(nuxeoController, form.getProcedureModel());
 
-        final String redirectUrl = getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
+        final String redirectUrl = this.portalUrlFactory.getBackURL(nuxeoController.getPortalCtx(), false);
         try {
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
@@ -1002,11 +1003,13 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
     }
 
     private void addDashboard(ActionRequest request, ActionResponse response, Form form) throws PortletException {
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+
         addAllFieldsToSet(form);
         addAllFiltersToSet(form);
         Dashboard newDashboard = new Dashboard();
-        newDashboard.setName(getMessage(nuxeoController.getPortalCtx(), "PROCEDURE_DASHBOARD"));
+        newDashboard.setName(bundle.getString("PROCEDURE_DASHBOARD"));
         form.setEditedDashboard(newDashboard);
         form.setSelectedTdb(String.valueOf(form.getProcedureModel().getDashboards().size() + 1));
         response.setRenderParameter("action", "editTdb");
@@ -1729,7 +1732,7 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.deleteProcedure(nuxeoController, form.getProcedureModel());
 
-        final String redirectUrl = getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
+        final String redirectUrl = this.portalUrlFactory.getBackURL(nuxeoController.getPortalCtx(), false);
         try {
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
@@ -1764,20 +1767,54 @@ public class ProcedurePortletController extends CMSPortlet implements PortletCon
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        this.portletContext = portletContext;
-    }
 
     /**
-     * {@inheritDoc}
+     * Load vocabulary resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @param vocabularyId vocabulary identifier request parameter
+     * @param filter search filter request parameter
      */
-    @Override
-    public void setPortletConfig(PortletConfig portletConfig) {
-        this.portletConfig = portletConfig;
+    @ResourceMapping("loadVocabulary")
+    public void loadVocabulary(ResourceRequest request, ResourceResponse response, @RequestParam(name = "vocabularyId", required = false) String vocabularyId,
+            @RequestParam(name = "filter", required = false) String filter) throws PortletException, IOException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
+        nuxeoController.setCacheTimeOut(TimeUnit.HOURS.toMillis(1));
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+
+        // Results
+        JSONArray results = this.procedureService.getVocabularyValues(nuxeoController, filter, vocabularyId);
+
+        // Content type
+        response.setContentType("application/json");
+
+        // Content
+        PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
+        printWriter.write(results.toString());
+        printWriter.close();
+    }
+
+
+    /**
+     * Add notification.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param key notification message internationalization key
+     * @param notificationType notification type
+     * @param args notification message arguments
+     */
+    private void addNotification(PortalControllerContext portalControllerContext, String key, NotificationsType notificationType, Object... args) {
+        // Locale
+        Locale locale = portalControllerContext.getRequest().getLocale();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(locale);
+        // Message
+        String message = bundle.getString(key, args);
+        // Notification
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, notificationType);
     }
 
 }

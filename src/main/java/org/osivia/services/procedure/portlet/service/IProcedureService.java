@@ -5,8 +5,6 @@ import java.util.Map;
 
 import javax.portlet.PortletException;
 
-import net.sf.json.JSONArray;
-
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
@@ -15,6 +13,7 @@ import org.osivia.services.procedure.portlet.model.Record;
 import org.osivia.services.procedure.portlet.model.WebIdException;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import net.sf.json.JSONArray;
 
 
 /**
@@ -28,7 +27,8 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public ProcedureModel retrieveProcedureByWebId(NuxeoController nuxeoController, String path) throws PortletException;
+    ProcedureModel retrieveProcedureByWebId(NuxeoController nuxeoController, String path) throws PortletException;
+
 
     /**
      * @param nuxeoController
@@ -37,7 +37,7 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public List<ProcedureModel> retrieveProcedureModels(NuxeoController nuxeoController, String procedurepath, String filter) throws PortletException;
+    List<ProcedureModel> retrieveProcedureModels(NuxeoController nuxeoController, String procedurepath, String filter) throws PortletException;
 
 
     /**
@@ -47,8 +47,9 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String Procedurepath) throws PortletException,
-            WebIdException;
+    ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String Procedurepath)
+            throws PortletException, WebIdException;
+
 
     /**
      * @param nuxeoController
@@ -56,7 +57,7 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException, WebIdException;
+    ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException, WebIdException;
 
 
     /**
@@ -64,14 +65,16 @@ public interface IProcedureService {
      * @param procedureModel
      * @throws PortletException
      */
-    public void deleteProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException;
+    void deleteProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException;
+
 
     /**
      * @param nuxeoController
      * @return
      * @throws PortletException
      */
-    public ProcedureInstance retrieveProcedureInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException;
+    ProcedureInstance retrieveProcedureInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException;
+
 
     /**
      * @param nuxeoController
@@ -79,14 +82,16 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public Record retrieveRecordInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException;
+    Record retrieveRecordInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException;
+
 
     /**
      * @param nuxeoController
      * @return
      * @throws PortletException
      */
-    public ProcedureInstance retrieveProcedureInstanceById(NuxeoController nuxeoController, String uuid) throws PortletException;
+    ProcedureInstance retrieveProcedureInstanceById(NuxeoController nuxeoController, String uuid) throws PortletException;
+
 
     /**
      * @param nuxeoController
@@ -95,7 +100,8 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public JSONArray getVocabularyValues(NuxeoController nuxeoController, String filter, String vocabularyName) throws PortletException;
+    JSONArray getVocabularyValues(NuxeoController nuxeoController, String filter, String vocabularyName) throws PortletException;
+
 
     /**
      * @param nuxeoController
@@ -103,8 +109,8 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, String procedurepath)
-            throws PortletException;
+    List<ProcedureModel> listProcedures(NuxeoController nuxeoController, String procedurepath) throws PortletException;
+
 
     /**
      * @param nuxeoController
@@ -114,14 +120,16 @@ public interface IProcedureService {
      * @return
      * @throws PortletException
      */
-    public String getAddUrl(NuxeoController nuxeoController, String procedurePath, String displayContext, String procedureType) throws PortletException;
+    String getAddUrl(NuxeoController nuxeoController, String procedurePath, String displayContext, String procedureType) throws PortletException;
+
 
     /**
      * @param nuxeoController
      * @param procedureModel
      * @return
      */
-    public List<ProcedureInstance> retrieveProceduresInstanceByModel(NuxeoController nuxeoController, ProcedureModel procedureModel);
+    List<ProcedureInstance> retrieveProceduresInstanceByModel(NuxeoController nuxeoController, ProcedureModel procedureModel);
+
 
     /**
      * Get close procedure URL.
@@ -130,7 +138,8 @@ public interface IProcedureService {
      * @return URL
      * @throws PortletException
      */
-    public String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException;
+    String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException;
+
 
     /**
      * search database for steps like given name
@@ -139,7 +148,8 @@ public interface IProcedureService {
      * @param filter
      * @return
      */
-    public List<Map<String, String>> retrieveStepsByName(NuxeoController nuxeoController, String filter);
+    List<Map<String, String>> retrieveStepsByName(NuxeoController nuxeoController, String filter);
+
 
     /**
      * perform post retrieve updates
@@ -148,6 +158,6 @@ public interface IProcedureService {
      * @param form
      * @throws PortletException
      */
-    public void updateData(NuxeoController nuxeoController, Form form) throws PortletException;
+    void updateData(NuxeoController nuxeoController, Form form) throws PortletException;
 
 }

@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
-import net.sf.json.JSONArray;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -60,6 +58,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import net.sf.json.JSONArray;
 
 /**
  * service for use in procedure and records
@@ -441,6 +440,10 @@ public class ProcedureServiceImpl implements IProcedureService {
         // }
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JSONArray getVocabularyValues(NuxeoController nuxeoController, String filter, String vocabularyName) throws PortletException {
         JSONArray values = new JSONArray();
@@ -457,7 +460,6 @@ public class ProcedureServiceImpl implements IProcedureService {
                 throw new PortletException(e);
             }
         }
-
 
         return values;
     }
@@ -568,8 +570,8 @@ public class ProcedureServiceImpl implements IProcedureService {
             if (!field.isInput() && StringUtils.isNotBlank(variableValue)) {
 
                 Map<String, String> varOptionsMap = null;
-                String varOptions = field.getVarOptions();
-                if (StringUtils.isNotBlank(varOptions)) {
+                String varOptions = StringUtils.trim(field.getVarOptions());
+                if (StringUtils.isNotEmpty(varOptions) && StringUtils.startsWith(varOptions, "[")) {
                     varOptions = StringUtils.substringBetween(varOptions, "[", "]");
                     String[] varOptionT = StringUtils.splitByWholeSeparator(varOptions, "},{");
 

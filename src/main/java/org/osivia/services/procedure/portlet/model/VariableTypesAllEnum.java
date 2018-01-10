@@ -5,7 +5,7 @@ package org.osivia.services.procedure.portlet.model;
  * @author Dorian Licois
  */
 public enum VariableTypesAllEnum {
-    TEXT, TEXTAREA, DATE, NUMBER,
+    TEXT, TEXTAREA, DATE, NUMBER, WYSIWYG, VOCABULARY,
     // FILE,
     RADIOLIST,
     // RADIOVOCAB,

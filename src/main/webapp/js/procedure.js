@@ -466,10 +466,24 @@ $JQry(function() {
 	
 	// gestion du type de nouveau champ
 	var updateNewFieldType = function() {
-		if($JQry(this).val() == 'RADIOLIST' || $JQry(this).val() == 'CHECKBOXLIST' || $JQry(this).val() == 'SELECTLIST'){
-			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
-			$JQry("input[name$='newField.helpText']").closest("div.form-group").removeClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
+	    var $this = $JQry(this);
+	    var value = $this.val();
+	    var $listEditor = $JQry("#formulaire-newField-list-editor");
+	    var $additionalOptions = $JQry("#formulaire-newField-additional-options");
+	    var $helpText = $JQry("input[name$='newField.helpText']").closest(".form-group");
+	    var $varOptions = $JQry("input[name$='newField.varOptions']").closest(".form-group");
+	    var $vocabulary = $JQry("#formulaire-newField-vocabulary");
+	    var varOptions;
+	    
+	    $listEditor.addClass("hidden");
+	    $additionalOptions.addClass("hidden");
+	    $helpText.addClass("hidden");
+	    $varOptions.addClass("hidden");
+	    $vocabulary.addClass("hidden");
+	    
+		if(value === 'RADIOLIST' || value === 'CHECKBOXLIST' || value === 'SELECTLIST') {
+		    $additionalOptions.removeClass("hidden");
+		    $helpText.removeClass("hidden");
 			
 			// maj du tableau des options
 			var json =  $JQry("input[name$='newField.varOptions']").val();
@@ -491,27 +505,27 @@ $JQry(function() {
 					$JQry("input[name$='newField.varOptions']").val(jsonifyList($JQry("#formulaire-newField-list-editor-optionList").find("tbody")));
 				}
 			});
-			$JQry("#formulaire-newField-list-editor").removeClass("hidden");
-		}else if($JQry(this).val() == 'TEXT'){
-			$JQry("#formulaire-newField-list-editor").addClass("hidden");
-			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
-			$JQry("input[name$='newField.helpText']").closest("div.form-group").removeClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
-		}else if($JQry(this).val() == 'TEXTAREA'){
-			$JQry("#formulaire-newField-list-editor").addClass("hidden");
-			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
-			$JQry("input[name$='newField.helpText']").closest("div.form-group").removeClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
-		}else if($JQry(this).val() == 'DISPLAY'){
-			$JQry("#formulaire-newField-list-editor").addClass("hidden");
-			$JQry("#formulaire-newField-additional-options").addClass("hidden");
-			$JQry("input[name$='newField.helpText']").closest("div.form-group").addClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").removeClass("hidden");
-		}else{
-			$JQry("#formulaire-newField-list-editor").addClass("hidden");
-			$JQry("#formulaire-newField-additional-options").removeClass("hidden");
-			$JQry("input[name$='newField.helpText']").closest("div.form-group").removeClass("hidden");
-			$JQry("input[name$='newField.varOptions']").closest("div.form-group").addClass("hidden");
+			$listEditor.removeClass("hidden");
+		} else if (value === 'TEXT' || value === 'TEXTAREA') {
+		    $additionalOptions.removeClass("hidden");
+		    $helpText.removeClass("hidden");
+		} else if (value === 'DISPLAY') {
+		    $varOptions.removeClass("hidden");
+		} else if (value === 'VOCABULARY') {
+		    $additionalOptions.removeClass("hidden");
+            $helpText.removeClass("hidden");
+            
+            try {
+                varOptions = JSON.parse($JQry("input[name$='newField.varOptions']").val());
+                $vocabulary.find("input[name=vocabularyId]").val(varOptions.vocabularyId);
+            } catch(e) {
+                $vocabulary.find("input[name=vocabularyId]").val("");
+            }
+            
+            $vocabulary.removeClass("hidden");
+		} else {
+		    $additionalOptions.removeClass("hidden");
+            $helpText.removeClass("hidden");
 		}
 	};
 	$JQry("select[name$='newField.type']").change(updateNewFieldType);
@@ -519,10 +533,24 @@ $JQry(function() {
 	
 	// gestion du type de champ sélectionné
 	var updateSelectedFieldType = function() {
-		if($JQry(this).val() == 'RADIOLIST' || $JQry(this).val() == 'CHECKBOXLIST' || $JQry(this).val() == 'SELECTLIST'){
-			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
-			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").removeClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
+	    var $this = $JQry(this);
+        var value = $this.val();
+        var $listEditor = $JQry("#formulaire-selectedField-list-editor");
+        var $additionalOptions = $JQry("#formulaire-selectedField-additional-options");
+        var $helpText = $JQry("input[name$='selectedField.helpText']").closest(".form-group");
+        var $varOptions = $JQry("input[name$='selectedField.varOptions']").closest(".form-group");
+        var $vocabulary = $JQry("#formulaire-selectedField-vocabulary");
+        var varOptions;
+        
+        $listEditor.addClass("hidden");
+        $additionalOptions.addClass("hidden");
+        $helpText.addClass("hidden");
+        $varOptions.addClass("hidden");
+        $vocabulary.addClass("hidden");
+	    
+		if (value === 'RADIOLIST' || value === 'CHECKBOXLIST' || value === 'SELECTLIST') {
+		    $additionalOptions.removeClass("hidden");
+		    $helpText.removeClass("hidden");
 			
 			// maj du tableau des options
 			$JQry("#formulaire-selectedField-list-editor-optionList").find("tbody").empty();
@@ -545,27 +573,27 @@ $JQry(function() {
 					$JQry("input[name$='selectedField.varOptions']").val(jsonifyList($JQry("#formulaire-selectedField-list-editor-optionList").find("tbody")));
 				}
 			});
-			$JQry("#formulaire-selectedField-list-editor").removeClass("hidden");
-		}else if($JQry(this).val() == 'TEXT'){
-			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
-			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
-			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").removeClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
-		}else if($JQry(this).val() == 'TEXTAREA'){
-			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
-			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
-			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").removeClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
-		}else if($JQry(this).val() == 'DISPLAY'){
-			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
-			$JQry("#formulaire-selectedField-additional-options").addClass("hidden");
-			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").addClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").removeClass("hidden");
-		}else{
-			$JQry("#formulaire-selectedField-list-editor").addClass("hidden");
-			$JQry("#formulaire-selectedField-additional-options").removeClass("hidden");
-			$JQry("input[name$='selectedField.helpText']").closest("div.form-group").removeClass("hidden");
-			$JQry("input[name$='selectedField.varOptions']").closest("div.form-group").addClass("hidden");
+			$listEditor.removeClass("hidden");
+		} else if (value === 'TEXT' || value === 'TEXTAREA') {
+		    $additionalOptions.removeClass("hidden");
+		    $helpText.removeClass("hidden");
+		} else if (value === 'DISPLAY') {
+		    $varOptions.removeClass("hidden");
+		} else if (value === 'VOCABULARY') {
+            $additionalOptions.removeClass("hidden");
+            $helpText.removeClass("hidden");
+            
+            try {
+                varOptions = JSON.parse($JQry("input[name$='selectedField.varOptions']").val());
+                $vocabulary.find("input[name=vocabularyId]").val(varOptions.vocabularyId);
+            } catch(e) {
+                $vocabulary.find("input[name=vocabularyId]").val("");
+            }
+            
+            $vocabulary.removeClass("hidden");
+		} else {
+		    $additionalOptions.removeClass("hidden");
+		    $helpText.removeClass("hidden");
 		}
 	};
 	
@@ -655,6 +683,27 @@ $JQry(function() {
 	});
 	
 	$JQry(".formulaire-list-editor-removeOption").click(removeRow);
+	
+	
+	$JQry("#formulaire-newField-vocabulary input[name=vocabularyId]").change(function(event) {
+	    var $target = $JQry(event.target);
+	    var $varOptionsInput = $JQry("input[name$='newField.varOptions']");
+	    var varOptions = new Object();
+	    
+	    varOptions.vocabularyId = $target.val();
+	    
+	    $varOptionsInput.val(JSON.stringify(varOptions));
+	});
+	
+	$JQry("#formulaire-selectedField-vocabulary input[name=vocabularyId]").change(function(event) {
+        var $target = $JQry(event.target);
+        var $varOptionsInput = $JQry("input[name$='selectedField.varOptions']");
+        var varOptions = new Object();
+        
+        varOptions.vocabularyId = $target.val();
+        
+        $varOptionsInput.val(JSON.stringify(varOptions));  
+    });
 });
 
 function makeRadioFromData(name, label, value, dataValue){
