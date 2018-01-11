@@ -113,7 +113,7 @@ public class ProcedurePlugin extends AbstractPluginPortlet {
         
         // Dashboards
         ListTemplate dashboards = new ListTemplate(STYLE_TEMPLATE_DASHBOARD, bundle.getString("LIST_TEMPLATE_DASHBOARD"), SCHEMAS_ADMIN);
-        listTemplates.put(container.getKey(), dashboards);
+        listTemplates.put(dashboards.getKey(), dashboards);
     }
 
     /**
