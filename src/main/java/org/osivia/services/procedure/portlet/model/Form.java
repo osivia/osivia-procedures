@@ -1,6 +1,7 @@
 package org.osivia.services.procedure.portlet.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -74,6 +75,10 @@ public class Form {
 
     /** editedVariables */
     private List<Variable> editedVariables;
+
+    /** Record types. */
+    private Map<String, String> recordTypes;
+
 
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
@@ -558,5 +563,22 @@ public class Form {
         this.editedVariables = editedVariables;
     }
 
+    /**
+     * Getter for recordTypes.
+     * 
+     * @return the recordTypes
+     */
+    public Map<String, String> getRecordTypes() {
+        return recordTypes;
+    }
+
+    /**
+     * Setter for recordTypes.
+     * 
+     * @param recordTypes the recordTypes to set
+     */
+    public void setRecordTypes(Map<String, String> recordTypes) {
+        this.recordTypes = recordTypes;
+    }
 
 }

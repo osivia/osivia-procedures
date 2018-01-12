@@ -5,16 +5,8 @@ package org.osivia.services.procedure.portlet.model;
  * @author Dorian Licois
  */
 public enum VariableTypesAllEnum {
-    TEXT, TEXTAREA, DATE, NUMBER, WYSIWYG, VOCABULARY,
-    // FILE,
-    RADIOLIST,
-    // RADIOVOCAB,
-    CHECKBOXLIST,
-    // CHECKBOXVOCAB,
-    SELECTLIST,
-    // SELECTVOCAB,
-    // SELECTVOCABMULTI,
-    FIELDSET;
+
+    TEXT, TEXTAREA, DATE, NUMBER, RADIOLIST, CHECKBOXLIST, SELECTLIST, FIELDSET, WYSIWYG, VOCABULARY, PERSON, RECORD;
 
     public static VariableTypesAllEnum[] filteredValues() {
 

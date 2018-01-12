@@ -7,9 +7,6 @@
 <%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc"%>
 
 
-<portlet:resourceURL id="editor" var="editorUrl" />
-
-
 <li class="form-group <c:if test="${form.selectedField.path eq field.path}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>">
     <div class="col-sm-9">
         <div class="row">
@@ -92,7 +89,6 @@
                         
                         <c:when test="${fieldType eq 'SELECTLIST'}">
                             <form:label path="${fieldNamePath}" cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
-
                             <div class="col-sm-9">
                                 <c:if test="${editionMode}">
                                     <!-- Incompatibility in selection Mode  -->
@@ -124,6 +120,8 @@
                                     </c:when>
 
                                     <c:otherwise>
+                                        <portlet:resourceURL id="editor" var="editorUrl" />
+                                        
                                         <form:textarea path="${fieldNamePath}" cssClass="form-control tinymce tinymce-default" data-editor-url="${editorUrl}" />
                                     </c:otherwise>
                                 </c:choose>
@@ -136,7 +134,6 @@
 
                         <c:when test="${fieldType eq 'VOCABULARY'}">
                             <form:label path="${fieldNamePath}" cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
-
                             <div class="col-sm-9">
                                 <c:choose>
                                     <c:when test="${editionMode}">
@@ -146,15 +143,97 @@
                                     <c:otherwise>
                                         <c:set var="vocabularyId" value="${field.jsonVarOptions['vocabularyId']}" />
                                         
-                                        <portlet:resourceURL id="loadVocabulary" var="url">
+                                        <portlet:resourceURL id="vocabulary-search" var="url">
                                             <portlet:param name="vocabularyId" value="${vocabularyId}" />
                                         </portlet:resourceURL>
 
                                         <div class="input-group select2-bootstrap-append">
-                                            <form:select path="${fieldNamePath}" cssClass="form-control select2 select2-default" data-url="${url}">
+                                            <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
+                                            <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
+                                            <form:select path="${fieldNamePath}" cssClass="form-control select2 select2-default" data-url="${url}" data-searching="${searching}" data-no-results="${noResults}">
                                                 <form:option value=""></form:option>
                                                 <c:if test="${not empty vocabularyId and not empty fieldValue}">
                                                     <form:option value="${fieldValue}"><ttc:vocabularyLabel name="${vocabularyId}" key="${fieldValue}" /></form:option>
+                                                </c:if>
+                                            </form:select>
+                                            
+                                            <span class="input-group-btn">
+                                                <button type="button" name="clear" class="btn btn-default">
+                                                    <i class="glyphicons glyphicons-delete"></i>
+                                                    <span class="sr-only"><op:translate key="DELETE"/></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <c:if test="${not empty field.helpText}">
+                                    <p class="help-block">${field.helpText}</p>
+                                </c:if>
+                            </div>
+                        </c:when>
+                        
+                        <c:when test="${fieldType eq 'PERSON'}">
+                            <form:label path="${fieldNamePath}" cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
+                            <div class="col-sm-9">
+                                <c:choose>
+                                    <c:when test="${editionMode}">
+                                        <form:select path="${fieldNamePath}" cssClass="form-control"></form:select>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <portlet:resourceURL id="person-search" var="url" />
+
+                                        <div class="input-group select2-bootstrap-append">
+                                            <c:set var="inputTooShort"><op:translate key="SELECT2_INPUT_TOO_SHORT" args="3" /></c:set>
+                                            <c:set var="loadingMore"><op:translate key="SELECT2_LOADING_MORE"/></c:set>
+                                            <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
+                                            <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
+                                            <form:select path="${fieldNamePath}" cssClass="form-control select2 select2-person" data-url="${url}" data-minimum-input-length="3" data-input-too-short="${inputTooShort}" data-loading-more="${loadingMore}" data-searching="${searching}" data-no-results="${noResults}">
+                                                <form:option value=""></form:option>
+                                                <c:if test="${not empty fieldValue}">
+                                                    <form:option value="${fieldValue}" data-avatar=""><ttc:user name="${fieldValue}" hideAvatar="true" linkable="false" /></form:option>
+                                                </c:if>
+                                            </form:select>
+                                            
+                                            <span class="input-group-btn">
+                                                <button type="button" name="clear" class="btn btn-default">
+                                                    <i class="glyphicons glyphicons-delete"></i>
+                                                    <span class="sr-only"><op:translate key="DELETE"/></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <c:if test="${not empty field.helpText}">
+                                    <p class="help-block">${field.helpText}</p>
+                                </c:if>
+                            </div>
+                        </c:when>
+                        
+                        <c:when test="${fieldType eq 'RECORD'}">
+                            <form:label path="${fieldNamePath}" cssClass="col-sm-3 control-label">${field.superLabel}</form:label>
+                            <div class="col-sm-9">
+                                <c:choose>
+                                    <c:when test="${editionMode}">
+                                        <form:select path="${fieldNamePath}" cssClass="form-control"></form:select>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <c:set var="recordFolderWebId" value="${field.jsonVarOptions['recordFolderWebId']}" />
+                                        
+                                        <portlet:resourceURL id="record-search" var="url">
+                                            <portlet:param name="recordFolderWebId" value="${recordFolderWebId}" />
+                                        </portlet:resourceURL>
+
+                                        <div class="input-group select2-bootstrap-append">
+                                            <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
+                                            <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
+                                            <form:select path="${fieldNamePath}" cssClass="form-control select2 select2-default" data-url="${url}" data-searching="${searching}" data-no-results="${noResults}">
+                                                <form:option value=""></form:option>
+                                                <c:if test="${not empty fieldValue}">
+                                                    <form:option value="${fieldValue}"><ttc:title path="${fieldValue}" linkable="false" /></form:option>
                                                 </c:if>
                                             </form:select>
                                             
@@ -208,6 +287,10 @@
                             <c:if test="${not empty vocabularyId}">
                                 <c:set var="fieldValue"><ttc:vocabularyLabel name="${vocabularyId}" key="${fieldValue}" /></c:set>
                             </c:if>
+                        </c:when>
+                        
+                        <c:when test="${fieldType eq 'PERSON'}">
+                            <c:set var="fieldValue"><ttc:user name="${fieldValue}" linkable="false" /></c:set>
                         </c:when>
                     </c:choose>
                 

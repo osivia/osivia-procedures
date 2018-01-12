@@ -95,16 +95,6 @@ public interface IProcedureService {
 
     /**
      * @param nuxeoController
-     * @param filter
-     * @param vocabularyName
-     * @return
-     * @throws PortletException
-     */
-    JSONArray getVocabularyValues(NuxeoController nuxeoController, String filter, String vocabularyName) throws PortletException;
-
-
-    /**
-     * @param nuxeoController
      * @param procedurepath
      * @return
      * @throws PortletException
@@ -159,5 +149,39 @@ public interface IProcedureService {
      * @throws PortletException
      */
     void updateData(NuxeoController nuxeoController, Form form) throws PortletException;
+
+
+    /**
+     * Search vocabulary values.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param vocabularyId vocabulary identifier
+     * @param filter search filter
+     * @return search results
+     * @throws PortletException
+     */
+    JSONArray searchVocabularyValues(PortalControllerContext portalControllerContext, String vocabularyId, String filter) throws PortletException;
+
+
+    /**
+     * Get record types.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return record types
+     * @throws PortletException
+     */
+    Map<String, String> getRecordTypes(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Search records.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param recordFolderWebId parent record folder webId
+     * @param filter search filter
+     * @return search results
+     * @throws PortletException
+     */
+    JSONArray searchRecords(PortalControllerContext portalControllerContext, String recordFolderWebId, String filter) throws PortletException;
 
 }

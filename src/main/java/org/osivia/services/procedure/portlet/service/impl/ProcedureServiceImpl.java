@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
@@ -12,6 +13,7 @@ import javax.portlet.PortletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.jackson.JsonGenerationException;
@@ -34,6 +36,8 @@ import org.osivia.services.procedure.portlet.command.DeleteDocumentCommand;
 import org.osivia.services.procedure.portlet.command.ListModelsContainerCommand;
 import org.osivia.services.procedure.portlet.command.ListProcedureInstancesByModelListCommand;
 import org.osivia.services.procedure.portlet.command.ListProceduresModelsCommand;
+import org.osivia.services.procedure.portlet.command.ListRecordTypesCommand;
+import org.osivia.services.procedure.portlet.command.ListRecordsCommand;
 import org.osivia.services.procedure.portlet.command.LoadVocabularyCommand;
 import org.osivia.services.procedure.portlet.command.RetrieveDocumentByIdCommand;
 import org.osivia.services.procedure.portlet.command.RetrieveDocumentByWebIdCommand;
@@ -51,6 +55,8 @@ import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.WebIdException;
 import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.osivia.services.procedure.portlet.util.VocabularySelect2Util;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
@@ -59,6 +65,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * service for use in procedure and records
@@ -70,10 +77,26 @@ public class ProcedureServiceImpl implements IProcedureService {
 
     private static final Pattern WEBID_ERROR = Pattern.compile("WebId: .+ already exists\\.");
 
-    @Override
-    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurepath) throws PortletException,
-            WebIdException {
 
+    /** Application context. */
+    @Autowired
+    private ApplicationContext applicationContext;
+
+
+    /**
+     * Constructor.
+     */
+    public ProcedureServiceImpl() {
+        super();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ProcedureModel createProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurepath)
+            throws PortletException, WebIdException {
         INuxeoCommand command;
         try {
             command = new ListModelsContainerCommand(procedurepath);
@@ -88,7 +111,6 @@ public class ProcedureServiceImpl implements IProcedureService {
 
             procedureModel = new ProcedureModel(procedureModelInstance, nuxeoController);
             return procedureModel;
-
         } catch (final NuxeoException e) {
             String errorMessage = ExceptionUtils.getRootCauseMessage(e);
             if (WEBID_ERROR.matcher(errorMessage).matches()) {
@@ -96,12 +118,15 @@ public class ProcedureServiceImpl implements IProcedureService {
             } else {
                 throw new PortletException(e);
             }
-
         } catch (final Exception e) {
             throw new PortletException(e);
         }
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProcedureModel retrieveProcedureByWebId(NuxeoController nuxeoController, String webId) throws PortletException {
         INuxeoCommand command;
@@ -117,6 +142,10 @@ public class ProcedureServiceImpl implements IProcedureService {
         return procedureModel;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ProcedureInstance> retrieveProceduresInstanceByModel(NuxeoController nuxeoController, ProcedureModel procedureModel) {
         INuxeoCommand command = new ListProcedureInstancesByModelListCommand(procedureModel.getPath(), procedureModel.getCurrentWebId(), false);
@@ -130,6 +159,10 @@ public class ProcedureServiceImpl implements IProcedureService {
         return procedureInstanceList;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException, WebIdException {
         INuxeoCommand command;
@@ -154,6 +187,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             throw new PortletException(e);
         }
     }
+
 
     /**
      * build a PropertyMap holding the data of ProcedureModel
@@ -181,6 +215,10 @@ public class ProcedureServiceImpl implements IProcedureService {
         return propMap;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
 
@@ -196,6 +234,9 @@ public class ProcedureServiceImpl implements IProcedureService {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProcedureInstance retrieveProcedureInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException {
 
@@ -214,7 +255,11 @@ public class ProcedureServiceImpl implements IProcedureService {
         }
         return procedureInstance;
     }
-    
+
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Record retrieveRecordInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException {
         INuxeoCommand command;
@@ -229,6 +274,10 @@ public class ProcedureServiceImpl implements IProcedureService {
         return record;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProcedureInstance retrieveProcedureInstanceById(NuxeoController nuxeoController, String uuid) throws PortletException {
 
@@ -241,7 +290,9 @@ public class ProcedureServiceImpl implements IProcedureService {
     }
 
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ProcedureModel> listProcedures(NuxeoController nuxeoController, String procedurepath) throws PortletException {
         INuxeoCommand command;
@@ -275,14 +326,14 @@ public class ProcedureServiceImpl implements IProcedureService {
         return procedureModels;
     }
 
+
     /**
      * @param nuxeoController
      * @param portalUrlFactory
      * @param procedureModel
      * @throws PortalException
      */
-    private String getEditUrl(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurePath)
-            throws PortalException {
+    private String getEditUrl(NuxeoController nuxeoController, ProcedureModel procedureModel, String procedurePath) throws PortalException {
 
         String startPortletUrl = null;
         if (StringUtils.isNotBlank(procedurePath) && nuxeoController.getDocumentContext(procedurePath).getPermissions().isEditable()) {
@@ -302,6 +353,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         return startPortletUrl;
     }
 
+
     /**
      * @param nuxeoController
      * @param portalUrlFactory
@@ -319,6 +371,10 @@ public class ProcedureServiceImpl implements IProcedureService {
         return windowProperties;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getAddUrl(NuxeoController nuxeoController, String procedurePath, String displayContext, String procedureType) throws PortletException {
         try {
@@ -336,6 +392,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         }
     }
 
+
     private void updateFormWithObjectsValues(NuxeoController nuxeoController, Form form) throws PortletException {
         final Map<String, ObjetMetier> ojMap = new HashMap<String, ObjetMetier>();
         Step theCurrentStep = form.getTheCurrentStep();
@@ -345,6 +402,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             }
         }
     }
+
 
     /**
      * permet de traverser la liste récursive en mettant à jour les objets métiers
@@ -392,16 +450,16 @@ public class ProcedureServiceImpl implements IProcedureService {
         // }
         // }
         // }
-//            else if (VariableTypesAllEnum.FILE.equals(field.getType())) {
-//                if (form.getProcedureInstance() != null && form.getProcedureInstance().getFilesPath().containsKey(field.getName())) {
-//                    
-//                    FilePath filePath = form.getProcedureInstance().getFilesPath().get(field.getName());
-//                    String fileLink = nuxeoController.createFileLink(form.getProcedureInstance().getOriginalDocument(),
-//                            "pi:attachments/" + String.valueOf(filePath.getIndex()) + "/blob");
-//                    filePath.setDownloadLink(fileLink);
-//                    
-//                }
-//            }
+        // else if (VariableTypesAllEnum.FILE.equals(field.getType())) {
+        // if (form.getProcedureInstance() != null && form.getProcedureInstance().getFilesPath().containsKey(field.getName())) {
+        //
+        // FilePath filePath = form.getProcedureInstance().getFilesPath().get(field.getName());
+        // String fileLink = nuxeoController.createFileLink(form.getProcedureInstance().getOriginalDocument(),
+        // "pi:attachments/" + String.valueOf(filePath.getIndex()) + "/blob");
+        // filePath.setDownloadLink(fileLink);
+        //
+        // }
+        // }
         // } else {
         // if (field.getFields() != null) {
         // for (final Field nestedField : field.getFields()) {
@@ -410,6 +468,7 @@ public class ProcedureServiceImpl implements IProcedureService {
         // }
         // }
     }
+
 
     private void updateVocabulariesWithValues(NuxeoController nuxeoController, Form form) throws PortletException {
 
@@ -445,30 +504,6 @@ public class ProcedureServiceImpl implements IProcedureService {
      * {@inheritDoc}
      */
     @Override
-    public JSONArray getVocabularyValues(NuxeoController nuxeoController, String filter, String vocabularyName) throws PortletException {
-        JSONArray values = new JSONArray();
-
-        final INuxeoCommand command = new LoadVocabularyCommand(vocabularyName);
-        final Object object = nuxeoController.executeNuxeoCommand(command);
-        if (object instanceof Blob) {
-            final Blob blob = (Blob) object;
-            try {
-                final String content = IOUtils.toString(blob.getStream(), "UTF-8");
-                final JSONArray array = JSONArray.fromObject(content);
-                values = VocabularySelect2Util.parse(array, filter);
-            } catch (final IOException e) {
-                throw new PortletException(e);
-            }
-        }
-
-        return values;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getCloseUrl(PortalControllerContext portalControllerContext) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
@@ -497,9 +532,12 @@ public class ProcedureServiceImpl implements IProcedureService {
         return url;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Map<String, String>> retrieveStepsByName(NuxeoController nuxeoController, String filter) {
-
         Documents procedures = (Documents) nuxeoController.executeNuxeoCommand(new RetrieveProcedureByStepNameCommand(filter));
         List<Map<String, String>> results = null;
         Map<String, String> stepResult;
@@ -521,9 +559,12 @@ public class ProcedureServiceImpl implements IProcedureService {
         return results;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ProcedureModel> retrieveProcedureModels(NuxeoController nuxeoController, String procedurepath, String filter) throws PortletException {
-
         final List<ProcedureModel> procedureModels = new ArrayList<ProcedureModel>();
 
         Documents documentList = null;
@@ -557,6 +598,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             }
         }
     }
+
 
     /**
      * update values of an extended variable with options
@@ -611,11 +653,112 @@ public class ProcedureServiceImpl implements IProcedureService {
         }
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateData(NuxeoController nuxeoController, Form form) throws PortletException {
         updateFormWithObjectsValues(nuxeoController, form);
         updateVocabulariesWithValues(nuxeoController, form);
         updateVarsWithOptions(form);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONArray searchVocabularyValues(PortalControllerContext portalControllerContext, String vocabularyId, String filter) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setCacheTimeOut(TimeUnit.HOURS.toMillis(1));
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+
+        // Search results
+        JSONArray results = new JSONArray();
+
+        // Nuxeo command
+        INuxeoCommand command = new LoadVocabularyCommand(vocabularyId);
+
+        Object object = nuxeoController.executeNuxeoCommand(command);
+        if (object instanceof Blob) {
+            Blob blob = (Blob) object;
+            try {
+                String content = IOUtils.toString(blob.getStream(), CharEncoding.UTF_8);
+                JSONArray array = JSONArray.fromObject(content);
+                results = VocabularySelect2Util.parse(array, filter);
+            } catch (IOException e) {
+                throw new PortletException(e);
+            }
+        }
+
+        return results;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, String> getRecordTypes(PortalControllerContext portalControllerContext) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // CMS base path
+        String basePath = nuxeoController.getBasePath();
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(ListRecordTypesCommand.class, basePath);
+
+        // Documents
+        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+
+        // Record types
+        Map<String, String> recordTypes = new HashMap<>(documents.size());
+
+        for (Document document : documents) {
+            String webId = document.getString("ttc:webid");
+            String displayName = StringUtils.defaultIfBlank(document.getTitle(), document.getId());
+
+            if (StringUtils.isNotEmpty(webId)) {
+                recordTypes.put(webId, displayName);
+            }
+        }
+
+        return recordTypes;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONArray searchRecords(PortalControllerContext portalControllerContext, String recordFolderWebId, String filter) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // CMS base path
+        String basePath = nuxeoController.getBasePath();
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(ListRecordsCommand.class, basePath, recordFolderWebId, filter);
+
+        // Documents
+        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+
+        // Search results
+        JSONArray results = new JSONArray();
+
+        for (Document document : documents) {
+            JSONObject object = new JSONObject();
+            object.put("id", document.getString("ttc:webid"));
+            object.put("text", StringUtils.defaultIfBlank(document.getTitle(), document.getId()));
+            results.add(object);
+        }
+
+        return results;
     }
 
 }

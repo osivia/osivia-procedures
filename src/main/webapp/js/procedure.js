@@ -301,34 +301,34 @@ $JQry(function() {
 	    }
 	});
 	
-	$JQry(".vocabularySelect-select2").each(function(index, element) {
-		var $element = $JQry(element);
-		var vocabularySearchUrl = $element.data("url");
-		
-		$element.select2({
-			ajax: {
-				url: $element.data("url"),
-				dataType: 'json',
-				delay: 300,
-				data: function (params) {
-					return {
-						filter: params.term
-					};
-				},
-				processResults: function (data, params) {
-					return {
-						results: data
-					};
-				},
-				cache: true
-			},
-			escapeMarkup: function (markup) { return markup; },
-			theme: "bootstrap",
-			templateResult: formatProfil,
-			templateSelection: formatProfil
-		});
-		
-	});
+//	$JQry(".vocabularySelect-select2").each(function(index, element) {
+//		var $element = $JQry(element);
+//		var vocabularySearchUrl = $element.data("url");
+//		
+//		$element.select2({
+//			ajax: {
+//				url: $element.data("url"),
+//				dataType: 'json',
+//				delay: 300,
+//				data: function (params) {
+//					return {
+//						filter: params.term
+//					};
+//				},
+//				processResults: function (data, params) {
+//					return {
+//						results: data
+//					};
+//				},
+//				cache: true
+//			},
+//			escapeMarkup: function (markup) { return markup; },
+//			theme: "bootstrap",
+//			templateResult: formatProfil,
+//			templateSelection: formatProfil
+//		});
+//		
+//	});
 	
 	
 
@@ -473,6 +473,7 @@ $JQry(function() {
 	    var $helpText = $JQry("input[name$='newField.helpText']").closest(".form-group");
 	    var $varOptions = $JQry("input[name$='newField.varOptions']").closest(".form-group");
 	    var $vocabulary = $JQry("#formulaire-newField-vocabulary");
+	    var $record = $JQry("#formulaire-newField-record");
 	    var varOptions;
 	    
 	    $listEditor.addClass("hidden");
@@ -480,8 +481,9 @@ $JQry(function() {
 	    $helpText.addClass("hidden");
 	    $varOptions.addClass("hidden");
 	    $vocabulary.addClass("hidden");
+	    $record.addClass("hidden");
 	    
-		if(value === 'RADIOLIST' || value === 'CHECKBOXLIST' || value === 'SELECTLIST') {
+		if(value === "RADIOLIST" || value === "CHECKBOXLIST" || value === "SELECTLIST") {
 		    $additionalOptions.removeClass("hidden");
 		    $helpText.removeClass("hidden");
 			
@@ -506,12 +508,12 @@ $JQry(function() {
 				}
 			});
 			$listEditor.removeClass("hidden");
-		} else if (value === 'TEXT' || value === 'TEXTAREA') {
+		} else if (value === "TEXT" || value === "TEXTAREA") {
 		    $additionalOptions.removeClass("hidden");
 		    $helpText.removeClass("hidden");
-		} else if (value === 'DISPLAY') {
+		} else if (value === "DISPLAY") {
 		    $varOptions.removeClass("hidden");
-		} else if (value === 'VOCABULARY') {
+		} else if (value === "VOCABULARY") {
 		    $additionalOptions.removeClass("hidden");
             $helpText.removeClass("hidden");
             
@@ -523,6 +525,18 @@ $JQry(function() {
             }
             
             $vocabulary.removeClass("hidden");
+		} else if (value === "RECORD") {
+		    $additionalOptions.removeClass("hidden");
+            $helpText.removeClass("hidden");
+            
+            try {
+                varOptions = JSON.parse($JQry("input[name$='newField.varOptions']").val());
+                $record.find("select[name=recordFolderWebId]").val(varOptions.recordFolderWebId);
+            } catch(e) {
+                $record.find("select[name=recordFolderWebId]").val("");
+            }
+            
+            $record.removeClass("hidden");
 		} else {
 		    $additionalOptions.removeClass("hidden");
             $helpText.removeClass("hidden");
@@ -540,6 +554,7 @@ $JQry(function() {
         var $helpText = $JQry("input[name$='selectedField.helpText']").closest(".form-group");
         var $varOptions = $JQry("input[name$='selectedField.varOptions']").closest(".form-group");
         var $vocabulary = $JQry("#formulaire-selectedField-vocabulary");
+        var $record = $JQry("#formulaire-selectedField-record");
         var varOptions;
         
         $listEditor.addClass("hidden");
@@ -547,8 +562,9 @@ $JQry(function() {
         $helpText.addClass("hidden");
         $varOptions.addClass("hidden");
         $vocabulary.addClass("hidden");
+        $record.addClass("hidden");
 	    
-		if (value === 'RADIOLIST' || value === 'CHECKBOXLIST' || value === 'SELECTLIST') {
+		if (value === "RADIOLIST" || value === "CHECKBOXLIST" || value === "SELECTLIST") {
 		    $additionalOptions.removeClass("hidden");
 		    $helpText.removeClass("hidden");
 			
@@ -574,12 +590,12 @@ $JQry(function() {
 				}
 			});
 			$listEditor.removeClass("hidden");
-		} else if (value === 'TEXT' || value === 'TEXTAREA') {
+		} else if (value === "TEXT" || value === "TEXTAREA") {
 		    $additionalOptions.removeClass("hidden");
 		    $helpText.removeClass("hidden");
-		} else if (value === 'DISPLAY') {
+		} else if (value === "DISPLAY") {
 		    $varOptions.removeClass("hidden");
-		} else if (value === 'VOCABULARY') {
+		} else if (value === "VOCABULARY") {
             $additionalOptions.removeClass("hidden");
             $helpText.removeClass("hidden");
             
@@ -591,6 +607,18 @@ $JQry(function() {
             }
             
             $vocabulary.removeClass("hidden");
+		} else if (value === "RECORD") {
+            $additionalOptions.removeClass("hidden");
+            $helpText.removeClass("hidden");
+            
+            try {
+                varOptions = JSON.parse($JQry("input[name$='selectedField.varOptions']").val());
+                $record.find("select[name=recordFolderWebId]").val(varOptions.recordFolderWebId);
+            } catch(e) {
+                $record.find("select[name=recordFolderWebId]").val("");
+            }
+            
+            $record.removeClass("hidden");
 		} else {
 		    $additionalOptions.removeClass("hidden");
 		    $helpText.removeClass("hidden");
@@ -701,6 +729,26 @@ $JQry(function() {
         var varOptions = new Object();
         
         varOptions.vocabularyId = $target.val();
+        
+        $varOptionsInput.val(JSON.stringify(varOptions));  
+    });
+	
+	$JQry("#formulaire-newField-record select[name=recordFolderWebId]").change(function(event) {
+        var $target = $JQry(event.target);
+        var $varOptionsInput = $JQry("input[name$='newField.varOptions']");
+        var varOptions = new Object();
+        
+        varOptions.recordFolderWebId = $target.val();
+        
+        $varOptionsInput.val(JSON.stringify(varOptions));
+    });
+	
+	$JQry("#formulaire-selectedField-record select[name=recordFolderWebId]").change(function(event) {
+        var $target = $JQry(event.target);
+        var $varOptionsInput = $JQry("input[name$='selectedField.varOptions']");
+        var varOptions = new Object();
+        
+        varOptions.recordFolderWebId = $target.val();
         
         $varOptionsInput.val(JSON.stringify(varOptions));  
     });

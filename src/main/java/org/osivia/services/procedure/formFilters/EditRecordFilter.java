@@ -3,6 +3,7 @@ package org.osivia.services.procedure.formFilters;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
@@ -10,6 +11,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.services.procedure.portlet.model.ProcedureRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -99,10 +101,21 @@ public class EditRecordFilter extends RecordFormFilter {
         updateProperties.set("rcd:globalVariablesValues", this.generateVariablesJSON(variables));
         updateProperties.set("rcd:procedureModelWebId", context.getModelWebId());
 
+        // Title
+        String title = variables.get(ProcedureRepository.DEFAULT_FIELD_TITLE_NAME);
+        if (StringUtils.isNotBlank(title)) {
+            updateProperties.set("dc:title", title);
+        }
         
+        // Record path
+        String recordPath = context.getVariables().get("rcdPath");
+
         // update record with values
-        Document editedRecord = (Document) nuxeoController.executeNuxeoCommand(new UpdateRecordCommand(new DocRef(context.getVariables().get("rcdPath")),
-                updateProperties));
+        Document editedRecord = (Document) nuxeoController.executeNuxeoCommand(new UpdateRecordCommand(new DocRef(recordPath), updateProperties));
+
+        // Reload record
+        nuxeoController.getDocumentContext(recordPath).reload();
+
 
         context.getVariables().put(IFormsService.REDIRECT_CMS_PATH_PARAMETER, editedRecord.getPath());
 

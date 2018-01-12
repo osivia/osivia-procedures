@@ -385,7 +385,7 @@ public class Field implements Comparable<Field> {
         if (VariableTypesAllEnum.SELECTLIST.equals(type) || VariableTypesAllEnum.RADIOLIST.equals(this.type)
                 || VariableTypesAllEnum.CHECKBOXLIST.equals(this.type)) {
         	jsonVarOptions = JSONArray.fromObject(varOptions);
-        } else if (VariableTypesAllEnum.VOCABULARY.equals(this.type)) {
+        } else if (VariableTypesAllEnum.VOCABULARY.equals(this.type) || VariableTypesAllEnum.RECORD.equals(this.type)) {
             try {
                 jsonVarOptions = JSONObject.fromObject(varOptions);
             } catch (JSONException e) {

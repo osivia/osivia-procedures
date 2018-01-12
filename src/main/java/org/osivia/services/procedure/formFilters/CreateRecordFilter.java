@@ -3,6 +3,7 @@ package org.osivia.services.procedure.formFilters;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
@@ -10,6 +11,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.services.procedure.portlet.model.ProcedureRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -98,7 +100,12 @@ public class CreateRecordFilter extends RecordFormFilter {
         }
         createProperties.set("rcd:globalVariablesValues", this.generateVariablesJSON(variables));
         createProperties.set("rcd:procedureModelWebId", context.getModelWebId());
-        createProperties.set("dc:title", recordFolder.getTitle());
+        
+        // Title
+        String title = variables.get(ProcedureRepository.DEFAULT_FIELD_TITLE_NAME);
+        if (StringUtils.isNotBlank(title)) {
+            createProperties.set("dc:title", title);
+        }
         
         // create record with values
         Document createdRecord = (Document) nuxeoController.executeNuxeoCommand(new CreateRecordCommand(new DocRef(recordFolder.getPath()), createProperties, recordFolder.getTitle()));

@@ -15,7 +15,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -41,7 +40,6 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Group;
 import org.osivia.portal.api.directory.v2.service.GroupService;
@@ -94,7 +92,6 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.CmsPortletController;
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import net.sf.json.JSONArray;
 
 @Controller
@@ -355,9 +352,12 @@ public class ProcedurePortletController extends CmsPortletController {
     @ModelAttribute(value = "form")
     public Form getForm(PortletRequest request, PortletResponse response, @RequestParam(value = "selectedStep", required = false) String selectedStep)
             throws PortletException {
+        // Portal Controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         Form form;
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getDocType())) {
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
             form = new Form(procedureModel);
@@ -415,6 +415,10 @@ public class ProcedurePortletController extends CmsPortletController {
                 // édition d'une procédure de type RecordFolder
                 final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
                 form = new Form(procedureModel);
+
+                // Record types
+                Map<String, String> recordTypes = this.procedureService.getRecordTypes(portalControllerContext);
+                form.setRecordTypes(recordTypes);
             } else {
                 // affichage d'une procédure de type RecordFolder
                 final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, getWebId(request));
@@ -439,7 +443,6 @@ public class ProcedurePortletController extends CmsPortletController {
                 procedureService.updateData(nuxeoController, form);
             }
         } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
-
             Record record = procedureService.retrieveRecordInstanceByWebId(nuxeoController, getWebId(request));
             ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, record.getProcedureModelWebId());
             form = new Form(procedureModel, record);
@@ -773,27 +776,28 @@ public class ProcedurePortletController extends CmsPortletController {
     }
 
 
-    @ResourceMapping(value = "vocabularySearch")
-    public void getVocabulary(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter,
-            @RequestParam(value = "vocabularyName", required = true) String vocabularyName) throws PortletException {
+    // @ResourceMapping(value = "vocabularySearch")
+    // public void getVocabulary(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter,
+    // @RequestParam(value = "vocabularyName", required = true) String vocabularyName) throws PortletException {
+    //
+    // // Nuxeo controller
+    // final NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
+    // nuxeoController.setCacheTimeOut(TimeUnit.HOURS.toMillis(1));
+    // nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+    // nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+    //
+    // try {
+    // final JSONArray values = procedureService.getVocabularyValues(nuxeoController, filter, vocabularyName);
+    // final PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
+    // printWriter.write(values.toString());
+    // printWriter.close();
+    // } catch (final IOException e) {
+    // throw new PortletException(e);
+    // } catch (final PortletException e) {
+    // throw new PortletException(e);
+    // }
+    // }
 
-        // Nuxeo controller
-        final NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
-        nuxeoController.setCacheTimeOut(TimeUnit.HOURS.toMillis(1));
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-
-        try {
-            final JSONArray values = procedureService.getVocabularyValues(nuxeoController, filter, vocabularyName);
-            final PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
-            printWriter.write(values.toString());
-            printWriter.close();
-        } catch (final IOException e) {
-            throw new PortletException(e);
-        } catch (final PortletException e) {
-            throw new PortletException(e);
-        }
-    }
 
     @ResourceMapping(value = "formulaireSearch")
     public void getFormulaire(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
@@ -1769,24 +1773,53 @@ public class ProcedurePortletController extends CmsPortletController {
 
 
     /**
-     * Load vocabulary resource mapping.
+     * Vocabulary search resource mapping.
      * 
      * @param request resource request
      * @param response resource response
      * @param vocabularyId vocabulary identifier request parameter
      * @param filter search filter request parameter
+     * @throws PortletException
+     * @throws IOException
      */
-    @ResourceMapping("loadVocabulary")
-    public void loadVocabulary(ResourceRequest request, ResourceResponse response, @RequestParam(name = "vocabularyId", required = false) String vocabularyId,
+    @ResourceMapping("vocabulary-search")
+    public void vocabularySearch(ResourceRequest request, ResourceResponse response, @RequestParam(name = "vocabularyId", required = false) String vocabularyId,
             @RequestParam(name = "filter", required = false) String filter) throws PortletException, IOException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
-        nuxeoController.setCacheTimeOut(TimeUnit.HOURS.toMillis(1));
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Results
-        JSONArray results = this.procedureService.getVocabularyValues(nuxeoController, filter, vocabularyId);
+        JSONArray results = this.procedureService.searchVocabularyValues(portalControllerContext, vocabularyId, filter);
+
+        // Content type
+        response.setContentType("application/json");
+
+        // Content
+        PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
+        printWriter.write(results.toString());
+        printWriter.close();
+    }
+
+
+    /**
+     * Record search resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @param recordFolderWebId parent record folder webId request parameter
+     * @param filter search filter request parameter
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ResourceMapping("record-search")
+    public void recordSearch(ResourceRequest request, ResourceResponse response,
+            @RequestParam(name = "recordFolderWebId", required = false) String recordFolderWebId,
+            @RequestParam(name = "filter", required = false) String filter) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Results
+        JSONArray results = this.procedureService.searchRecords(portalControllerContext, recordFolderWebId, filter);
 
         // Content type
         response.setContentType("application/json");

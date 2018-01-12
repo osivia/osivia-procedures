@@ -7,10 +7,9 @@
 
 <portlet:defineObjects />
 
-<portlet:actionURL name="editRecord" var="editRecordUrl">
-</portlet:actionURL>
+<portlet:actionURL name="editRecord" var="editRecordUrl" />
 
-<portlet:resourceURL id="fieldSearch" var="fieldSearchUrl"></portlet:resourceURL>
+<portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" />
 
 
 
@@ -148,6 +147,17 @@
                                 </div>
                             </div>
                             
+                            <div id="formulaire-newField-record" class="form-group required hidden">
+                                <label class="col-sm-3 control-label"><op:translate key="RECORD_TYPE" /></label>
+                                <div class="col-sm-9">
+                                    <select name="recordFolderWebId" class="form-control select2 select2-default">
+                                        <c:forEach var="recordType" items="${form.recordTypes}">
+                                            <option value="${recordType.key}">${recordType.value}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                            </div>
+                            
                             <button type="submit" name="addField" class="btn btn-default pull-right">
                                 <op:translate key="ADD" />
                             </button>
@@ -240,6 +250,17 @@
                                     <label class="col-sm-3 control-label"><op:translate key="VOCABULARY_ID" /></label>
                                     <div class="col-sm-9">
                                         <input type="text" name="vocabularyId" class="form-control" />
+                                    </div>
+                                </div>
+                                
+                                <div id="formulaire-selectedField-record" class="form-group required hidden">
+                                    <label class="col-sm-3 control-label"><op:translate key="RECORD_TYPE" /></label>
+                                    <div class="col-sm-9">
+                                        <select name="recordFolderWebId" class="form-control select2 select2-default">
+                                            <c:forEach var="recordType" items="${form.recordTypes}">
+                                                <option value="${recordType.key}">${recordType.value}</option>
+                                            </c:forEach>
+                                        </select>
                                     </div>
                                 </div>
                                 

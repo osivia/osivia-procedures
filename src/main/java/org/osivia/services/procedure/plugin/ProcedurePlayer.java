@@ -21,7 +21,6 @@ import javax.portlet.PortletContext;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.player.Player;
@@ -188,20 +187,7 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
 		if (document != null) {
             player = new Player();
             Map<String, String> windowProperties = new HashMap<String, String>();
-            
-            PropertyMap properties = document.getProperties();
-            PropertyList globalVariablesValues = properties.getList("rcd:globalVariablesValues");
-            String title =null;
-            for (Object globalVariablesValueO : globalVariablesValues.list()) {
-            	PropertyMap globalVariablesValueM = (PropertyMap) globalVariablesValueO;
-            	String name = globalVariablesValueM.getString("name");
-            	if(StringUtils.equals(name, "_title")) {
-            		title = globalVariablesValueM.getString("value");
-            		break;
-            	}
-			}
-            
-            windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, title);
+            windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
             windowProperties.putAll(getProcedureWindowProperties(document));
             windowProperties.put("osivia.procedure.admin", docCtx.getDisplayContext());
             player.setWindowProperties(windowProperties);
