@@ -244,12 +244,20 @@ public class ProcedureServiceImpl implements IProcedureService {
         ProcedureInstance procedureInstance = null;
         try {
             command = new RetrieveDocumentByWebIdCommand(webId);
+            
+            int authType = nuxeoController.getAuthType();
+            int cacheType = nuxeoController.getCacheType();
 
             nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
             nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
 
             final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
             procedureInstance = new ProcedureInstance(currentDocument);
+            
+            nuxeoController.setAuthType(authType);
+            nuxeoController.setCacheType(cacheType);
+        
+            
         } catch (final Exception e) {
             throw new PortletException(e);
         }
