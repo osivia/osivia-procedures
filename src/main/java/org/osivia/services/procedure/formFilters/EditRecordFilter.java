@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.formFilters;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 /**
  * filter to edit a record
- * 
+ *
  * @author Dorian Licois
  */
 public class EditRecordFilter extends RecordFormFilter {
@@ -80,16 +81,16 @@ public class EditRecordFilter extends RecordFormFilter {
     @Override
     public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException {
         NuxeoController nuxeoController = new NuxeoController(context.getPortalControllerContext());
-        
+
      // fetch model
         String fetchPath = NuxeoController.webIdToFetchPath(context.getModelWebId());
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(fetchPath);
-        
+
      // fetch variable refs in the currentStep
         Document recordFolder = documentContext.getDocument();
         PropertyMap properties = recordFolder.getProperties();
         PropertyList globalVariablesReferences = getGlobalVariablesReferences(IFormsService.FORM_STEP_REFERENCE, properties);
-        
+
      // get values of referenced variables
         PropertyMap updateProperties = new PropertyMap();
         Map<String, String> variables = new HashMap<String, String>();
@@ -98,7 +99,11 @@ public class EditRecordFilter extends RecordFormFilter {
             String variableName = variableREfM.getString("variableName");
             variables.put(variableName, context.getVariables().get(variableName));
         }
-        updateProperties.set("rcd:globalVariablesValues", this.generateVariablesJSON(variables));
+        try {
+            updateProperties.set("rcd:globalVariablesValues", this.generateVariablesJSON(variables));
+        } catch (IOException e) {
+            throw new FormFilterException(e);
+        }
         updateProperties.set("rcd:procedureModelWebId", context.getModelWebId());
 
         // Title
@@ -106,7 +111,7 @@ public class EditRecordFilter extends RecordFormFilter {
         if (StringUtils.isNotBlank(title)) {
             updateProperties.set("dc:title", title);
         }
-        
+
         // Record path
         String recordPath = context.getVariables().get("rcdPath");
 

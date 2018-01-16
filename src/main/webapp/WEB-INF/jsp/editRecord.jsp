@@ -47,15 +47,17 @@
             <div class="row">
                 <div class="col-sm-4">
                     <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="<c:if test="${empty activeFormTab or 'edit' ne activeFormTab}">active</c:if>"><a href="#CreateField"
+                        <li role="presentation" class="<c:if test="${empty activeFormTab or ('edit' ne activeFormTab and 'createList' ne activeFormTab)}">active</c:if>"><a href="#CreateField"
                             role="tab" data-toggle="tab" class="no-ajax-link"><op:translate key="ADD_FIELD" /></a></li>
                         <c:if test="${not empty form.selectedField}">
                             <li role="presentation" class="<c:if test="${'edit' eq activeFormTab}">active</c:if>"><a href="#Edit" role="tab"
                                 data-toggle="tab" class="no-ajax-link"><op:translate key="EDIT" /></a></li>
                         </c:if>
+                        <li role="presentation" class="<c:if test="${'createList' eq activeFormTab}">active</c:if>"><a href="#CreateFieldList"
+                            role="tab" data-toggle="tab" class="no-ajax-link"><op:translate key="ADD_FIELDLIST" /></a></li>
                     </ul>
                     <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane <c:if test="${empty activeFormTab or 'edit' ne activeFormTab}">active</c:if>" id="CreateField">
+                        <div role="tabpanel" class="tab-pane <c:if test="${empty activeFormTab or ('edit' ne activeFormTab and 'createList' ne activeFormTab)}">active</c:if>" id="CreateField">
                             <div class="form-group">
                                 <form:label path="newField.label" cssClass="col-sm-3 control-label">
                                     <op:translate key="LABEL" />
@@ -276,6 +278,18 @@
                                 </div>
                             </div>
                         </c:if>
+                        <div role="tabpanel" class="tab-pane <c:if test="${'createList' eq activeFormTab}">active</c:if>" id="CreateFieldList">
+                        	<div class="form-group">
+                                <form:label path="newFieldList.label" cssClass="col-sm-3 control-label"><op:translate key="LABEL" /></form:label>
+                                <div class="col-sm-9">
+                                    <input name="newFieldList.label" class="form-control" placeholder='<op:translate key="LABEL" />' value="${form.newFieldList.label}" type="text">
+                                </div>
+                            </div>
+                             
+                             <button type="submit" name="addFieldList" class="btn btn-default pull-right">
+                                <op:translate key="ADD" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 

@@ -310,5 +310,6 @@
                 <c:set var="springPath" value="${status.first ? 'theSelectedStep' : springPath}.fields[${pathPart}]" scope="request" />
             </c:otherwise>
         </c:choose>
-    </c:forEach> <form:hidden path="${springPath}.path" />
+    </c:forEach> 
+    <form:hidden path="${springPath}.path" />
 </li>

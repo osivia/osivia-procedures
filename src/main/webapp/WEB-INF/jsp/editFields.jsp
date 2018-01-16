@@ -2,36 +2,80 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 <c:choose>
 	<c:when test="${field.fieldSet eq true}">
         <li class="form-group">
 			<div class="col-sm-12">
-			  <c:choose>
-			      <c:when test="${form.selectedField.path eq field.path}">
-			          <div class="panel panel-info">
-			      </c:when>
-			      <c:otherwise>
-			          <div class="panel panel-default">
-			      </c:otherwise>
-			  </c:choose>
-			  
-			        <c:if test="${not empty field.superLabel}">
-			   			<div class="panel-heading">
-			   				${field.superLabel}
-			   			</div>
-			        </c:if>
-		   			<div class="panel-body">
-		   			    <p class="text-pre-wrap">${form.procedureModel.variables[field.name].varOptions}</p>
-		   				<ul class="procedure-sortable list-unstyled">
-							<c:set var="fieldBkp" value="${field}" scope="page"/>
-							<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
-								<c:set var="field" value="${nestedField}" scope="request"/>
-								<jsp:include page="editFields.jsp" />
-							</c:forEach>
-						</ul>
-		   			</div>
-	   			</div>
+				<c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
+				<c:choose>
+	                <c:when test="${fieldType eq 'FIELDSET'}">
+						  <c:choose>
+						      <c:when test="${form.selectedField.path eq field.path}">
+						          <div class="panel panel-info">
+						      </c:when>
+						      <c:otherwise>
+						          <div class="panel panel-default">
+						      </c:otherwise>
+						  </c:choose>
+						  
+						        <c:if test="${not empty field.superLabel}">
+						   			<div class="panel-heading">
+						   				${field.superLabel}
+						   			</div>
+						        </c:if>
+					   			<div class="panel-body">
+					   			    <p class="text-pre-wrap">${form.procedureModel.variables[field.name].varOptions}</p>
+					   				<ul class="procedure-sortable list-unstyled">
+										<c:set var="fieldBkp" value="${field}" scope="page"/>
+										<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
+											<c:set var="field" value="${nestedField}" scope="request"/>
+											<jsp:include page="editFields.jsp" />
+										</c:forEach>
+									</ul>
+					   			</div>
+				   			</div>
+	                </c:when>
+	                <c:when test="${fieldType eq 'FIELDLIST'}">
+	                	<div class="panel panel-default list-field">
+	                		<div class="panel-body">
+			                	<caption>${field.superLabel}</caption>
+				                <ul class="procedure-sortable list-unstyled">
+				                	<c:set var="fieldBkp" value="${field}" scope="page"/>
+									<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
+										<c:set var="field" value="${nestedField}" scope="request"/>
+										<jsp:include page="editFields.jsp" />
+									</c:forEach>
+				                </ul>
+				                
+				                <c:if test="${editionMode}">
+				                	<button type="submit" name="addFieldInList" class="btn btn-default pull-right" disabled="disabled">
+		                                <op:translate key="ADD" />
+		                            </button>
+				                </c:if>
+				                <c:if test="${not editionMode}">
+	                                <button type="submit" name="addFieldInList" class="btn btn-default pull-right" onclick="selector(this,'${fieldBkp.path}','selectedFieldPath')">
+		                                <op:translate key="ADD" />
+		                            </button>
+				                </c:if>
+	                            
+				                <table class="table">
+				                	<thead>
+				                		<tr>
+				                			<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
+				                				<th>${nestedField.superLabel}</th>
+				                			</c:forEach>
+				                		</tr>
+				                	</thead>
+				                	<tbody>
+				                	</tbody>
+				                </table>
+			                </div>
+							<form:hidden path="procedureInstance.globalVariablesValues['${fieldBkp.name}']" />
+		                </div>
+	                </c:when>
+	            </c:choose>
    			</div>
 			<c:forEach var="pathPart" items="${fieldBkp.path}" varStatus="status">
                 <c:choose>

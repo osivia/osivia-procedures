@@ -93,6 +93,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.CmsPortletController;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @Controller
 @SessionAttributes("form")
@@ -232,7 +233,7 @@ public class ProcedurePortletController extends CmsPortletController {
             } else if (StringUtils.equals(getAction(request), "detailproc")) {
                 // affichage du detail d'un élément de RECORD
                 return DETAIL_PROC;
-            } else if (getWebId(request) != null || (getId(request) != null)) {
+            } else if ((getWebId(request) != null) || (getId(request) != null)) {
                 // lancement d'une procédure
                 return VIEW_PROCEDURE;
             } else {
@@ -446,14 +447,14 @@ public class ProcedurePortletController extends CmsPortletController {
             Record record = procedureService.retrieveRecordInstanceByWebId(nuxeoController, getWebId(request));
             ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, record.getProcedureModelWebId());
             form = new Form(procedureModel, record);
-            
+
             if (StringUtils.isNotBlank(getAction(request))) {
                 try {
                     Map<String, String> variables = new HashMap<String, String>();
                     variables.put("pcd:startingStep", getAction(request));
                     variables.put("rcdPath", record.getOriginalDocument().getPath());
                     variables.put("rcdFolderPath", procedureModel.getOriginalDocument().getPath());
-                    
+
                     variables.putAll(record.getGlobalVariablesValues());
                     Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
                             .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), variables);
@@ -480,12 +481,15 @@ public class ProcedurePortletController extends CmsPortletController {
             } else if (StringUtils.equals(getAction(request), "adminrecord")) {
                 // création record folder
                 form = new Form(ProcedureRepository.recordFolder());
+                // Record types
+                Map<String, String> recordTypes = this.procedureService.getRecordTypes(portalControllerContext);
+                form.setRecordTypes(recordTypes);
             } else {
                 // liste des procédures du path
                 form = new Form();
             }
         }
-        if (response instanceof RenderResponse && form.getProcedureModel() != null) {
+        if ((response instanceof RenderResponse) && (form.getProcedureModel() != null)) {
             ((RenderResponse) response).setTitle(form.getProcedureModel().getName());
         }
         return form;
@@ -493,24 +497,24 @@ public class ProcedurePortletController extends CmsPortletController {
 
     /**
      * Displays warning(s) if model is missing critical elements
-     * 
+     *
      * @param form
      * @param nuxeoController
      */
     private void validateModel(Form form, NuxeoController nuxeoController) {
-        
+
         ProcedureModel procedureModel = form.getProcedureModel();
-        
+
         if (procedureModel != null) {
             List<Step> steps = procedureModel.getSteps();
-            if(steps == null || steps.size()==0){
+            if((steps == null) || (steps.size()==0)){
                 addNotification(nuxeoController.getPortalCtx(), "WARNING_NO_STEPS", NotificationsType.WARNING);
             }else{
                 for (Step step : steps) {
                     String stepName = StringUtils.defaultIfBlank(step.getStepName(), step.getReference());
                     if (StringUtils.isNotBlank(stepName)) {
                         List<Action> actions = step.getActions();
-                        if (actions == null || actions.size() == 0) {
+                        if ((actions == null) || (actions.size() == 0)) {
                             addNotification(nuxeoController.getPortalCtx(), "WARNING_STEP_WITHOUT_ACTION", NotificationsType.WARNING, stepName);
                         } else {
                             for (Action action : actions) {
@@ -518,7 +522,7 @@ public class ProcedurePortletController extends CmsPortletController {
                                 if (StringUtils.isBlank(stepReference)) {
                                     addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WITHOUT_STEP", NotificationsType.WARNING,
                                             action.getLabel(), stepName);
-                                } else if (!StringUtils.equals(stepReference, "endStep") && procedureModel.getStepsMap().get(stepReference) == null) {
+                                } else if (!StringUtils.equals(stepReference, "endStep") && (procedureModel.getStepsMap().get(stepReference) == null)) {
                                     addNotification(nuxeoController.getPortalCtx(), "WARNING_ACTION_WRONG_STEP", NotificationsType.WARNING, action.getLabel(),
                                             stepName);
                                 }
@@ -538,14 +542,14 @@ public class ProcedurePortletController extends CmsPortletController {
 
     /**
      * Displays warning(s) if step is missing critical elements
-     * 
+     *
      * @param form
      * @param nuxeoController
      */
     private void validateStep(Form form, NuxeoController nuxeoController) {
         ProcedureModel procedureModel = form.getProcedureModel();
-        
-        if (procedureModel != null && CollectionUtils.isNotEmpty(procedureModel.getSteps())) {
+
+        if ((procedureModel != null) && CollectionUtils.isNotEmpty(procedureModel.getSteps())) {
 
             List<Action> actions = form.getTheSelectedStep().getActions();
             if (CollectionUtils.isEmpty(actions)) {
@@ -555,7 +559,7 @@ public class ProcedurePortletController extends CmsPortletController {
                     String stepReference = action.getStepReference();
                     if (StringUtils.isBlank(stepReference)) {
                         addNotification(nuxeoController.getPortalCtx(), "WARNING_THIS_STEP_ACTION_WITHOUT_STEP", NotificationsType.WARNING, action.getLabel());
-                    } else if (!StringUtils.equals(stepReference, "endStep") && procedureModel.getStepsMap().get(procedureModel.getStartingStep()) == null) {
+                    } else if (!StringUtils.equals(stepReference, "endStep") && (procedureModel.getStepsMap().get(procedureModel.getStartingStep()) == null)) {
                         addNotification(nuxeoController.getPortalCtx(), "WARNING_THIS_STEP_ACTION_WRONG_STEP", NotificationsType.WARNING, action.getLabel());
                     }
                 }
@@ -575,9 +579,9 @@ public class ProcedurePortletController extends CmsPortletController {
     public String getEditProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
-        
+
         String editProcedureUrl = null;
-        if(form.getProcedureModel() != null && form.getProcedureModel().getOriginalDocument() != null){
+        if((form.getProcedureModel() != null) && (form.getProcedureModel().getOriginalDocument() != null)){
             try {
                 CMSPublicationInfos publicationInfos = NuxeoController.getCMSService().getPublicationInfos(nuxeoController.getCMSCtx(),
                         form.getProcedureModel().getPath());
@@ -595,7 +599,7 @@ public class ProcedurePortletController extends CmsPortletController {
     @ModelAttribute(value = "linkProcedureUrl")
     public String getLinkProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        return form.getProcedureModel() != null && form.getProcedureModel().getOriginalDocument() != null ? nuxeoController.getLink(
+        return (form.getProcedureModel() != null) && (form.getProcedureModel().getOriginalDocument() != null) ? nuxeoController.getLink(
                 form.getProcedureModel().getOriginalDocument()).getUrl() : null;
     }
 
@@ -903,7 +907,7 @@ public class ProcedurePortletController extends CmsPortletController {
 
     private void manageEndStep(NuxeoController nuxeoController, Map<String, String> globalVariablesValues, Form form)
             throws PortletException {
-        
+
         ActionResponse response = (ActionResponse) nuxeoController.getResponse();
 
         String cmsPath = globalVariablesValues.get(IFormsService.REDIRECT_CMS_PATH_PARAMETER);
@@ -914,7 +918,7 @@ public class ProcedurePortletController extends CmsPortletController {
             // redirect to provided cms page
             String redirectUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(nuxeoController.getPortalCtx(), null, cmsPath, new HashMap<String, String>(),
                     null, displayContext, nuxeoController.getHideMetaDatas(), nuxeoController.getScope(), nuxeoController.getDisplayLiveVersion(), null);
-            
+
             try {
                 response.sendRedirect(redirectUrl);
             } catch (IOException e) {
@@ -1234,7 +1238,7 @@ public class ProcedurePortletController extends CmsPortletController {
 
     @ActionMapping(value = "editTdb", params = "cancelTdb")
     public void cancelTdb(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) {
-        response.setRenderParameter("action", (String) request.getParameter("cancelTdb"));
+        response.setRenderParameter("action", request.getParameter("cancelTdb"));
     }
 
     @ActionMapping(value = "editStep", params = "saveStep")
@@ -1341,13 +1345,13 @@ public class ProcedurePortletController extends CmsPortletController {
 
     private void updateStepReferences(Form form) {
         // if stepReference has changed
-        if (form.getTheSelectedStep() != null && !StringUtils.equals(form.getTheSelectedStep().getReference(), form.getTheSelectedStep().getOldReference())) {
-            
+        if ((form.getTheSelectedStep() != null) && !StringUtils.equals(form.getTheSelectedStep().getReference(), form.getTheSelectedStep().getOldReference())) {
+
             //update starting step reference if it's the one that has changed
             if (StringUtils.equals(form.getProcedureModel().getStartingStep(), form.getTheSelectedStep().getOldReference())) {
                 form.getProcedureModel().setStartingStep(form.getTheSelectedStep().getReference());
             }
-            
+
             // update action's stepreference if it's the one that has changed
             List<Step> steps = form.getProcedureModel().getSteps();
             if(steps!=null){
@@ -1468,6 +1472,21 @@ public class ProcedurePortletController extends CmsPortletController {
         addField(request, response, form, "editRecord", true);
     }
 
+    @ActionMapping(value = "editRecord", params = "addFieldList")
+    public void addFieldListInRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+
+    	final AddField addFieldList = form.getNewFieldList();
+        addFieldList.setType(VariableTypesAllEnum.FIELDLIST);
+
+        Map<String, Variable> variables = form.getProcedureModel().getVariables();
+        if (StringUtils.isBlank(addFieldList.getVariableName())) {
+            addFieldList.setVariableName(ProcedureUtils.buildUniqueVariableName(variables, addFieldList.getLabel()));
+        }
+        final Field field = new Field(form.getTheSelectedStep().getNextPath(), addFieldList, true);
+        variables.put(addFieldList.getVariableName(), new Variable(addFieldList));
+        updateProcedureWithForm(request, response, form, field, "editRecord");
+    }
+
     @ActionMapping(value = "editStep", params = "addFieldSet")
     public void addFieldSet(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         AddField newFieldSet = form.getNewFieldSet();
@@ -1480,6 +1499,42 @@ public class ProcedurePortletController extends CmsPortletController {
         variables.put(newFieldSet.getVariableName(), new Variable(newFieldSet));
         updateProcedureWithForm(request, response, form, field, "editStep");
     }
+
+    @ActionMapping(value = "actionProcedure", params = "addFieldInList")
+    public void addFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
+            @RequestParam(value = "selectedFieldPath") String selectedFieldPath) throws PortletException {
+
+        Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
+
+        Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
+
+        // retrieve values of children of selected field
+        List<Field> fields = listField.getFields();
+        String listFieldValue = globalVariablesValues.get(listField.getName());
+        JSONArray jsonValue;
+        if (StringUtils.isNotBlank(listFieldValue)) {
+            jsonValue = JSONArray.fromObject(listFieldValue);
+        } else {
+            jsonValue = new JSONArray();
+        }
+
+        if (CollectionUtils.isNotEmpty(fields)) {
+            JSONObject jsonObject = new JSONObject();
+            for (Field field : fields) {
+                String name = field.getName();
+                String value = globalVariablesValues.get(name);
+                jsonObject.accumulate(name, value);
+
+                // reset field
+                globalVariablesValues.remove(name);
+            }
+            jsonValue.add(jsonObject);
+        }
+
+        // add values to the list of values
+        globalVariablesValues.put(listField.getName(), jsonValue.toString());
+    }
+
 
     private void updateProcedureWithForm(ActionRequest request, ActionResponse response, Form form, final Field field, String action) throws PortletException {
         updateProcedureWithForm(request, response, form, field, action, null);
@@ -1522,7 +1577,7 @@ public class ProcedurePortletController extends CmsPortletController {
     public void updateFormRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         updateForm(response, form, "form", "editRecord");
     }
-    
+
     @ActionMapping(value = "editRecord", params = "updateDashboard")
     public void updateDashboardRecord(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         updateForm(response, form, "dashboard", "editRecord");
@@ -1687,9 +1742,9 @@ public class ProcedurePortletController extends CmsPortletController {
         addAllFiltersToSet(form);
 
         Action theSelectedAction = form.getTheSelectedAction();
-        
+
         Integer index = NumberUtils.toInt(form.getSelectedAction());
-        
+
         if(index<0) {
 			form.getTheSelectedStep().setInitAction(theSelectedAction);
 		} else if (form.getTheSelectedStep().getActions().size() <= index) {
@@ -1774,7 +1829,7 @@ public class ProcedurePortletController extends CmsPortletController {
 
     /**
      * Vocabulary search resource mapping.
-     * 
+     *
      * @param request resource request
      * @param response resource response
      * @param vocabularyId vocabulary identifier request parameter
@@ -1803,7 +1858,7 @@ public class ProcedurePortletController extends CmsPortletController {
 
     /**
      * Record search resource mapping.
-     * 
+     *
      * @param request resource request
      * @param response resource response
      * @param recordFolderWebId parent record folder webId request parameter
@@ -1833,7 +1888,7 @@ public class ProcedurePortletController extends CmsPortletController {
 
     /**
      * Add notification.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param key notification message internationalization key
      * @param notificationType notification type

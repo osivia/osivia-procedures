@@ -36,6 +36,9 @@ public class Form {
 
     /** newFieldSet */
     private AddField newFieldSet;
+    
+    /** newFieldList */
+    private AddField newFieldList;
 
     /** newColumn */
     private Column newColumn;
@@ -84,6 +87,7 @@ public class Form {
         this.procedureModel = procedureModel;
         newField = new AddField();
         newFieldSet = new AddField();
+        newFieldList = new AddField();
         newColumn = new Column();
     }
 
@@ -100,6 +104,7 @@ public class Form {
         }
         newField = new AddField();
         newFieldSet = new AddField();
+        newFieldList = new AddField();
         newColumn = new Column();
     }
 
@@ -111,6 +116,7 @@ public class Form {
     public Form() {
         newField = new AddField();
         newFieldSet = new AddField();
+        newFieldList = new AddField();
         newColumn = new Column();
     }
 
@@ -580,5 +586,21 @@ public class Form {
     public void setRecordTypes(Map<String, String> recordTypes) {
         this.recordTypes = recordTypes;
     }
+
+	/**
+	 * Getter for newFieldList.
+	 * @return the newFieldList
+	 */
+	public AddField getNewFieldList() {
+		return newFieldList;
+	}
+
+	/**
+	 * Setter for newFieldList.
+	 * @param newFieldList the newFieldList to set
+	 */
+	public void setNewFieldList(AddField newFieldList) {
+		this.newFieldList = newFieldList;
+	}
 
 }
