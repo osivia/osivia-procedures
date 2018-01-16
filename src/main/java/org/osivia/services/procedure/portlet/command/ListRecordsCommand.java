@@ -62,7 +62,7 @@ public class ListRecordsCommand implements INuxeoCommand {
             clause.append("AND rcd:procedureModelWebId = '").append(this.recordFolderWebId).append("' ");
         }
         if (StringUtils.isNotBlank(this.filter)) {
-            clause.append("AND ecm:fulltext = '").append(this.filter).append("' ");
+            clause.append("AND (dc:title ILIKE '").append(this.filter).append("%' or ecm:fulltext = '").append(this.filter).append("' ) ");
         }
         clause.append("ORDER BY dc:title ASC");
 
