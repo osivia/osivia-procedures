@@ -635,7 +635,6 @@ $JQry(function() {
 		$JQry("input[name$='selectedField.varOptions']").val(jsonifyList($JQry("#formulaire-selectedField-list-editor-optionList").find("tbody")));
 	};
 
-
 	$JQry(".list-field").each(function(index, element) {
 		var $listField = $JQry(element);
 		var jsonValue = $listField.children("input[name^='procedureInstance.globalVariablesValues']").val();
@@ -645,8 +644,8 @@ $JQry(function() {
 		if (jsonValue.trim().length > 0) {
 			var values = JSON.parse(jsonValue);
 			for (var i = 0; i < values.length; i++) {
-				var trTag = document.createElement("tr");
-				var $trTag = $JQry(trTag);
+				let trTag = document.createElement("tr");
+				let $trTag = $JQry(trTag);
 
 				for ( var varName in values[i]) {
 					let tdTag = document.createElement("td");
