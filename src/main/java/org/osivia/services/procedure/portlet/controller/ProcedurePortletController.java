@@ -709,7 +709,10 @@ public class ProcedurePortletController extends CmsPortletController {
                         exactMatch = true;
                     } else if (StringUtils.containsIgnoreCase(entryVar.getValue().getName(), filter)
                             || StringUtils.containsIgnoreCase(entryVar.getValue().getLabel(), filter)) {
-                        listeVar.add(0, entryVar.getValue());
+                        if (!VariableTypesAllEnum.FIELDSET.equals(entryVar.getValue().getType())
+                                && !VariableTypesAllEnum.FIELDLIST.equals(entryVar.getValue().getType())) {
+                            listeVar.add(0, entryVar.getValue());
+                        }
                     }
                 }
             }
@@ -723,7 +726,7 @@ public class ProcedurePortletController extends CmsPortletController {
                 listeVar.addAll(variables);
             } else {
                 for (Variable variable : variables) {
-                    if (!VariableTypesAllEnum.FIELDSET.equals(variable.getType())) {
+                    if (!VariableTypesAllEnum.FIELDSET.equals(variable.getType()) && !VariableTypesAllEnum.FIELDLIST.equals(variable.getType())) {
                         listeVar.add(variable);
                     }
                 }
