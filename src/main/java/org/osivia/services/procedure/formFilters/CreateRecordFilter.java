@@ -9,6 +9,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -78,7 +79,7 @@ public class CreateRecordFilter extends RecordFormFilter {
     }
 
     @Override
-    public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException {
+    public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException, PortalException {
 
         NuxeoController nuxeoController = new NuxeoController(context.getPortalControllerContext());
 
@@ -102,7 +103,7 @@ public class CreateRecordFilter extends RecordFormFilter {
         try {
             createProperties.set("rcd:globalVariablesValues", this.generateVariablesJSON(variables));
         } catch (IOException e) {
-            throw new FormFilterException(e);
+            throw new PortalException(e);
         }
         createProperties.set("rcd:procedureModelWebId", context.getModelWebId());
 
