@@ -48,24 +48,41 @@
 										<jsp:include page="editFields.jsp" />
 									</c:forEach>
 				                </ul>
-				                
-				                <c:if test="${editionMode}">
-				                	<button type="submit" name="addFieldInList" class="btn btn-default pull-right" disabled="disabled">
-		                                <op:translate key="ADD" />
-		                            </button>
-				                </c:if>
-				                <c:if test="${not editionMode}">
-	                                <button type="submit" name="addFieldInList" class="btn btn-default pull-right" onclick="selector(this,'${fieldBkp.path}','selectedFieldPath')">
-		                                <op:translate key="ADD" />
-		                            </button>
-				                </c:if>
-	                            
+
+								<c:choose>
+									<c:when test="${form.selectedListFieldPath eq fieldBkp.path}">
+										<div class="btn-group pull-right">
+				                            <button type="submit" name="cancelEditFieldInList" class="btn btn-default">
+				                                <op:translate key="CANCEL" />
+				                            </button>
+											<button type="submit" name="validateEditFieldInList" class="btn btn-primary">
+				                                <op:translate key="VALIDATE" />
+				                            </button>
+										</div>
+									</c:when>
+									<c:otherwise>
+										<c:choose>
+											<c:when test="${editionMode}">
+												<button type="submit" name="addFieldInList" class="btn btn-default pull-right" disabled="disabled">
+					                                <op:translate key="ADD" />
+					                            </button>
+											</c:when>
+											<c:otherwise>
+												<button type="submit" name="addFieldInList" class="btn btn-default pull-right" onclick="selector(this,'${fieldBkp.path}','selectedFieldPath')">
+					                                <op:translate key="ADD" />
+					                            </button>
+											</c:otherwise>
+										</c:choose>
+									</c:otherwise>
+								</c:choose>
+
 				                <table class="table">
 				                	<thead>
 				                		<tr>
 				                			<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
 				                				<th>${nestedField.superLabel}</th>
 				                			</c:forEach>
+				                			<th></th>
 				                		</tr>
 				                	</thead>
 				                	<tbody>

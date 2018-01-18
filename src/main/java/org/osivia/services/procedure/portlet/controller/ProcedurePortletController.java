@@ -1535,6 +1535,119 @@ public class ProcedurePortletController extends CmsPortletController {
         globalVariablesValues.put(listField.getName(), jsonValue.toString());
     }
 
+    @ActionMapping(value = "actionProcedure", params = "removeFieldInList")
+    public void removeFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
+            @RequestParam(value = "selectedFieldPath") String selectedFieldPath, @RequestParam(value = "rowIndex") String rowIndex) throws PortletException {
+
+        if (StringUtils.isNotBlank(selectedFieldPath) && StringUtils.isNotBlank(rowIndex)) {
+            Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
+            Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
+            String listFieldValue = globalVariablesValues.get(listField.getName());
+
+            int index = Integer.valueOf(rowIndex);
+
+            JSONArray jsonValue;
+            if (StringUtils.isNotBlank(listFieldValue)) {
+                jsonValue = JSONArray.fromObject(listFieldValue);
+            } else {
+                jsonValue = new JSONArray();
+            }
+            jsonValue.remove(index);
+
+            globalVariablesValues.put(listField.getName(), jsonValue.toString());
+        }
+    }
+
+    @ActionMapping(value = "actionProcedure", params = "editFieldInList")
+    public void editFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
+            @RequestParam(value = "selectedFieldPath") String selectedFieldPath, @RequestParam(value = "rowIndex") String rowIndex) throws PortletException {
+
+        if (StringUtils.isNotBlank(selectedFieldPath) && StringUtils.isNotBlank(rowIndex)) {
+            Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
+            Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
+            String listFieldValue = globalVariablesValues.get(listField.getName());
+
+            int rowIdx = Integer.valueOf(rowIndex);
+            JSONArray jsonValue;
+            if (StringUtils.isNotBlank(listFieldValue)) {
+                jsonValue = JSONArray.fromObject(listFieldValue);
+            } else {
+                jsonValue = new JSONArray();
+            }
+
+            for (int i = 0; i < jsonValue.size(); i++) {
+                if (i == rowIdx) {
+                    JSONObject jsonO = (JSONObject) jsonValue.get(i);
+
+                    for (int j = 0; j < jsonO.names().size(); j++) {
+
+                        String name = jsonO.names().getString(j);
+                        String value = jsonO.getString(name);
+
+                        globalVariablesValues.put(name, value);
+                    }
+                }
+            }
+            form.setSelectedListFieldRowIndex(rowIndex);
+            form.setSelectedListFieldPath(selectedFieldPath);
+        }
+    }
+
+    @ActionMapping(value = "actionProcedure", params = "validateEditFieldInList")
+    public void validateEditFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+
+        if (StringUtils.isNotBlank(form.getSelectedListFieldPath()) && StringUtils.isNotBlank(form.getSelectedListFieldRowIndex())) {
+            String rowIndex = form.getSelectedListFieldRowIndex();
+            Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedListFieldPath());
+            Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
+            String listFieldValue = globalVariablesValues.get(listField.getName());
+
+            int rowIdx = Integer.valueOf(rowIndex);
+            JSONArray jsonValue;
+            if (StringUtils.isNotBlank(listFieldValue)) {
+                jsonValue = JSONArray.fromObject(listFieldValue);
+            } else {
+                jsonValue = new JSONArray();
+            }
+
+            List<Field> fields = listField.getFields();
+
+            if (CollectionUtils.isNotEmpty(fields)) {
+                JSONObject jsonObject = new JSONObject();
+                for (Field field : fields) {
+                    String name = field.getName();
+                    String value = globalVariablesValues.get(name);
+                    jsonObject.accumulate(name, value);
+
+                    // reset field
+                    globalVariablesValues.remove(name);
+                }
+                jsonValue.element(rowIdx, jsonObject);
+            }
+            globalVariablesValues.put(listField.getName(), jsonValue.toString());
+            form.setSelectedListFieldRowIndex(null);
+            form.setSelectedListFieldPath(null);
+        }
+    }
+
+    @ActionMapping(value = "actionProcedure", params = "cancelEditFieldInList")
+    public void cancelEditFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+
+        if (StringUtils.isNotBlank(form.getSelectedListFieldPath()) && StringUtils.isNotBlank(form.getSelectedListFieldRowIndex())) {
+            Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedListFieldPath());
+            Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
+            List<Field> fields = listField.getFields();
+            if (CollectionUtils.isNotEmpty(fields)) {
+                for (Field field : fields) {
+                    // reset field
+                    globalVariablesValues.remove(field.getName());
+                }
+            }
+            form.setSelectedListFieldRowIndex(null);
+            form.setSelectedListFieldPath(null);
+        }
+    }
+
 
     private void updateProcedureWithForm(ActionRequest request, ActionResponse response, Form form, final Field field, String action) throws PortletException {
         updateProcedureWithForm(request, response, form, field, action, null);

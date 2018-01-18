@@ -640,20 +640,54 @@ $JQry(function() {
 		var jsonValue = $listField.children("input[name^='procedureInstance.globalVariablesValues']").val();
 		var $pbody = $listField.children(".panel-body");
 		var $tbody = $pbody.children("table").children("tbody");
+		var path = $listField.closest("li.form-group").children("input[name$='path']").val();
 
 		if (jsonValue.trim().length > 0) {
 			var values = JSON.parse(jsonValue);
 			for (var i = 0; i < values.length; i++) {
 				let trTag = document.createElement("tr");
-				let $trTag = $JQry(trTag);
 
 				for ( var varName in values[i]) {
 					let tdTag = document.createElement("td");
 					tdTag.innerHTML = values[i][varName];
-					$trTag.append(tdTag);
+					trTag.appendChild(tdTag);
 				}
 
-				$tbody.append($trTag);
+				if (path) {
+					let rowEditButton = document.createElement("button");
+					let rowDelButton = document.createElement("button");
+
+					rowEditButton.classList.add("btn", "btn-default");
+					rowEditButton.setAttribute("type", "submit");
+					rowEditButton.setAttribute("name", "editFieldInList");
+					rowEditButton.setAttribute("onclick", "selector(this,'" + path + "','selectedFieldPath');selector(this,'" + i + "','rowIndex')");
+
+					rowDelButton.classList.add("btn", "btn-default");
+					rowDelButton.setAttribute("type", "submit");
+					rowDelButton.setAttribute("name", "removeFieldInList");
+					rowDelButton.setAttribute("onclick", "selector(this,'" + path + "','selectedFieldPath');selector(this,'" + i + "','rowIndex')");
+
+					let rowEditGlyph = document.createElement("i");
+					let rowDelGlyph = document.createElement("i");
+
+					rowEditGlyph.classList.add("glyphicons", "glyphicons-edit");
+					rowDelGlyph.classList.add("glyphicons", "glyphicons-bin");
+
+					rowEditButton.appendChild(rowEditGlyph);
+					rowDelButton.appendChild(rowDelGlyph);
+
+					let tdTag = document.createElement("td");
+					let btnDiv = document.createElement("div");
+
+					btnDiv.classList.add("btn-group", "pull-right");
+					btnDiv.appendChild(rowEditButton);
+					btnDiv.appendChild(rowDelButton);
+
+					tdTag.appendChild(btnDiv);
+					trTag.appendChild(tdTag);
+				}
+
+				$tbody.append(trTag);
 			}
 		}
 	});
@@ -862,11 +896,6 @@ function buildRow(label, value) {
 	$JQry(tdDel).append(radioDelButton);
 
 	return $JQry(row).append(tdLabel).append(tdValue).append(tdDel);
-};
-
-function selectPath(button, name) {
-	var path = $JQry(button).parents("li").find("input[name$='path']").val();
-	selector(button, path, name);
 };
 
 function selector(button, value, name) {

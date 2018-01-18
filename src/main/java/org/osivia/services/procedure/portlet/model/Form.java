@@ -36,7 +36,7 @@ public class Form {
 
     /** newFieldSet */
     private AddField newFieldSet;
-    
+
     /** newFieldList */
     private AddField newFieldList;
 
@@ -57,7 +57,7 @@ public class Form {
 
     /** advancedMode */
     private boolean advancedMode;
-    
+
     /** variableTypesEnum */
     private VariableTypesAllEnum[] variableTypesEnum = VariableTypesAllEnum.filteredValues();
 
@@ -66,7 +66,7 @@ public class Form {
 
     /** procedureInstance */
     private List<ProcedureInstance> procedureInstances;
-    
+
     /** editedStep */
     private Step editedStep;
 
@@ -81,6 +81,12 @@ public class Form {
 
     /** Record types. */
     private Map<String, String> recordTypes;
+
+    /** selectedListFieldRow */
+    private String selectedListFieldRowIndex;
+
+    /** selectedListField */
+    private String selectedListFieldPath;
 
 
     public Form(ProcedureModel procedureModel) {
@@ -378,7 +384,7 @@ public class Form {
 
     /**
      * Getter for procedureInstances.
-     * 
+     *
      * @return the procedureInstances
      */
     public List<ProcedureInstance> getProcedureInstances() {
@@ -387,13 +393,13 @@ public class Form {
 
     /**
      * Setter for procedureInstances.
-     * 
+     *
      * @param procedureInstances the procedureInstances to set
      */
     public void setProcedureInstances(List<ProcedureInstance> procedureInstances) {
         this.procedureInstances = procedureInstances;
     }
-    
+
     /**
      * Getter for selectedVariable.
      * @return the selectedVariable
@@ -413,7 +419,7 @@ public class Form {
 
     /**
      * Getter for selectedTdb.
-     * 
+     *
      * @return the selectedTdb
      */
     public String getSelectedTdb() {
@@ -423,7 +429,7 @@ public class Form {
 
     /**
      * Setter for selectedTdb.
-     * 
+     *
      * @param selectedTdb the selectedTdb to set
      */
     public void setSelectedTdb(String selectedTdb) {
@@ -433,7 +439,7 @@ public class Form {
 
     /**
      * Getter for newColumn.
-     * 
+     *
      * @return the newColumn
      */
     public Column getNewColumn() {
@@ -446,7 +452,7 @@ public class Form {
 
     /**
      * Setter for newColumn.
-     * 
+     *
      * @param newColumn the newColumn to set
      */
     public void setNewColumn(Column newColumn) {
@@ -487,7 +493,7 @@ public class Form {
 
     /**
      * Getter for newExportVar.
-     * 
+     *
      * @return the newExportVar
      */
     public String getNewExportVar() {
@@ -496,7 +502,7 @@ public class Form {
 
     /**
      * Setter for newExportVar.
-     * 
+     *
      * @param newExportVar the newExportVar to set
      */
     public void setNewExportVar(String newExportVar) {
@@ -537,7 +543,7 @@ public class Form {
 
     /**
      * Getter for editedDashboard.
-     * 
+     *
      * @return the editedDashboard
      */
     public Dashboard getEditedDashboard() {
@@ -546,7 +552,7 @@ public class Form {
 
     /**
      * Setter for editedDashboard.
-     * 
+     *
      * @param editedDashboard the editedDashboard to set
      */
     public void setEditedDashboard(Dashboard editedDashboard) {
@@ -571,7 +577,7 @@ public class Form {
 
     /**
      * Getter for recordTypes.
-     * 
+     *
      * @return the recordTypes
      */
     public Map<String, String> getRecordTypes() {
@@ -580,7 +586,7 @@ public class Form {
 
     /**
      * Setter for recordTypes.
-     * 
+     *
      * @param recordTypes the recordTypes to set
      */
     public void setRecordTypes(Map<String, String> recordTypes) {
@@ -602,5 +608,45 @@ public class Form {
 	public void setNewFieldList(AddField newFieldList) {
 		this.newFieldList = newFieldList;
 	}
+
+
+    /**
+     * Getter for selectedListFieldRowIndex.
+     * 
+     * @return the selectedListFieldRowIndex
+     */
+    public String getSelectedListFieldRowIndex() {
+        return selectedListFieldRowIndex;
+    }
+
+
+    /**
+     * Setter for selectedListFieldRowIndex.
+     * 
+     * @param selectedListFieldRowIndex the selectedListFieldRowIndex to set
+     */
+    public void setSelectedListFieldRowIndex(String selectedListFieldRowIndex) {
+        this.selectedListFieldRowIndex = selectedListFieldRowIndex;
+    }
+
+
+    /**
+     * Getter for selectedListFieldPath.
+     * 
+     * @return the selectedListFieldPath
+     */
+    public String getSelectedListFieldPath() {
+        return selectedListFieldPath;
+    }
+
+
+    /**
+     * Setter for selectedListFieldPath.
+     * 
+     * @param selectedListFieldPath the selectedListFieldPath to set
+     */
+    public void setSelectedListFieldPath(String selectedListFieldPath) {
+        this.selectedListFieldPath = selectedListFieldPath;
+    }
 
 }
