@@ -6,7 +6,7 @@
 
 <c:choose>
 	<c:when test="${field.fieldSet eq true}">
-        <li class="form-group">
+        <li class="form-group" id="${field.path}">
 			<div class="col-sm-12">
 				<c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
 				<c:choose>
@@ -80,7 +80,7 @@
 				                	<thead>
 				                		<tr>
 				                			<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
-				                				<th>${nestedField.superLabel}</th>
+				                				<th data-varname="${nestedField.name}">${nestedField.superLabel}</th>
 				                			</c:forEach>
 				                			<th></th>
 				                		</tr>

@@ -639,7 +639,9 @@ $JQry(function() {
 		var $listField = $JQry(element);
 		var jsonValue = $listField.children("input[name^='procedureInstance.globalVariablesValues']").val();
 		var $pbody = $listField.children(".panel-body");
-		var $tbody = $pbody.children("table").children("tbody");
+		var $table = $pbody.children("table");
+		var $ths = $table.find("th");
+		var $tbody = $table.children("tbody");
 		var path = $listField.closest("li.form-group").children("input[name$='path']").val();
 
 		if (jsonValue.trim().length > 0) {
@@ -647,11 +649,14 @@ $JQry(function() {
 			for (var i = 0; i < values.length; i++) {
 				let trTag = document.createElement("tr");
 
-				for ( var varName in values[i]) {
+				$ths.each(function(index, element) {
+
+					let varName = $JQry(element).data("varname");
 					let tdTag = document.createElement("td");
-					tdTag.innerHTML = values[i][varName];
+					tdTag.innerHTML = values[i][varName] ? values[i][varName] : "";
 					trTag.appendChild(tdTag);
-				}
+
+				});
 
 				if (path) {
 					let rowEditButton = document.createElement("button");

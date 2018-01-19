@@ -69,7 +69,7 @@
 				                	<thead>
 				                		<tr>
 				                			<c:forEach var="nestedField" items="${field.fields}" varStatus="status">
-				                				<th>${nestedField.superLabel}</th>
+				                				<th data-varname="${nestedField.name}">${nestedField.superLabel}</th>
 				                			</c:forEach>
 				                		</tr>
 				                	</thead>
