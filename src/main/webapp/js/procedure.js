@@ -640,6 +640,7 @@ $JQry(function() {
 	$JQry(".list-field").each(function(index, element) {
 		var $listField = $JQry(element);
 		var jsonValue = $listField.children("input[name^='procedureInstance.globalVariablesValues']").val();
+		var selectedListFieldRowIndex = $listField.children("input[name='selectedListFieldRowIndex']").val();
 		var $pbody = $listField.children(".panel-body");
 		var $table = $pbody.children("table");
 		var $ths = $table.find("th[data-varname]");
@@ -650,6 +651,10 @@ $JQry(function() {
 			var values = JSON.parse(jsonValue);
 			for (var i = 0; i < values.length; i++) {
 				let trTag = document.createElement("tr");
+
+				if (i.toString() === selectedListFieldRowIndex) {
+					trTag.classList.add("info");
+				}
 
 				$ths.each(function(index, element) {
 					let $th = $JQry(element);

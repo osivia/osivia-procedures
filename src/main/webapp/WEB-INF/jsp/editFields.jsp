@@ -90,6 +90,7 @@
 				                	</tbody>
 				                </table>
 			                </div>
+			                <form:hidden path="selectedListFieldRowIndex" />
 							<form:hidden path="procedureInstance.globalVariablesValues['${fieldBkp.name}']" />
 		                </div>
 	                </c:when>
