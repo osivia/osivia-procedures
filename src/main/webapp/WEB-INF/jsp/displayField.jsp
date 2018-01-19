@@ -69,7 +69,8 @@
 				                	<thead>
 				                		<tr>
 				                			<c:forEach var="nestedField" items="${field.fields}" varStatus="status">
-				                				<th data-varname="${nestedField.name}">${nestedField.superLabel}</th>
+				                				<c:set var="fieldVarOptions" value="${form.procedureModel.variables[nestedField.name].varOptions}" />
+				                				<th data-varname="${nestedField.name}" data-varoptions='${fieldVarOptions}'>${nestedField.superLabel}</th>
 				                			</c:forEach>
 				                		</tr>
 				                	</thead>

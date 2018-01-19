@@ -640,7 +640,7 @@ $JQry(function() {
 		var jsonValue = $listField.children("input[name^='procedureInstance.globalVariablesValues']").val();
 		var $pbody = $listField.children(".panel-body");
 		var $table = $pbody.children("table");
-		var $ths = $table.find("th");
+		var $ths = $table.find("th[data-varname]");
 		var $tbody = $table.children("tbody");
 		var path = $listField.closest("li.form-group").children("input[name$='path']").val();
 
@@ -650,12 +650,21 @@ $JQry(function() {
 				let trTag = document.createElement("tr");
 
 				$ths.each(function(index, element) {
-
-					let varName = $JQry(element).data("varname");
+					let $th = $JQry(element);
+					let varName = $th.data("varname");
 					let tdTag = document.createElement("td");
-					tdTag.innerHTML = values[i][varName] ? values[i][varName] : "";
-					trTag.appendChild(tdTag);
+					let varValue = values[i][varName] ? values[i][varName] : "";
+					let varJson = $th.data("varoptions");
+					if (varJson.length > 0) {
+						for (var j = 0; j < varJson.length; j++) {
+							if (varJson[j].value == varValue) {
+								varValue = varJson[j].label;
+							}
+						}
+					}
 
+					tdTag.innerHTML = varValue;
+					trTag.appendChild(tdTag);
 				});
 
 				if (path) {
