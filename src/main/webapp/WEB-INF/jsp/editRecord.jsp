@@ -96,7 +96,7 @@
                                 </form:label>
                                 <div class="col-sm-9">
                                     <input name="newField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />'
-                                        value="${form.newField.varOptions}" type="text">
+                                        value='${form.newField.varOptions}' type="text">
                                 </div>
                             </div>
                             <div class="form-group hidden" id="formulaire-newField-list-editor">

@@ -489,16 +489,18 @@ $JQry(function() {
 		if (value === "RADIOLIST" || value === "CHECKBOXLIST" || value === "SELECTLIST") {
 			$additionalOptions.removeClass("hidden");
 			$helpText.removeClass("hidden");
+			let $tbody = $JQry("#formulaire-newField-list-editor-optionList tbody");
 
 			// maj du tableau des options
+			$tbody.empty();
 			var json = $JQry("input[name$='newField.varOptions']").val();
 			if (json.trim().length > 0) {
 				var rowList = JSON.parse(json);
 				for (var i = 0; i < rowList.length; i++) {
-					$JQry("#formulaire-newField-list-editor-optionList").find("tbody").append(buildRow(rowList[i].label, rowList[i].value));
+					$tbody.append(buildRow(rowList[i].label, rowList[i].value));
 				}
 			}
-			$JQry("#formulaire-newField-list-editor-optionList tbody").sortable({
+			$tbody.sortable({
 				helper : sortableTableHelper,
 				forcePlaceholderSize : true,
 				forceHelperSize : true,

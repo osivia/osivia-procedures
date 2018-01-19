@@ -145,7 +145,7 @@
 	                        <div class="form-group hidden">
 	                            <form:label path="newField.varOptions" cssClass="col-sm-3 control-label"><op:translate key="OPTIONS" /></form:label>
 	                            <div class="col-sm-9">
-	                                <input name="newField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />' value="${form.newField.varOptions}" type="text">
+	                                <input name="newField.varOptions" class="form-control" placeholder='<op:translate key="OPTIONS" />' value='${form.newField.varOptions}' type="text">
 	                            </div>
 	                        </div>
 	                        <div class="form-group hidden" id="formulaire-newField-list-editor">
