@@ -58,13 +58,13 @@
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane <c:if test="${empty activeFormTab or ('edit' ne activeFormTab and 'createList' ne activeFormTab)}">active</c:if>" id="CreateField">
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <form:label path="newField.label" cssClass="col-sm-3 control-label">
                                     <op:translate key="LABEL" />
                                 </form:label>
                                 <div class="col-sm-9">
-                                    <input name="newField.label" class="form-control" placeholder='<op:translate key="LABEL" />' type="text"> <span
-                                        class="help-block"><op:translate key="LABEL_HELP" /></span>
+                                    <input name="newField.label" class="form-control" placeholder='<op:translate key="LABEL" />' type="text">
+                                    <span class="help-block"><op:translate key="LABEL_HELP" /></span>
                                 </div>
                             </div>
                             <div class="form-group">
