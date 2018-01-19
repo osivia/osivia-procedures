@@ -234,6 +234,7 @@ public class Step implements Comparable<Step> {
     public Step(Integer index, String reference) {
         fields = new ArrayList<Field>();
         actions = new ArrayList<Action>();
+        initAction = new Action();
         setIndex(index);
         setReference(reference);
         setNotifiable(true);
@@ -242,7 +243,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * get the next available index for field
-     * 
+     *
      * @return
      */
     public String getNextPath() {
@@ -610,7 +611,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Getter for notifEmail.
-     * 
+     *
      * @return the notifEmail
      */
     public Boolean getNotifEmail() {
@@ -620,13 +621,13 @@ public class Step implements Comparable<Step> {
 
     /**
      * Setter for notifEmail.
-     * 
+     *
      * @param notifEmail the notifEmail to set
      */
     public void setNotifEmail(Boolean notifEmail) {
         this.notifEmail = notifEmail;
     }
-    
+
     /**
      * Getter for initAction.
      *
@@ -649,7 +650,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Getter for actors.
-     * 
+     *
      * @return the actors
      */
     public List<String> getActors() {
@@ -662,7 +663,7 @@ public class Step implements Comparable<Step> {
 
     /**
      * Setter for actors.
-     * 
+     *
      * @param actors the actors to set
      */
     public void setActors(List<String> actors) {
