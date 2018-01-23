@@ -64,21 +64,19 @@
 					</c:when>
 					
 					<c:when test="${fieldType eq 'FIELDLIST'}">
-						<div class="panel panel-default list-field">
-							<div class="panel-body">
-								<table class="table">
-				                	<thead>
-				                		<tr>
-				                			<c:forEach var="nestedField" items="${field.fields}" varStatus="status">
-				                				<c:set var="fieldVarOptions" value="${form.procedureModel.variables[nestedField.name].varOptions}" />
-				                				<th data-varname="${nestedField.name}" data-varoptions='${fieldVarOptions}'>${nestedField.superLabel}</th>
-				                			</c:forEach>
-				                		</tr>
-				                	</thead>
-				                	<tbody>
-				                	</tbody>
-				                </table>
-							</div>
+						<div class="list-field">
+							<table class="table">
+			                	<thead>
+			                		<tr>
+			                			<c:forEach var="nestedField" items="${field.fields}" varStatus="status">
+			                				<c:set var="fieldVarOptions" value="${form.procedureModel.variables[nestedField.name].varOptions}" />
+			                				<th data-varname="${nestedField.name}" data-varoptions='${fieldVarOptions}'>${nestedField.superLabel}</th>
+			                			</c:forEach>
+			                		</tr>
+			                	</thead>
+			                	<tbody>
+			                	</tbody>
+			                </table>
 							<input type="hidden" name="procedureInstance.globalVariablesValues['${field.name}']" value='${fieldValue}'>
 						</div>
 					</c:when>

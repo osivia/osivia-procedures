@@ -641,8 +641,7 @@ $JQry(function() {
 		var $listField = $JQry(element);
 		var jsonValue = $listField.children("input[name^='procedureInstance.globalVariablesValues']").val();
 		var selectedListFieldRowIndex = $listField.children("input[name='selectedListFieldRowIndex']").val();
-		var $pbody = $listField.children(".panel-body");
-		var $table = $pbody.children("table");
+		var $table = $listField.children("table");
 		var $ths = $table.find("th[data-varname]");
 		var $tbody = $table.children("tbody");
 		var path = $listField.closest("li.form-group").children("input[name$='path']").val();
@@ -678,12 +677,12 @@ $JQry(function() {
 					let rowEditButton = document.createElement("button");
 					let rowDelButton = document.createElement("button");
 
-					rowEditButton.classList.add("btn", "btn-default");
+					rowEditButton.classList.add("btn", "btn-default", "btn-xs");
 					rowEditButton.setAttribute("type", "submit");
 					rowEditButton.setAttribute("name", "editFieldInList");
 					rowEditButton.setAttribute("onclick", "selector(this,'" + path + "','selectedFieldPath');selector(this,'" + i + "','rowIndex')");
 
-					rowDelButton.classList.add("btn", "btn-default");
+					rowDelButton.classList.add("btn", "btn-default", "btn-xs");
 					rowDelButton.setAttribute("type", "submit");
 					rowDelButton.setAttribute("name", "removeFieldInList");
 					rowDelButton.setAttribute("onclick", "selector(this,'" + path + "','selectedFieldPath');selector(this,'" + i + "','rowIndex')");
@@ -700,7 +699,7 @@ $JQry(function() {
 					let tdTag = document.createElement("td");
 					let btnDiv = document.createElement("div");
 
-					btnDiv.classList.add("btn-group", "pull-right");
+					btnDiv.classList.add("text-nowrap");
 					btnDiv.appendChild(rowEditButton);
 					btnDiv.appendChild(rowDelButton);
 
