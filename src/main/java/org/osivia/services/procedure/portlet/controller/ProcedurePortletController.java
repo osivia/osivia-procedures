@@ -92,6 +92,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.CmsPortletController;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 @Controller
@@ -1477,8 +1478,8 @@ public class ProcedurePortletController extends CmsPortletController {
     }
 
     @ActionMapping(value = "actionProcedure", params = "addFieldInList")
-    public void addFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam("addFieldInList") String selectedFieldPath) throws PortletException {
+    public void addFieldInList(ActionRequest request, ActionResponse response, @RequestParam("addFieldInList") String selectedFieldPath,
+            @ModelAttribute(value = "form") Form form) throws PortletException {
 
         Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
 
@@ -1489,7 +1490,11 @@ public class ProcedurePortletController extends CmsPortletController {
         String listFieldValue = globalVariablesValues.get(listField.getName());
         JSONArray jsonValue;
         if (StringUtils.isNotBlank(listFieldValue)) {
-            jsonValue = JSONArray.fromObject(listFieldValue);
+            try {
+                jsonValue = JSONArray.fromObject(listFieldValue);
+            } catch (JSONException e) {
+                jsonValue = new JSONArray();
+            }
         } else {
             jsonValue = new JSONArray();
         }
@@ -1518,8 +1523,8 @@ public class ProcedurePortletController extends CmsPortletController {
     }
 
     @ActionMapping(value = "actionProcedure", params = "removeFieldInList")
-    public void removeFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam("removeFieldInList") String submitValue) throws PortletException {
+    public void removeFieldInList(ActionRequest request, ActionResponse response, @RequestParam("removeFieldInList") String submitValue,
+            @ModelAttribute(value = "form") Form form) throws PortletException {
         String[] splittedValues = StringUtils.split(submitValue, "|");
         if (ArrayUtils.isNotEmpty(splittedValues) && (splittedValues.length == 2)) {
             String selectedFieldPath = splittedValues[0];
@@ -1552,8 +1557,8 @@ public class ProcedurePortletController extends CmsPortletController {
     }
 
     @ActionMapping(value = "actionProcedure", params = "editFieldInList")
-    public void editFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam("editFieldInList") String submitValue) throws PortletException {
+    public void editFieldInList(ActionRequest request, ActionResponse response, @RequestParam("editFieldInList") String submitValue,
+            @ModelAttribute(value = "form") Form form) throws PortletException {
         String[] splittedValues = StringUtils.split(submitValue, "|");
         if (ArrayUtils.isNotEmpty(splittedValues) && (splittedValues.length == 2)) {
             String selectedFieldPath = splittedValues[0];
@@ -1599,10 +1604,11 @@ public class ProcedurePortletController extends CmsPortletController {
 
     @ActionMapping(value = "actionProcedure", params = "validateEditFieldInList")
     public void validateEditFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+        String selectedFieldPath = form.getSelectedListFieldPath();
+        String rowIndex = form.getSelectedListFieldRowIndex();
 
-        if (StringUtils.isNotBlank(form.getSelectedListFieldPath()) && StringUtils.isNotBlank(form.getSelectedListFieldRowIndex())) {
-            String rowIndex = form.getSelectedListFieldRowIndex();
-            Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedListFieldPath());
+        if (StringUtils.isNotBlank(selectedFieldPath) && StringUtils.isNotBlank(rowIndex)) {
+            Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
             Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
             String listFieldValue = globalVariablesValues.get(listField.getName());
 

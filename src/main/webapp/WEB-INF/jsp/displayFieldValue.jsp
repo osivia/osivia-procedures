@@ -9,46 +9,49 @@
 
 <c:choose>
     <c:when test="${level eq 1}"><c:set var="htmlClasses" value="form-control-static" /></c:when>
-    <c:otherwise><c:remove var="htmlClasses" /></c:otherwise>
+    <c:otherwise><c:set var="htmlClasses" value="no-margin-bottom" /></c:otherwise>
 </c:choose>
 
 
 <c:choose>
     <c:when test="${fieldType eq 'FIELDLIST'}">
         <c:set var="fieldBkp" value="${field}" scope="page" />
-        <c:set var="occurrences" value="${form.record.jsonValues[fieldBkp.name]}" scope="page" />
+        <c:set var="occurrences" value="${fieldJsonValue}" scope="page" />
     
-        <table class="table ${htmlClasses}">
-            <thead>
-                <tr>
-                    <c:forEach var="nestedField" items="${fieldBkp.fields}">
-                        <th>${nestedField.superLabel}</th>
-                    </c:forEach>
-                </tr>
-            </thead>
-
-            <tbody>
-                <c:forEach var="occurrence" items="${occurrences}">
+        <c:if test="${not empty occurrences or level eq 1}">
+            <table class="table ${htmlClasses} ${level gt 1 ? 'table-condensed table-bordered' : ''}">
+                <thead>
                     <tr>
                         <c:forEach var="nestedField" items="${fieldBkp.fields}">
-                            <td>
-                                <c:set var="field" value="${nestedField}" scope="request" />
-                                <c:set var="fieldType" value="${nestedField.type}" scope="request" />
-                                <c:set var="fieldValue" value="${occurrence[nestedField.name]}" scope="request" />
-                                <c:set var="fieldLevel" value="${level + 1}" scope="request" />
-                                <jsp:include page="displayFieldValue.jsp" />
-                            </td>
+                            <th>${nestedField.superLabel}</th>
                         </c:forEach>
                     </tr>
-                </c:forEach>
-                
-                <c:if test="${empty occurrences}">
-                    <tr>
-                        <td colspan="${fn:length(fieldBkp.fields)}" class="text-center text-muted"><op:translate key="NO_OCCURRENCE" /></td>
-                    </tr>
-                </c:if>
-            </tbody>
-        </table>
+                </thead>
+    
+                <tbody>
+                    <c:forEach var="occurrence" items="${occurrences}">
+                        <tr>
+                            <c:forEach var="nestedField" items="${fieldBkp.fields}">
+                                <td>
+                                    <c:set var="field" value="${nestedField}" scope="request" />
+                                    <c:set var="fieldType" value="${nestedField.type}" scope="request" />
+                                    <c:set var="fieldValue" value="${occurrence[nestedField.name]}" scope="request" />
+                                    <c:set var="fieldJsonValue" value="${occurrence[nestedField.name]}" scope="request" />
+                                    <c:set var="fieldLevel" value="${level + 1}" scope="request" />
+                                    <jsp:include page="displayFieldValue.jsp" />
+                                </td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                    
+                    <c:if test="${empty occurrences}">
+                        <tr>
+                            <td colspan="${fn:length(fieldBkp.fields)}" class="text-center text-muted"><op:translate key="NO_OCCURRENCE" /></td>
+                        </tr>
+                    </c:if>
+                </tbody>
+            </table>
+        </c:if>
     </c:when>
 
     <c:when test="${empty fieldValue}">
@@ -107,13 +110,15 @@
         <c:set var="file" value="${form.uploadedFiles[field.name]}" />
 
         <c:choose>
-            <c:when test="${empty file}">
-                <div class="${htmlClasses}">${fieldValue}</div>
+            <c:when test="${empty file.url}">
+                <div class="${htmlClasses}"></div>
             </c:when>
 
             <c:otherwise>
                 <div class="${htmlClasses}">
-                    <i class="${file.originalMetadata.icon}"></i> <a href="${file.url}" target="_blank" class="no-ajax-link"> <span>${file.originalMetadata.fileName}</span>
+                    <i class="${file.originalMetadata.icon}"></i>
+                    <a href="${file.url}" target="_blank" class="no-ajax-link">
+                        <span>${file.originalMetadata.fileName}</span>
                     </a>
                 </div>
             </c:otherwise>
@@ -125,8 +130,8 @@
         <c:set var="imageErrorMessage"><op:translate key="IMAGE_ERROR_MESSAGE" /></c:set>
 
         <c:choose>
-            <c:when test="${empty file}">
-                <div class="${htmlClasses}">${fieldValue}</div>
+            <c:when test="${empty file.url}">
+                <div class="${htmlClasses}"></div>
             </c:when>
 
             <c:otherwise>

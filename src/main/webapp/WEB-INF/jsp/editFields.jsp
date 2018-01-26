@@ -30,6 +30,7 @@
 
                     <c:when test="${fieldType eq 'FIELDLIST'}">
                         <c:set var="fieldBkp" value="${field}" scope="page" />
+                        <c:set var="occurrences" value="${form.record.jsonValues[fieldBkp.name]}" scope="page" />
 
                         <div class="panel panel-default no-margin-bottom list-field">
                             <c:if test="${not empty fieldBkp.helpText}">
@@ -42,19 +43,50 @@
                                 <thead>
                                     <tr>
                                         <c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
-                                            <c:set var="fieldVarOptions" value="${form.procedureModel.variables[nestedField.name].varOptions}" />
-                                            <th data-varname="${nestedField.name}" data-varOptions='${fieldVarOptions}'>${nestedField.superLabel}</th>
+                                            <th>${nestedField.superLabel}</th>
                                         </c:forEach>
                                         <th width="1%"></th>
                                     </tr>
                                 </thead>
+                                
                                 <tbody>
+                                    <c:forEach var="occurrence" items="${occurrences}" varStatus="status">
+                                        <tr class="${form.selectedListFieldPath eq fieldBkp.path and form.selectedListFieldRowIndex eq status.index ? 'info' : ''}">
+                                            <c:forEach var="nestedField" items="${fieldBkp.fields}">
+                                                <td>
+                                                    <c:set var="field" value="${nestedField}" scope="request" />
+                                                    <c:set var="fieldType" value="${nestedField.type}" scope="request" />
+                                                    <c:set var="fieldValue" value="${occurrence[nestedField.name]}" scope="request" />
+                                                    <c:set var="fieldJsonValue" value="${occurrence[nestedField.name]}" scope="request" />
+                                                    <c:set var="fieldLevel" value="2" scope="request" />
+                                                    <jsp:include page="displayFieldValue.jsp" />
+                                                </td>
+                                            </c:forEach>
+                                            
+                                            <td class="text-nowrap">
+                                                <button type="submit" name="editFieldInList" value="${fieldBkp.path}|${status.index}" class="btn btn-default btn-xs">
+                                                    <i class="glyphicons glyphicons-edit"></i>
+                                                    <span class="sr-only"><op:translate key="EDIT" /></span>
+                                                </button>
+                                                
+                                                <button type="submit" name="removeFieldInList" value="${fieldBkp.path}|${status.index}" class="btn btn-default btn-xs">
+                                                    <i class="glyphicons glyphicons-bin"></i>
+                                                    <span class="sr-only"><op:translate key="DELETE" /></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                    
+                                    <c:if test="${empty occurrences}">
+                                        <tr>
+                                            <td colspan="${fn:length(fieldBkp.fields)}" class="text-center text-muted"><op:translate key="NO_OCCURRENCE" /></td>
+                                        </tr>
+                                    </c:if>
                                 </tbody>
                             </table>
 
                             <div class="panel-body">
                                 <ul class="list-unstyled ${editionMode ? 'procedure-sortable' : ''}">
-                                    <c:set var="fieldBkp" value="${field}" scope="page" />
                                     <c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
                                         <c:set var="field" value="${nestedField}" scope="request" />
                                         <jsp:include page="editFields.jsp" />
@@ -69,13 +101,13 @@
                                                     <op:translate key="CANCEL" />
                                                 </button>
 
-                                                <button type="submit" name="validateEditFieldInList" class="btn btn-primary">
+                                                <button type="submit" name="validateEditFieldInList" value="${fieldBkp.path}|${status.index}" class="btn btn-primary">
                                                     <op:translate key="VALIDATE" />
                                                 </button>
                                             </c:when>
 
                                             <c:when test="${not editionMode}">
-                                                <button type="submit" name="addFieldInList" class="btn btn-default" onclick="selector(this,'${fieldBkp.path}','selectedFieldPath')">
+                                                <button type="submit" name="addFieldInList" value="${fieldBkp.path}" class="btn btn-default">
                                                     <op:translate key="ADD" />
                                                 </button>
                                             </c:when>
@@ -83,22 +115,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <form:hidden path="selectedListFieldRowIndex" />
-                            <form:hidden path="procedureInstance.globalVariablesValues['${fieldBkp.name}']" />
+                            <%-- <form:hidden path="selectedListFieldRowIndex" />
+                            <form:hidden path="procedureInstance.globalVariablesValues['${fieldBkp.name}']" /> --%>
                         </div>
                     </c:when>
                 </c:choose>
-            </div> <c:forEach var="pathPart" items="${fieldBkp.path}" varStatus="status">
+            </div> 
+            
+            <c:forEach var="pathPart" items="${fieldBkp.path}" varStatus="status">
                 <c:choose>
                     <c:when test="${not empty form.procedureInstance and not empty form.procedureInstance.currentStep}">
                         <c:set var="springPathNested" value="${status.first ? 'theCurrentStep' : springPathNested}.fields[${pathPart}]" scope="request" />
                     </c:when>
+                    
                     <c:otherwise>
                         <c:set var="springPathNested" value="${status.first ? 'theSelectedStep' : springPathNested}.fields[${pathPart}]" scope="request" />
                     </c:otherwise>
                 </c:choose>
-            </c:forEach> <form:hidden path="${springPathNested}.path" /></li>
+            </c:forEach>
+            
+            <form:hidden path="${springPathNested}.path" /></li>
     </c:when>
+    
     <c:otherwise>
         <jsp:include page="editField.jsp" />
     </c:otherwise>
