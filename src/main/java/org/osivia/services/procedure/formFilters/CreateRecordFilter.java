@@ -1,20 +1,20 @@
 package org.osivia.services.procedure.formFilters;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.portlet.model.UploadedFile;
 import org.osivia.services.procedure.portlet.model.ProcedureRepository;
 
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
@@ -22,10 +22,11 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
 
 /**
  * Creation of a record form filter
- *
+ * 
  * @author Dorian Licois
  */
 public class CreateRecordFilter extends RecordFormFilter {
@@ -44,13 +45,22 @@ public class CreateRecordFilter extends RecordFormFilter {
 
     /** Internationalization bundle factory. */
     private final IBundleFactory bundleFactory;
+    /** Nuxeo service. */
+    private final INuxeoService nuxeoService;
+    
 
-
+    /**
+     * Constructor.
+     */
     public CreateRecordFilter() {
+        super();
+        
         // Internationalization bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        // Nuxeo service
+        this.nuxeoService = Locator.findMBean(INuxeoService.class, INuxeoService.MBEAN_NAME);
     }
 
     @Override
@@ -80,8 +90,12 @@ public class CreateRecordFilter extends RecordFormFilter {
 
     @Override
     public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException, PortalException {
-
-        NuxeoController nuxeoController = new NuxeoController(context.getPortalControllerContext());
+        // Forms service
+        IFormsService formsService = this.nuxeoService.getFormsService();
+        // Portal controller context
+        PortalControllerContext portalControllerContext = context.getPortalControllerContext();
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // fetch model
         String fetchPath = NuxeoController.webIdToFetchPath(context.getModelWebId());
@@ -92,19 +106,13 @@ public class CreateRecordFilter extends RecordFormFilter {
         PropertyMap properties = recordFolder.getProperties();
         PropertyList globalVariablesReferences = getGlobalVariablesReferences(IFormsService.FORM_STEP_REFERENCE, properties);
 
+        // Uploaded files
+        Map<String, UploadedFile> uploadedFiles = context.getUploadedFiles();
+
         // get values of referenced variables
         PropertyMap createProperties = new PropertyMap();
-        Map<String, String> variables = new HashMap<String, String>();
-        for (Object variableREfO : globalVariablesReferences.list()) {
-            PropertyMap variableREfM = (PropertyMap) variableREfO;
-            String variableName = variableREfM.getString("variableName");
-            variables.put(variableName, context.getVariables().get(variableName));
-        }
-        try {
-            createProperties.set("rcd:globalVariablesValues", this.generateVariablesJSON(variables));
-        } catch (IOException e) {
-            throw new PortalException(e);
-        }
+        Map<String, String> variables = this.getVariables(context, globalVariablesReferences, uploadedFiles);
+        createProperties.set("rcd:globalVariablesValues", formsService.convertVariablesToJson(portalControllerContext, variables));
         createProperties.set("rcd:procedureModelWebId", context.getModelWebId());
 
         // Title
@@ -114,7 +122,8 @@ public class CreateRecordFilter extends RecordFormFilter {
         }
 
         // create record with values
-        Document createdRecord = (Document) nuxeoController.executeNuxeoCommand(new CreateRecordCommand(new DocRef(recordFolder.getPath()), createProperties, recordFolder.getTitle()));
+        INuxeoCommand command = new CreateRecordCommand(recordFolder.getPath(), createProperties, uploadedFiles.values());
+        nuxeoController.executeNuxeoCommand(command);
 
         context.getVariables().put(IFormsService.REDIRECT_CMS_PATH_PARAMETER, recordFolder.getPath());
 
@@ -122,7 +131,6 @@ public class CreateRecordFilter extends RecordFormFilter {
 
         context.getVariables().put(IFormsService.REDIRECT_MESSAGE_PARAMETER,
                 bundleFactory.getBundle(nuxeoController.getRequest().getLocale()).getString(NOTIFICATION_KEY));
-
     }
 
 }

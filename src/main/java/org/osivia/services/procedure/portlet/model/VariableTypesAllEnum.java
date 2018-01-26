@@ -1,26 +1,36 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Utilisé pour les procédures
- *
+ * Variable types enumeration.
+ * 
  * @author Dorian Licois
  */
 public enum VariableTypesAllEnum {
 
-    TEXT, TEXTAREA, DATE, NUMBER, RADIOLIST, CHECKBOXLIST, SELECTLIST, FIELDSET, FIELDLIST, WYSIWYG, VOCABULARY, PERSON, RECORD;
+    TEXT, TEXTAREA, DATE, NUMBER, RADIOLIST, CHECKBOXLIST, SELECTLIST, FIELDSET, FIELDLIST, WYSIWYG, VOCABULARY, PERSON, RECORD, FILE, PICTURE;
 
-    public static VariableTypesAllEnum[] filteredValues() {
 
-        VariableTypesAllEnum[] variableTypesEnum = new VariableTypesAllEnum[VariableTypesAllEnum.values().length - 1];
-        int i = 0;
-        for (VariableTypesAllEnum variableType : VariableTypesAllEnum.values()) {
-            if (!VariableTypesAllEnum.FIELDSET.equals(variableType) && !VariableTypesAllEnum.FIELDLIST.equals(variableType)) {
-                variableTypesEnum[i] = variableType;
-                i++;
-            }
-        }
-
-        return variableTypesEnum;
+    /**
+     * Constructor.
+     */
+    private VariableTypesAllEnum() {
     }
+
+
+    /**
+     * Get filtered values.
+     * 
+     * @return filtered values
+     */
+    public static VariableTypesAllEnum[] filteredValues() {
+        List<VariableTypesAllEnum> list = new ArrayList<>(Arrays.asList(VariableTypesAllEnum.values()));
+        list.remove(FIELDSET);
+        list.remove(RECORD);
+        return list.toArray(new VariableTypesAllEnum[list.size()]);
+    }
+
 }

@@ -81,6 +81,7 @@ public class Field implements Comparable<Field> {
     @JsonIgnore
     private Object jsonVarOptions;
 
+
     public Field() {
     }
 

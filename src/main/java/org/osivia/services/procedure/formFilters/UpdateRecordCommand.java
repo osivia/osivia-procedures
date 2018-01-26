@@ -1,44 +1,52 @@
 package org.osivia.services.procedure.formFilters;
 
+import java.util.Collection;
+
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-
+import org.osivia.portal.api.portlet.model.UploadedFile;
 
 /**
+ * Update record Nuxeo command.
+ * 
  * @author Dorian Licois
+ * @see AbstractRecordCommand
  */
-public class UpdateRecordCommand implements INuxeoCommand {
-
-    /** properties */
-    private PropertyMap properties;
-
-    /** docRef */
-    private DocRef docRef;
+public class UpdateRecordCommand extends AbstractRecordCommand {
 
     /**
-     * @param docRef
-     * @param updateProperties
+     * Constructor.
+     * 
+     * @param path document path
+     * @param properties properties
+     * @param uploadedFiles uploaded files
      */
-    public UpdateRecordCommand(DocRef docRef, PropertyMap updateProperties) {
-        this.docRef = docRef;
-        this.properties = updateProperties;
+    public UpdateRecordCommand(String path, PropertyMap properties, Collection<UploadedFile> uploadedFiles) {
+        super(path, properties, uploadedFiles);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        
+        // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
         
-        return documentService.update(docRef, properties, true);
-    }
+        // Document reference
+        DocRef ref = new DocRef(this.getPath());
 
-    @Override
-    public String getId() {
-        return "UpdateRecordCommand/" + docRef + "/" + properties;
+        // Update document
+        Document document = documentService.update(ref, this.getProperties(), true);
+
+        // Update blobs
+        this.updateBlobs(documentService, document);
+
+        return document;
     }
 
 }

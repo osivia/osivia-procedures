@@ -28,6 +28,7 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -47,6 +48,7 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.portlet.model.UploadedFile;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -58,7 +60,6 @@ import org.osivia.services.procedure.portlet.model.Column;
 import org.osivia.services.procedure.portlet.model.Dashboard;
 import org.osivia.services.procedure.portlet.model.DocumentTypeEnum;
 import org.osivia.services.procedure.portlet.model.Field;
-import org.osivia.services.procedure.portlet.model.FilePath;
 import org.osivia.services.procedure.portlet.model.Filter;
 import org.osivia.services.procedure.portlet.model.Form;
 import org.osivia.services.procedure.portlet.model.ProcedureInstance;
@@ -80,11 +81,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-import org.springframework.web.portlet.multipart.MultipartActionRequest;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -388,11 +387,13 @@ public class ProcedurePortletController extends CmsPortletController {
         } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
             // déroulement d'une procédure
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByWebId(nuxeoController, getWebId(request));
+            nuxeoController.setCurrentDoc(procedureInstance.getOriginalDocument());
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
             form = new Form(procedureModel, procedureInstance);
             procedureService.updateData(nuxeoController, form);
         } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getDocType())) {
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceById(nuxeoController, getId(request));
+            nuxeoController.setCurrentDoc(procedureInstance.getOriginalDocument());
             final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
             form = new Form(procedureModel, procedureInstance);
 
@@ -445,6 +446,7 @@ public class ProcedurePortletController extends CmsPortletController {
             }
         } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
             Record record = procedureService.retrieveRecordInstanceByWebId(nuxeoController, getWebId(request));
+            nuxeoController.setCurrentDoc(record.getOriginalDocument());
             ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, record.getProcedureModelWebId());
             form = new Form(procedureModel, record);
 
@@ -489,9 +491,11 @@ public class ProcedurePortletController extends CmsPortletController {
                 form = new Form();
             }
         }
+
         if ((response instanceof RenderResponse) && (form.getProcedureModel() != null)) {
             ((RenderResponse) response).setTitle(form.getProcedureModel().getName());
         }
+
         return form;
     }
 
@@ -783,29 +787,6 @@ public class ProcedurePortletController extends CmsPortletController {
     }
 
 
-    // @ResourceMapping(value = "vocabularySearch")
-    // public void getVocabulary(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter,
-    // @RequestParam(value = "vocabularyName", required = true) String vocabularyName) throws PortletException {
-    //
-    // // Nuxeo controller
-    // final NuxeoController nuxeoController = new NuxeoController(request, response, this.portletContext);
-    // nuxeoController.setCacheTimeOut(TimeUnit.HOURS.toMillis(1));
-    // nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-    // nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-    //
-    // try {
-    // final JSONArray values = procedureService.getVocabularyValues(nuxeoController, filter, vocabularyName);
-    // final PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
-    // printWriter.write(values.toString());
-    // printWriter.close();
-    // } catch (final IOException e) {
-    // throw new PortletException(e);
-    // } catch (final PortletException e) {
-    // throw new PortletException(e);
-    // }
-    // }
-
-
     @ResourceMapping(value = "formulaireSearch")
     public void getFormulaire(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
             throws PortletException {
@@ -838,56 +819,48 @@ public class ProcedurePortletController extends CmsPortletController {
     @ActionMapping(value = "actionProcedure", params = "proceedProcedure")
     public void proceedProcedure(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
             @RequestParam(value = "actionId") String actionId) throws PortletException {
-
         if (StringUtils.isNotBlank((String) request.getAttribute("errorText"))) {
             response.setRenderParameter("errorText", (String) request.getAttribute("errorText"));
             response.setRenderParameter("action", "error");
             return;
         }
 
-        if (request instanceof MultipartActionRequest) {
-            // set the uploaded files in the instance
-            final MultipartActionRequest multipartActionRequest = (MultipartActionRequest) request;
-            for (final Field field : form.getTheCurrentStep().getFields()) {
-                setMultipartFile(field, multipartActionRequest, form);
-            }
-        }
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+        // Forms service
+        IFormsService formsService = nuxeoController.getNuxeoCMSService().getFormsService();
+
+        // Uploaded files
+        Map<String, UploadedFile> uploadedFiles = new HashMap<>(form.getUploadedFiles().size());
+        uploadedFiles.putAll(form.getUploadedFiles());
+
         try {
             Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
             if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREMODEL.getDocType())) {
                 // if there is no instance, start the procedure
-                PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
-                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
-                        .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
+                globalVariablesValues = formsService.start(portalControllerContext, currentWebId, actionId, globalVariablesValues, uploadedFiles);
                 manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
                 // instance already exist
                 PropertyMap taskProperties = form.getProcedureInstance().getTaskDoc();
-                PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
-                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
-                        .proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
+                globalVariablesValues = formsService.proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues, uploadedFiles);
                 manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getDocType())) {
                 // instance already exist
                 PropertyMap taskProperties = form.getProcedureInstance().getTaskDoc();
-                PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
-                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
-                        .proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues);
+                globalVariablesValues = formsService.proceed(portalControllerContext, taskProperties, actionId, globalVariablesValues, uploadedFiles);
                 manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
-                PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
-                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
-                        .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
+                globalVariablesValues = formsService.start(portalControllerContext, currentWebId, actionId, globalVariablesValues, uploadedFiles);
                 manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
-                PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
-                globalVariablesValues = nuxeoController.getNuxeoCMSService().getFormsService()
-                        .start(portalControllerContext, currentWebId, actionId, globalVariablesValues);
+                globalVariablesValues = formsService.start(portalControllerContext, currentWebId, actionId, globalVariablesValues, uploadedFiles);
                 manageEndStep(nuxeoController, globalVariablesValues, form);
             } else {
                 // shouldn't happen
@@ -902,7 +875,7 @@ public class ProcedurePortletController extends CmsPortletController {
                 throw new PortletException(e);
             }
         } catch (final FormFilterException e) {
-            this.notificationsService.addSimpleNotification(nuxeoController.getPortalCtx(), e.getMessage(), NotificationsType.ERROR);
+            this.notificationsService.addSimpleNotification(portalControllerContext, e.getMessage(), NotificationsType.ERROR);
             request.setAttribute("filterMessage", e.getMessage());
             response.setRenderParameter("action", "viewProcedure");
         }
@@ -1505,7 +1478,7 @@ public class ProcedurePortletController extends CmsPortletController {
 
     @ActionMapping(value = "actionProcedure", params = "addFieldInList")
     public void addFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam(value = "selectedFieldPath") String selectedFieldPath) throws PortletException {
+            @RequestParam("addFieldInList") String selectedFieldPath) throws PortletException {
 
         Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
 
@@ -1536,63 +1509,91 @@ public class ProcedurePortletController extends CmsPortletController {
 
         // add values to the list of values
         globalVariablesValues.put(listField.getName(), jsonValue.toString());
+
+        // Update record
+        Record record = form.getRecord();
+        if (record != null) {
+            record.setGlobalVariablesValues(globalVariablesValues);
+        }
     }
 
     @ActionMapping(value = "actionProcedure", params = "removeFieldInList")
     public void removeFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam(value = "selectedFieldPath") String selectedFieldPath, @RequestParam(value = "rowIndex") String rowIndex) throws PortletException {
+            @RequestParam("removeFieldInList") String submitValue) throws PortletException {
+        String[] splittedValues = StringUtils.split(submitValue, "|");
+        if (ArrayUtils.isNotEmpty(splittedValues) && (splittedValues.length == 2)) {
+            String selectedFieldPath = splittedValues[0];
+            String rowIndex = splittedValues[1];
 
-        if (StringUtils.isNotBlank(selectedFieldPath) && StringUtils.isNotBlank(rowIndex)) {
-            Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
-            Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
-            String listFieldValue = globalVariablesValues.get(listField.getName());
+            if (StringUtils.isNotBlank(selectedFieldPath) && StringUtils.isNotBlank(rowIndex)) {
+                Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
+                Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
+                String listFieldValue = globalVariablesValues.get(listField.getName());
 
-            int index = Integer.valueOf(rowIndex);
+                int index = Integer.valueOf(rowIndex);
 
-            JSONArray jsonValue;
-            if (StringUtils.isNotBlank(listFieldValue)) {
-                jsonValue = JSONArray.fromObject(listFieldValue);
-            } else {
-                jsonValue = new JSONArray();
+                JSONArray jsonValue;
+                if (StringUtils.isNotBlank(listFieldValue)) {
+                    jsonValue = JSONArray.fromObject(listFieldValue);
+                } else {
+                    jsonValue = new JSONArray();
+                }
+                jsonValue.remove(index);
+
+                globalVariablesValues.put(listField.getName(), jsonValue.toString());
+
+                // Update record
+                Record record = form.getRecord();
+                if (record != null) {
+                    record.setGlobalVariablesValues(globalVariablesValues);
+                }
             }
-            jsonValue.remove(index);
-
-            globalVariablesValues.put(listField.getName(), jsonValue.toString());
         }
     }
 
     @ActionMapping(value = "actionProcedure", params = "editFieldInList")
     public void editFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form,
-            @RequestParam(value = "selectedFieldPath") String selectedFieldPath, @RequestParam(value = "rowIndex") String rowIndex) throws PortletException {
+            @RequestParam("editFieldInList") String submitValue) throws PortletException {
+        String[] splittedValues = StringUtils.split(submitValue, "|");
+        if (ArrayUtils.isNotEmpty(splittedValues) && (splittedValues.length == 2)) {
+            String selectedFieldPath = splittedValues[0];
+            String rowIndex = splittedValues[1];
 
-        if (StringUtils.isNotBlank(selectedFieldPath) && StringUtils.isNotBlank(rowIndex)) {
-            Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
-            Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
-            String listFieldValue = globalVariablesValues.get(listField.getName());
+            if (StringUtils.isNotBlank(selectedFieldPath) && StringUtils.isNotBlank(rowIndex)) {
+                Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
+                Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
+                String listFieldValue = globalVariablesValues.get(listField.getName());
 
-            int rowIdx = Integer.valueOf(rowIndex);
-            JSONArray jsonValue;
-            if (StringUtils.isNotBlank(listFieldValue)) {
-                jsonValue = JSONArray.fromObject(listFieldValue);
-            } else {
-                jsonValue = new JSONArray();
-            }
+                int rowIdx = Integer.valueOf(rowIndex);
+                JSONArray jsonValue;
+                if (StringUtils.isNotBlank(listFieldValue)) {
+                    jsonValue = JSONArray.fromObject(listFieldValue);
+                } else {
+                    jsonValue = new JSONArray();
+                }
 
-            for (int i = 0; i < jsonValue.size(); i++) {
-                if (i == rowIdx) {
-                    JSONObject jsonO = (JSONObject) jsonValue.get(i);
+                for (int i = 0; i < jsonValue.size(); i++) {
+                    if (i == rowIdx) {
+                        JSONObject jsonO = (JSONObject) jsonValue.get(i);
 
-                    for (int j = 0; j < jsonO.names().size(); j++) {
+                        for (int j = 0; j < jsonO.names().size(); j++) {
 
-                        String name = jsonO.names().getString(j);
-                        String value = jsonO.getString(name);
+                            String name = jsonO.names().getString(j);
+                            String value = jsonO.getString(name);
 
-                        globalVariablesValues.put(name, value);
+                            globalVariablesValues.put(name, value);
+                        }
                     }
                 }
+                form.setSelectedListFieldRowIndex(rowIndex);
+                form.setSelectedListFieldPath(selectedFieldPath);
+
+                // Update record
+                Record record = form.getRecord();
+                if (record != null) {
+                    record.setGlobalVariablesValues(globalVariablesValues);
+                }
             }
-            form.setSelectedListFieldRowIndex(rowIndex);
-            form.setSelectedListFieldPath(selectedFieldPath);
         }
     }
 
@@ -1917,33 +1918,6 @@ public class ProcedurePortletController extends CmsPortletController {
 
 
     /**
-     * set the uploaded files in the instance, traversing recursive fields
-     *
-     * @param field
-     * @param multipartActionRequest
-     * @param form
-     */
-    private void setMultipartFile(Field field, MultipartActionRequest multipartActionRequest, Form form) {
-        if (!field.isFieldSet()) {
-            if (field.isInput()) {
-                final MultipartFile multipartFile = multipartActionRequest.getFileMap().get("file:" + field.getName());
-                if ((multipartFile != null) && (multipartFile.getSize() > 0)) {
-                    final FilePath filePath = new FilePath();
-                    filePath.setFile(multipartFile);
-                    filePath.setVariableName(field.getName());
-                    filePath.setFileName(String.valueOf(multipartFile.getOriginalFilename()));
-                    form.getProcedureInstance().getFilesPath().put(filePath.getVariableName(), filePath);
-                }
-            }
-        } else {
-            for (final Field nestedField : field.getFields()) {
-                setMultipartFile(nestedField, multipartActionRequest, form);
-            }
-        }
-    }
-
-
-    /**
      * Vocabulary search resource mapping.
      *
      * @param request resource request
@@ -1999,6 +1973,64 @@ public class ProcedurePortletController extends CmsPortletController {
         PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
         printWriter.write(results.toString());
         printWriter.close();
+    }
+
+
+    /**
+     * Upload file action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form form model attribute
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping(value = "actionProcedure", params = "upload-file")
+    public void uploadFile(ActionRequest request, ActionResponse response, @ModelAttribute("form") Form form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.procedureService.uploadFile(portalControllerContext, form);
+    }
+
+
+    /**
+     * Delete file action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param variableName variable name request parameter
+     * @param form form model attribute
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping(value = "actionProcedure", params = "delete-file")
+    public void deleteFile(ActionRequest request, ActionResponse response, @RequestParam("delete-file") String variableName, @ModelAttribute("form") Form form)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.procedureService.deleteFile(portalControllerContext, variableName, form);
+    }
+
+
+    /**
+     * Picture preview resource mapping.
+     *
+     * @param request resource request
+     * @param response resource response
+     * @param variableName variable name request parameter
+     * @param form form model attribute
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ResourceMapping("picture-preview")
+    public void picturePreview(ResourceRequest request, ResourceResponse response, @RequestParam("variableName") String variableName,
+            @ModelAttribute("form") Form form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.procedureService.picturePreview(portalControllerContext, form, variableName);
     }
 
 

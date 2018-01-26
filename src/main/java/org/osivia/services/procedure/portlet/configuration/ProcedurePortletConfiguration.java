@@ -16,6 +16,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import fr.toutatice.portail.cms.nuxeo.api.portlet.CmsPortletConfiguration;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Procedure portlet configuration.
@@ -90,6 +92,17 @@ public class ProcedurePortletConfiguration extends CmsPortletConfiguration {
 
 
     /**
+     * Get nuxeo service.
+     * 
+     * @return nuxeo service
+     */
+    @Bean
+    public INuxeoService getNuxeoService() {
+        return Locator.findMBean(INuxeoService.class, INuxeoService.MBEAN_NAME);
+    }
+
+
+    /**
      * Get group service.
      * 
      * @return group service
@@ -99,5 +112,15 @@ public class ProcedurePortletConfiguration extends CmsPortletConfiguration {
         return DirServiceFactory.getService(GroupService.class);
     }
 
+
+    /**
+     * Get document DAO.
+     * 
+     * @return document DAO
+     */
+    @Bean
+    public DocumentDAO getDocumentDao() {
+        return DocumentDAO.getInstance();
+    }
 
 }

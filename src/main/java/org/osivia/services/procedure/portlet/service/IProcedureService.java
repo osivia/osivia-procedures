@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -183,5 +184,40 @@ public interface IProcedureService {
      * @throws PortletException
      */
     JSONArray searchRecords(PortalControllerContext portalControllerContext, String recordFolderWebId, String filter) throws PortletException;
+
+
+    /**
+     * Upload file.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form form
+     * @throws PortletException
+     * @throws IOException
+     */
+    void uploadFile(PortalControllerContext portalControllerContext, Form form) throws PortletException, IOException;
+
+
+    /**
+     * Delete file.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param variableName variable name
+     * @param form form
+     * @throws PortletException
+     * @throws IOException
+     */
+    void deleteFile(PortalControllerContext portalControllerContext, String variableName, Form form) throws PortletException, IOException;
+
+
+    /**
+     * Picture preview.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form form
+     * @param variableName variable name
+     * @throws PortletException
+     * @throws IOException
+     */
+    void picturePreview(PortalControllerContext portalControllerContext, Form form, String variableName) throws PortletException, IOException;
 
 }

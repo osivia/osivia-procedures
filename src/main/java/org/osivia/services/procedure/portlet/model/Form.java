@@ -1,10 +1,12 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.osivia.portal.api.portlet.Refreshable;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
@@ -12,6 +14,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 /**
  * @author Dorian Licois
  */
+@Refreshable
 public class Form {
 
     /** procedureModel */
@@ -89,12 +92,17 @@ public class Form {
     private String selectedListFieldPath;
 
 
+    /** Uploaded files. */
+    private final Map<String, ProcedureUploadedFile> uploadedFiles;
+
+
     public Form(ProcedureModel procedureModel) {
         this.procedureModel = procedureModel;
         newField = new AddField();
         newFieldSet = new AddField();
         newFieldList = new AddField();
         newColumn = new Column();
+        this.uploadedFiles = new HashMap<>();
     }
 
     public Form(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
@@ -112,11 +120,13 @@ public class Form {
         newFieldSet = new AddField();
         newFieldList = new AddField();
         newColumn = new Column();
+        this.uploadedFiles = new HashMap<>();
     }
 
     public Form(ProcedureModel procedureModel, Record record) {
         this.procedureModel = procedureModel;
         this.record = record;
+        this.uploadedFiles = new HashMap<>();
     }
 
     public Form() {
@@ -124,6 +134,7 @@ public class Form {
         newFieldSet = new AddField();
         newFieldList = new AddField();
         newColumn = new Column();
+        this.uploadedFiles = new HashMap<>();
     }
 
     /**
@@ -647,6 +658,16 @@ public class Form {
      */
     public void setSelectedListFieldPath(String selectedListFieldPath) {
         this.selectedListFieldPath = selectedListFieldPath;
+    }
+
+
+    /**
+     * Getter for uploadedFiles.
+     * 
+     * @return the uploadedFiles
+     */
+    public Map<String, ProcedureUploadedFile> getUploadedFiles() {
+        return uploadedFiles;
     }
 
 }

@@ -303,35 +303,6 @@ $JQry(function() {
 		}
 	});
 
-	// $JQry(".vocabularySelect-select2").each(function(index, element) {
-	// var $element = $JQry(element);
-	// var vocabularySearchUrl = $element.data("url");
-	//		
-	// $element.select2({
-	// ajax: {
-	// url: $element.data("url"),
-	// dataType: 'json',
-	// delay: 300,
-	// data: function (params) {
-	// return {
-	// filter: params.term
-	// };
-	// },
-	// processResults: function (data, params) {
-	// return {
-	// results: data
-	// };
-	// },
-	// cache: true
-	// },
-	// escapeMarkup: function (markup) { return markup; },
-	// theme: "bootstrap",
-	// templateResult: formatProfil,
-	// templateSelection: formatProfil
-	// });
-	//		
-	// });
-
 	$JQry(".field-selectList-select2").each(function(index, element) {
 		var $element = $JQry(element);
 		$element.select2({
@@ -513,7 +484,7 @@ $JQry(function() {
 				}
 			});
 			$listEditor.removeClass("hidden");
-		} else if (value === "TEXT" || value === "TEXTAREA") {
+		} else if (value === "TEXT" || value === "TEXTAREA" || value === "FILE" || value === "PICTURE") {
 			$additionalOptions.removeClass("hidden");
 			$helpText.removeClass("hidden");
 		} else if (value === "DISPLAY") {
@@ -595,7 +566,7 @@ $JQry(function() {
 				}
 			});
 			$listEditor.removeClass("hidden");
-		} else if (value === "TEXT" || value === "TEXTAREA") {
+		} else if (value === "TEXT" || value === "TEXTAREA" || value === "FILE" || value === "PICTURE") {
 			$additionalOptions.removeClass("hidden");
 			$helpText.removeClass("hidden");
 		} else if (value === "DISPLAY") {
@@ -637,80 +608,81 @@ $JQry(function() {
 		$JQry("input[name$='selectedField.varOptions']").val(jsonifyList($JQry("#formulaire-selectedField-list-editor-optionList").find("tbody")));
 	};
 
-	$JQry(".list-field").each(function(index, element) {
-		var $listField = $JQry(element);
-		var jsonValue = $listField.children("input[name^='procedureInstance.globalVariablesValues']").val();
-		var selectedListFieldRowIndex = $listField.children("input[name='selectedListFieldRowIndex']").val();
-		var $table = $listField.children("table");
-		var $ths = $table.find("th[data-varname]");
-		var $tbody = $table.children("tbody");
-		var path = $listField.closest("li.form-group").children("input[name$='path']").val();
-
-		if (jsonValue.trim().length > 0) {
-			var values = JSON.parse(jsonValue);
-			for (var i = 0; i < values.length; i++) {
-				let trTag = document.createElement("tr");
-
-				if (i.toString() === selectedListFieldRowIndex) {
-					trTag.classList.add("info");
-				}
-
-				$ths.each(function(index, element) {
-					let $th = $JQry(element);
-					let varName = $th.data("varname");
-					let tdTag = document.createElement("td");
-					let varValue = values[i][varName] ? values[i][varName] : "";
-					let varJson = $th.data("varoptions");
-					if (varJson.length > 0) {
-						for (var j = 0; j < varJson.length; j++) {
-							if (varJson[j].value == varValue) {
-								varValue = varJson[j].label;
-							}
-						}
-					}
-
-					tdTag.innerHTML = varValue;
-					trTag.appendChild(tdTag);
-				});
-
-				if (path) {
-					let rowEditButton = document.createElement("button");
-					let rowDelButton = document.createElement("button");
-
-					rowEditButton.classList.add("btn", "btn-default", "btn-xs");
-					rowEditButton.setAttribute("type", "submit");
-					rowEditButton.setAttribute("name", "editFieldInList");
-					rowEditButton.setAttribute("onclick", "selector(this,'" + path + "','selectedFieldPath');selector(this,'" + i + "','rowIndex')");
-
-					rowDelButton.classList.add("btn", "btn-default", "btn-xs");
-					rowDelButton.setAttribute("type", "submit");
-					rowDelButton.setAttribute("name", "removeFieldInList");
-					rowDelButton.setAttribute("onclick", "selector(this,'" + path + "','selectedFieldPath');selector(this,'" + i + "','rowIndex')");
-
-					let rowEditGlyph = document.createElement("i");
-					let rowDelGlyph = document.createElement("i");
-
-					rowEditGlyph.classList.add("glyphicons", "glyphicons-edit");
-					rowDelGlyph.classList.add("glyphicons", "glyphicons-bin");
-
-					rowEditButton.appendChild(rowEditGlyph);
-					rowDelButton.appendChild(rowDelGlyph);
-
-					let tdTag = document.createElement("td");
-					let btnDiv = document.createElement("div");
-
-					btnDiv.classList.add("text-nowrap");
-					btnDiv.appendChild(rowEditButton);
-					btnDiv.appendChild(rowDelButton);
-
-					tdTag.appendChild(btnDiv);
-					trTag.appendChild(tdTag);
-				}
-
-				$tbody.append(trTag);
-			}
-		}
-	});
+//	$JQry(".list-field").each(function(index, element) {
+//		var $listField = $JQry(element);
+//		var jsonValue = $listField.children("input[name^='procedureInstance.globalVariablesValues']").val();
+//		var selectedListFieldRowIndex = $listField.children("input[name='selectedListFieldRowIndex']").val();
+//		var $pbody = $listField.children(".panel-body");
+//		var $table = $pbody.children("table");
+//		var $ths = $table.find("th[data-varname]");
+//		var $tbody = $table.children("tbody");
+//		var path = $listField.closest("li.form-group").children("input[name$='path']").val();
+//
+//		if (jsonValue.trim().length > 0) {
+//			var values = JSON.parse(jsonValue);
+//			for (var i = 0; i < values.length; i++) {
+//				let trTag = document.createElement("tr");
+//
+//				if (i.toString() === selectedListFieldRowIndex) {
+//					trTag.classList.add("info");
+//				}
+//
+//				$ths.each(function(index, element) {
+//					let $th = $JQry(element);
+//					let varName = $th.data("varname");
+//					let tdTag = document.createElement("td");
+//					let varValue = values[i][varName] ? values[i][varName] : "";
+//					let varJson = $th.data("varoptions");
+//					if (varJson.length > 0) {
+//						for (var j = 0; j < varJson.length; j++) {
+//							if (varJson[j].value == varValue) {
+//								varValue = varJson[j].label;
+//							}
+//						}
+//					}
+//
+//					tdTag.innerHTML = varValue;
+//					trTag.appendChild(tdTag);
+//				});
+//
+//				if (path) {
+//					let rowEditButton = document.createElement("button");
+//					let rowDelButton = document.createElement("button");
+//
+//					rowEditButton.classList.add("btn", "btn-default");
+//					rowEditButton.setAttribute("type", "submit");
+//					rowEditButton.setAttribute("name", "editFieldInList");
+//					rowEditButton.setAttribute("onclick", "selector(this,'" + path + "','selectedFieldPath');selector(this,'" + i + "','rowIndex')");
+//
+//					rowDelButton.classList.add("btn", "btn-default");
+//					rowDelButton.setAttribute("type", "submit");
+//					rowDelButton.setAttribute("name", "removeFieldInList");
+//					rowDelButton.setAttribute("onclick", "selector(this,'" + path + "','selectedFieldPath');selector(this,'" + i + "','rowIndex')");
+//
+//					let rowEditGlyph = document.createElement("i");
+//					let rowDelGlyph = document.createElement("i");
+//
+//					rowEditGlyph.classList.add("glyphicons", "glyphicons-edit");
+//					rowDelGlyph.classList.add("glyphicons", "glyphicons-bin");
+//
+//					rowEditButton.appendChild(rowEditGlyph);
+//					rowDelButton.appendChild(rowDelGlyph);
+//
+//					let tdTag = document.createElement("td");
+//					let btnDiv = document.createElement("div");
+//
+//					btnDiv.classList.add("btn-group", "pull-right");
+//					btnDiv.appendChild(rowEditButton);
+//					btnDiv.appendChild(rowDelButton);
+//
+//					tdTag.appendChild(btnDiv);
+//					trTag.appendChild(tdTag);
+//				}
+//
+//				$tbody.append(trTag);
+//			}
+//		}
+//	});
 
 	// éditeur bouton radio - ajout
 	$JQry("#formulaire-newField-list-editor-addOption").click(function() {

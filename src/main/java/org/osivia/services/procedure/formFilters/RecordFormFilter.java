@@ -1,21 +1,26 @@
 package org.osivia.services.procedure.formFilters;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.procedure.portlet.adapter.ProcedureJSONAdapter;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.portlet.model.UploadedFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
+import net.sf.json.JSONObject;
 
 
 /**
@@ -24,6 +29,14 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
  * @author Dorian Licois
  */
 public abstract class RecordFormFilter implements FormFilter {
+
+    /**
+     * Constructor.
+     */
+    public RecordFormFilter() {
+        super();
+    }
+
 
     /**
      * retrieves the PropertyList holding the references of the variables for a startingStep
@@ -45,25 +58,77 @@ public abstract class RecordFormFilter implements FormFilter {
         return null;
     }
 
-    /**
-     * Builds JSONArray for variables
-     *
-     * @param variables
-     * @return
-     * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonGenerationException
-     */
-    protected String generateVariablesJSON(Map<String, String> variables) throws JsonGenerationException, JsonMappingException, IOException {
 
-        Set<Map<String, String>> objects = new HashSet<>();
-        for (Entry<String, String> entry : variables.entrySet()) {
-            Map<String, String> object = new HashMap<>(2);
-            object.put("name", entry.getKey());
-            object.put("value", entry.getValue());
-            objects.add(object);
+    /**
+     * Get variables.
+     * 
+     * @param context form filter context
+     * @param globalVariablesReferences global variables
+     * @param uploadedFiles uploaded files
+     * @return variables
+     * @throws PortalException
+     */
+    protected Map<String, String> getVariables(FormFilterContext context, PropertyList globalVariablesReferences,
+            Map<String, UploadedFile> uploadedFiles) throws PortalException {
+        Map<String, String> variables = new HashMap<String, String>();
+
+        for (Object variableREfO : globalVariablesReferences.list()) {
+            PropertyMap variableREfM = (PropertyMap) variableREfO;
+            String variableName = variableREfM.getString("variableName");
+            variables.put(variableName, context.getVariables().get(variableName));
         }
 
-        return ProcedureJSONAdapter.getInstance().toJSON(objects);
+        if (MapUtils.isNotEmpty(uploadedFiles)) {
+            for (Entry<String, UploadedFile> entry : uploadedFiles.entrySet()) {
+                String variableName = entry.getKey();
+                UploadedFile uploadedFile = entry.getValue();
+
+                // Temporary file
+                File temporaryFile = uploadedFile.getTemporaryFile();
+
+                if (uploadedFile.isDeleted()) {
+                    variables.put(variableName, null);
+                } else if (temporaryFile != null) {
+                    // Digest
+                    String digest;
+                    try {
+                        digest = this.getDigest(temporaryFile);
+                    } catch (IOException e) {
+                        throw new PortalException(e);
+                    }
+
+                    JSONObject object = new JSONObject();
+                    object.put("digest", digest);
+                    object.put("fileName", uploadedFile.getTemporaryMetadata().getFileName());
+
+                    variables.put(variableName, object.toString());
+                }
+            }
+        }
+
+        return variables;
     }
+
+
+    /**
+     * Get file digest.
+     * 
+     * @param file file
+     * @return digest
+     * @throws IOException
+     */
+    protected String getDigest(File file) throws IOException {
+        String digest;
+
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            digest = DigestUtils.md5Hex(inputStream);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        return digest;
+    }
+
 }

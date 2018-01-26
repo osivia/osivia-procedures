@@ -3,7 +3,6 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
-<c:set var="editionMode" value="true" scope="request" />
 
 <portlet:defineObjects />
 
@@ -11,6 +10,10 @@
 
 <portlet:resourceURL id="fieldSearch" var="fieldSearchUrl" />
 
+
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+<c:set var="editionMode" value="true" scope="request" />
 
 
 <form:form modelAttribute="form" action="${editRecordUrl}" method="post" cssClass="form-horizontal" role="form">
@@ -407,5 +410,4 @@
     <input type="submit" class="hidden" name="updateForm">
     <input type="submit" class="hidden" name="updateDashboard">
     <input type="submit" class="hidden" name="selectField">
-
 </form:form>

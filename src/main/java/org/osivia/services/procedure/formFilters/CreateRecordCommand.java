@@ -1,52 +1,57 @@
 package org.osivia.services.procedure.formFilters;
 
+import java.util.Collection;
+
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import org.osivia.portal.api.portlet.model.UploadedFile;
 
 
 /**
+ * Create record Nuxeo command.
+ * 
  * @author Dorian Licois
+ * @see AbstractRecordCommand
  */
-public class CreateRecordCommand implements INuxeoCommand {
+public class CreateRecordCommand extends AbstractRecordCommand {
 
     /** RECORD */
     private static final String RECORD = "Record";
 
-    /** properties */
-    private PropertyMap properties;
 
-    /** parentRef */
-    private DocRef parentRef;
-
-    /** title */
-    private String title;
+    /**
+     * Constructor.
+     * 
+     * @param path parent document path
+     * @param properties properties
+     * @param uploadedFiles uploaded files
+     */
+    public CreateRecordCommand(String path, PropertyMap properties, Collection<UploadedFile> uploadedFiles) {
+        super(path, properties, uploadedFiles);
+    }
 
 
     /**
-     * @param parentRef
-     * @param properties
-     * @param title
+     * {@inheritDoc}
      */
-    public CreateRecordCommand(DocRef parentRef, PropertyMap properties, String title) {
-        this.parentRef = parentRef;
-        this.properties = properties;
-        this.title = title;
-    }
-
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
+        // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
-        return documentService.createDocument(parentRef, RECORD, title, properties, true);
-    }
+        // Parent document reference
+        DocRef ref = new DocRef(this.getPath());
 
-    @Override
-    public String getId() {
-        return "CreateRecordCommand/" + parentRef + "/" + properties + "/" + title;
+        // Create record document
+        Document document = documentService.createDocument(ref, RECORD, null, this.getProperties(), true);
+
+        // Update blobs
+        this.updateBlobs(documentService, document);
+
+        return document;
     }
 
 }

@@ -5,15 +5,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 
 /**
  * @author Dorian Licois
  */
 public class Record {
-
 
     /** procedureModelWebId */
     private String procedureModelWebId;
@@ -33,12 +39,21 @@ public class Record {
     /** modified */
     private Date modified;
 
-    /** originalDocument */
-    private Document originalDocument;
 
+    /** Original document. */
+    private final Document originalDocument;
+
+
+    /**
+     * Constructor.
+     * 
+     * @param document document
+     */
     public Record(Document document) {
+        super();
+        this.originalDocument = document;
+
         globalVariablesValues = new HashMap<String, String>();
-        setOriginalDocument(document);
         PropertyMap documentProperties = document.getProperties();
 
         // global variables
@@ -54,8 +69,47 @@ public class Record {
         setCreated(documentProperties.getDate("dc:created"));
         setLastContributor(documentProperties.getString("dc:lastContributor"));
         setModified(documentProperties.getDate("dc:modified"));
-
     }
+
+
+    /**
+     * Get variable JSON values.
+     * 
+     * @return JSON values
+     */
+    public Map<String, JSON> getJsonValues() {
+        Map<String, JSON> jsonValues;
+        if (MapUtils.isEmpty(this.globalVariablesValues)) {
+            jsonValues = null;
+        } else {
+            jsonValues = new HashMap<>(this.globalVariablesValues.size());
+
+            for (Entry<String, String> entry : this.globalVariablesValues.entrySet()) {
+                String name = entry.getKey();
+                String value = StringUtils.trim(entry.getValue());
+
+                JSON json;
+                try {
+                    if (StringUtils.startsWith(value, "[")) {
+                        json = JSONArray.fromObject(value);
+                    } else if (StringUtils.startsWith(value, "{")) {
+                        json = JSONObject.fromObject(value);
+                    } else {
+                        json = null;
+                    }
+                } catch (JSONException e) {
+                    json = null;
+                }
+
+                if (json != null) {
+                    jsonValues.put(name, json);
+                }
+            }
+        }
+
+        return jsonValues;
+    }
+
 
     /**
      * Getter for procedureModelWebId.
@@ -66,7 +120,6 @@ public class Record {
         return procedureModelWebId;
     }
 
-
     /**
      * Setter for procedureModelWebId.
      * 
@@ -75,7 +128,6 @@ public class Record {
     public void setProcedureModelWebId(String procedureModelWebId) {
         this.procedureModelWebId = procedureModelWebId;
     }
-
 
     /**
      * Getter for globalVariablesValues.
@@ -86,7 +138,6 @@ public class Record {
         return globalVariablesValues;
     }
 
-
     /**
      * Setter for globalVariablesValues.
      * 
@@ -95,7 +146,6 @@ public class Record {
     public void setGlobalVariablesValues(Map<String, String> globalVariablesValues) {
         this.globalVariablesValues = globalVariablesValues;
     }
-
 
     /**
      * Getter for creator.
@@ -106,7 +156,6 @@ public class Record {
         return creator;
     }
 
-
     /**
      * Setter for creator.
      * 
@@ -115,7 +164,6 @@ public class Record {
     public void setCreator(String creator) {
         this.creator = creator;
     }
-
 
     /**
      * Getter for created.
@@ -126,7 +174,6 @@ public class Record {
         return created;
     }
 
-
     /**
      * Setter for created.
      * 
@@ -135,7 +182,6 @@ public class Record {
     public void setCreated(Date created) {
         this.created = created;
     }
-
 
     /**
      * Getter for lastContributor.
@@ -146,7 +192,6 @@ public class Record {
         return lastContributor;
     }
 
-
     /**
      * Setter for lastContributor.
      * 
@@ -156,7 +201,6 @@ public class Record {
         this.lastContributor = lastContributor;
     }
 
-
     /**
      * Getter for modified.
      * 
@@ -165,7 +209,6 @@ public class Record {
     public Date getModified() {
         return modified;
     }
-
 
     /**
      * Setter for modified.
@@ -178,19 +221,11 @@ public class Record {
 
     /**
      * Getter for originalDocument.
+     * 
      * @return the originalDocument
      */
     public Document getOriginalDocument() {
         return originalDocument;
     }
-
-    /**
-     * Setter for originalDocument.
-     * @param originalDocument the originalDocument to set
-     */
-    public void setOriginalDocument(Document originalDocument) {
-        this.originalDocument = originalDocument;
-    }
-
 
 }

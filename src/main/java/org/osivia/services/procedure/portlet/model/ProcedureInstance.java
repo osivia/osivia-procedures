@@ -41,29 +41,25 @@ public class ProcedureInstance {
     /** url */
     private String url;
 
+
+
     public ProcedureInstance() {
-        globalVariablesValues = new HashMap<String, String>();
-        filesPath = new HashMap<String, FilePath>();
-        setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
-        procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
+        this.globalVariablesValues = new HashMap<>();
+        this.filesPath = new HashMap<>();
+        this.setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
+        this.procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
     }
 
     public ProcedureInstance(String currentStep) {
-        globalVariablesValues = new HashMap<String, String>();
-        filesPath = new HashMap<String, FilePath>();
-        setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
+        this();
         this.currentStep = currentStep;
-        procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
     }
 
     public ProcedureInstance(Document document) {
-        globalVariablesValues = new HashMap<String, String>();
-        filesPath = new HashMap<String, FilePath>();
-        procedureObjectInstances = new HashMap<String, ProcedureObjectInstance>();
-        setProcedureObjects(new HashMap<String, ProcedureObjectInstance>());
+        this();
         PropertyMap documentProperties = document.getProperties();
         setTaskDoc(documentProperties.getMap("pi:task"));
-        currentStep = documentProperties.getString("pi:currentStep");
+        this.currentStep = documentProperties.getString("pi:currentStep");
         setProcedureModelWebId(documentProperties.getString("pi:procedureModelWebId"));
         setOriginalDocument(document);
 
@@ -104,6 +100,7 @@ public class ProcedureInstance {
     }
     
     public ProcedureInstance(Map<String, String> variables) {
+        this();
         globalVariablesValues = variables;
     }
 
@@ -290,4 +287,5 @@ public class ProcedureInstance {
     public void setUrl(String url) {
         this.url = url;
     }
+
 }

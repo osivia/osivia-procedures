@@ -10,10 +10,12 @@
 
 <div class="row"> 
     <div class="col-md-8 col-lg-9">
-        <ul class="procedure-sortable list-unstyled form-horizontal">
+        <ul class="list-unstyled form-horizontal">
             <c:forEach var="field" items="${form.theCurrentStep.fields}" varStatus="status">
-            	<c:set var="field" value="${field}" scope="request" />
-				<jsp:include page="displayField.jsp" />
+                <c:if test="${not status.first or field.name ne '_title'}">
+                	<c:set var="field" value="${field}" scope="request" />
+    				<jsp:include page="displayField.jsp" />
+                </c:if>
             </c:forEach>
         </ul>
     </div>

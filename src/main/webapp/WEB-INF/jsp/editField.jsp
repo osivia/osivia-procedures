@@ -7,13 +7,14 @@
 <%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc"%>
 
 
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
 <li class="form-group <c:if test="${form.selectedField.path eq field.path}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>" id="${field.path}">
       <c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
       <c:set var="fieldNamePath" value="procedureInstance.globalVariablesValues['${field.name}']" />
       <c:set var="fieldValue" value="${form.procedureInstance.globalVariablesValues[field.name]}" />
       <c:set var="fieldVarOptions" value="${form.procedureModel.variables[field.name].varOptions}" />
-      <c:set var="downloadLink" value="${form.procedureInstance.filesPath[field.name].downloadLink}" />
-      <c:set var="fileName" value="${form.procedureInstance.filesPath[field.name].fileName}" />
 
       <c:choose>
           <c:when test="${field.input}">
@@ -249,6 +250,103 @@
                           </c:if>
                       </div>
                   </c:when>
+                  
+                  <c:when test="${fieldType eq 'FILE'}">
+                    <c:set var="path" value="uploadedFiles['${field.name}'].upload" />
+                    <c:set var="uploadedFile" value="${form.uploadedFiles[field.name]}" />
+                
+                    <form:label path="${path}" cssClass="col-sm-3 col-lg-2 control-label">${field.superLabel}</form:label>
+                    <div class="col-sm-9 col-lg-10">
+                        <div class="media-body">
+                            <p class="form-control-static">
+                                <c:choose>
+                                    <c:when test="${uploadedFile.deleted}">
+                                        <span class="text-muted"><op:translate key="DELETED_FILE" /></span>
+                                    </c:when>
+                                    
+                                    <c:when test="${not empty uploadedFile.temporaryMetadata.fileName}">
+                                        <i class="${uploadedFile.temporaryMetadata.icon}"></i>
+                                        <span>${uploadedFile.temporaryMetadata.fileName}</span>
+                                    </c:when>
+                                    
+                                    <c:when test="${not empty uploadedFile.originalMetadata}">
+                                        <i class="${uploadedFile.originalMetadata.icon}"></i>
+                                        <span>${uploadedFile.originalMetadata.fileName}</span>
+                                    </c:when>
+                                    
+                                    <c:otherwise>
+                                        <span class="text-muted"><op:translate key="NO_FILE" /></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </p>
+                        </div>
+                        
+                        <div class="media-right media-middle">
+                            <div class="text-nowrap">
+                                <!-- Upload -->
+                                <label class="btn btn-default btn-sm btn-file">
+                                    <i class="halflings halflings-folder-open"></i>
+                                    <span class="hidden-xs"><op:translate key="FILE_UPLOAD"/></span>
+                                    <input type="file" name="${path}" data-change-submit="${namespace}-upload-file">
+                                </label>
+                                
+                                <!-- Delete -->
+                                <button type="submit" name="delete-file" value="${field.name}" class="btn btn-default btn-sm" ${empty uploadedFile.originalMetadata and empty uploadedFile.temporaryMetadata ? 'disabled' : ''}>
+                                    <i class="halflings halflings-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </c:when>
+                
+                <c:when test="${fieldType eq 'PICTURE'}">
+                    <c:set var="path" value="uploadedFiles['${field.name}'].upload" />
+                    <c:set var="uploadedFile" value="${form.uploadedFiles[field.name]}" />
+                    <c:set var="imageErrorMessage"><op:translate key="IMAGE_ERROR_MESSAGE" /></c:set>
+                
+                    <form:label path="${path}" cssClass="col-sm-3 col-lg-2 control-label">${field.superLabel}</form:label>
+                    <div class="col-sm-9 col-lg-10">
+                        <div class="thumbnail no-margin-bottom text-center">
+                            <c:choose>
+                                <c:when test="${uploadedFile.deleted}">
+                                    <span class="text-muted"><op:translate key="DELETED_PICTURE" /></span>
+                                </c:when>
+                                
+                                <c:when test="${not empty uploadedFile.temporaryFile}">
+                                    <jsp:useBean id="currentDate" class="java.util.Date"/>
+                                    <portlet:resourceURL id="picture-preview" var="url">
+                                        <portlet:param name="variableName" value="${field.name}" />
+                                        <portlet:param name="ts" value="${currentDate.time}" />
+                                    </portlet:resourceURL>
+                                    
+                                    <img src="${url}" alt="${uploadedFile.temporaryMetadata.fileName}" data-error-message="${imageErrorMessage}">
+                                </c:when>
+                                
+                                <c:when test="${not empty uploadedFile.url}">
+                                    <img src="${uploadedFile.url}" alt="${uploadedFile.originalMetadata.fileName}" data-error-message="${imageErrorMessage}">
+                                </c:when>
+                                
+                                <c:otherwise>
+                                    <span class="text-muted"><op:translate key="NO_PICTURE" /></span>
+                                </c:otherwise>
+                            </c:choose>
+                            
+                            <div class="caption">
+                                <!-- Upload -->
+                                <label class="btn btn-default btn-sm btn-file">
+                                    <i class="halflings halflings-folder-open"></i>
+                                    <span><op:translate key="FILE_UPLOAD"/></span>
+                                    <input type="file" name="${path}" data-change-submit="${namespace}-upload-file">
+                                </label>
+                                
+                                <!-- Delete -->
+                                <button type="submit" name="delete-file" value="${field.name}" class="btn btn-default btn-sm" ${empty uploadedFile.originalMetadata and empty uploadedFile.temporaryMetadata ? 'disabled' : ''}>
+                                    <i class="halflings halflings-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </c:when>
 
                   <c:otherwise>
                       <p>error</p>
@@ -289,6 +387,34 @@
                   <c:when test="${fieldType eq 'PERSON'}">
                       <c:set var="fieldValue"><ttc:user name="${fieldValue}" linkable="false" /></c:set>
                   </c:when>
+                  
+                  <c:when test="${fieldType eq 'FILE'}">
+                    <c:set var="file" value="${form.uploadedFiles[field.name]}" />
+                                    
+                    <c:choose>
+                        <c:when test="${empty file}">
+                            <c:remove var="fieldValue" />
+                        </c:when>
+                        
+                        <c:otherwise>
+                            <c:set var="fieldValue"><i class="${file.originalMetadata.icon}"></i> <a href="${file.url}" target="_blank" class="no-ajax-link"><span>${file.originalMetadata.fileName}</span></a></c:set>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
+                
+                <c:when test="${fieldType eq 'PICTURE'}">
+                    <c:set var="file" value="${form.uploadedFiles[field.name]}" />
+                
+                    <c:choose>
+                        <c:when test="${empty file}">
+                            <c:remove var="fieldValue" />
+                        </c:when>
+                        
+                        <c:otherwise>
+                            <c:set var="fieldValue"><img src="${file.url}" alt="${file.originalMetadata.fileName}" class="img-responsive" data-error-message="${imageErrorMessage}"></c:set>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
               </c:choose>
           
               <label class="col-sm-3 col-lg-2 control-label">${field.superLabel}</label>
