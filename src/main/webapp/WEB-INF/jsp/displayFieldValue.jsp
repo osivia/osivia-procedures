@@ -144,7 +144,7 @@
             </c:when>
 
             <c:otherwise>
-                <a href="${file.url}" class="thumbnail no-margin-bottom" data-fancybox="gallery" data-caption="${file.originalMetadata.fileName}" data-type="image">
+                <a href="${file.url}" class="thumbnail no-margin-bottom no-ajax-link" data-fancybox="gallery" data-caption="${file.originalMetadata.fileName}" data-type="image">
                     <img src="${file.url}" alt="${file.originalMetadata.fileName}" data-error-message="${imageErrorMessage}">
                 </a>
             </c:otherwise>

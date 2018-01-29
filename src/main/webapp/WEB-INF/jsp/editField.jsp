@@ -306,7 +306,7 @@
                 
                     <form:label path="${path}" cssClass="col-sm-3 col-lg-2 control-label">${field.superLabel}</form:label>
                     <div class="col-sm-9 col-lg-10">
-                        <div class="thumbnail no-margin-bottom text-center">
+                        <div class="thumbnail thumbnail-edition no-margin-bottom text-center">
                             <c:choose>
                                 <c:when test="${uploadedFile.deleted}">
                                     <span class="text-muted"><op:translate key="DELETED_PICTURE" /></span>
