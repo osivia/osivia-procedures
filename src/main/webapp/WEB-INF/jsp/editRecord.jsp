@@ -364,7 +364,7 @@
                                 </div>
                                 <div class="col-sm-1 col-md-1 col-lg-1">
                                     <c:if test="${field.deletable}">
-                                        <button type="submit" name="deleteCol" class="btn btn-default pull-riht"
+                                        <button type="submit" name="deleteCol" class="btn btn-default pull-right"
                                             onclick="selector(this,'${status.index}','selectedCol')">
                                             <i class="glyphicons glyphicons-bin"></i>
                                         </button>

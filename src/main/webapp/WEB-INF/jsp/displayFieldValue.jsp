@@ -29,7 +29,7 @@
                 </thead>
     
                 <tbody>
-                    <c:forEach var="occurrence" items="${occurrences}">
+                    <c:forEach var="occurrence" items="${occurrences}" varStatus="status">
                         <tr>
                             <c:forEach var="nestedField" items="${fieldBkp.fields}">
                                 <td>
@@ -38,6 +38,7 @@
                                     <c:set var="fieldValue" value="${occurrence[nestedField.name]}" scope="request" />
                                     <c:set var="fieldJsonValue" value="${occurrence[nestedField.name]}" scope="request" />
                                     <c:set var="fieldLevel" value="${level + 1}" scope="request" />
+                                    <c:set var="rowIndex" value="${status.index}" scope="request" />
                                     <jsp:include page="displayFieldValue.jsp" />
                                 </td>
                             </c:forEach>
@@ -107,11 +108,15 @@
     </c:when>
 
     <c:when test="${fieldType eq 'FILE'}">
-        <c:set var="file" value="${form.uploadedFiles[field.name]}" />
+        <c:choose>
+            <c:when test="${empty rowIndex}"><c:set var="uploadedFileKey" value="${field.name}" /></c:when>
+            <c:otherwise><c:set var="uploadedFileKey" value="${field.name}|${rowIndex}" /></c:otherwise>
+        </c:choose>
+        <c:set var="file" value="${form.uploadedFiles[uploadedFileKey]}" />
 
         <c:choose>
             <c:when test="${empty file.url}">
-                <div class="${htmlClasses}"></div>
+                <div class="${htmlClasses}">${uploadedFileKey} : ${fieldValue}</div>
             </c:when>
 
             <c:otherwise>
@@ -126,12 +131,16 @@
     </c:when>
 
     <c:when test="${fieldType eq 'PICTURE'}">
-        <c:set var="file" value="${form.uploadedFiles[field.name]}" />
+        <c:choose>
+            <c:when test="${empty rowIndex}"><c:set var="uploadedFileKey" value="${field.name}" /></c:when>
+            <c:otherwise><c:set var="uploadedFileKey" value="${field.name}|${rowIndex}" /></c:otherwise>
+        </c:choose>
+        <c:set var="file" value="${form.uploadedFiles[uploadedFileKey]}" />
         <c:set var="imageErrorMessage"><op:translate key="IMAGE_ERROR_MESSAGE" /></c:set>
 
         <c:choose>
             <c:when test="${empty file.url}">
-                <div class="${htmlClasses}"></div>
+                <div class="${htmlClasses}">${uploadedFileKey} : ${fieldValue}</div>
             </c:when>
 
             <c:otherwise>

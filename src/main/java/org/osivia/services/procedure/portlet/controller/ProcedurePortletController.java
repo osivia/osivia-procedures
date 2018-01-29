@@ -1,6 +1,9 @@
 package org.osivia.services.procedure.portlet.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +30,9 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,6 +71,7 @@ import org.osivia.services.procedure.portlet.model.ProcedureInstance;
 import org.osivia.services.procedure.portlet.model.ProcedureModel;
 import org.osivia.services.procedure.portlet.model.ProcedureObject;
 import org.osivia.services.procedure.portlet.model.ProcedureRepository;
+import org.osivia.services.procedure.portlet.model.ProcedureUploadedFile;
 import org.osivia.services.procedure.portlet.model.Record;
 import org.osivia.services.procedure.portlet.model.Step;
 import org.osivia.services.procedure.portlet.model.Variable;
@@ -75,6 +81,7 @@ import org.osivia.services.procedure.portlet.service.IProcedureService;
 import org.osivia.services.procedure.portlet.util.ProcedureUtils;
 import org.osivia.services.procedure.portlet.util.VariableTypesEnumJsonSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -130,6 +137,10 @@ public class ProcedurePortletController extends CmsPortletController {
     /** VIEW_ERROR */
     private static final String VIEW_ERROR = "error";
 
+
+    /** Application context. */
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /** Portlet context. */
     @Autowired
@@ -1479,7 +1490,7 @@ public class ProcedurePortletController extends CmsPortletController {
 
     @ActionMapping(value = "actionProcedure", params = "addFieldInList")
     public void addFieldInList(ActionRequest request, ActionResponse response, @RequestParam("addFieldInList") String selectedFieldPath,
-            @ModelAttribute(value = "form") Form form) throws PortletException {
+            @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
 
         Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), selectedFieldPath);
 
@@ -1503,8 +1514,27 @@ public class ProcedurePortletController extends CmsPortletController {
             JSONObject jsonObject = new JSONObject();
             for (Field field : fields) {
                 String name = field.getName();
-                String value = globalVariablesValues.get(name);
-                jsonObject.accumulate(name, value);
+                String value;
+                if (VariableTypesAllEnum.FILE.equals(field.getType()) || VariableTypesAllEnum.PICTURE.equals(field.getType())) {
+                    ProcedureUploadedFile uploadedFile = form.getUploadedFiles().get(name);
+                    if (uploadedFile == null) {
+                        value = null;
+                    } else if (uploadedFile.isDeleted()) {
+                        value = null;
+                    } else if (uploadedFile.getTemporaryFile() != null) {
+                        JSONObject uploadedFileJsonValue = new JSONObject();
+                        uploadedFileJsonValue.put("digest", this.getDigest(uploadedFile.getTemporaryFile()));
+                        uploadedFileJsonValue.put("fileName", uploadedFile.getTemporaryMetadata().getFileName());
+                        value = uploadedFileJsonValue.toString();
+                    } else {
+                        value = jsonObject.optString(name);
+                    }
+                } else {
+                    value = globalVariablesValues.get(name);
+                }
+                if (value != null) {
+                    jsonObject.accumulate(name, value);
+                }
 
                 // reset field
                 globalVariablesValues.remove(name);
@@ -1593,6 +1623,16 @@ public class ProcedurePortletController extends CmsPortletController {
                 form.setSelectedListFieldRowIndex(rowIndex);
                 form.setSelectedListFieldPath(selectedFieldPath);
 
+                for (Field nestedField : listField.getFields()) {
+                    if (VariableTypesAllEnum.FILE.equals(nestedField.getType()) || VariableTypesAllEnum.PICTURE.equals(nestedField.getType())) {
+                        ProcedureUploadedFile uploadedFile = form.getUploadedFiles().get(nestedField.getName() + "|" + rowIndex);
+                        if (uploadedFile == null) {
+                            uploadedFile = this.applicationContext.getBean(ProcedureUploadedFile.class);
+                        }
+                        form.getUploadedFiles().put(nestedField.getName(), uploadedFile);
+                    }
+                }
+                
                 // Update record
                 Record record = form.getRecord();
                 if (record != null) {
@@ -1603,7 +1643,8 @@ public class ProcedurePortletController extends CmsPortletController {
     }
 
     @ActionMapping(value = "actionProcedure", params = "validateEditFieldInList")
-    public void validateEditFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+    public void validateEditFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
+            throws PortletException, IOException {
         String selectedFieldPath = form.getSelectedListFieldPath();
         String rowIndex = form.getSelectedListFieldRowIndex();
 
@@ -1626,8 +1667,27 @@ public class ProcedurePortletController extends CmsPortletController {
                 JSONObject jsonObject = new JSONObject();
                 for (Field field : fields) {
                     String name = field.getName();
-                    String value = globalVariablesValues.get(name);
-                    jsonObject.accumulate(name, value);
+                    String value;
+                    if (VariableTypesAllEnum.FILE.equals(field.getType()) || VariableTypesAllEnum.PICTURE.equals(field.getType())) {
+                        ProcedureUploadedFile uploadedFile = form.getUploadedFiles().get(name);
+                        if (uploadedFile == null) {
+                            value = null;
+                        } else if (uploadedFile.isDeleted()) {
+                            value = null;
+                        } else if (uploadedFile.getTemporaryFile() != null) {
+                            JSONObject uploadedFileJsonValue = new JSONObject();
+                            uploadedFileJsonValue.put("digest", this.getDigest(uploadedFile.getTemporaryFile()));
+                            uploadedFileJsonValue.put("fileName", uploadedFile.getTemporaryMetadata().getFileName());
+                            value = uploadedFileJsonValue.toString();
+                        } else {
+                            value = jsonObject.optString(name);
+                        }
+                    } else {
+                        value = globalVariablesValues.get(name);
+                    }
+                    if (value != null) {
+                        jsonObject.accumulate(name, value);
+                    }
 
                     // reset field
                     globalVariablesValues.remove(name);
@@ -1640,9 +1700,31 @@ public class ProcedurePortletController extends CmsPortletController {
         }
     }
 
+
+    /**
+     * Get file digest.
+     * 
+     * @param file file
+     * @return digest
+     * @throws IOException
+     */
+    private String getDigest(File file) throws IOException {
+        String digest;
+
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            digest = DigestUtils.md5Hex(inputStream);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        return digest;
+    }
+
+
     @ActionMapping(value = "actionProcedure", params = "cancelEditFieldInList")
     public void cancelEditFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
-
         if (StringUtils.isNotBlank(form.getSelectedListFieldPath()) && StringUtils.isNotBlank(form.getSelectedListFieldRowIndex())) {
             Field listField = ProcedureUtils.getFieldByFieldPath(form.getTheSelectedStep().getFields(), form.getSelectedListFieldPath());
             Map<String, String> globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
@@ -2016,7 +2098,7 @@ public class ProcedurePortletController extends CmsPortletController {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.procedureService.deleteFile(portalControllerContext, variableName, form);
+        this.procedureService.deleteFile(portalControllerContext, form, variableName);
     }
 
 

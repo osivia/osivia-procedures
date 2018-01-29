@@ -201,12 +201,12 @@ public interface IProcedureService {
      * Delete file.
      * 
      * @param portalControllerContext portal controller context
-     * @param variableName variable name
      * @param form form
+     * @param variableName variable name
      * @throws PortletException
      * @throws IOException
      */
-    void deleteFile(PortalControllerContext portalControllerContext, String variableName, Form form) throws PortletException, IOException;
+    void deleteFile(PortalControllerContext portalControllerContext, Form form, String variableName) throws PortletException, IOException;
 
 
     /**

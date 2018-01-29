@@ -30,7 +30,7 @@
 
                     <c:when test="${fieldType eq 'FIELDLIST'}">
                         <c:set var="fieldBkp" value="${field}" scope="page" />
-                        <c:set var="occurrences" value="${form.record.jsonValues[fieldBkp.name]}" scope="page" />
+                        <c:set var="occurrences" value="${form.procedureInstance.jsonValues[fieldBkp.name]}" scope="page" />
 
                         <div class="panel panel-default no-margin-bottom list-field">
                             <c:if test="${not empty fieldBkp.helpText}">
@@ -59,6 +59,7 @@
                                                     <c:set var="fieldValue" value="${occurrence[nestedField.name]}" scope="request" />
                                                     <c:set var="fieldJsonValue" value="${occurrence[nestedField.name]}" scope="request" />
                                                     <c:set var="fieldLevel" value="2" scope="request" />
+                                                    <c:set var="rowIndex" value="${status.index}" scope="request" />
                                                     <jsp:include page="displayFieldValue.jsp" />
                                                 </td>
                                             </c:forEach>
@@ -87,7 +88,7 @@
 
                             <div class="panel-body">
                                 <ul class="list-unstyled ${editionMode ? 'procedure-sortable' : ''}">
-                                    <c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
+                                    <c:forEach var="nestedField" items="${fieldBkp.fields}">
                                         <c:set var="field" value="${nestedField}" scope="request" />
                                         <jsp:include page="editFields.jsp" />
                                     </c:forEach>
@@ -97,12 +98,12 @@
                                     <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
                                         <c:choose>
                                             <c:when test="${form.selectedListFieldPath eq fieldBkp.path}">
-                                                <button type="submit" name="cancelEditFieldInList" class="btn btn-default">
-                                                    <op:translate key="CANCEL" />
-                                                </button>
-
                                                 <button type="submit" name="validateEditFieldInList" value="${fieldBkp.path}|${status.index}" class="btn btn-primary">
                                                     <op:translate key="VALIDATE" />
+                                                </button>
+                                            
+                                                <button type="submit" name="cancelEditFieldInList" class="btn btn-default">
+                                                    <op:translate key="CANCEL" />
                                                 </button>
                                             </c:when>
 

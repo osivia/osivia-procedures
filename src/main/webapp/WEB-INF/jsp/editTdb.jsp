@@ -13,6 +13,10 @@
 <portlet:actionURL name="editTdb" var="editTdbUrl">
 </portlet:actionURL>
 
+
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">
@@ -97,7 +101,7 @@
                        <c:if test="${not column.enableLink}"><i class="halflings halflings-remove"></i></c:if>
                    </td>
 		           <td>   
-		              <button type="submit" name="deleteCol" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedCol')">
+		              <button type="button" onclick="selector(this,'${status.index}','selectedCol'); $JQry('#${namespace}-delete-col').click();" class="btn btn-default pull-right">
                           <i class="glyphicons glyphicons-bin"></i>
                       </button>
                       <input type="hidden" name="theSelectedTdb.columns[${status.index}].index" value="${status.index}">
@@ -114,6 +118,7 @@
 		    </tr>
         </tbody>
     </table>
+    <input id="${namespace}-delete-col" type="submit" name="deleteCol" class="hidden">
     
     <h3><op:translate key="DASHBOARDS_EXPORT" /></h3>
     
@@ -125,7 +130,7 @@
                 <tr class="procedure-export">
 	                <td>${exportVar}</td>
 	                <td>   
-	                   <button type="submit" name="deleteExportVar" class="btn btn-default pull-riht" onclick="selector(this,'${status.index}','selectedExportVar')">
+	                   <button type="button" onclick="selector(this,'${status.index}','selectedExportVar'); $JQry('#${namespace}-delete-export-var').click();" class="btn btn-default pull-right">
 	                       <i class="glyphicons glyphicons-bin"></i>
 	                   </button>
 	                </td>
@@ -138,6 +143,7 @@
             </tr>
         </tbody>
     </table>
+    <input id="${namespace}-delete-export-var" type="submit" name="deleteExportVar" class="hidden">
 	    
     <button type="submit" class="btn btn-default" name="cancelTdb"><op:translate key="CANCEL" /></button>
     <button type="submit" class="btn btn-primary" name="saveTdb"><op:translate key="SAVE_DASHBOARD" /></button>

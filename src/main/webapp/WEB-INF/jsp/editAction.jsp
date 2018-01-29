@@ -8,6 +8,8 @@
 <portlet:actionURL name="editAction" var="editActionUrl">
 </portlet:actionURL>
 
+<c:set var="namespace"><portlet:namespace /></c:set>
+
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">
@@ -88,9 +90,10 @@
 	                                <c:if test="${not empty filtre.descriptionKey}">
 		                                <op:translate key="${filtre.descriptionKey}" classLoader="${filtre.class.classLoader}"/>
 	                                </c:if>
-	                                <button type="submit" name="addFilter" class="btn btn-default pull-right" onclick="selector(this,'${filtre.id}','selectedFilterId');" >
+	                                <button type="button" class="btn btn-default pull-right" onclick="selector(this,'${filtre.id}','selectedFilterId'); $JQry('#${namespace}-add-filter').click()" >
 	                                    <i class="glyphicons glyphicons-plus"></i>
 	                                </button>
+                                    <input id="${namespace}-add-filter" type="submit" name="addFilter" class="hidden">
 	                            </div>
 	                        </div>
 	                    </c:forEach>

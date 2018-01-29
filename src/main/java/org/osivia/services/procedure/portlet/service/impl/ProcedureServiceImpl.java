@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -599,9 +600,6 @@ public class ProcedureServiceImpl implements IProcedureService {
         }
 
         if (document != null) {
-            // Path
-            String path = document.getPath();
-
             // Variables
             Map<String, String> variables;
             if (record != null) {
@@ -615,8 +613,6 @@ public class ProcedureServiceImpl implements IProcedureService {
             // Files
             PropertyList files = document.getProperties().getList("files:files");
 
-
-
             // Fields
             List<Field> fields = form.getTheCurrentStep().getFields();
 
@@ -625,68 +621,143 @@ public class ProcedureServiceImpl implements IProcedureService {
                 Map<String, ProcedureUploadedFile> uploadedFiles = new HashMap<>();
 
                 for (Field field : fields) {
-                    if (VariableTypesAllEnum.FILE.equals(field.getType()) || VariableTypesAllEnum.PICTURE.equals(field.getType())) {
-                        String name = field.getName();
-                        String value = variables.get(name);
-
-                        // JSON value
-                        JSONObject jsonValue;
-                        if (StringUtils.isEmpty(value)) {
-                            jsonValue = null;
-                        } else {
-                            try {
-                                jsonValue = JSONObject.fromObject(value);
-                            } catch (JSONException e) {
-                                jsonValue = null;
-                            }
-                        }
-
-                        if (jsonValue != null) {
-                            String fileName = jsonValue.getString("fileName");
-                            String digest = jsonValue.getString("digest");
-
-                            PropertyMap file = null;
-                            int index = 0;
-                            while ((file == null) && (index < files.size())) {
-                                PropertyMap map = files.getMap(index).getMap("file");
-                                if (StringUtils.equals(map.getString("name"), fileName) && StringUtils.equals(map.getString("digest"), digest)) {
-                                    file = map;
-                                } else {
-                                    index++;
-                                }
-                            }
-
-                            if (file != null) {
-                                // URL
-                                String url = nuxeoController.createAttachedFileLink(path, String.valueOf(index));
-                                // MIME type
-                                MimeType mimeType;
-                                try {
-                                    mimeType = new MimeType(file.getString("mime-type"));
-                                } catch (Exception e) {
-                                    mimeType = null;
-                                }
-                                // Type icon
-                                String icon = this.documentDao.getIcon(mimeType);
-
-                                ProcedureUploadedFile uploadedFile = this.applicationContext.getBean(ProcedureUploadedFile.class);
-                                uploadedFile.setUrl(url);
-                                uploadedFile.setIndex(index);
-                                ProcedureUploadedFileMetadata metadata = this.applicationContext.getBean(ProcedureUploadedFileMetadata.class);
-                                metadata.setFileName(fileName);
-                                metadata.setMimeType(mimeType);
-                                metadata.setIcon(icon);
-                                uploadedFile.setOriginalMetadata(metadata);
-
-                                uploadedFiles.put(name, uploadedFile);
-                            }
-                        }
+                    String value = variables.get(field.getName());
+                    if (StringUtils.isNotEmpty(value)) {
+                        updateFieldFile(nuxeoController, document, files, uploadedFiles, field, null, value);
                     }
                 }
 
                 form.getUploadedFiles().putAll(uploadedFiles);
             }
         }
+    }
+
+
+    /**
+     * Update field file.
+     * 
+     * @param nuxeoController Nuxeo controller
+     * @param document Nuxeo document
+     * @param files files
+     * @param uploadedFiles uploaded files
+     * @param field field
+     * @param index row index
+     * @param value row value
+     */
+    private void updateFieldFile(NuxeoController nuxeoController, Document document, PropertyList files, Map<String, ProcedureUploadedFile> uploadedFiles,
+            Field field, Integer index, String value) {
+        if (VariableTypesAllEnum.FILE.equals(field.getType()) || VariableTypesAllEnum.PICTURE.equals(field.getType())) {
+            // JSON value
+            JSONObject jsonValue;
+            if (StringUtils.isEmpty(value)) {
+                jsonValue = null;
+            } else {
+                try {
+                    jsonValue = JSONObject.fromObject(value);
+                } catch (JSONException e) {
+                    jsonValue = null;
+                }
+            }
+
+            if ((jsonValue != null) && !jsonValue.isNullObject()) {
+                // Uploaded file
+                ProcedureUploadedFile uploadedFile = jsonObjectToFile(nuxeoController, document, files, jsonValue);
+                if (uploadedFile != null) {
+                    String uploadedFileKey = field.getName();
+                    if (index != null) {
+                        uploadedFileKey += "|" + index;
+                    }
+                    uploadedFiles.put(uploadedFileKey, uploadedFile);
+                }
+            }
+        } else if (VariableTypesAllEnum.FIELDLIST.equals(field.getType())) {
+            // JSON array
+            JSONArray jsonArray;
+            if (StringUtils.isEmpty(value)) {
+                jsonArray = null;
+            } else {
+                try {
+                    jsonArray = JSONArray.fromObject(value);
+                } catch (JSONException e) {
+                    jsonArray = null;
+                }
+            }
+
+            if ((jsonArray != null) && !jsonArray.isEmpty()) {
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    // JSON object
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                    for (Field nestedField : field.getFields()) {
+                        if (jsonObject.has(nestedField.getName())) {
+                            String nestedValue = jsonObject.getString(nestedField.getName());
+                            if (StringUtils.isNotEmpty(nestedValue)) {
+                                this.updateFieldFile(nuxeoController, document, files, uploadedFiles, nestedField, i, nestedValue);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Transform JSON object to uploaded file.
+     * 
+     * @param nuxeoController Nuxeo controller
+     * @param document Nuxeo document
+     * @param files
+     * @param fieldName
+     * @param uploadedFiles
+     * @param jsonObject
+     */
+    private ProcedureUploadedFile jsonObjectToFile(NuxeoController nuxeoController, Document document, PropertyList files, JSONObject jsonObject) {
+        String fileName = jsonObject.getString("fileName");
+        String digest = jsonObject.getString("digest");
+
+        PropertyMap file = null;
+        int index = 0;
+        while ((file == null) && (index < files.size())) {
+            PropertyMap map = files.getMap(index).getMap("file");
+            if (StringUtils.equals(map.getString("name"), fileName) && StringUtils.equals(map.getString("digest"), digest)) {
+                file = map;
+            } else {
+                index++;
+            }
+        }
+
+
+        // Uploaded file
+        ProcedureUploadedFile uploadedFile;
+
+        if (file == null) {
+            uploadedFile = null;
+        } else {
+            // URL
+            String url = nuxeoController.createAttachedFileLink(document.getPath(), String.valueOf(index));
+            // MIME type
+            MimeType mimeType;
+            try {
+                mimeType = new MimeType(file.getString("mime-type"));
+            } catch (Exception e) {
+                mimeType = null;
+            }
+            // Type icon
+            String icon = this.documentDao.getIcon(mimeType);
+
+            uploadedFile = this.applicationContext.getBean(ProcedureUploadedFile.class);
+            uploadedFile.setUrl(url);
+            uploadedFile.setIndex(index);
+
+            ProcedureUploadedFileMetadata metadata = this.applicationContext.getBean(ProcedureUploadedFileMetadata.class);
+            metadata.setFileName(fileName);
+            metadata.setMimeType(mimeType);
+            metadata.setIcon(icon);
+            uploadedFile.setOriginalMetadata(metadata);
+        }
+
+        return uploadedFile;
     }
 
 
@@ -805,10 +876,11 @@ public class ProcedureServiceImpl implements IProcedureService {
         // Uploaded files
         Map<String, ProcedureUploadedFile> uploadedFiles = form.getUploadedFiles();
 
-        for (ProcedureUploadedFile uploadedFile : uploadedFiles.values()) {
-            MultipartFile multipartFile = uploadedFile.getUpload();
+        for (Entry<String, ProcedureUploadedFile> entry : uploadedFiles.entrySet()) {
+            ProcedureUploadedFile uploadedFile = entry.getValue();
 
-            if (!multipartFile.isEmpty()) {
+            MultipartFile multipartFile = uploadedFile.getUpload();
+            if ((multipartFile != null) && !multipartFile.isEmpty()) {
                 // Temporary file
                 File temporaryFile = uploadedFile.getTemporaryFile();
                 if (temporaryFile != null) {
@@ -848,12 +920,19 @@ public class ProcedureServiceImpl implements IProcedureService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteFile(PortalControllerContext portalControllerContext, String variableName, Form form) throws PortletException, IOException {
+    public void deleteFile(PortalControllerContext portalControllerContext, Form form, String variableName) throws PortletException, IOException {
         // Uploaded files
         Map<String, ProcedureUploadedFile> uploadedFiles = form.getUploadedFiles();
 
+        // Selected row index
+        String rowIndex = form.getSelectedListFieldRowIndex();
+
         // Uploaded file
-        ProcedureUploadedFile uploadedFile = uploadedFiles.get(variableName);
+        String uploadedFileKey = variableName;
+        if (StringUtils.isNotEmpty(rowIndex)) {
+            uploadedFileKey += "|" + rowIndex;
+        }
+        ProcedureUploadedFile uploadedFile = uploadedFiles.get(uploadedFileKey);
 
         if (uploadedFile != null) {
             // Temporary file
@@ -872,6 +951,9 @@ public class ProcedureServiceImpl implements IProcedureService {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void picturePreview(PortalControllerContext portalControllerContext, Form form, String variableName) throws PortletException, IOException {
         // Resource response
@@ -883,31 +965,37 @@ public class ProcedureServiceImpl implements IProcedureService {
         // Uploaded file
         ProcedureUploadedFile uploadedFile = uploadedFiles.get(variableName);
 
-        // Temporary file
-        File temporaryFile = uploadedFile.getTemporaryFile();
-
-        // Upload size
-        Long size = new Long(temporaryFile.length());
-        response.setContentLength(size.intValue());
-
-        // Content type
-        String contentType = response.getContentType();
-        response.setContentType(contentType);
-
-        // Character encoding
-        response.setCharacterEncoding(CharEncoding.UTF_8);
-
-        // No cache
-        response.getCacheControl().setExpirationTime(0);
-
-
-        // Input steam
-        InputStream inputSteam = new FileInputStream(temporaryFile);
         // Output stream
         OutputStream outputStream = response.getPortletOutputStream();
-        // Copy
-        IOUtils.copy(inputSteam, outputStream);
-        outputStream.close();
+
+        if (uploadedFile != null) {
+            // Temporary file
+            File temporaryFile = uploadedFile.getTemporaryFile();
+
+            // Upload size
+            Long size = new Long(temporaryFile.length());
+            response.setContentLength(size.intValue());
+
+            // Content type
+            String contentType = response.getContentType();
+            response.setContentType(contentType);
+
+            // Character encoding
+            response.setCharacterEncoding(CharEncoding.UTF_8);
+
+            // No cache
+            response.getCacheControl().setExpirationTime(0);
+
+
+            // Input steam
+            InputStream inputSteam = new FileInputStream(temporaryFile);
+
+            // Copy
+            IOUtils.copy(inputSteam, outputStream);
+            IOUtils.closeQuietly(inputSteam);
+        }
+
+        IOUtils.closeQuietly(outputStream);
     }
 
 }

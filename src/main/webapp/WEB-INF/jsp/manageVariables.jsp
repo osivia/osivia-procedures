@@ -8,6 +8,10 @@
 <portlet:actionURL name="manageVariables" var="manageVariablesUrl">
 </portlet:actionURL>
 
+
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">
@@ -77,11 +81,11 @@
 		 					<div class="col-sm-3"><op:translate key="${variable.type}" /></div>
 		 					<div class="col-sm-3">
 			 					<div class="pull-right">
-			 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.name}','selectedVar')" name="selectVariable">
+			 						<button type="button" onclick="selector(this,'${variable.name}','selectedVar'); $JQry('#${namespace}-select-variable').click();" class="btn btn-default">
 			 							<i class="glyphicons glyphicons-edit"></i>
 			 						</button>
 			 						<c:if test="${empty variable.usedInFields}">
-				 						<button type="submit" class="btn btn-default" onclick="selector(this,'${variable.name}','selectedVar')" name="deleteVariable">
+				 						<button type="button" onclick="selector(this,'${variable.name}','selectedVar'); $JQry('#${namespace}-delete-variable').click();" class="btn btn-default">
 				 							<i class="glyphicons glyphicons-bin"></i>
 				 						</button>
 			 						</c:if>
@@ -96,6 +100,8 @@
 						</div>
 				    </c:if>
 				</c:forEach>
+                <input id="${namespace}-select-variable" type="submit" name="selectVariable" class="hidden">
+                <input id="${namespace}-delete-variable" type="submit" name="deleteVariable" class="hidden">
 			</div>
 		</div>
 	</div>

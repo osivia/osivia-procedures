@@ -27,6 +27,10 @@
 <portlet:actionURL name="editStep" var="editStepUrl">
 </portlet:actionURL>
 
+
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
 <div class="content-navbar">
     <!-- Breadcrumb -->
     <div class="content-navbar-breadcrumb">
@@ -457,19 +461,21 @@
                       </c:if>
                       
                       <div class="btn-group col-sm-2">
-                          <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
+                          <button type="button" onclick="selector(this,'${status.index}','selectedButton'); $JQry('#${namespace}-edit-button').click();" class="btn btn-default">
                               <i class="glyphicons glyphicons-edit"></i>
                           </button>
-                          <button type="submit" name="deleteButton" class="btn btn-default" onclick="selector(this,'${status.index}','selectedButton')">
+                          <button type="button" onclick="selector(this,'${status.index}','selectedButton'); $JQry('#${namespace}-delete-button').click();" class="btn btn-default">
                               <i class="glyphicons glyphicons-bin"></i>
                           </button>
                       </div>
                   </li>
               </c:forEach>
           </ul>
+          <input id="${namespace}-edit-button" type="submit" name="editButton" class="hidden">
+          <input id="${namespace}-delete-button" type="submit" name="deleteButton" class="hidden">          
 	          
           <button type="submit" name="addButton" class="btn btn-default"><op:translate key="STEP_ADD_ACTION" /></button>
-          <button type="submit" name="editButton" class="btn btn-default" onclick="selector(this,'-1','selectedButton')">
+          <button type="button" onclick="selector(this,'-1','selectedButton'); $JQry('#${namespace}-edit-button').click();" class="btn btn-default">
         	</i><op:translate key="STEP_EDIT_INIT_ACTION" />
           </button>
 	    </div>

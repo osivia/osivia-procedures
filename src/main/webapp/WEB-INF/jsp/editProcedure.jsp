@@ -8,6 +8,9 @@
 <portlet:actionURL name="editProcedure" var="editProcedureUrl">
 </portlet:actionURL>
 
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
 <c:if test="${!form.advancedMode}">
 	<portlet:resourceURL id="stepSearch" var="stepSearchUrl" ></portlet:resourceURL>
 </c:if>
@@ -88,7 +91,7 @@
                     <li class="form-group">
                         <div class="col-sm-10">${step.stepName}</div>
                         <div class="btn-group col-sm-2">
-                            <button type="submit" name="editStep" onclick="selector(this,'${status.index}','selectedStep')" class="btn btn-default pull-riht">
+                            <button type="button" onclick="selector(this,'${status.index}','selectedStep'); $JQry('#${namespace}-edit-step').click();" class="btn btn-default pull-right">
                                 <i class="glyphicons glyphicons-edit"></i>
                             </button>
                         </div>
@@ -96,6 +99,7 @@
                     </li>
                 </c:forEach>
             </ul>
+            <input id="${namespace}-edit-step" type="submit" name="editStep" class="hidden">
         </div>
         <div class="panel-footer">
             <div class="form-group">
@@ -140,13 +144,14 @@
                                 </form:select>
                             </div>
                             <div class="btn-group col-sm-1">
-                                <button type="submit" name="deleteObject" class="btn btn-default" onclick="selector(this,'${status.index}','selectedObject')">
+                                <button type="button" onclick="selector(this,'${status.index}','selectedObject'); $JQry('#${namespace}-delete-object').click();" class="btn btn-default">
                                     <i class="glyphicons glyphicons-bin"></i>
                                 </button>
                             </div>
                          </li>
                     </c:forEach>
                 </ul>
+                <input id="${namespace}-delete-object" type="submit" name="deleteObject" class="hidden">
             </div>
             <div class="panel-footer">
                 <div class="form-group">
@@ -198,13 +203,14 @@
 	                     <div class="col-sm-5">${dashboard.name}</div>
 	                     <div class="col-sm-5">${dashboard.groupsString}</div>
 	                     <div class="btn-group col-sm-2">
-	                         <button type="submit" name="editTdb" onclick="selector(this,'${status.index}','selectedTdb')" class="btn btn-default pull-riht">
+	                         <button type="button" onclick="selector(this,'${status.index}','selectedTdb'); $JQry('#${namespace}-edit-tdb').click();" class="btn btn-default pull-right">
 	                             <i class="glyphicons glyphicons-edit"></i>
 	                         </button>
 	                     </div>
 	                 </li>
                 </c:forEach>
             </ul>
+            <input id="${namespace}-edit-tdb" type="submit" name="editTdb" class="hidden">
         </div>
         <div class="panel-footer">
             <div class="form-group">

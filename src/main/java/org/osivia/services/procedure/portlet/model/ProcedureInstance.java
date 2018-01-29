@@ -4,9 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 
 /**
@@ -103,6 +110,46 @@ public class ProcedureInstance {
         this();
         globalVariablesValues = variables;
     }
+
+
+    /**
+     * Get variable JSON values.
+     * 
+     * @return JSON values
+     */
+    public Map<String, JSON> getJsonValues() {
+        Map<String, JSON> jsonValues;
+        if (MapUtils.isEmpty(this.globalVariablesValues)) {
+            jsonValues = null;
+        } else {
+            jsonValues = new HashMap<>(this.globalVariablesValues.size());
+
+            for (Entry<String, String> entry : this.globalVariablesValues.entrySet()) {
+                String name = entry.getKey();
+                String value = StringUtils.trim(entry.getValue());
+
+                JSON json;
+                try {
+                    if (StringUtils.startsWith(value, "[")) {
+                        json = JSONArray.fromObject(value);
+                    } else if (StringUtils.startsWith(value, "{")) {
+                        json = JSONObject.fromObject(value);
+                    } else {
+                        json = null;
+                    }
+                } catch (JSONException e) {
+                    json = null;
+                }
+
+                if (json != null) {
+                    jsonValues.put(name, json);
+                }
+            }
+        }
+
+        return jsonValues;
+    }
+
 
     /**
      * Getter for globalVariablesValues.
