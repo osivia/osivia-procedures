@@ -75,7 +75,7 @@ public class ProcedurePortletConfiguration extends CmsPortletConfiguration {
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(2 * FileUtils.ONE_MB);
+        multipartResolver.setMaxUploadSizePerFile(10 * FileUtils.ONE_MB);
         return multipartResolver;
     }
 

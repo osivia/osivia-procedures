@@ -8,13 +8,11 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.procedure.portlet.command.RetrieveDocumentByWebIdCommand;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 /**
@@ -151,10 +149,10 @@ public class ProcedureModel {
             }
         }
 
-        if (StringUtils.isNotBlank(getWebIdParent())) {
-            INuxeoCommand command = new RetrieveDocumentByWebIdCommand(getWebIdParent());
-            Document documentParent = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            ProcedureModel procedureParent = new ProcedureModel(documentParent, nuxeoController);
+        if (StringUtils.isNotBlank(this.webIdParent)) {
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(this.webIdParent);
+            Document denormalizedDocument = documentContext.getDenormalizedDocument();
+            ProcedureModel procedureParent = new ProcedureModel(denormalizedDocument, nuxeoController);
             setProcedureParent(procedureParent);
         }
     }

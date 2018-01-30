@@ -50,7 +50,6 @@ import org.osivia.services.procedure.portlet.command.ListRecordTypesCommand;
 import org.osivia.services.procedure.portlet.command.ListRecordsCommand;
 import org.osivia.services.procedure.portlet.command.LoadVocabularyCommand;
 import org.osivia.services.procedure.portlet.command.RetrieveDocumentByIdCommand;
-import org.osivia.services.procedure.portlet.command.RetrieveDocumentByWebIdCommand;
 import org.osivia.services.procedure.portlet.command.RetrieveProcedureByStepNameCommand;
 import org.osivia.services.procedure.portlet.command.UpdateDocumentCommand;
 import org.osivia.services.procedure.portlet.controller.ProcedurePortletAdminController;
@@ -186,16 +185,17 @@ public class ProcedureServiceImpl implements IProcedureService {
      */
     @Override
     public ProcedureModel updateProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException, WebIdException {
-        INuxeoCommand command;
+        ProcedureModel model;
+        
         try {
-            command = new RetrieveDocumentByWebIdCommand(procedureModel.getCurrentWebId());
-            final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            command = new UpdateDocumentCommand(currentDocument, buildProperties(nuxeoController.getPortalCtx(), procedureModel));
+            String webId = procedureModel.getCurrentWebId();
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(webId);
+            Document denormalizedDocument = documentContext.getDenormalizedDocument();
+            INuxeoCommand command = new UpdateDocumentCommand(denormalizedDocument, buildProperties(nuxeoController.getPortalCtx(), procedureModel));
 
-            final Document procedureModelInstance = (Document) nuxeoController.executeNuxeoCommand(command);
+            Document procedureModelInstance = (Document) nuxeoController.executeNuxeoCommand(command);
 
-            return new ProcedureModel(procedureModelInstance, nuxeoController);
-
+            model = new ProcedureModel(procedureModelInstance, nuxeoController);
         } catch (final NuxeoException e) {
             String errorMessage = ExceptionUtils.getRootCauseMessage(e);
             if (errorMessage != null && WEBID_ERROR.matcher(errorMessage).matches()) {
@@ -207,6 +207,8 @@ public class ProcedureServiceImpl implements IProcedureService {
         } catch (final Exception e) {
             throw new PortletException(e);
         }
+        
+        return model;
     }
 
 
@@ -251,12 +253,11 @@ public class ProcedureServiceImpl implements IProcedureService {
      */
     @Override
     public void deleteProcedure(NuxeoController nuxeoController, ProcedureModel procedureModel) throws PortletException {
-
-        INuxeoCommand command;
         try {
-            command = new RetrieveDocumentByWebIdCommand(procedureModel.getCurrentWebId());
-            final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            command = new DeleteDocumentCommand(currentDocument);
+            String webId = procedureModel.getCurrentWebId();
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(webId);
+            Document currentDocument = documentContext.getDenormalizedDocument();
+            INuxeoCommand command = new DeleteDocumentCommand(currentDocument);
             nuxeoController.executeNuxeoCommand(command);
         } catch (final Exception e) {
             throw new PortletException(e);
@@ -269,28 +270,26 @@ public class ProcedureServiceImpl implements IProcedureService {
      */
     @Override
     public ProcedureInstance retrieveProcedureInstanceByWebId(NuxeoController nuxeoController, String webId) throws PortletException {
+        ProcedureInstance procedureInstance;
 
-        INuxeoCommand command;
-        ProcedureInstance procedureInstance = null;
+        int savedAuthType = nuxeoController.getAuthType();
+        int savedCacheType = nuxeoController.getCacheType();
+
         try {
-            command = new RetrieveDocumentByWebIdCommand(webId);
-            
-            int authType = nuxeoController.getAuthType();
-            int cacheType = nuxeoController.getCacheType();
-
             nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-            nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+            nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
-            final Document currentDocument = ((Documents) nuxeoController.executeNuxeoCommand(command)).get(0);
-            procedureInstance = new ProcedureInstance(currentDocument);
-            
-            nuxeoController.setAuthType(authType);
-            nuxeoController.setCacheType(cacheType);
-        
-            
-        } catch (final Exception e) {
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(webId);
+            Document denormalizedDocument = documentContext.getDenormalizedDocument();
+
+            procedureInstance = new ProcedureInstance(denormalizedDocument);
+        } catch (Exception e) {
             throw new PortletException(e);
+        } finally {
+            nuxeoController.setAuthType(savedAuthType);
+            nuxeoController.setCacheType(savedCacheType);
         }
+
         return procedureInstance;
     }
 

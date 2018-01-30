@@ -96,7 +96,7 @@ public class ProcedureMenubarModule implements MenubarModule {
                 windowProperties.put("osivia.ajaxLink", "1");
                 windowProperties.put("osivia.procedure.admin", "adminrecord");
                 windowProperties.put("osivia.services.procedure.webid", webId);
-                windowProperties.put("osivia.title", bundle.getString("EDIT_PROCEDURE"));
+                windowProperties.put("osivia.title", bundle.getString("EDIT_RECORD_FOLDER"));
 
                 String editRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
                         "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
