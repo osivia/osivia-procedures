@@ -25,6 +25,9 @@
             data-id="Formulaire" class="no-ajax-link"><op:translate key="FORM" /></a></li>
         <li role="presentation" class="<c:if test="${'dashboard' eq activeTab}">active</c:if>"><a href="#Dashboard" role="tab" data-toggle="tab"
             data-id="Dashboard" class="no-ajax-link"><op:translate key="PROCEDURE_DASHBOARD" /></a></li>
+        <li role="presentation" class="<c:if test="${'rules' eq activeTab}">active</c:if>"><a href="#Rules" role="tab" data-toggle="tab"
+            data-id="Rules" class="no-ajax-link"><op:translate key="PROCEDURE_RULES" /></a></li>
+   
     </ul>
 
     <div class="tab-content">
@@ -399,7 +402,20 @@
                 </div>
             </div>
         </div>
-    </div>
+		<div role="tabpanel"
+			class="tab-pane <c:if test="${'rules' eq activeTab}">active</c:if>"
+			id="Rules">
+
+
+			<div class="form-group">
+				<div class="col-sm-12">
+					<form:textarea rows="20" path="procedureModel.rules"
+						cssClass="form-control" />
+				</div>
+			</div>
+		</div>
+	</div>
+     
 
     <button type="submit" class="btn btn-primary" name="saveRecord">
         <op:translate key="SAVE" />

@@ -50,6 +50,35 @@
                             <td colspan="${fn:length(fieldBkp.fields)}" class="text-center text-muted"><op:translate key="NO_OCCURRENCE" /></td>
                         </tr>
                     </c:if>
+                    
+                    <c:set var="displayFooter" value="false" />
+					<c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
+                  			<c:set var="sumName" value="osivia.${fieldBkp.name}.${nestedField.name}" />
+							<c:set var="sumValue" value="${form.record.globalVariablesValues[sumName]}" />
+					
+							<c:if test="${not empty sumValue}">
+                                    		<c:set var="displayFooter" value="true" />
+                             </c:if>
+
+                    </c:forEach>     
+                                   
+                    <c:if test="${displayFooter}">
+						<tfoot>
+	                        <tr class="active">    
+	                           <c:forEach var="nestedField" items="${fieldBkp.fields}" varStatus="status">
+	                               	<td>   
+	                           			<c:set var="sumName" value="osivia.${fieldBkp.name}.${nestedField.name}" />
+										<c:set var="sumValue" value="${form.record.globalVariablesValues[sumName]}" />
+								
+										<c:if test="${not empty sumValue}">
+	                                      		${sumValue}	
+	                                    </c:if>
+	                                </td>
+	                            </c:forEach>
+							</tr>                                    
+						</tfoot>  
+					</c:if>
+						                  
                 </tbody>
             </table>
         </c:if>

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.theme.impl.render.dynamic.json.JSONException;
+import org.jboss.portal.theme.impl.render.dynamic.json.JSONObject;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
@@ -67,6 +69,9 @@ public class ProcedureModel {
 
     /** ProcedureParent */
     private ProcedureModel ProcedureParent;
+    
+    /** Business rules */
+    private String rules;
 
     public ProcedureModel() {
         variables = new HashMap<String, Variable>();
@@ -93,6 +98,14 @@ public class ProcedureModel {
         startingStep = properties.getString("pcd:startingStep");
         procedureType = document.getType();
         webIdParent = properties.getString("pcd:webIdParent");
+        
+ 
+        
+        try {
+			rules = (String) new JSONObject(properties.getString("pcd:businessRules")).get("rules");
+		} catch (Exception e1) {
+			
+		}
 
         // global variables
         final PropertyList globalVariablesList = properties.getList("pcd:globalVariablesDefinitions");
@@ -155,6 +168,9 @@ public class ProcedureModel {
             ProcedureModel procedureParent = new ProcedureModel(denormalizedDocument, nuxeoController);
             setProcedureParent(procedureParent);
         }
+        
+        
+        
     }
 
     public void updateStepsIndexes() {
@@ -497,5 +513,19 @@ public class ProcedureModel {
     public void setStepsMap(Map<String, Step> stepsMap) {
         this.stepsMap = stepsMap;
     }
+
+	/**
+	 * @return the rules
+	 */
+	public String getRules() {
+		return rules;
+	}
+
+	/**
+	 * @param rules the rules to set
+	 */
+	public void setRules(String rules) {
+		this.rules = rules;
+	}
 
 }

@@ -19,23 +19,26 @@
     <script type="text/javascript" src="/osivia-portal-custom-web-assets/components/jquery-ui/i18n/datepicker-${datepickerLanguage}.js"></script>
 </c:if>
 
-
-<form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" enctype="multipart/form-data" cssClass="form-horizontal" role="form">
-    <ul class="list-unstyled">
-        <c:forEach var="field" items="${form.theCurrentStep.fields}" varStatus="status">
-            <c:set var="field" value="${field}" scope="request" />
-            <jsp:include page="editFields.jsp" />
-        </c:forEach>
-    </ul>
-
-    <div class="form-group">
-        <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
-            <c:forEach var="action" items="${form.theCurrentStep.actions}" varStatus="status">
-                <button type="button" onclick="selector(this,'${action.actionId}','actionId'); $JQry('#${namespace}-proceed-procedure').click();" class="btn btn-primary">${action.label}</button>
-            </c:forEach>
-            <input id="${namespace}-proceed-procedure" type="submit" name="proceedProcedure" class="hidden">
-        </div>
-    </div>
-
-    <input id="${namespace}-upload-file" type="submit" name="upload-file" class="hidden">
-</form:form>
+<div class="procedureContainer">
+	<form:form modelAttribute="form" action="${actionProcedureUrl}" method="post" enctype="multipart/form-data" cssClass="form-horizontal" role="form">
+	    <ul class="list-unstyled">
+	        <c:forEach var="field" items="${form.theCurrentStep.fields}" varStatus="status">
+	            <c:set var="field" value="${field}" scope="request" />
+	            <jsp:include page="editFields.jsp" />
+	        </c:forEach>
+	    </ul>
+	
+	    <div class="form-group">
+	        <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
+	            <c:forEach var="action" items="${form.theCurrentStep.actions}" varStatus="status">
+	                <button type="button" onclick="selector(this,'${action.actionId}','actionId'); $JQry('#${namespace}-proceed-procedure').click();" class="btn btn-primary">${action.label}</button>
+	            </c:forEach>
+	            <input id="${namespace}-proceed-procedure" type="submit" name="proceedProcedure" class="hidden">
+	        </div>
+	    </div>
+	
+	    <input id="${namespace}-upload-file" type="submit" name="upload-file" class="hidden">
+	    <input  type="submit" name="applyRules" class="hidden">   
+	
+	</form:form>
+</div>

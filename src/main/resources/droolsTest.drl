@@ -1,0 +1,12 @@
+import org.osivia.services.procedure.portlet.drools.Datas;
+
+
+
+
+rule "Date livraison"
+
+when
+  datas:Datas (getValue("datelivraison") < new java.util.Date())
+then
+  datas.setValue("_title", "erreur");
+end

@@ -240,6 +240,11 @@ public class ProcedureServiceImpl implements IProcedureService {
             propMap.set("pcd:startingStep", procedureModel.getStartingStep());
             propMap.set("pcd:procedureObjects", formsService.convertToJson(portalControllerContext, procedureModel.getProcedureObjects()));
             propMap.set("pcd:dashboards", formsService.convertToJson(portalControllerContext, procedureModel.getDashboards()));
+            
+            Map<String, String> rules = new HashMap<>();
+            rules.put("rules", procedureModel.getRules());
+            propMap.set("pcd:businessRules", formsService.convertToJson(portalControllerContext, rules));
+            
         } catch (PortalException e) {
             throw new PortletException(e);
         }

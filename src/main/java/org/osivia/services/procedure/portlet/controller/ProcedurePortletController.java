@@ -59,6 +59,7 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
+import org.osivia.services.procedure.portlet.drools.DatasInjection;
 import org.osivia.services.procedure.portlet.model.Action;
 import org.osivia.services.procedure.portlet.model.AddField;
 import org.osivia.services.procedure.portlet.model.Column;
@@ -462,18 +463,21 @@ public class ProcedurePortletController extends CmsPortletController {
             ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, record.getProcedureModelWebId());
             form = new Form(procedureModel, record);
 
-            if (StringUtils.isNotBlank(getAction(request))) {
+            Map<String, String> globalVariablesValues = record.getGlobalVariablesValues();
+			if (StringUtils.isNotBlank(getAction(request))) {
                 try {
                     Map<String, String> variables = new HashMap<String, String>();
                     variables.put("pcd:startingStep", getAction(request));
                     variables.put("rcdPath", record.getOriginalDocument().getPath());
                     variables.put("rcdFolderPath", procedureModel.getOriginalDocument().getPath());
 
-                    variables.putAll(record.getGlobalVariablesValues());
+                    variables.putAll(globalVariablesValues);
                     Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
                             .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), variables);
                     form.getProcedureModel().setStartingStep(initVariables.get("pcd:startingStep"));
                     form.setProcedureInstance(new ProcedureInstance(initVariables));
+                    globalVariablesValues = form.getProcedureInstance().getGlobalVariablesValues();
+                                        
                 } catch (PortalException e) {
                     if (StringUtils.isNotBlank(e.getMessage())) {
                         request.setAttribute("errorText", e.getMessage());
@@ -485,6 +489,16 @@ public class ProcedurePortletController extends CmsPortletController {
                 }
             }
             procedureService.updateData(nuxeoController, form);
+            
+            try	{
+            	if( !StringUtils.isEmpty(procedureModel.getRules()))
+            		new DatasInjection().shouldFire(form.getProcedureModel(),globalVariablesValues,"prepare");
+            } catch (final FormFilterException e) {
+            	this.notificationsService.addSimpleNotification(new PortalControllerContext(portletContext, request, response), e.getMessage(), NotificationsType.ERROR);
+            	request.setAttribute("filterMessage", e.getMessage());
+            } 
+
+            
         } else if (StringUtils.isNotBlank(getDashboardPath(request))) {
             NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(getDashboardPath(request));
             form = new Form(new ProcedureModel(documentContext.getDocument(), nuxeoController));
@@ -872,6 +886,12 @@ public class ProcedurePortletController extends CmsPortletController {
                 manageEndStep(nuxeoController, globalVariablesValues, form);
             } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.RECORD.getDocType())) {
                 String currentWebId = form.getProcedureModel().getCurrentWebId();
+                
+
+
+                if( !StringUtils.isEmpty(form.getProcedureModel().getRules()))
+                	new DatasInjection().shouldFire(form.getProcedureModel(),globalVariablesValues,"validate");
+
                 globalVariablesValues = formsService.start(portalControllerContext, currentWebId, actionId, globalVariablesValues, uploadedFiles);
                 manageEndStep(nuxeoController, globalVariablesValues, form);
             } else {
@@ -890,7 +910,7 @@ public class ProcedurePortletController extends CmsPortletController {
             this.notificationsService.addSimpleNotification(portalControllerContext, e.getMessage(), NotificationsType.ERROR);
             request.setAttribute("filterMessage", e.getMessage());
             response.setRenderParameter("action", "viewProcedure");
-        }
+        } 
     }
 
     private void manageEndStep(NuxeoController nuxeoController, Map<String, String> globalVariablesValues, Form form)
@@ -1487,6 +1507,26 @@ public class ProcedurePortletController extends CmsPortletController {
         variables.put(newFieldSet.getVariableName(), new Variable(newFieldSet));
         updateProcedureWithForm(request, response, form, field, "editStep");
     }
+    
+    
+    @ActionMapping(value = "actionProcedure", params = "applyRules")
+    public void applyRules(ActionRequest request, ActionResponse response,
+            @ModelAttribute(value = "form") Form form) throws PortletException, IOException {
+    	
+    	try	{
+    		if( !StringUtils.isEmpty(form.getProcedureModel().getRules()))	{
+    			new DatasInjection().shouldFire(form.getProcedureModel(),form.getProcedureInstance().getGlobalVariablesValues(),"apply");
+    			new DatasInjection().shouldFire(form.getProcedureModel(),form.getProcedureInstance().getGlobalVariablesValues(),"prepare");
+    		}
+         
+    	} catch (final FormFilterException e) {
+            this.notificationsService.addSimpleNotification(new PortalControllerContext(portletContext, request, response), e.getMessage(), NotificationsType.ERROR);
+            request.setAttribute("filterMessage", e.getMessage());
+            response.setRenderParameter("action", "viewProcedure");
+        } 
+
+    	
+    }
 
     @ActionMapping(value = "actionProcedure", params = "addFieldInList")
     public void addFieldInList(ActionRequest request, ActionResponse response, @RequestParam("addFieldInList") String selectedFieldPath,
@@ -1550,6 +1590,18 @@ public class ProcedurePortletController extends CmsPortletController {
         if (record != null) {
             record.setGlobalVariablesValues(globalVariablesValues);
         }
+        
+        
+      	try	{
+            if( !StringUtils.isEmpty(form.getProcedureModel().getRules()))
+        		new DatasInjection().shouldFire(form.getProcedureModel(),form.getProcedureInstance().getGlobalVariablesValues(),"prepare");
+            
+        	} catch (final FormFilterException e) {
+                this.notificationsService.addSimpleNotification(new PortalControllerContext(portletContext, request, response), e.getMessage(), NotificationsType.ERROR);
+                request.setAttribute("filterMessage", e.getMessage());
+                response.setRenderParameter("action", "viewProcedure");
+            } 
+
     }
 
     @ActionMapping(value = "actionProcedure", params = "removeFieldInList")
@@ -1584,6 +1636,17 @@ public class ProcedurePortletController extends CmsPortletController {
                 }
             }
         }
+        
+      	try	{
+            if( !StringUtils.isEmpty(form.getProcedureModel().getRules()))
+            	new DatasInjection().shouldFire(form.getProcedureModel(),form.getProcedureInstance().getGlobalVariablesValues(),"prepare");
+        	} catch (final FormFilterException e) {
+                this.notificationsService.addSimpleNotification(new PortalControllerContext(portletContext, request, response), e.getMessage(), NotificationsType.ERROR);
+                request.setAttribute("filterMessage", e.getMessage());
+                response.setRenderParameter("action", "viewProcedure");
+            } 
+
+        
     }
 
     @ActionMapping(value = "actionProcedure", params = "editFieldInList")
@@ -1640,11 +1703,25 @@ public class ProcedurePortletController extends CmsPortletController {
                 }
             }
         }
+        
+      	try	{
+            if( !StringUtils.isEmpty(form.getProcedureModel().getRules()))
+            	new DatasInjection().shouldFire(form.getProcedureModel(),form.getProcedureInstance().getGlobalVariablesValues(),"prepare");
+        	} catch (final FormFilterException e) {
+                this.notificationsService.addSimpleNotification(new PortalControllerContext(portletContext, request, response), e.getMessage(), NotificationsType.ERROR);
+                request.setAttribute("filterMessage", e.getMessage());
+                response.setRenderParameter("action", "viewProcedure");
+            } 
+
+        
     }
 
     @ActionMapping(value = "actionProcedure", params = "validateEditFieldInList")
     public void validateEditFieldInList(ActionRequest request, ActionResponse response, @ModelAttribute(value = "form") Form form)
             throws PortletException, IOException {
+    	
+    	
+      	
         String selectedFieldPath = form.getSelectedListFieldPath();
         String rowIndex = form.getSelectedListFieldRowIndex();
 
@@ -1697,7 +1774,19 @@ public class ProcedurePortletController extends CmsPortletController {
             globalVariablesValues.put(listField.getName(), jsonValue.toString());
             form.setSelectedListFieldRowIndex(null);
             form.setSelectedListFieldPath(null);
+
+
         }
+        
+    	try	{
+            if( !StringUtils.isEmpty(form.getProcedureModel().getRules()))
+            	new DatasInjection().shouldFire(form.getProcedureModel(),form.getProcedureInstance().getGlobalVariablesValues(),"prepare");            
+        	} catch (final FormFilterException e) {
+                this.notificationsService.addSimpleNotification(new PortalControllerContext(portletContext, request, response), e.getMessage(), NotificationsType.ERROR);
+                request.setAttribute("filterMessage", e.getMessage());
+                response.setRenderParameter("action", "viewProcedure");
+            } 
+        
     }
 
 

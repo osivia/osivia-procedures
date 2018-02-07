@@ -802,6 +802,14 @@ $JQry(function() {
 
 		$varOptionsInput.val(JSON.stringify(varOptions));
 	});
+	
+	$JQry(".procedureContainer select").change(function(event) {
+		var $target = $JQry(event.target);
+		
+		var $form = $target.closest('form');
+		$form.find('input[name=applyRules]').click();
+	});
+	
 });
 
 function makeRadioFromData(name, label, value, dataValue) {
