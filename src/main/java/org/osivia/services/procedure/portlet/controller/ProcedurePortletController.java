@@ -378,8 +378,29 @@ public class ProcedurePortletController extends CmsPortletController {
 
             if (!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")) {
                 try {
-                    Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
-                            .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), null);
+                	PortalWindow window = WindowFactory.getWindow(request);
+                	String jsonVariables = window.getProperty("osivia.services.procedure.variables");
+                    Map<String, String> variables;
+                    if (StringUtils.isEmpty(jsonVariables))
+                    {
+                    	variables = null; 
+                    } else
+                    {
+                    	try {
+                    		JSONObject jsonObject = JSONObject.fromObject(jsonVariables);
+                    		variables = new HashMap<>(jsonObject.size());
+                    		for (Object object : jsonObject.keySet())
+                    		{
+                    			String key = (String) object;
+                    			variables.put(key, jsonObject.getString(key));
+                    		}
+                    	} catch(JSONException e)
+                    	{
+                    		variables = null;
+                    	}
+                    }
+					Map<String, String> initVariables = nuxeoController.getNuxeoCMSService().getFormsService()
+                            .init(nuxeoController.getPortalCtx(), procedureModel.getOriginalDocument(), variables);
                     ProcedureInstance procedureInstance = new ProcedureInstance(initVariables);
                     procedureInstance.setCurrentStep(form.getProcedureModel().getStartingStep());
                     form.setProcedureInstance(procedureInstance);
