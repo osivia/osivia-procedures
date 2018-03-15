@@ -22,7 +22,6 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -198,7 +197,7 @@ public class ProcedureServiceImpl implements IProcedureService {
             model = new ProcedureModel(procedureModelInstance, nuxeoController);
         } catch (final NuxeoException e) {
             String errorMessage = ExceptionUtils.getRootCauseMessage(e);
-            if (errorMessage != null && WEBID_ERROR.matcher(errorMessage).matches()) {
+            if ((errorMessage != null) && WEBID_ERROR.matcher(errorMessage).matches()) {
                 throw new WebIdException();
             } else {
                 throw new PortletException(e);
@@ -335,11 +334,11 @@ public class ProcedureServiceImpl implements IProcedureService {
         try {
             command = new ListModelsContainerCommand(procedurepath);
             documentList = (Documents) nuxeoController.executeNuxeoCommand(command);
-            if (documentList != null && !documentList.isEmpty()) {
+            if ((documentList != null) && !documentList.isEmpty()) {
                 Document modelsContainer = documentList.get(0);
                 command = new ListProceduresModelsCommand(modelsContainer.getPath());
                 documentList = (Documents) nuxeoController.executeNuxeoCommand(command);
-                if (documentList != null && !documentList.isEmpty()) {
+                if ((documentList != null) && !documentList.isEmpty()) {
                     ProcedureModel procedureModel;
                     for (final Document document : documentList) {
                         procedureModel = new ProcedureModel(document, nuxeoController);
@@ -508,76 +507,6 @@ public class ProcedureServiceImpl implements IProcedureService {
             }
         }
         return procedureModels;
-    }
-
-
-    /**
-     * update values of extended variables with options
-     * 
-     * @param form
-     */
-    public void updateVarsWithOptions(Form form) {
-        Step theCurrentStep = form.getTheCurrentStep();
-        if (theCurrentStep != null) {
-            List<Field> fields = theCurrentStep.getFields();
-            for (Field field : fields) {
-                updateVarWithOptions(form, field);
-            }
-        }
-    }
-
-
-    /**
-     * update values of an extended variable with options
-     * 
-     * @param form
-     * @param field
-     */
-    private void updateVarWithOptions(Form form, Field field) {
-        if (form.getProcedureInstance() != null) {
-            String variableValue = form.getProcedureInstance().getGlobalVariablesValues().get(field.getName());
-            if (!field.isInput() && StringUtils.isNotBlank(variableValue)) {
-
-                Map<String, String> varOptionsMap = null;
-                String varOptions = StringUtils.trim(field.getVarOptions());
-                if (StringUtils.isNotEmpty(varOptions) && StringUtils.startsWith(varOptions, "[")) {
-                    varOptions = StringUtils.substringBetween(varOptions, "[", "]");
-                    String[] varOptionT = StringUtils.splitByWholeSeparator(varOptions, "},{");
-
-                    varOptionsMap = new HashMap<String, String>(varOptionT.length);
-
-                    for (int j = 0; j < varOptionT.length; j++) {
-                        String varOption = varOptionT[j];
-                        String[] varOptionLV = StringUtils.split(varOption, ',');
-                        if (varOptionLV != null) {
-                            String varOptionValue = null;
-                            String varOptionLabel = null;
-                            for (int k = 0; k < varOptionLV.length; k++) {
-                                String varOptionLVS = varOptionLV[k];
-                                varOptionLVS = StringUtils.replaceChars(varOptionLVS, "\"{}", StringUtils.EMPTY);
-
-                                if (StringUtils.startsWith(varOptionLVS, "label")) {
-                                    varOptionLabel = StringUtils.substringAfterLast(varOptionLVS, ":");
-                                } else if (StringUtils.startsWith(varOptionLVS, "value")) {
-                                    varOptionValue = StringUtils.substringAfterLast(varOptionLVS, ":");
-                                }
-                            }
-                            if (StringUtils.isNotBlank(varOptionValue) && StringUtils.isNotBlank(varOptionLabel)) {
-                                varOptionsMap.put(varOptionValue, varOptionLabel);
-                            }
-                        }
-                    }
-                    String[] values = StringUtils.split(variableValue, ',');
-                    if (ArrayUtils.isNotEmpty(values)) {
-                        for (int i = 0; i < values.length; i++) {
-                            values[i] = varOptionsMap.get(values[i]) != null ? varOptionsMap.get(values[i]) : values[i];
-                        }
-                    }
-                    variableValue = StringUtils.join(values, ',');
-                    form.getProcedureInstance().getGlobalVariablesValues().put(field.getName(), variableValue);
-                }
-            }
-        }
     }
 
 
@@ -770,7 +699,6 @@ public class ProcedureServiceImpl implements IProcedureService {
      */
     @Override
     public void updateData(NuxeoController nuxeoController, Form form) throws PortletException {
-        updateVarsWithOptions(form);
         updateFiles(nuxeoController, form);
     }
 
