@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public enum DocumentTypeEnum {
 
-    PROCEDUREMODEL("ProcedureModel"), PROCEDUREINSTANCE("ProcedureInstance"), TASKDOC("TaskDoc"), RECORDFOLDER("RecordFolder"), RECORDCONTAINER(
+    PROCEDUREMODEL("ProcedureModel"), PROCEDUREINSTANCE("ProcedureInstance"), TASKDOC("RoutingTask"), RECORDFOLDER("RecordFolder"), RECORDCONTAINER(
             "RecordContainer"), RECORD("Record");
 
     String docType;
@@ -37,6 +37,9 @@ public enum DocumentTypeEnum {
         for (DocumentTypeEnum instance : DocumentTypeEnum.values()) {
             map.put(instance.getDocType(), instance);
         }
+        // Compat mode (8.10 migration)
+        map.put("TaskDoc", DocumentTypeEnum.TASKDOC);
+
         ENUM_MAP = Collections.unmodifiableMap(map);
     }
 
