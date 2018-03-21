@@ -418,6 +418,9 @@ public class ProcedurePortletController extends CmsPortletController {
             if (!StringUtils.equals(getAction(request), "adminproc") && !StringUtils.equals(getAction(request), "adminprocstep")) {
                 procedureService.updateData(nuxeoController, form);
             }
+            // Record types
+            Map<String, String> recordTypes = this.procedureService.getRecordTypes(portalControllerContext);
+            form.setRecordTypes(recordTypes);
         } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
             // déroulement d'une procédure
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByWebId(nuxeoController, getWebId(request));
@@ -528,6 +531,9 @@ public class ProcedurePortletController extends CmsPortletController {
             if (StringUtils.equals(getAction(request), "adminproc")) {
                 // création d'une procédure
                 form = new Form();
+                // Record types
+                Map<String, String> recordTypes = this.procedureService.getRecordTypes(portalControllerContext);
+                form.setRecordTypes(recordTypes);
             } else if (StringUtils.equals(getAction(request), "adminrecord")) {
                 // création record folder
                 form = new Form(ProcedureRepository.recordFolder());

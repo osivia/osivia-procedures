@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Variable types enumeration.
- * 
+ *
  * @author Dorian Licois
  */
 public enum VariableTypesAllEnum {
@@ -23,13 +23,12 @@ public enum VariableTypesAllEnum {
 
     /**
      * Get filtered values.
-     * 
+     *
      * @return filtered values
      */
     public static VariableTypesAllEnum[] filteredValues() {
         List<VariableTypesAllEnum> list = new ArrayList<>(Arrays.asList(VariableTypesAllEnum.values()));
         list.remove(FIELDSET);
-        list.remove(RECORD);
         return list.toArray(new VariableTypesAllEnum[list.size()]);
     }
 

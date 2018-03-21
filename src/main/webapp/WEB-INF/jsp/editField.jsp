@@ -392,6 +392,12 @@
 	                      <c:set var="fieldValue"><ttc:user name="${fieldValue}" linkable="false" /></c:set>
 	                  </c:when>
 	                  
+	                  <c:when test="${fieldType eq 'RECORD'}">
+				        <c:set var="fieldValue">
+				            <ttc:title path="${fieldValue}" />
+				        </c:set>
+			    	  </c:when>
+	                  
 	                  <c:when test="${fieldType eq 'FILE'}">
 	                    <c:set var="file" value="${form.uploadedFiles[field.name]}" />
 	                                    
