@@ -126,7 +126,7 @@
 
 
     <scm>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/procedure/tags/4.6.4</developerConnection>
+        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/procedure/branches/4.8-maintenance</developerConnection>
     </scm>
 
 
