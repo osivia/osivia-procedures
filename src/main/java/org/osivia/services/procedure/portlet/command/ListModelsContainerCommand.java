@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.command;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.osivia.services.procedure.portlet.model.NuxeoOperationEnum;
@@ -14,12 +15,14 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
  */
 public class ListModelsContainerCommand implements INuxeoCommand {
 
-    /** select */
-    private static final String select = "SELECT * FROM ProceduresModelsContainer, RecordContainer";
-    /** where */
-    private static final String where = " WHERE ecm:path startswith '";
-    /** end */
-    private static final String end = "'";
+    /** Select. */
+    private static final String SELECT = "SELECT * FROM ProceduresModelsContainer, RecordContainer";
+    /** Where. */
+    private static final String WHERE = " WHERE ";
+    /** Clause begin. */
+    private static final String CLAUSE_BEGIN = "ecm:path STARTSWITH '";
+    /** Clause end. */
+    private static final String CLAUSE_END = "'";
 
     /** path */
     private String path;
@@ -34,14 +37,24 @@ public class ListModelsContainerCommand implements INuxeoCommand {
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.QueryElasticSearch.getId());
-        StringBuilder sbQuery = new StringBuilder(select);
-        if (path != null) {
-            sbQuery.append(where).append(path).append(end);
+
+        StringBuilder query = new StringBuilder();
+        query.append(SELECT);
+
+        if (StringUtils.isNotBlank(this.path)) {
+            query.append(WHERE);
+
+            StringBuilder clause = new StringBuilder();
+            clause.append(CLAUSE_BEGIN);
+            clause.append(this.path);
+            clause.append(CLAUSE_END);
+
+            String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, clause.toString());
+            query.append(filteredClause);
         }
 
-        String query = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, sbQuery.toString());
+        request.set("query", query.toString());
 
-        request.set("query", query);
         return request.execute();
     }
 

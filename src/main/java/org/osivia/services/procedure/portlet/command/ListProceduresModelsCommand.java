@@ -15,49 +15,71 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
  */
 public class ListProceduresModelsCommand implements INuxeoCommand {
 
-    /** select */
-    private static final String select = "SELECT * FROM ProcedureModel, RecordFolder";
-    /** where */
-    private static final String where = " WHERE ecm:path startswith '";
-    /** end */
-    private static final String end = "' ORDER BY dc:title";
+    /** Select. */
+    private static final String SELECT = "SELECT * FROM ProcedureModel, RecordFolder";
+    /** Where. */
+    private static final String WHERE = " WHERE ";
+    /** Clause begin. */
+    private static final String CLAUSE_BEGIN = " ecm:path STARTSWITH '";
+    /** Clause end. */
+    private static final String CLAUSE_END = "' ";
+    /** Order. */
+    private static final String ORDER = " ORDER BY dc:title";
 
-    /** path */
-    private String path;
 
-    /** filter */
-    private String filter;
+    /** Path */
+    private final String path;
+    /** Filter. */
+    private final String filter;
+
 
     /**
-     * @param path
-     * @param filter
+     * Constructor.
+     * 
+     * @param path path
+     */
+    public ListProceduresModelsCommand(String path) {
+        this(path, null);
+    }
+
+
+    /**
+     * Constructor.
+     * 
+     * @param path path
+     * @param filter filter
      */
     public ListProceduresModelsCommand(String path, String filter) {
+        super();
         this.path = path;
         this.filter = filter;
     }
 
-    /**
-     * @param path
-     */
-    public ListProceduresModelsCommand(String path) {
-        this.path = path;
-    }
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
         OperationRequest request = nuxeoSession.newRequest(NuxeoOperationEnum.QueryElasticSearch.getId());
-        StringBuilder sbQuery = new StringBuilder(select);
+
+
+        StringBuilder query = new StringBuilder(SELECT);
         if (StringUtils.isNotBlank(path)) {
-            sbQuery.append(where).append(path).append(end);
-            if(StringUtils.isNotBlank(filter)){
-                sbQuery.append(filter);
+            query.append(WHERE);
+
+            StringBuilder clause = new StringBuilder();
+            clause.append(CLAUSE_BEGIN);
+            clause.append(path);
+            clause.append(CLAUSE_END);
+            if (StringUtils.isNotBlank(this.filter)) {
+                clause.append(this.filter);
             }
+            clause.append(ORDER);
+
+            String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, clause.toString());
+            query.append(filteredClause);
         }
 
-        String query = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, sbQuery.toString());
+        request.set("query", query.toString());
 
-        request.set("query", query);
         return request.execute();
     }
 
