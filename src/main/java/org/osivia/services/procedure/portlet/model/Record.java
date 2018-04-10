@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -43,6 +45,8 @@ public class Record {
     /** Original document. */
     private final Document originalDocument;
 
+    private final DocumentDTO dto;
+
 
     /**
      * Constructor.
@@ -51,7 +55,10 @@ public class Record {
      */
     public Record(Document document) {
         super();
+        DocumentDAO dao = DocumentDAO.getInstance();
+
         this.originalDocument = document;
+        this.dto = dao.toDTO(document);
 
         globalVariablesValues = new HashMap<String, String>();
         PropertyMap documentProperties = document.getProperties();
@@ -226,6 +233,16 @@ public class Record {
      */
     public Document getOriginalDocument() {
         return originalDocument;
+    }
+
+
+    /**
+     * Getter for dto.
+     * 
+     * @return the dto
+     */
+    public DocumentDTO getDto() {
+        return dto;
     }
 
 }

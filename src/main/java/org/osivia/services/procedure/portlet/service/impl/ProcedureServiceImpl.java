@@ -157,8 +157,12 @@ public class ProcedureServiceImpl implements IProcedureService {
      */
     @Override
     public ProcedureModel retrieveProcedureByWebId(NuxeoController nuxeoController, String webId) throws PortletException {
-        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(webId);
-        return new ProcedureModel(documentContext.getDenormalizedDocument(), nuxeoController);
+        NuxeoController nuxeoController2 = new NuxeoController(nuxeoController.getPortalCtx());
+        nuxeoController2.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController2.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+
+        NuxeoDocumentContext documentContext = nuxeoController2.getDocumentContext(webId);
+        return new ProcedureModel(documentContext.getDenormalizedDocument(), nuxeoController2);
     }
 
 

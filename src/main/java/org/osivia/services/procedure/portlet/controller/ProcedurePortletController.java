@@ -639,7 +639,7 @@ public class ProcedurePortletController extends CmsPortletController {
 
 
         String editProcedureUrl = null;
-        if((form.getProcedureModel() != null) && (form.getProcedureModel().getOriginalDocument() != null)){
+        if ((form.getProcedureModel() != null) && (form.getProcedureModel().getOriginalDocument() != null) && (form.getRecord() == null)) {
             try {
                 CMSPublicationInfos publicationInfos = NuxeoController.getCMSService().getPublicationInfos(nuxeoController.getCMSCtx(),
                         form.getProcedureModel().getPath());

@@ -60,6 +60,7 @@
                                                     <c:set var="fieldJsonValue" value="${occurrence[nestedField.name]}" scope="request" />
                                                     <c:set var="fieldLevel" value="2" scope="request" />
                                                     <c:set var="rowIndex" value="${status.index}" scope="request" />
+                                                    <c:set var="fieldName" value="${fieldBkp.name}" scope="request" />
                                                     <jsp:include page="displayFieldValue.jsp" />
                                                 </td>
                                             </c:forEach>

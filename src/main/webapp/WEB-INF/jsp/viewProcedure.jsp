@@ -12,6 +12,8 @@
 
 <c:set var="namespace"><portlet:namespace /></c:set>
 
+<c:set var="inputMode" value="true" scope="request" />
+
 
 <!-- Datepicker language -->
 <c:set var="datepickerLanguage" value="${fn:toLowerCase(pageContext.response.locale.language)}" />

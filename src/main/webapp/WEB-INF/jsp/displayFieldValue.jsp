@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 <%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="h" %>
 
 
 <c:set var="level" value="${fieldLevel}" scope="page" />
@@ -39,6 +40,7 @@
                                     <c:set var="fieldJsonValue" value="${occurrence[nestedField.name]}" scope="request" />
                                     <c:set var="fieldLevel" value="${level + 1}" scope="request" />
                                     <c:set var="rowIndex" value="${status.index}" scope="request" />
+                                    <c:set var="fieldName" value="${fieldBkp.name}" scope="request" />
                                     <jsp:include page="displayFieldValue.jsp" />
                                 </td>
                             </c:forEach>
@@ -130,10 +132,23 @@
     </c:when>
 
     <c:when test="${fieldType eq 'RECORD'}">
-        <c:set var="fieldValue">
-            <ttc:title path="${fieldValue}" />
-        </c:set>
-        <div class="${htmlClasses}">${fieldValue}</div>
+        <div class="${htmlClasses}">
+            <c:choose>
+                <c:when test="${inputMode}">
+                    <h:record-title webId="${fieldValue}" />
+                </c:when>
+                
+                <c:otherwise>
+                    <c:choose>
+                        <c:when test="${empty rowIndex}"><c:set var="data" value="${form.record.dto.properties['rcd:data'][field.name]}" /></c:when>
+                        <c:otherwise><c:set var="data" value="${form.record.dto.properties['rcd:data'][fieldName][rowIndex]}" /></c:otherwise>
+                    </c:choose>
+                    <c:set var="title" value="${data['dc:title']}" />
+                    <c:set var="url"><ttc:transformNuxeoUrl url="/nuxeo/nxpath/default${data['ecm:path']}@view_documents" /></c:set>
+                    <a href="${url}" class="no-ajax-link">${title}</a>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </c:when>
 
     <c:when test="${fieldType eq 'FILE'}">
