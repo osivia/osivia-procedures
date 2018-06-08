@@ -6,9 +6,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -176,8 +178,30 @@ public class SendMailFilter implements FormFilter {
         // System properties
         Properties properties = System.getProperties();
 
-        // Mail session
-        Session mailSession = Session.getInstance(properties, null);
+        
+//		mail.transport.protocol=smtp
+//		mail.smtp.auth=true
+//		mail.smtp.starttls.enable=true
+//		mail.smtp.host=smtp.gmail.com
+//		mail.smtp.port=587
+//		mail.smtp.user=demo@osivia.com
+//		mail.smtp.password=demo-osivia
+
+		
+		String userName = properties.getProperty("mail.smtp.user");
+		String password = properties.getProperty("mail.smtp.password");       
+
+		Authenticator auth = null;
+		if( userName != null && password !=null)
+			auth = new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication("demo@osivia.com", "demo-osivia");
+			}
+		  };
+			
+		
+		Session mailSession = Session.getInstance(properties, auth);
+
 
         // Message
         MimeMessage message = new MimeMessage(mailSession);
