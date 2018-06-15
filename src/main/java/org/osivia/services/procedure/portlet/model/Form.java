@@ -1,8 +1,10 @@
 package org.osivia.services.procedure.portlet.model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -86,10 +88,8 @@ public class Form {
     private Map<String, String> recordTypes;
 
     /** selectedListFieldRow */
-    private String selectedListFieldRowIndex;
+    private Map<String, String> selectedListFieldRowIndex;
 
-    /** selectedListField */
-    private String selectedListFieldPath;
 
 
     /** Uploaded files. */
@@ -103,6 +103,7 @@ public class Form {
         newFieldList = new AddField();
         newColumn = new Column();
         this.uploadedFiles = new HashMap<>();
+        selectedListFieldRowIndex=new HashMap<>();
     }
 
     public Form(ProcedureModel procedureModel, ProcedureInstance procedureInstance) {
@@ -121,12 +122,14 @@ public class Form {
         newFieldList = new AddField();
         newColumn = new Column();
         this.uploadedFiles = new HashMap<>();
+        selectedListFieldRowIndex=new HashMap<>();
     }
 
     public Form(ProcedureModel procedureModel, Record record) {
         this.procedureModel = procedureModel;
         this.record = record;
         this.uploadedFiles = new HashMap<>();
+        selectedListFieldRowIndex=new HashMap<>();
     }
 
     public Form() {
@@ -135,6 +138,7 @@ public class Form {
         newFieldList = new AddField();
         newColumn = new Column();
         this.uploadedFiles = new HashMap<>();
+        selectedListFieldRowIndex=new HashMap<>();
     }
 
     /**
@@ -620,13 +624,19 @@ public class Form {
 		this.newFieldList = newFieldList;
 	}
 
+	
+	
 
-    /**
+    public Map<String, ProcedureUploadedFile> getUploadedFiles() {
+		return uploadedFiles;
+	}
+
+	/**
      * Getter for selectedListFieldRowIndex.
      * 
      * @return the selectedListFieldRowIndex
      */
-    public String getSelectedListFieldRowIndex() {
+    public Map<String, String> getSelectedListFieldRowIndex() {
         return selectedListFieldRowIndex;
     }
 
@@ -636,38 +646,11 @@ public class Form {
      * 
      * @param selectedListFieldRowIndex the selectedListFieldRowIndex to set
      */
-    public void setSelectedListFieldRowIndex(String selectedListFieldRowIndex) {
+    public void setSelectedListFieldRowIndex(Map<String, String> selectedListFieldRowIndex) {
         this.selectedListFieldRowIndex = selectedListFieldRowIndex;
     }
 
 
-    /**
-     * Getter for selectedListFieldPath.
-     * 
-     * @return the selectedListFieldPath
-     */
-    public String getSelectedListFieldPath() {
-        return selectedListFieldPath;
-    }
-
-
-    /**
-     * Setter for selectedListFieldPath.
-     * 
-     * @param selectedListFieldPath the selectedListFieldPath to set
-     */
-    public void setSelectedListFieldPath(String selectedListFieldPath) {
-        this.selectedListFieldPath = selectedListFieldPath;
-    }
-
-
-    /**
-     * Getter for uploadedFiles.
-     * 
-     * @return the uploadedFiles
-     */
-    public Map<String, ProcedureUploadedFile> getUploadedFiles() {
-        return uploadedFiles;
-    }
+   
 
 }

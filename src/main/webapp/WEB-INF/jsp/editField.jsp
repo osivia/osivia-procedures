@@ -263,6 +263,7 @@
 	                    <div class="col-sm-9 col-lg-10">
 	                        <div class="media-body">
 	                            <p class="form-control-static">
+
 	                                <c:choose>
 	                                    <c:when test="${uploadedFile.deleted}">
 	                                        <span class="text-muted"><op:translate key="DELETED_FILE" /></span>

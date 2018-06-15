@@ -602,7 +602,7 @@ public class ProcedureServiceImpl implements IProcedureService {
                 if (uploadedFile != null) {
                     String uploadedFileKey = field.getName();
                     if (index != null) {
-                        uploadedFileKey += "|" + index;
+                        uploadedFileKey = getFileKey(Integer.toString(index), field);
                     }
                     uploadedFiles.put(uploadedFileKey, uploadedFile);
                 }
@@ -827,6 +827,8 @@ public class ProcedureServiceImpl implements IProcedureService {
                 temporaryFile.deleteOnExit();
                 multipartFile.transferTo(temporaryFile);
                 uploadedFile.setTemporaryFile(temporaryFile);
+                
+                
 
                 // Temporary file metadata
                 ProcedureUploadedFileMetadata metadata = this.applicationContext.getBean(ProcedureUploadedFileMetadata.class);
@@ -847,6 +849,8 @@ public class ProcedureServiceImpl implements IProcedureService {
 
                 uploadedFile.setTemporaryMetadata(metadata);
                 uploadedFile.setDeleted(false);
+                
+     
             }
         }
     }
@@ -860,14 +864,15 @@ public class ProcedureServiceImpl implements IProcedureService {
         // Uploaded files
         Map<String, ProcedureUploadedFile> uploadedFiles = form.getUploadedFiles();
 
-        // Selected row index
-        String rowIndex = form.getSelectedListFieldRowIndex();
+
 
         // Uploaded file
         String uploadedFileKey = variableName;
+/*        
         if (StringUtils.isNotEmpty(rowIndex)) {
             uploadedFileKey += "|" + rowIndex;
         }
+*/        
         ProcedureUploadedFile uploadedFile = uploadedFiles.get(uploadedFileKey);
 
         if (uploadedFile != null) {
@@ -934,4 +939,9 @@ public class ProcedureServiceImpl implements IProcedureService {
         IOUtils.closeQuietly(outputStream);
     }
 
+    
+	public static String getFileKey(String rowIndex, Field nestedField) {
+		return nestedField.getName()+"_"+nestedField.getPath() + "|" + rowIndex;
+	}
+    
 }

@@ -51,7 +51,7 @@
                                 
                                 <tbody>
                                     <c:forEach var="occurrence" items="${occurrences}" varStatus="status">
-                                        <tr class="${form.selectedListFieldPath eq fieldBkp.path and form.selectedListFieldRowIndex eq status.index ? 'info' : ''}">
+                                        <tr class="${form.selectedListFieldRowIndex[fieldBkp.path] eq status.index ? 'info' : ''}">
                                             <c:forEach var="nestedField" items="${fieldBkp.fields}">
                                                 <td>
                                                     <c:set var="field" value="${nestedField}" scope="request" />
@@ -129,16 +129,16 @@
                                         <jsp:include page="editFields.jsp" />
                                     </c:forEach>
                                 </ul>
-
+                                
                                 <div class="row">
                                     <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
                                         <c:choose>
-                                            <c:when test="${form.selectedListFieldPath eq fieldBkp.path}">
-                                                <button type="submit" name="validateEditFieldInList" value="${fieldBkp.path}|${status.index}" class="btn btn-primary">
+                                            <c:when test="${not empty form.selectedListFieldRowIndex[fieldBkp.path]}">
+                                                <button type="submit" name="validateEditFieldInList" value="${fieldBkp.path}" class="btn btn-primary">
                                                     <op:translate key="VALIDATE" />
                                                 </button>
                                             
-                                                <button type="submit" name="cancelEditFieldInList" class="btn btn-default">
+                                                <button type="submit" name="cancelEditFieldInList" value="${fieldBkp.path}" class="btn btn-default">
                                                     <op:translate key="CANCEL" />
                                                 </button>
                                             </c:when>

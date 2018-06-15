@@ -151,16 +151,21 @@
         </div>
     </c:when>
 
+
     <c:when test="${fieldType eq 'FILE'}">
         <c:choose>
             <c:when test="${empty rowIndex}"><c:set var="uploadedFileKey" value="${field.name}" /></c:when>
-            <c:otherwise><c:set var="uploadedFileKey" value="${field.name}|${rowIndex}" /></c:otherwise>
+            <c:otherwise><c:set var="uploadedFileKey" value="${field.name}_${field.path}|${rowIndex}" /></c:otherwise>
         </c:choose>
+        
         <c:set var="file" value="${form.uploadedFiles[uploadedFileKey]}" />
 
         <c:choose>
             <c:when test="${empty file.url}">
-                <div class="${htmlClasses}">${uploadedFileKey} : ${fieldValue}</div>
+ 				<div class="${htmlClasses}">
+                    <i class="${file.temporaryMetadata.icon}"></i>
+                        <span>${file.temporaryMetadata.fileName}</span>
+                </div>               
             </c:when>
 
             <c:otherwise>
@@ -177,14 +182,17 @@
     <c:when test="${fieldType eq 'PICTURE'}">
         <c:choose>
             <c:when test="${empty rowIndex}"><c:set var="uploadedFileKey" value="${field.name}" /></c:when>
-            <c:otherwise><c:set var="uploadedFileKey" value="${field.name}|${rowIndex}" /></c:otherwise>
+            <c:otherwise><c:set var="uploadedFileKey" value="${field.name}_${field.path}|${rowIndex}" /></c:otherwise>
         </c:choose>
         <c:set var="file" value="${form.uploadedFiles[uploadedFileKey]}" />
         <c:set var="imageErrorMessage"><op:translate key="IMAGE_ERROR_MESSAGE" /></c:set>
 
         <c:choose>
             <c:when test="${empty file.url}">
-                <div class="${htmlClasses}">${uploadedFileKey} : ${fieldValue}</div>
+ 				<div class="${htmlClasses}">
+                    <i class="${file.temporaryMetadata.icon}"></i>
+                        <span>${file.temporaryMetadata.fileName}</span>
+                </div>     
             </c:when>
 
             <c:otherwise>
