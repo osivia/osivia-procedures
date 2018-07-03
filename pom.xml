@@ -11,12 +11,11 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>4.7.1</toutatice.version>
-
+        <toutatice.version>4.7-SNAPSHOT</toutatice.version>
+        <jboss-portal.version>2.7.2</jboss-portal.version>
     </properties>
 
-
-    <dependencies>
+       <dependencies>
 
         <!-- Toutatice -->
         <dependency>
@@ -26,6 +25,20 @@
             <scope>provided</scope>
         </dependency>
         
+        
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-core-lib</artifactId>
+            <version>${jboss-portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-common-lib</artifactId>
+            <version>${jboss-portal.version}</version>
+            <scope>provided</scope>
+        </dependency>        
         
         <dependency>
             <groupId>org.drools</groupId>

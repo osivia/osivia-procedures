@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.naming.Name;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
@@ -43,11 +44,13 @@ import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Group;
+import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -177,6 +180,50 @@ public class ProcedurePortletController extends CmsPortletController {
         super();
     }
 
+    
+    private boolean checkTaskdocRight(PropertyList actors, String userId){
+		// Actors
+
+		Set<Name> names = new HashSet<>(actors.size());
+
+		if (!actors.isEmpty()) {
+			// User names
+
+			for (int i = 0; i < actors.size(); i++) {
+				String actor = actors.getString(i);
+
+				// Group
+				Group group;
+				if (StringUtils.startsWith(actor, IFormsService.ACTOR_USER_PREFIX)) {
+					group = null;
+				} else if (StringUtils.startsWith(actor, IFormsService.ACTOR_GROUP_PREFIX)) {
+					group = this.groupService.get(StringUtils.removeStart(actor, IFormsService.ACTOR_GROUP_PREFIX));
+				} else {
+					group = this.groupService.get(actor);
+				}
+
+				if (group == null) {
+					String user = StringUtils.removeStart(actor, IFormsService.ACTOR_USER_PREFIX);
+					names.add(this.personService.getEmptyPerson().buildDn(user));
+				} else {
+					for (Name member : group.getMembers()) {
+						names.add(member);
+					}
+				}
+			}
+		}
+
+		for (Name name : names) {
+			Person person = this.personService.getPerson(name);
+			if (person.getUid().equals(userId))
+				return true;
+
+		}
+
+		return false;
+
+	}
+    
 
     /**
      * View page render mapping.
@@ -426,10 +473,20 @@ public class ProcedurePortletController extends CmsPortletController {
         } else if (StringUtils.isNotEmpty(getWebId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.PROCEDUREINSTANCE.getDocType())) {
             // déroulement d'une procédure
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByWebId(nuxeoController, getWebId(request));
-            nuxeoController.setCurrentDoc(procedureInstance.getOriginalDocument());
-            final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
-            form = new Form(procedureModel, procedureInstance);
-            procedureService.updateData(nuxeoController, form);
+            
+
+    		PropertyList actors = procedureInstance.getTaskDoc().getList("nt:actors");
+    		if( !checkTaskdocRight(actors, portalControllerContext.getHttpServletRequest().getRemoteUser()))	{
+    			 form = new Form();
+    			 request.setAttribute("errorText", "Accès interdit");
+    		}
+    		else	{
+    			nuxeoController.setCurrentDoc(procedureInstance.getOriginalDocument());
+    			final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
+    			form = new Form(procedureModel, procedureInstance);
+
+    			procedureService.updateData(nuxeoController, form);
+    		}
         } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getDocType())) {
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceById(nuxeoController, getId(request));
             nuxeoController.setCurrentDoc(procedureInstance.getOriginalDocument());
