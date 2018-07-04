@@ -13,6 +13,7 @@
         <!-- Toutatice -->
         <toutatice.version>4.7-SNAPSHOT</toutatice.version>
         <jboss-portal.version>2.7.2</jboss-portal.version>
+        <jboss.version>4.2.3.GA</jboss.version>        
     </properties>
 
        <dependencies>
@@ -40,11 +41,27 @@
             <scope>provided</scope>
         </dependency>        
         
+         <dependency>
+           <groupId>org.jboss.portal</groupId>
+           <artifactId>portal-security-lib</artifactId>
+           <version>${jboss-portal.version}</version>
+           <scope>provided</scope>
+       </dependency>
+        
+        
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
             <version>5.4.0.Final</version>
         </dependency>
+
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-j2ee</artifactId>
+			<version>${jboss.version}</version>
+			<scope>provided</scope>
+		</dependency>    
+		
         
     </dependencies>
 

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +31,9 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.security.auth.Subject;
+import javax.security.jacc.PolicyContext;
+import javax.security.jacc.PolicyContextException;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -43,7 +47,9 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
+import org.jboss.portal.security.impl.jacc.JACCPortalPrincipal;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
@@ -62,6 +68,7 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
+import org.osivia.services.procedure.portlet.command.ListProcedureInstancesByQueryCommand;
 import org.osivia.services.procedure.portlet.drools.DatasInjection;
 import org.osivia.services.procedure.portlet.model.Action;
 import org.osivia.services.procedure.portlet.model.AddField;
@@ -181,8 +188,10 @@ public class ProcedurePortletController extends CmsPortletController {
     }
 
     
-    private boolean checkTaskdocRight(PropertyList actors, String userId){
-		// Actors
+    private boolean checkTaskdocRight( NuxeoController nuxeoController,ProcedureModel procedureModel, ProcedureInstance procedureInstance, String userId, String displayContext){
+
+  
+		PropertyList actors = procedureInstance.getTaskDoc().getList("nt:actors");
 
 		Set<Name> names = new HashSet<>(actors.size());
 
@@ -220,9 +229,98 @@ public class ProcedurePortletController extends CmsPortletController {
 
 		}
 
+		/* Checks Links  from dashboard */
+
+		List<Dashboard> dashboardsList = procedureModel.getDashboards();
+		for (Dashboard dashboard : dashboardsList) {
+			
+			// Check if there is link
+			boolean userAccess = false;
+			for (Column column: dashboard.getColumns()) {
+				if( column.isEnableLink())
+					userAccess = true;
+			}
+			
+			if( userAccess) {
+				List<String> groups = dashboard.getGroups();
+
+                if (isAuthorized(groups)) {
+                	// Check if dashboard contains our instance
+					StringBuilder requestSb = new StringBuilder();
+
+					requestSb.append("ecm:primaryType = 'ProcedureInstance' ");
+					requestSb.append(" AND ttc:webid = '"+procedureInstance.getOriginalDocument().getProperties().getString("ttc:webid")+"' ");
+					requestSb.append(" AND (pi:procedureModelWebId = '" + procedureModel.getCurrentWebId() + "') ");
+					String requestFilter = dashboard.getRequestFilter();
+					if (StringUtils.isNotEmpty(requestFilter)) {
+						requestSb.append(" AND (" + parseRequest(requestFilter, userId) + ")");
+					}
+
+					ListProcedureInstancesByQueryCommand command = new ListProcedureInstancesByQueryCommand(
+							requestSb.toString());
+					Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+					if (documents.size() == 1)
+						return true;
+				}
+			}
+
+		}
+
+
 		return false;
 
 	}
+    
+    private static final String VAR__RQST_USR = "${user}";
+    
+    private String parseRequest(String request, String user) {
+
+        request = StringUtils.replace(request, VAR__RQST_USR, user);
+
+        return request;
+    }
+    
+    
+    
+    /**
+     * Check current user group is part of the validated groups for the dashboard
+     * 
+     * @param groups
+     * @param iter
+     */
+    private boolean isAuthorized(List<String> groups) {
+        if (groups == null || groups.isEmpty() || groups.contains("members")) {
+            return true;
+        }
+
+        // Get the current authenticated subject through the JACC contract
+        Subject subject = null;
+        try {
+            subject = (Subject) PolicyContext.getContext("javax.security.auth.Subject.container");
+        } catch (PolicyContextException e) {
+        }
+
+        if (subject != null) {
+            JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
+            Iterator iter = pp.getRoles().iterator();
+
+            while (iter.hasNext()) {
+                Principal principal = (Principal) iter.next();
+                String groupName = principal.getName();
+
+                for (Object groupO : groups) {
+                    String group = (String) groupO;
+                    if (StringUtils.equals(groupName, group)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+
+        return false;
+    }
+    
     
 
     /**
@@ -474,17 +572,16 @@ public class ProcedurePortletController extends CmsPortletController {
             // déroulement d'une procédure
             final ProcedureInstance procedureInstance = procedureService.retrieveProcedureInstanceByWebId(nuxeoController, getWebId(request));
             
+            nuxeoController.setCurrentDoc(procedureInstance.getOriginalDocument());
+			final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
 
-    		PropertyList actors = procedureInstance.getTaskDoc().getList("nt:actors");
-    		if( !checkTaskdocRight(actors, portalControllerContext.getHttpServletRequest().getRemoteUser()))	{
+    		
+    		if( !checkTaskdocRight( nuxeoController, procedureModel, procedureInstance, portalControllerContext.getHttpServletRequest().getRemoteUser(), portalControllerContext.getHttpServletRequest().getParameter("displayContext")))	{
     			 form = new Form();
     			 request.setAttribute("errorText", "Accès interdit");
     		}
     		else	{
-    			nuxeoController.setCurrentDoc(procedureInstance.getOriginalDocument());
-    			final ProcedureModel procedureModel = procedureService.retrieveProcedureByWebId(nuxeoController, procedureInstance.getProcedureModelWebId());
-    			form = new Form(procedureModel, procedureInstance);
-
+     			form = new Form(procedureModel, procedureInstance);
     			procedureService.updateData(nuxeoController, form);
     		}
         } else if (StringUtils.isNotEmpty(getId(request)) && StringUtils.equals(getDocType(request), DocumentTypeEnum.TASKDOC.getDocType())) {
