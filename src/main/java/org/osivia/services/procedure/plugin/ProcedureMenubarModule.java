@@ -12,6 +12,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
+import org.osivia.portal.api.cms.Permissions;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
@@ -72,116 +73,141 @@ public class ProcedureMenubarModule implements MenubarModule {
             Document document = ((NuxeoDocumentContext) documentContext).getDocument();
             NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
+            Permissions permissions = documentContext.getPermissions();
+            NuxeoPublicationInfos pubInfos = ((NuxeoDocumentContext) documentContext).getPublicationInfos();            
+
             Bundle bundle = bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
             if (document != null && StringUtils.equals(document.getType(), DocumentTypeEnum.RECORDFOLDER.getDocType())) {
                 String documentPath = document.getPath();
 
+
                 // ADD RECORD
-                String cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "create", null,
-                        null, null, null);
+                if( pubInfos.getSubtypes().size() >0)   {
+                     String cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "create", null,
+                            null, null, null);
 
-                MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD_ELEMENT"), "halflings halflings-plus", MenubarGroup.ADD, 0, cmsUrl, null, null,
-                        null);
-                item.setAjaxDisabled(true);
+                    MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD_ELEMENT"), "halflings halflings-plus", MenubarGroup.ADD, 0, cmsUrl, null,
+                            null, null);
+                    item.setAjaxDisabled(true);
 
-                menubar.add(item);
+                    menubar.add(item);
+                }
 
                 // EDIT RECORD FOLDER
-                String webId = document.getProperties().getString("ttc:webid");
-                Map<String, String> windowProperties = new HashMap<String, String>();
-                windowProperties.put("osivia.doctype", DocumentTypeEnum.RECORDFOLDER.getDocType());
-                windowProperties.put("osivia.hideDecorators", "1");
-                windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-                windowProperties.put("osivia.ajaxLink", "1");
-                windowProperties.put("osivia.procedure.admin", "adminrecord");
-                windowProperties.put("osivia.services.procedure.webid", webId);
-                windowProperties.put("osivia.title", bundle.getString("EDIT_RECORD_FOLDER"));
-
-                String editRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
-                        "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
                 
+                if( permissions.isEditable())   {
+                    String webId = document.getProperties().getString("ttc:webid");
+                    Map<String, String> windowProperties = new HashMap<String, String>();
+                    windowProperties.put("osivia.doctype", DocumentTypeEnum.RECORDFOLDER.getDocType());
+                    windowProperties.put("osivia.hideDecorators", "1");
+                    windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
+                    windowProperties.put("osivia.ajaxLink", "1");
+                    windowProperties.put("osivia.procedure.admin", "adminrecord");
+                    windowProperties.put("osivia.services.procedure.webid", webId);
+                    windowProperties.put("osivia.title", bundle.getString("EDIT_RECORD_FOLDER"));
 
-                final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
+                    String editRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
+                            "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
 
-                item = new MenubarItem("EDIT", bundle.getString("EDIT_RECORD_FOLDER"), "halflings halflings-pencil", parent, 0, editRecUrl, null, null, null);
-                item.setAjaxDisabled(true);
 
-                menubar.add(item);
+                    final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
+
+                    MenubarItem item = new MenubarItem("EDIT", bundle.getString("EDIT_RECORD_FOLDER"), "halflings halflings-pencil", parent, 0, editRecUrl, null, null,
+                            null);
+                    item.setAjaxDisabled(true);
+
+                    menubar.add(item);
+                }
 
                 // DELETE RECORD FOLDER
+                if( permissions.isDeletable() )   {
 
-                String itemLabel = bundle.getString("DELETE");
-                item = new MenubarItem("DELETE", itemLabel, "glyphicons glyphicons-bin", parent, 20, null, null, null, null);
-                item.setAjaxDisabled(true);
-                item.setDivider(true);
+                    final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
+                    
+                    String itemLabel = bundle.getString("DELETE");
+                    MenubarItem item = new MenubarItem("DELETE", itemLabel, "glyphicons glyphicons-bin", parent, 20, null, null, null, null);
+                    item.setAjaxDisabled(true);
+                    item.setDivider(true);
 
-                // Fancybox properties
-                final Map<String, String> properties = new HashMap<String, String>();
-                properties.put("docId", document.getId());
-                properties.put("docPath", document.getPath());
+                    // Fancybox properties
+                    final Map<String, String> properties = new HashMap<String, String>();
+                    properties.put("docId", document.getId());
+                    properties.put("docPath", document.getPath());
 
-                // Fancybox identifier
-                final String fancyboxId = nuxeoController.getCMSCtx().getResponse().getNamespace() + "_PORTAL_DELETE";
+                    // Fancybox identifier
+                    final String fancyboxId = nuxeoController.getCMSCtx().getResponse().getNamespace() + "_PORTAL_DELETE";
 
-                // Fancybox delete action URL
-                NuxeoPublicationInfos pubInfos = ((NuxeoDocumentContext) documentContext).getPublicationInfos();
 
-                String removeURL = nuxeoController.getPortalUrlFactory().getPutDocumentInTrashUrl(portalControllerContext, pubInfos.getLiveId(),
-                        pubInfos.getPath());
+                    // Fancybox delete action URL
 
-                // Fancybox HTML data
-                final String fancybox = this.generateDeleteConfirmationFancybox(properties, bundle, fancyboxId, removeURL);
-                item.setAssociatedHTML(fancybox);
 
-                // URL
-                final String url = "#" + fancyboxId;
+                    String removeURL = nuxeoController.getPortalUrlFactory().getPutDocumentInTrashUrl(portalControllerContext, pubInfos.getLiveId(),
+                            pubInfos.getPath());
 
-                item.setUrl("javascript:;");
-                item.getData().put("fancybox", StringUtils.EMPTY);
-                item.getData().put("src", url);
+                    // Fancybox HTML data
+                    final String fancybox = this.generateDeleteConfirmationFancybox(properties, bundle, fancyboxId, removeURL);
+                    item.setAssociatedHTML(fancybox);
 
-                menubar.add(item);
+                    // URL
+                    final String url = "#" + fancyboxId;
+
+                    item.setUrl("javascript:;");
+                    item.getData().put("fancybox", StringUtils.EMPTY);
+                    item.getData().put("src", url);
+
+                    menubar.add(item);
+                }
 
 
             } else if (document != null && StringUtils.equals(document.getType(), DocumentTypeEnum.RECORDCONTAINER.getDocType())) {
                 String documentPath = document.getPath();
+                
+                if( pubInfos.getSubtypes().size() >0)   {
 
-                // ADD RECORD FOLDER
-                final Map<String, String> windowProperties = new HashMap<String, String>();
-                windowProperties.put("osivia.doctype", DocumentTypeEnum.RECORDFOLDER.getDocType());
-                windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, documentPath);
-                windowProperties.put("osivia.hideDecorators", "1");
-                windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-                windowProperties.put("osivia.ajaxLink", "1");
-                windowProperties.put("osivia.procedure.admin", "adminrecord");
-                windowProperties.put("osivia.title", bundle.getString("CREATE_RECORD_FOLDER"));
-                String addRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
-                        "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
+                    // ADD RECORD FOLDER
+                    final Map<String, String> windowProperties = new HashMap<String, String>();
+                    windowProperties.put("osivia.doctype", DocumentTypeEnum.RECORDFOLDER.getDocType());
+                    windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, documentPath);
+                    windowProperties.put("osivia.hideDecorators", "1");
+                    windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
+                    windowProperties.put("osivia.ajaxLink", "1");
+                    windowProperties.put("osivia.procedure.admin", "adminrecord");
+                    windowProperties.put("osivia.title", bundle.getString("CREATE_RECORD_FOLDER"));
+                    String addRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),
+                            "osivia-services-procedure-portletInstance", windowProperties, PortalUrlType.DEFAULT);
 
-                MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD_RECORD_FOLDER"), "halflings halflings-plus", MenubarGroup.ADD, 0, addRecUrl,
-                        null, null, null);
-                item.setAjaxDisabled(true);
+                    MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD_RECORD_FOLDER"), "halflings halflings-plus", MenubarGroup.ADD, 0, addRecUrl,
+                            null, null, null);
+                    item.setAjaxDisabled(true);
 
-                menubar.add(item);
+                    menubar.add(item);
+                }
             } else if (document != null && StringUtils.equals(document.getType(), DocumentTypeEnum.RECORD.getDocType())) {
                 String documentPath = document.getPath();
+                
+                if( permissions.isEditable())	{
 
-                // EDIT RECORD
-                final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
-                String cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "edit", null, null,
-                        null, null);
-                MenubarItem item = new MenubarItem("EDIT", bundle.getString("EDIT_RECORD"), "halflings halflings-pencil", parent, 0, cmsUrl, null, null, null);
-                item.setAjaxDisabled(true);
-                menubar.add(item);
+	                // EDIT RECORD
+	                final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
+	                String cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "edit", null, null,
+	                        null, null);
+	                MenubarItem item = new MenubarItem("EDIT", bundle.getString("EDIT_RECORD"), "halflings halflings-pencil", parent, 0, cmsUrl, null, null, null);
+	                item.setAjaxDisabled(true);
+	                menubar.add(item);
+                }
+                if( permissions.isDeletable()) {
+                    final MenubarDropdown parent = menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
 
-                // DELETE RECORD
-                cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "delete", null, null,
-                        null, null);
-                item = new MenubarItem("EDIT", bundle.getString("DELETE_RECORD"), "halflings halflings-trash", parent, 20, cmsUrl, null, null, null);
-                item.setAjaxDisabled(true);
-                item.setDivider(true);
-                menubar.add(item);
+                    // DELETE RECORD
+                    String cmsUrl = nuxeoController.getPortalUrlFactory().getCMSUrl(portalControllerContext, null, documentPath, null, null, "delete", null,
+                            null, null, null);
+                    MenubarItem item = new MenubarItem("EDIT", bundle.getString("DELETE_RECORD"), "halflings halflings-trash", parent, 20, cmsUrl, null, null,
+                            null);
+                    item.setAjaxDisabled(true);
+                    item.setDivider(true);
+                    menubar.add(item);
+                }
             }
         }
     }
