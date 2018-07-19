@@ -11,7 +11,7 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>4.7-SNAPSHOT</toutatice.version>
+        <toutatice.version>4.7.5</toutatice.version>
         <jboss-portal.version>2.7.2</jboss-portal.version>
         <jboss.version>4.2.3.GA</jboss.version>        
     </properties>
@@ -118,7 +118,6 @@
 	            <artifactId>maven-release-plugin</artifactId>
 	            <version>2.2.1</version>
 	            <configuration>
-	                <tagBase>http://www.osivia.org/repos/osivia-services/procedure/tags</tagBase>
 	                <useReleaseProfile>false</useReleaseProfile>
 	                <preparationGoals>clean install</preparationGoals>
 	                <goals>deploy</goals>
@@ -163,9 +162,11 @@
 
 
     <scm>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/procedure/trunk</developerConnection>
-    </scm>
-
+        <url>https://github.com/osivia/osivia-procedures</url>
+        <connection>scm:git:ssh://git@github.com/osivia/osivia-procedures.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/osivia/osivia-procedures.git</developerConnection>     
+        <tag>HEAD</tag>
+	</scm>
 
     <distributionManagement>
         <repository>
