@@ -6,9 +6,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -18,6 +20,8 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -40,6 +44,9 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
  * @see FormFilter
  */
 public class SendMailFilter implements FormFilter {
+
+    /** Logger. */
+    private static final Log LOGGER = LogFactory.getLog(SendMailFilter.class);
 
     /** Identifier. */
     public static final String ID = "SendMailFilter";
@@ -141,8 +148,14 @@ public class SendMailFilter implements FormFilter {
     public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException {
         // Portal controller context
         PortalControllerContext portalControllerContext = context.getPortalControllerContext();
+        
         // Locale
-        Locale locale = portalControllerContext.getRequest().getLocale();
+        Locale locale = null;
+        if(portalControllerContext.getRequest() != null) {
+        	locale = portalControllerContext.getRequest().getLocale();
+        }
+        
+        
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
@@ -165,20 +178,43 @@ public class SendMailFilter implements FormFilter {
         // System properties
         Properties properties = System.getProperties();
 
-        // Mail session
-        Session mailSession = Session.getInstance(properties, null);
+        
+//		mail.transport.protocol=smtp
+//		mail.smtp.auth=true
+//		mail.smtp.starttls.enable=true
+//		mail.smtp.host=smtp.gmail.com
+//		mail.smtp.port=587
+//		mail.smtp.user=demo@osivia.com
+//		mail.smtp.password=demo-osivia
+
+		
+		String userName = properties.getProperty("mail.smtp.user");
+		String password = properties.getProperty("mail.smtp.password");       
+
+		Authenticator auth = null;
+		if( userName != null && password !=null)
+			auth = new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication("demo@osivia.com", "demo-osivia");
+			}
+		  };
+			
+		
+		Session mailSession = Session.getInstance(properties, auth);
+
 
         // Message
         MimeMessage message = new MimeMessage(mailSession);
 
         // "Mail from" address
-        InternetAddress mailFromAddr;
-        try {
-            mailFromAddr = new InternetAddress(mailFromVar);
-        } catch (AddressException e1) {
-            throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
+        InternetAddress mailFromAddr = null;
+        if (StringUtils.isNotBlank(mailFromVar)) {
+            try {
+                mailFromAddr = new InternetAddress(mailFromVar);
+            } catch (AddressException e1) {
+                throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
+            }
         }
-
         // "Mail to" address
         InternetAddress[] mailToAddr;
         try {
@@ -201,10 +237,11 @@ public class SendMailFilter implements FormFilter {
 
             message.setSentDate(new Date());
 
-            InternetAddress[] replyToTab = new InternetAddress[1];
-            replyToTab[0] = mailFromAddr;
-            message.setReplyTo(replyToTab);
-
+            if (mailFromAddr != null) {
+                InternetAddress[] replyToTab = new InternetAddress[1];
+                replyToTab[0] = mailFromAddr;
+                message.setReplyTo(replyToTab);
+            }
             // SMTP transport
             SMTPTransport transport = (SMTPTransport) mailSession.getTransport();
             transport.connect();
@@ -213,8 +250,10 @@ public class SendMailFilter implements FormFilter {
         } catch (MessagingException e) {
             if (continueEvenIfError) {
                 // Notification
-                this.notificationService.addSimpleNotification(portalControllerContext, bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR"),
+                String errorMsg = bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR");
+                this.notificationService.addSimpleNotification(portalControllerContext, errorMsg,
                         NotificationsType.ERROR);
+                LOGGER.error(errorMsg, e);
             } else {
                 // Exception
                 throw new FormFilterException(e);
