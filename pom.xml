@@ -8,8 +8,8 @@
     <packaging>war</packaging>
     <name>Services OSIVIA - procedure</name>
 
+
     <properties>
-    
         <!-- Toutatice -->
         <toutatice.version>4.7.6</toutatice.version>
         <jboss-portal.version>2.7.2</jboss-portal.version>
