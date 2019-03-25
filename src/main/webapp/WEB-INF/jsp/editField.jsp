@@ -33,6 +33,16 @@
 	                      </div>
 	                  </c:when>
 	                  
+	                  <c:when test="${fieldType eq 'PASSWORD'}">
+	                      <form:label path="${fieldNamePath}" cssClass="col-sm-3 col-lg-2 control-label">${field.superLabel}</form:label>
+	                      <div class="col-sm-9 col-lg-10">
+	                          <form:password path="${fieldNamePath}" cssClass="form-control" />
+	                          <c:if test="${not empty field.helpText}">
+	                              <span class="help-block">${field.helpText}</span>
+	                          </c:if>
+	                      </div>
+	                  </c:when>	                  
+	                  
 	                  <c:when test="${fieldType eq 'TEXTAREA'}">
 	                      <form:label path="${fieldNamePath}" cssClass="col-sm-3 col-lg-2 control-label">${field.superLabel}</form:label>
 	                      <div class="col-sm-9 col-lg-10">
