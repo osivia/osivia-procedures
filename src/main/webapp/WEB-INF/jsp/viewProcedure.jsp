@@ -33,8 +33,11 @@
 	    <div class="form-group">
 	        <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
 	            <c:forEach var="action" items="${form.theCurrentStep.actions}" varStatus="status">
-	                <button type="button" onclick="selector(this,'${action.actionId}','actionId'); $JQry('#${namespace}-proceed-procedure').click();" class="btn btn-primary">${action.label}</button>
+	                <button type="button" onclick="$JQry('#${namespace}-action').val('${action.actionId}'); $JQry('#${namespace}-proceed-procedure').click();" class="btn btn-primary">${action.label}</button>
 	            </c:forEach>
+	            
+	            <input id="${namespace}-action" type="hidden" name="actionId" value="${form.theCurrentStep.actions[0].actionId}">
+	            
 	            <input id="${namespace}-proceed-procedure" type="submit" name="proceedProcedure" class="hidden">
 	        </div>
 	    </div>

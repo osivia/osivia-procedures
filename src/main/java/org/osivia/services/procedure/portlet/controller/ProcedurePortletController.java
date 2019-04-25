@@ -68,6 +68,7 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.services.procedure.portlet.command.ListProcedureInstancesByQueryCommand;
 import org.osivia.services.procedure.portlet.drools.DatasInjection;
 import org.osivia.services.procedure.portlet.model.Action;
@@ -149,6 +150,13 @@ public class ProcedurePortletController extends CmsPortletController {
     private static final String DASHBOARD_VIEW = "procedureDashboard";
     /** VIEW_ERROR */
     private static final String VIEW_ERROR = "error";
+    
+    
+    /** Redirection fragment type variable name. */
+    //TODO : move into API (mutualize with UptaskCommand)
+    public static final String REDIRECTION_FRAGMENT_TYPE_VARIABLE = "command.redirection.fragment-type";
+    /** Redirection page display name variable name. */
+    public static final String REDIRECTION_PAGE_DISPLAY_NAME_VARIABLE = "command.redirection.page-display-name";    
 
 
     /** Application context. */
@@ -1104,6 +1112,8 @@ public class ProcedurePortletController extends CmsPortletController {
         ActionResponse response = (ActionResponse) nuxeoController.getResponse();
 
         String cmsPath = globalVariablesValues.get(IFormsService.REDIRECT_CMS_PATH_PARAMETER);
+        String redirectionFragmentType = globalVariablesValues.get(REDIRECTION_FRAGMENT_TYPE_VARIABLE);      
+        String redirectionPageDisplayName = globalVariablesValues.get(REDIRECTION_PAGE_DISPLAY_NAME_VARIABLE);        
 
         String displayContext = globalVariablesValues.get(IFormsService.REDIRECT_DISPLAYCONTEXT_PARAMETER);
 
@@ -1126,7 +1136,33 @@ public class ProcedurePortletController extends CmsPortletController {
                 this.notificationsService.addSimpleNotification(nuxeoController.getPortalCtx(), notificationMessage, NotificationsType.SUCCESS);
             }
 
-        }else{
+        }
+        else if (StringUtils.isNotEmpty(redirectionFragmentType))   {
+            
+            //TODO : mutualiser la redirection avec UpdateTaskCommands
+            
+            // Portlet instance
+            String instance = "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance";
+            // Page name
+            String name = "informations";
+            // Page display name
+            String displayName = StringUtils.defaultIfBlank(redirectionPageDisplayName, "Informations");
+            // Window properties
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put(InternalConstants.PROP_WINDOW_TITLE, displayName);
+            properties.put("osivia.hideTitle", "1");
+            properties.put("osivia.fragmentTypeId", redirectionFragmentType);
+            
+            try {
+                String redirectionUrl = this.portalUrlFactory.getStartPortletInNewPage(nuxeoController.getPortalCtx(), name, displayName, instance, properties, null);                
+                response.sendRedirect(redirectionUrl);
+            } catch (IOException | PortalException e) {
+                throw new PortletException(e);
+            }
+
+                        
+        }
+        else{
             // redirect to end of step page
             response.setRenderParameter("action", "endStep");
         }
