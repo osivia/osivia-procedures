@@ -14,7 +14,7 @@
 
 <c:if test="${applicable ne 'false' }">
 
-	<li class="form-group <c:if test="${form.selectedField.path eq field.path}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>" id="${field.path}">
+	<li class="form-group row <c:if test="${form.selectedField.path eq field.path}">fieldSelected</c:if> <c:if test="${field.required eq true}">required</c:if>" id="${field.path}">
 	      <c:set var="fieldType" value="${form.procedureModel.variables[field.name].type}" />
 	      <c:set var="fieldNamePath" value="procedureInstance.globalVariablesValues['${field.name}']" />
 	      <c:set var="fieldValue" value="${form.procedureInstance.globalVariablesValues[field.name]}" />

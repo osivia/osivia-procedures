@@ -38,12 +38,12 @@
 	            
 	            <input id="${namespace}-action" type="hidden" name="actionId" value="${form.theCurrentStep.actions[0].actionId}">
 	            
-	            <input id="${namespace}-proceed-procedure" type="submit" name="proceedProcedure" class="hidden">
+	            <input id="${namespace}-proceed-procedure" type="submit" name="proceedProcedure" class="d-none">
 	        </div>
 	    </div>
 	
-	    <input id="${namespace}-upload-file" type="submit" name="upload-file" class="hidden">
-	    <input  type="submit" name="applyRules" class="hidden">   
+	    <input id="${namespace}-upload-file" type="submit" name="upload-file" class="d-none">
+	    <input  type="submit" name="applyRules" class="d-none">   
 	
 	</form:form>
 </div>
