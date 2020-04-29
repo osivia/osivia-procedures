@@ -273,9 +273,13 @@ public class SendMailFilter implements FormFilter {
         } catch (MessagingException e) {
             if (continueEvenIfError) {
                 // Notification
-                String errorMsg = bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR");
-                this.notificationService.addSimpleNotification(portalControllerContext, errorMsg,
-                        NotificationsType.ERROR);
+        		String errorMsg = bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR");
+
+            	if(portalControllerContext.getRequest() != null) {
+                    this.notificationService.addSimpleNotification(portalControllerContext, errorMsg,
+                            NotificationsType.ERROR);	
+            	}
+                
                 LOGGER.error(errorMsg, e);
             } else {
                 // Exception
