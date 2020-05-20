@@ -72,6 +72,20 @@ public class SendMailFilter implements FormFilter {
     private IBundleFactory bundleFactory;
     /** Notification service. */
     private INotificationsService notificationService;
+    
+    
+    private class SMTPAuthenticator extends Authenticator {
+        private final String userName, password;
+        
+        public SMTPAuthenticator(String userName, String password) {
+            this.userName = userName;
+            this.password = password;
+        }
+        
+        protected PasswordAuthentication getPasswordAuthentication() {
+            return new PasswordAuthentication(userName, password);
+        }        
+     }
 
 
     /**
@@ -186,18 +200,16 @@ public class SendMailFilter implements FormFilter {
 //		mail.smtp.port=587
 //		mail.smtp.user=demo@osivia.com
 //		mail.smtp.password=demo-osivia
+//      mail.replyTo=no-reply-demo@osivia.com
 
 		
 		String userName = properties.getProperty("mail.smtp.user");
 		String password = properties.getProperty("mail.smtp.password");       
 
 		Authenticator auth = null;
-		if( userName != null && password !=null)
-			auth = new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("demo@osivia.com", "demo-osivia");
-			}
-		  };
+		if( userName != null && password !=null)  {
+			auth = new SMTPAuthenticator(userName, password);
+		}
 			
 		
 		Session mailSession = Session.getInstance(properties, auth);
@@ -215,6 +227,21 @@ public class SendMailFilter implements FormFilter {
                 throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
             }
         }
+        
+        if (mailFromAddr == null) {
+            String defaultFrom = System.getProperty("mail.replyTo");
+            if (StringUtils.isNotEmpty(defaultFrom)) {
+                try {
+                    mailFromAddr = new InternetAddress(defaultFrom);
+                } catch (AddressException e1) {
+                    throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
+                }
+            }
+        }
+            
+        
+        
+        
         // "Mail to" address
         InternetAddress[] mailToAddr;
         try {
