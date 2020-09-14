@@ -62,6 +62,8 @@ public class SendMailFilter implements FormFilter {
     private static final String MAIL_TO_PARAMETER = "mailTo";
     /** "Mail from" parameter. */
     private static final String MAIL_FROM_PARAMETER = "mailFrom";
+    /** "Mail reply-to" parameter. */
+    private static final String MAIL_REPLYTO_PARAMETER = "mailReplyTo";    
     /** Mail object parameter. */
     private static final String MAIL_OBJECT_PARAMETER = "mailObject";
     /** Continue workflow even if an error is thrown indicator. */
@@ -126,6 +128,7 @@ public class SendMailFilter implements FormFilter {
         parameters.put(MAIL_TO_PARAMETER, FormFilterParameterType.TEXT);
         parameters.put(MAIL_OBJECT_PARAMETER, FormFilterParameterType.TEXT);
         parameters.put(MAIL_FROM_PARAMETER, FormFilterParameterType.TEXT);
+        parameters.put(MAIL_REPLYTO_PARAMETER, FormFilterParameterType.TEXT);        
         parameters.put(BODY_PARAMETER, FormFilterParameterType.TEXTAREA);
         parameters.put(CONTINUE_PARAMETER, FormFilterParameterType.BOOLEAN);
         return parameters;
@@ -161,6 +164,7 @@ public class SendMailFilter implements FormFilter {
 
         // Parameters
         String mailFromVar = context.getParamValue(executor, MAIL_FROM_PARAMETER);
+        String mailReplyToVar = context.getParamValue(executor, MAIL_REPLYTO_PARAMETER);        
         String mailToVar = context.getParamValue(executor, MAIL_TO_PARAMETER);
         String mailObjectVar = context.getParamValue(executor, MAIL_OBJECT_PARAMETER);
         String mailBodyVar = context.getParamValue(executor, BODY_PARAMETER);
@@ -177,29 +181,17 @@ public class SendMailFilter implements FormFilter {
 
         // System properties
         Properties properties = System.getProperties();
-
-        
-//		mail.transport.protocol=smtp
-//		mail.smtp.auth=true
-//		mail.smtp.starttls.enable=true
-//		mail.smtp.host=smtp.gmail.com
-//		mail.smtp.port=587
-//		mail.smtp.user=demo@osivia.com
-//		mail.smtp.password=demo-osivia
-
 		
 		String userName = properties.getProperty("mail.smtp.user");
-		String password = properties.getProperty("mail.smtp.password");       
-
-		Authenticator auth = null;
-		if( userName != null && password !=null)
-			auth = new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("demo@osivia.com", "demo-osivia");
-			}
-		  };
-			
+		String password = properties.getProperty("mail.smtp.password");      
 		
+		Authenticator auth = null;
+
+		if( userName != null && password !=null) {
+			
+			auth = new ProcedureAuthenticator(userName, password);
+		}
+
 		Session mailSession = Session.getInstance(properties, auth);
 
 
@@ -215,6 +207,17 @@ public class SendMailFilter implements FormFilter {
                 throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
             }
         }
+        
+        // "Mail reply-to" address
+        InternetAddress[] mailReplyToAddr = null;
+        if (StringUtils.isNotBlank(mailReplyToVar)) {
+            try {
+            	mailReplyToAddr = InternetAddress.parse(mailReplyToVar, false);
+            } catch (AddressException e1) {
+                throw new FormFilterException(bundle.getString("SEND_MAIL_FILTER_MAILFROM_MISSING_ERROR"));
+            }
+        }        
+        
         // "Mail to" address
         InternetAddress[] mailToAddr;
         try {
@@ -237,11 +240,19 @@ public class SendMailFilter implements FormFilter {
 
             message.setSentDate(new Date());
 
+            // Reply-to
             if (mailFromAddr != null) {
-                InternetAddress[] replyToTab = new InternetAddress[1];
-                replyToTab[0] = mailFromAddr;
-                message.setReplyTo(replyToTab);
+            	if (mailReplyToAddr == null) {
+           
+	                InternetAddress[] replyToTab = new InternetAddress[1];
+	                replyToTab[0] = mailFromAddr;
+	                message.setReplyTo(replyToTab);
+            	}
+	            else {
+	                message.setReplyTo(mailReplyToAddr);
+	            }
             }
+            
             // SMTP transport
             SMTPTransport transport = (SMTPTransport) mailSession.getTransport();
             transport.connect();
@@ -250,9 +261,13 @@ public class SendMailFilter implements FormFilter {
         } catch (MessagingException e) {
             if (continueEvenIfError) {
                 // Notification
-                String errorMsg = bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR");
-                this.notificationService.addSimpleNotification(portalControllerContext, errorMsg,
-                        NotificationsType.ERROR);
+        		String errorMsg = bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR");
+
+            	if(portalControllerContext.getRequest() != null) {
+                    this.notificationService.addSimpleNotification(portalControllerContext, errorMsg,
+                            NotificationsType.ERROR);	
+            	}
+                
                 LOGGER.error(errorMsg, e);
             } else {
                 // Exception
@@ -260,4 +275,5 @@ public class SendMailFilter implements FormFilter {
             }
         }
     }
+    
 }
