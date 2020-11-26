@@ -1,11 +1,16 @@
 package org.osivia.services.procedure.formFilters;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -180,13 +185,49 @@ public class SendMailFilter implements FormFilter {
         String mailBodyVar = context.getParamValue(executor, BODY_PARAMETER);
         boolean continueEvenIfError = BooleanUtils.toBoolean(context.getParamValue(executor, CONTINUE_PARAMETER));
 
+        String logoPath = System.getProperty("osivia.procedure.mail.logo.path");
+        String logoHeight = System.getProperty("osivia.procedure.mail.logo.height");
+        String margin = System.getProperty("osivia.procedure.mail.margin");
+        String fontFamily = System.getProperty("osivia.procedure.mail.font.family");
+        String fontSize = System.getProperty("osivia.procedure.mail.font.size");
+        
         // Body
         StringBuilder body = new StringBuilder();
-        for (String line : StringUtils.split(mailBodyVar, System.lineSeparator())) {
-            body.append("<p>");
-            body.append(line);
-            body.append("</p>");
+        if( logoPath != null) {
+            body.append("<img ");
+            if( logoHeight != null)
+                body.append("height=\""+logoHeight+"\" ");
+  
+            body.append("src=\"cid:logo\"><br>");
         }
+        
+        body.append("<div style=\"");
+        
+        if( margin != null)    {
+            body.append("margin-left:"+margin+"; margin-right:"+margin+"; "); 
+        }
+
+        if( fontFamily != null) {
+            body.append("font-family:"+fontFamily+"; "); 
+        }
+        
+        if( fontSize != null) {
+            body.append("font-size:"+fontSize+"; "); 
+        }
+        
+        
+        
+        body.append("\">");
+        
+        
+        for (String line : StringUtils.split(mailBodyVar, System.lineSeparator())) {
+
+            body.append(line);
+            body.append("<br>");
+        }
+        
+
+        body.append("</div>");
 
 
         // System properties
@@ -255,11 +296,26 @@ public class SendMailFilter implements FormFilter {
             message.setRecipients(Message.RecipientType.TO, mailToAddr);
             message.setSubject(mailObjectVar, "UTF-8");
 
+           
             // Multipart
-            Multipart multipart = new MimeMultipart();
-            MimeBodyPart htmlPart = new MimeBodyPart();
-            htmlPart.setContent(body.toString(), "text/html; charset=UTF-8");
-            multipart.addBodyPart(htmlPart);
+            Multipart multipart = new MimeMultipart("related");
+
+
+            
+            // Main
+            MimeBodyPart mainPart = new MimeBodyPart();
+            mainPart.setContent(body.toString(), "text/html; charset=UTF-8");
+            multipart.addBodyPart(mainPart);
+             
+            // Add logo
+            if( logoPath != null) {
+                MimeBodyPart image = new MimeBodyPart();
+                image.attachFile(logoPath);
+                image.setHeader("Content-ID", "<logo>");
+                multipart.addBodyPart(image);       
+            }          
+
+            
             message.setContent(multipart);
 
             message.setSentDate(new Date());
@@ -274,7 +330,7 @@ public class SendMailFilter implements FormFilter {
             transport.connect();
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();
-        } catch (MessagingException e) {
+        } catch (MessagingException | IOException e) {
             if (continueEvenIfError) {
                 // Notification
                 String errorMsg = bundle.getString("SEND_MAIL_FILTER_NOTIFICATION_ERROR");
