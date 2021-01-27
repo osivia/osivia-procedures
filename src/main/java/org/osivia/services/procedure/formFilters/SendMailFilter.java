@@ -193,7 +193,13 @@ public class SendMailFilter implements FormFilter {
 
 		
 		String userName = properties.getProperty("mail.smtp.user");
-		String password = properties.getProperty("mail.smtp.password");       
+		String password = properties.getProperty("mail.smtp.password");
+		
+		String subjectPrefix = properties.getProperty("mail.subject.prefix");
+		if(StringUtils.isNotBlank(subjectPrefix)) {
+			mailObjectVar = "[".concat(subjectPrefix).concat("] ").concat(mailObjectVar);
+		}
+		
 
 		Authenticator auth = null;
 		if( userName != null && password !=null)
