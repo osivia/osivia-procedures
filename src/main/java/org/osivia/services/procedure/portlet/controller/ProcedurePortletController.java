@@ -788,34 +788,34 @@ public class ProcedurePortletController extends CmsPortletController {
         String procedurePath = getProcedurePath(request);
         return procedurePath != null ? procedureService.listProcedures(nuxeoController, procedurePath) : null;
     }
-
-    @ModelAttribute(value = "editProcedureUrl")
-    public String getEditProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-
-
-        String editProcedureUrl = null;
-        if ((form.getProcedureModel() != null) && (form.getProcedureModel().getOriginalDocument() != null) && (form.getRecord() == null)) {
-            try {
-                CMSPublicationInfos publicationInfos = NuxeoController.getCMSService().getPublicationInfos(nuxeoController.getCMSCtx(),
-                        form.getProcedureModel().getPath());
-                if (publicationInfos.isEditableByUser()) {
-                    editProcedureUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl();
-                }
-            } catch (CMSException e) {
-                throw new PortletException(e);
-            }
-        }
-
-        return editProcedureUrl;
-    }
-
-    @ModelAttribute(value = "linkProcedureUrl")
-    public String getLinkProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) {
-        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        return (form.getProcedureModel() != null) && (form.getProcedureModel().getOriginalDocument() != null) ? nuxeoController.getLink(
-                form.getProcedureModel().getOriginalDocument()).getUrl() : null;
-    }
+//
+//    @ModelAttribute(value = "editProcedureUrl")
+//    public String getEditProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
+//        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+//
+//
+//        String editProcedureUrl = null;
+//        if ((form.getProcedureModel() != null) && (form.getProcedureModel().getOriginalDocument() != null) && (form.getRecord() == null)) {
+//            try {
+//                CMSPublicationInfos publicationInfos = NuxeoController.getCMSService().getPublicationInfos(nuxeoController.getCMSCtx(),
+//                        form.getProcedureModel().getPath());
+//                if (publicationInfos.isEditableByUser()) {
+//                    editProcedureUrl = nuxeoController.getLink(form.getProcedureModel().getOriginalDocument(), "adminproc").getUrl();
+//                }
+//            } catch (CMSException e) {
+//                throw new PortletException(e);
+//            }
+//        }
+//
+//        return editProcedureUrl;
+//    }
+//
+//    @ModelAttribute(value = "linkProcedureUrl")
+//    public String getLinkProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) {
+//        final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+//        return (form.getProcedureModel() != null) && (form.getProcedureModel().getOriginalDocument() != null) ? nuxeoController.getLink(
+//                form.getProcedureModel().getOriginalDocument()).getUrl() : null;
+//    }
 
     @ModelAttribute(value = "addProcedureUrl")
     public String getAddProcedureUrl(PortletRequest request, PortletResponse response) throws PortletException {
