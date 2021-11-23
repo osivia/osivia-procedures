@@ -443,21 +443,21 @@ public class ProcedureServiceImpl implements IProcedureService {
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Contextualization indicator
-        boolean contextualization = "1".equals(window.getProperty("osivia.cms.contextualization"));
+//        boolean contextualization = "1".equals(window.getProperty("osivia.cms.contextualization"));
 
         // Close URL
         String url;
-        try {
-            if (contextualization) {
-                // Destroy current page URL
-                url = nuxeoController.getPortalUrlFactory().getDestroyCurrentPageUrl(portalControllerContext);
-            } else {
+//        try {
+//            if (contextualization) {
+//                // Destroy current page URL
+//                url = nuxeoController.getPortalUrlFactory().getDestroyCurrentPageUrl(portalControllerContext);
+//            } else {
                 // Back URL
-                url = nuxeoController.getPortalUrlFactory().getBackURL(portalControllerContext, false);
-            }
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }
+                url = nuxeoController.getPortalUrlFactory().getBackURL(portalControllerContext, false, false);
+ //           }
+//        } catch (PortalException e) {
+//            throw new PortletException(e);
+//        }
 
         return url;
     }

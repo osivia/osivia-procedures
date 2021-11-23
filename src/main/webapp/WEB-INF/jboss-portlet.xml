@@ -11,7 +11,7 @@
         </transaction>
         
         <header-content>
-            <link rel="stylesheet" href="/css/procedure.min.css" />
+            <link rel="stylesheet" type="text/css"  href="/css/procedure.min.css" />
             <script type="text/javascript" src="/js/procedure.js"></script>
         </header-content>
 

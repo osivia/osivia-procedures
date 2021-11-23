@@ -1,5 +1,6 @@
 package org.osivia.services.procedure.portlet.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +18,17 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
  * @author Dorian Licois
  */
 @Refreshable
-public class Form {
+public class Form implements Serializable{
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 
+     */
+
 
     /** procedureModel */
     private ProcedureModel procedureModel;

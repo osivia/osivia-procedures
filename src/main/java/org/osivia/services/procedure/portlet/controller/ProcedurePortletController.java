@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.annotation.Retention;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
-import org.jboss.portal.security.impl.jacc.JACCPortalPrincipal;
+
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
@@ -96,6 +97,7 @@ import org.osivia.services.procedure.portlet.util.ProcedureUtils;
 import org.osivia.services.procedure.portlet.util.VariableTypesEnumJsonSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -300,7 +302,7 @@ public class ProcedurePortletController extends CmsPortletController {
         if (groups == null || groups.isEmpty() || groups.contains("members")) {
             return true;
         }
-
+/*
         // Get the current authenticated subject through the JACC contract
         Subject subject = null;
         try {
@@ -325,7 +327,7 @@ public class ProcedurePortletController extends CmsPortletController {
             }
         }
 
-
+*/
         return false;
     }
     
@@ -517,7 +519,7 @@ public class ProcedurePortletController extends CmsPortletController {
     }
 
 
-    @ModelAttribute(value = "form")
+    @ModelAttribute("form")
     public Form getForm(PortletRequest request, PortletResponse response, @RequestParam(value = "selectedStep", required = false) String selectedStep)
             throws PortletException {
         // Portal Controller context
@@ -797,6 +799,10 @@ public class ProcedurePortletController extends CmsPortletController {
         return procedurePath != null ? procedureService.listProcedures(nuxeoController, procedurePath) : null;
     }
 
+    //TODO : ces 2 méthodes bloquent le lancement du portlet
+    //HandlerMethodInvoker (le form n'est pas renseigné)
+    
+    /*
     @ModelAttribute(value = "editProcedureUrl")
     public String getEditProcedureUrl(PortletRequest request, PortletResponse response, @ModelAttribute(value = "form") Form form) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
@@ -825,6 +831,7 @@ public class ProcedurePortletController extends CmsPortletController {
                 form.getProcedureModel().getOriginalDocument()).getUrl() : null;
     }
 
+*/
     @ModelAttribute(value = "addProcedureUrl")
     public String getAddProcedureUrl(PortletRequest request, PortletResponse response) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
@@ -1196,7 +1203,7 @@ public class ProcedurePortletController extends CmsPortletController {
     @ActionMapping(value = "editProcedure", params = "exit")
     public void exit(ActionRequest request, ActionResponse response) throws PortletException {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
-        String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
+        String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false, false);
         try {
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
@@ -1211,7 +1218,7 @@ public class ProcedurePortletController extends CmsPortletController {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.deleteProcedure(nuxeoController, form.getProcedureModel());
 
-        final String redirectUrl = this.portalUrlFactory.getBackURL(nuxeoController.getPortalCtx(), false);
+        final String redirectUrl = this.portalUrlFactory.getBackURL(nuxeoController.getPortalCtx(), false, false);
         try {
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
@@ -1517,7 +1524,7 @@ public class ProcedurePortletController extends CmsPortletController {
                 } else {
                     // if the procedure doesn't exist in database, create it
                     form.setProcedureModel(procedureService.createProcedure(nuxeoController, form.getProcedureModel(), getProcedurePath(request)));
-                    String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false);
+                    String redirectUrl = nuxeoController.getPortalUrlFactory().getBackURL(nuxeoController.getPortalCtx(), false, false);
                     response.sendRedirect(redirectUrl);
                 }
                 sessionStatus.setComplete();
@@ -2390,7 +2397,7 @@ public class ProcedurePortletController extends CmsPortletController {
         final NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         procedureService.deleteProcedure(nuxeoController, form.getProcedureModel());
 
-        final String redirectUrl = this.portalUrlFactory.getBackURL(nuxeoController.getPortalCtx(), false);
+        final String redirectUrl = this.portalUrlFactory.getBackURL(nuxeoController.getPortalCtx(), false, false);
         try {
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {

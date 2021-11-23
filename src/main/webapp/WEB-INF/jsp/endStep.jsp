@@ -12,8 +12,4 @@
 	<h2><op:translate key="ENDSTEP" /></h2>
 </c:if>
 
-<div>
-    <a href="${closeUrl}" class="btn btn-default no-ajax-link">
-        <span><op:translate key="END" /></span>
-    </a>
-</div>
+

@@ -141,6 +141,7 @@ public class ProcedureMenubarModule implements MenubarModule {
 
                     // Fancybox delete action URL
 
+                    /*
 
                     String removeURL = nuxeoController.getPortalUrlFactory().getPutDocumentInTrashUrl(portalControllerContext, pubInfos.getLiveId(),
                             pubInfos.getPath());
@@ -148,10 +149,12 @@ public class ProcedureMenubarModule implements MenubarModule {
                     // Fancybox HTML data
                     final String fancybox = this.generateDeleteConfirmationFancybox(properties, bundle, fancyboxId, removeURL);
                     item.setAssociatedHTML(fancybox);
+                    
 
                     // URL
-                    final String url = "#" + fancyboxId;
-
+                    final String url = "#" + fancyboxId;*/
+                    
+                    final String url = "#";
                     item.setUrl("javascript:;");
                     item.getData().put("fancybox", StringUtils.EMPTY);
                     item.getData().put("src", url);

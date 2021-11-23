@@ -18,7 +18,7 @@
         <c:forEach var="procedure" items="${procedureList}">
             <c:if test="${not empty procedure.url}">
 	            <li>
-	                <a href="${procedure.url}" class="no-ajax-link">${procedure.name}</a>
+	                <a href="${procedure.url}">${procedure.name}</a>
 	            </li>
             </c:if>
         </c:forEach>
