@@ -186,6 +186,8 @@ public class SendMailFilter implements FormFilter {
         boolean continueEvenIfError = BooleanUtils.toBoolean(context.getParamValue(executor, CONTINUE_PARAMETER));
 
         String logoPath = System.getProperty("osivia.procedure.mail.logo.path");
+        logoPath = logoPath.replaceAll("\\$\\{catalina.base\\}", System.getProperty("catalina.base"));
+        
         String logoHeight = System.getProperty("osivia.procedure.mail.logo.height");
         String margin = System.getProperty("osivia.procedure.mail.margin");
         String fontFamily = System.getProperty("osivia.procedure.mail.font.family");
