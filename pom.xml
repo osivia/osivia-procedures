@@ -11,7 +11,7 @@
     <properties>
     
         <!-- Toutatice -->
-        <toutatice.version>5.0-SNAPSHOT</toutatice.version>
+        <toutatice.version>5.0.1</toutatice.version>
     
     </properties>
 
