@@ -101,8 +101,6 @@ public class ProcedureMenubarModule implements MenubarModule {
                     Map<String, String> windowProperties = new HashMap<String, String>();
                     windowProperties.put("osivia.doctype", DocumentTypeEnum.RECORDFOLDER.getDocType());
                     windowProperties.put("osivia.hideDecorators", "1");
-                    windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-                    windowProperties.put("osivia.ajaxLink", "1");
                     windowProperties.put("osivia.procedure.admin", "adminrecord");
                     windowProperties.put("osivia.services.procedure.webid", webId);
                     windowProperties.put("osivia.title", bundle.getString("EDIT_RECORD_FOLDER"));
@@ -173,8 +171,6 @@ public class ProcedureMenubarModule implements MenubarModule {
                     windowProperties.put("osivia.doctype", DocumentTypeEnum.RECORDFOLDER.getDocType());
                     windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, documentPath);
                     windowProperties.put("osivia.hideDecorators", "1");
-                    windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-                    windowProperties.put("osivia.ajaxLink", "1");
                     windowProperties.put("osivia.procedure.admin", "adminrecord");
                     windowProperties.put("osivia.title", bundle.getString("CREATE_RECORD_FOLDER"));
                     String addRecUrl = nuxeoController.getPortalUrlFactory().getStartPortletUrl(nuxeoController.getPortalCtx(),

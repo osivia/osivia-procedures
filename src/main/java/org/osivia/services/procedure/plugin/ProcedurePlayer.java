@@ -105,8 +105,6 @@ public class ProcedurePlayer extends PluginModule implements INuxeoPlayerModule 
         windowProperties.put("osivia.services.procedure.uuid", document.getId());
         windowProperties.put("osivia.doctype", document.getType());
         windowProperties.put("osivia.hideDecorators", "1");
-        windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-        windowProperties.put("osivia.ajaxLink", "1");
         return windowProperties;
     }
     

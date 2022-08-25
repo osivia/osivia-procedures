@@ -402,8 +402,6 @@ public class ProcedureServiceImpl implements IProcedureService {
         windowProperties.put("osivia.doctype", procedureType);
         windowProperties.put(ProcedurePortletAdminController.PROCEDURE_PATH_KEY, procedurePath);
         windowProperties.put("osivia.hideDecorators", "1");
-        windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-        windowProperties.put("osivia.ajaxLink", "1");
         windowProperties.put("osivia.procedure.admin", displayContext);
         return windowProperties;
     }
