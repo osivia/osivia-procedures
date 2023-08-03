@@ -11,7 +11,7 @@
 
     <properties>
         <!-- Toutatice -->
-        <toutatice.version>4.7.6</toutatice.version>
+        <toutatice.version>4.7.51</toutatice.version>
         <jboss-portal.version>2.7.2</jboss-portal.version>
         <jboss.version>4.2.3.GA</jboss.version>        
     </properties>
@@ -219,6 +219,27 @@
         		</snapshotRepository>
     		</distributionManagement>
     	</profile>
+    	
+		<profile>
+            <id>forge-ci</id>       
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>            
+            <distributionManagement>
+                <repository>
+                    <id>${releaseRepoId}</id>
+                    <name>Internal releases repository</name>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>${releaseRepoUrl}</url>
+                </repository>
+                <snapshotRepository>
+                    <id>${snapshotRepoId}</id>
+                    <name>Internal snapshots repository</name>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>${snapshotRepoUrl}</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>    	
     </profiles>
     
     
