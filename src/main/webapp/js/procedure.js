@@ -710,6 +710,8 @@ $JQry(function() {
 			for (var i = 0; i < radioList.length; i++) {
 				$JQry(this).after(makeRadioFromData(name, radioList[i].label, radioList[i].value, dataValue));
 			}
+			// Cocher la première puce d'une liste
+			$JQry(this).parent().find('input[type=radio]')[0].checked = true;
 		}
 	});
 	$JQry(".field-radioList-json").each(function(index, element) {
@@ -819,13 +821,16 @@ function makeRadioFromData(name, label, value, dataValue) {
 		name : name,
 		value : value
 	});
-	var labelTag = document.createElement("label");
 
-	if (value == dataValue) {
+	if (value === dataValue) {
 		$JQry(inputTag).prop("checked", true);
 	}
 
-	return $JQry(labelTag).addClass("radio-inline").append(inputTag).append(label);
+	var labelTag = document.createElement("label");
+
+	var radioDiv = document.createElement('div');
+	return $JQry(radioDiv).addClass('radio').append($JQry(labelTag).append(inputTag).append(label));
+
 }
 
 function makeCheckboxFromData(name, label, value, dataValue) {
